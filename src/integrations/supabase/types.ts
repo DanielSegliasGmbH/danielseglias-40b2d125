@@ -53,10 +53,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "cases_client_id_fkey"
-            columns: ["client_id"]
+            foreignKeyName: "fk_cases_assigned_to"
+            columns: ["assigned_to"]
             isOneToOne: false
-            referencedRelation: "clients"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
@@ -64,6 +64,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_cases_created_by"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -92,10 +99,24 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "client_users_client_id_fkey"
+            foreignKeyName: "fk_client_users_client_id"
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_client_users_created_by"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_client_users_user_id"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -140,7 +161,15 @@ export type Database = {
           status?: Database["public"]["Enums"]["client_status"]
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_clients_created_by"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       meetings: {
         Row: {
@@ -188,10 +217,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "meetings_case_id_fkey"
-            columns: ["case_id"]
+            foreignKeyName: "fk_meetings_created_by"
+            columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "cases"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -226,6 +255,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_notes_author_id"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "fk_notes_case_id"
             columns: ["case_id"]
             isOneToOne: false
@@ -233,14 +269,7 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "notes_case_id_fkey"
-            columns: ["case_id"]
-            isOneToOne: false
-            referencedRelation: "cases"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "notes_meeting_id_fkey"
+            foreignKeyName: "fk_notes_meeting_id"
             columns: ["meeting_id"]
             isOneToOne: false
             referencedRelation: "meetings"
@@ -320,6 +349,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_tasks_assigned_to"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "fk_tasks_case_id"
             columns: ["case_id"]
             isOneToOne: false
@@ -327,10 +363,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "tasks_case_id_fkey"
-            columns: ["case_id"]
+            foreignKeyName: "fk_tasks_created_by"
+            columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "cases"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
