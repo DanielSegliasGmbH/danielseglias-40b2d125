@@ -523,5 +523,55 @@
       "feature3": "Tax calculator",
       "feature4": "Retirement check"
     }
+  },
+  "customer": {
+    "listTitle": "Customers",
+    "create": "New Customer",
+    "createTitle": "Create New Customer",
+    "createDescription": "Enter the basic customer data. Additional details can be added later.",
+    "createSuccess": "Customer created successfully",
+    "createError": "Error creating customer",
+    "saved": "Changes saved",
+    "saveError": "Error saving",
+    "deleted": "Customer deleted",
+    "deleteError": "Error deleting",
+    "deleteConfirmTitle": "Delete customer?",
+    "deleteConfirmDescription": "This action cannot be undone. The customer will be moved to trash.",
+    "notFound": "Customer not found",
+    "noSearchResults": "No customers found",
+    "noCustomers": "No customers yet",
+    "searchPlaceholder": "Search name, email or phone...",
+    "statuses": {
+      "lead": "Lead",
+      "active": "Active",
+      "passive": "Passive",
+      "former": "Former"
+    },
+    "careLevels": {
+      "vip": "VIP",
+      "standard": "Standard",
+      "light": "Light"
+    },
+    "tabs": {
+      "core": "Core Data",
+      "profile": "Contact",
+      "economics": "Finances",
+      "control": "Management"
+    }
+  },
+  "common": {
+    "select": "Select",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "create": "Create",
+    "back": "Back"
+  },
+  "languages": {
+    "de": "German",
+    "fr": "French",
+    "it": "Italian",
+    "en": "English"
   }
 }

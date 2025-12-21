@@ -38,6 +38,7 @@ export function AppSidebar() {
 
   const mainNavItems = [
     { title: t('dashboard.title'), url: '/app', icon: LayoutDashboard },
+    { title: t('customer.listTitle', 'Kunden'), url: '/app/customers', icon: Users },
     { title: t('client.list'), url: '/app/clients', icon: Users },
     { title: t('case.list'), url: '/app/cases', icon: Briefcase },
     { title: t('task.list'), url: '/app/tasks', icon: ClipboardList },

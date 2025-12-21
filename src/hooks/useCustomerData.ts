@@ -1,7 +1,23 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-// Types for customer data (will be updated when types regenerate)
+// ============================================
+// TYPE DEFINITIONS
+// ============================================
+
+export type CustomerStatus = 'lead' | 'active' | 'passive' | 'former';
+export type CustomerPriority = 'A' | 'B' | 'C';
+export type CareLevel = 'vip' | 'standard' | 'light';
+export type CommunicationPreference = 'whatsapp' | 'email' | 'phone';
+export type EmploymentType = 'employed' | 'self_employed' | 'entrepreneur' | 'unemployed' | 'retired';
+export type IncomeRange = 'under_50k' | '50k_80k' | '80k_120k' | '120k_200k' | '200k_plus';
+export type RevenueBand = 'low' | 'medium' | 'high' | 'very_high';
+export type ServiceEffort = 'low' | 'medium' | 'high';
+export type DecisionStyle = 'fast' | 'analytical' | 'hesitant';
+export type FinancialKnowledgeLevel = 'beginner' | 'intermediate' | 'advanced' | 'expert';
+export type PotentialLevel = 'none' | 'low' | 'medium' | 'high';
+export type CivilStatus = 'single' | 'married' | 'divorced' | 'widowed' | 'partnership';
+
 export interface Customer {
   id: string;
   salutation: string | null;
@@ -10,13 +26,13 @@ export interface Customer {
   preferred_name: string | null;
   date_of_birth: string | null;
   nationality: string | null;
-  civil_status: string | null;
+  civil_status: CivilStatus | null;
   partner_customer_id: string | null;
   number_of_children: number;
   ahv_number: string | null;
-  customer_status: string;
-  priority: string | null;
-  care_level: string | null;
+  customer_status: CustomerStatus;
+  priority: CustomerPriority | null;
+  care_level: CareLevel | null;
   acquisition_source: string | null;
   referrer_customer_id: string | null;
   first_contact_date: string | null;
@@ -32,7 +48,7 @@ export interface CustomerProfile {
   customer_id: string;
   phone: string | null;
   email: string | null;
-  communication_preference: string | null;
+  communication_preference: CommunicationPreference | null;
   street: string | null;
   house_number: string | null;
   postal_code: string | null;
@@ -50,12 +66,12 @@ export interface CustomerProfile {
 export interface CustomerEconomics {
   id: string;
   customer_id: string;
-  employment_type: string | null;
+  employment_type: EmploymentType | null;
   employer: string | null;
   job_title: string | null;
   industry: string | null;
   workload_percentage: number | null;
-  income_range: string | null;
+  income_range: IncomeRange | null;
   bonus_income: boolean;
   side_income: boolean;
   banks: string[] | null;
@@ -71,15 +87,15 @@ export interface CustomerControl {
   id: string;
   customer_id: string;
   customer_value_score: number | null;
-  estimated_revenue_band: string | null;
+  estimated_revenue_band: RevenueBand | null;
   lifetime_value: number | null;
-  service_effort: string | null;
+  service_effort: ServiceEffort | null;
   trust_level: number | null;
-  decision_style: string | null;
+  decision_style: DecisionStyle | null;
   implementation_strength: number | null;
-  financial_knowledge_level: string | null;
-  upsell_potential: string | null;
-  cross_sell_potential: string | null;
+  financial_knowledge_level: FinancialKnowledgeLevel | null;
+  upsell_potential: PotentialLevel | null;
+  cross_sell_potential: PotentialLevel | null;
   referral_score: number | null;
   google_review_received: boolean;
   google_review_date: string | null;
@@ -90,31 +106,106 @@ export interface CustomerControl {
 }
 
 export interface CustomerWithRelations extends Customer {
-  customer_profiles?: CustomerProfile | null;
-  customer_economics?: CustomerEconomics | null;
-  customer_control?: CustomerControl | null;
-  partner?: Customer | null;
-  referrer?: Customer | null;
+  customer_profiles: CustomerProfile | null;
+  customer_economics: CustomerEconomics | null;
+  customer_control: CustomerControl | null;
 }
 
-// Fetch all customers
+// Input types for mutations (without auto-generated fields)
+export interface CustomerInsert {
+  salutation?: string | null;
+  first_name: string;
+  last_name: string;
+  preferred_name?: string | null;
+  date_of_birth?: string | null;
+  nationality?: string | null;
+  civil_status?: CivilStatus | null;
+  partner_customer_id?: string | null;
+  number_of_children?: number;
+  ahv_number?: string | null;
+  customer_status?: CustomerStatus;
+  priority?: CustomerPriority | null;
+  care_level?: CareLevel | null;
+  acquisition_source?: string | null;
+  referrer_customer_id?: string | null;
+  first_contact_date?: string | null;
+}
+
+export interface CustomerProfileUpsert {
+  customer_id: string;
+  phone?: string | null;
+  email?: string | null;
+  communication_preference?: CommunicationPreference | null;
+  street?: string | null;
+  house_number?: string | null;
+  postal_code?: string | null;
+  city?: string | null;
+  canton?: string | null;
+  country?: string | null;
+  language_preference?: string | null;
+  wedding_date?: string | null;
+  children_birth_years?: number[] | null;
+  gdpr_consent_at?: string | null;
+}
+
+export interface CustomerEconomicsUpsert {
+  customer_id: string;
+  employment_type?: EmploymentType | null;
+  employer?: string | null;
+  job_title?: string | null;
+  industry?: string | null;
+  workload_percentage?: number | null;
+  income_range?: IncomeRange | null;
+  bonus_income?: boolean;
+  side_income?: boolean;
+  banks?: string[] | null;
+  ibans?: string[] | null;
+  owns_real_estate?: boolean;
+  has_liabilities?: boolean;
+  entrepreneurial_activity?: boolean;
+}
+
+export interface CustomerControlUpsert {
+  customer_id: string;
+  customer_value_score?: number | null;
+  estimated_revenue_band?: RevenueBand | null;
+  lifetime_value?: number | null;
+  service_effort?: ServiceEffort | null;
+  trust_level?: number | null;
+  decision_style?: DecisionStyle | null;
+  implementation_strength?: number | null;
+  financial_knowledge_level?: FinancialKnowledgeLevel | null;
+  upsell_potential?: PotentialLevel | null;
+  cross_sell_potential?: PotentialLevel | null;
+  referral_score?: number | null;
+  google_review_received?: boolean;
+  google_review_date?: string | null;
+  moneytree_received?: boolean;
+  moneytree_date?: string | null;
+}
+
+// ============================================
+// QUERY HOOKS
+// ============================================
+
+// Fetch all non-deleted customers
 export function useCustomers() {
   return useQuery({
     queryKey: ['customers'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('customers')
-        .select('*')
+        .select('*, customer_profiles(email, phone)')
         .is('deleted_at', null)
         .order('last_name', { ascending: true });
       
       if (error) throw error;
-      return data as Customer[];
+      return data as (Customer & { customer_profiles: { email: string | null; phone: string | null } | null })[];
     }
   });
 }
 
-// Fetch single customer with all relations
+// Fetch single non-deleted customer with all relations
 export function useCustomer(customerId: string) {
   return useQuery({
     queryKey: ['customer', customerId],
@@ -128,6 +219,7 @@ export function useCustomer(customerId: string) {
           customer_control (*)
         `)
         .eq('id', customerId)
+        .is('deleted_at', null)
         .maybeSingle();
       
       if (error) throw error;
@@ -191,20 +283,66 @@ export function useCustomerControl(customerId: string) {
   });
 }
 
-// Create customer
+// ============================================
+// MUTATION HOOKS
+// ============================================
+
+// Create customer with optional profile data
 export function useCreateCustomer() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (customer: Partial<Customer>) => {
-      const { data, error } = await supabase
+    mutationFn: async (input: CustomerInsert & { email?: string | null; phone?: string | null }) => {
+      const { email, phone, ...customerData } = input;
+      
+      // Insert customer
+      const { data: customer, error: customerError } = await supabase
         .from('customers')
-        .insert(customer as any)
+        .insert({
+          first_name: customerData.first_name,
+          last_name: customerData.last_name,
+          salutation: customerData.salutation,
+          preferred_name: customerData.preferred_name,
+          date_of_birth: customerData.date_of_birth,
+          nationality: customerData.nationality,
+          civil_status: customerData.civil_status,
+          partner_customer_id: customerData.partner_customer_id,
+          number_of_children: customerData.number_of_children ?? 0,
+          ahv_number: customerData.ahv_number,
+          customer_status: customerData.customer_status ?? 'lead',
+          priority: customerData.priority,
+          care_level: customerData.care_level,
+          acquisition_source: customerData.acquisition_source,
+          referrer_customer_id: customerData.referrer_customer_id,
+          first_contact_date: customerData.first_contact_date,
+        })
         .select()
         .single();
       
-      if (error) throw error;
-      return data;
+      if (customerError) throw customerError;
+      
+      // Create empty profile with email/phone if provided
+      if (email || phone) {
+        await supabase
+          .from('customer_profiles')
+          .insert({
+            customer_id: customer.id,
+            email,
+            phone,
+          });
+      }
+      
+      // Create empty economics record
+      await supabase
+        .from('customer_economics')
+        .insert({ customer_id: customer.id });
+      
+      // Create empty control record
+      await supabase
+        .from('customer_control')
+        .insert({ customer_id: customer.id });
+      
+      return customer as Customer;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customers'] });
@@ -212,21 +350,38 @@ export function useCreateCustomer() {
   });
 }
 
-// Update customer
+// Update customer core data
 export function useUpdateCustomer() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ id, ...updates }: Partial<Customer> & { id: string }) => {
+    mutationFn: async ({ id, ...updates }: Partial<CustomerInsert> & { id: string }) => {
       const { data, error } = await supabase
         .from('customers')
-        .update(updates as any)
+        .update({
+          salutation: updates.salutation,
+          first_name: updates.first_name,
+          last_name: updates.last_name,
+          preferred_name: updates.preferred_name,
+          date_of_birth: updates.date_of_birth,
+          nationality: updates.nationality,
+          civil_status: updates.civil_status,
+          partner_customer_id: updates.partner_customer_id,
+          number_of_children: updates.number_of_children,
+          ahv_number: updates.ahv_number,
+          customer_status: updates.customer_status,
+          priority: updates.priority,
+          care_level: updates.care_level,
+          acquisition_source: updates.acquisition_source,
+          referrer_customer_id: updates.referrer_customer_id,
+          first_contact_date: updates.first_contact_date,
+        })
         .eq('id', id)
         .select()
         .single();
       
       if (error) throw error;
-      return data;
+      return data as Customer;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['customers'] });
@@ -235,79 +390,79 @@ export function useUpdateCustomer() {
   });
 }
 
-// Update customer profile
-export function useUpdateCustomerProfile() {
+// Upsert customer profile (uses onConflict for customer_id)
+export function useUpsertCustomerProfile() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ customer_id, ...updates }: Partial<CustomerProfile> & { customer_id: string }) => {
-      // Check if profile exists
-      const { data: existing } = await supabase
+    mutationFn: async (input: CustomerProfileUpsert) => {
+      const { data, error } = await supabase
         .from('customer_profiles')
-        .select('id')
-        .eq('customer_id', customer_id)
-        .maybeSingle();
+        .upsert(
+          {
+            customer_id: input.customer_id,
+            phone: input.phone,
+            email: input.email,
+            communication_preference: input.communication_preference,
+            street: input.street,
+            house_number: input.house_number,
+            postal_code: input.postal_code,
+            city: input.city,
+            canton: input.canton,
+            country: input.country,
+            language_preference: input.language_preference,
+            wedding_date: input.wedding_date,
+            children_birth_years: input.children_birth_years,
+            gdpr_consent_at: input.gdpr_consent_at,
+          },
+          { onConflict: 'customer_id' }
+        )
+        .select()
+        .single();
       
-      if (existing) {
-        const { data, error } = await supabase
-          .from('customer_profiles')
-          .update(updates as any)
-          .eq('customer_id', customer_id)
-          .select()
-          .single();
-        
-        if (error) throw error;
-        return data;
-      } else {
-        const { data, error } = await supabase
-          .from('customer_profiles')
-          .insert({ customer_id, ...updates } as any)
-          .select()
-          .single();
-        
-        if (error) throw error;
-        return data;
-      }
+      if (error) throw error;
+      return data as CustomerProfile;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['customer_profile', variables.customer_id] });
       queryClient.invalidateQueries({ queryKey: ['customer', variables.customer_id] });
+      queryClient.invalidateQueries({ queryKey: ['customers'] });
     }
   });
 }
 
-// Update customer economics
-export function useUpdateCustomerEconomics() {
+// Upsert customer economics (uses onConflict for customer_id)
+export function useUpsertCustomerEconomics() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ customer_id, ...updates }: Partial<CustomerEconomics> & { customer_id: string }) => {
-      const { data: existing } = await supabase
+    mutationFn: async (input: CustomerEconomicsUpsert) => {
+      const { data, error } = await supabase
         .from('customer_economics')
-        .select('id')
-        .eq('customer_id', customer_id)
-        .maybeSingle();
+        .upsert(
+          {
+            customer_id: input.customer_id,
+            employment_type: input.employment_type,
+            employer: input.employer,
+            job_title: input.job_title,
+            industry: input.industry,
+            workload_percentage: input.workload_percentage,
+            income_range: input.income_range,
+            bonus_income: input.bonus_income,
+            side_income: input.side_income,
+            banks: input.banks,
+            ibans: input.ibans,
+            owns_real_estate: input.owns_real_estate,
+            has_liabilities: input.has_liabilities,
+            entrepreneurial_activity: input.entrepreneurial_activity,
+          },
+          { onConflict: 'customer_id' }
+        )
+        .select()
+        .single();
       
-      if (existing) {
-        const { data, error } = await supabase
-          .from('customer_economics')
-          .update(updates as any)
-          .eq('customer_id', customer_id)
-          .select()
-          .single();
-        
-        if (error) throw error;
-        return data;
-      } else {
-        const { data, error } = await supabase
-          .from('customer_economics')
-          .insert({ customer_id, ...updates } as any)
-          .select()
-          .single();
-        
-        if (error) throw error;
-        return data;
-      }
+      if (error) throw error;
+      return data as CustomerEconomics;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['customer_economics', variables.customer_id] });
@@ -316,38 +471,40 @@ export function useUpdateCustomerEconomics() {
   });
 }
 
-// Update customer control
-export function useUpdateCustomerControl() {
+// Upsert customer control (uses onConflict for customer_id)
+export function useUpsertCustomerControl() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ customer_id, ...updates }: Partial<CustomerControl> & { customer_id: string }) => {
-      const { data: existing } = await supabase
+    mutationFn: async (input: CustomerControlUpsert) => {
+      const { data, error } = await supabase
         .from('customer_control')
-        .select('id')
-        .eq('customer_id', customer_id)
-        .maybeSingle();
+        .upsert(
+          {
+            customer_id: input.customer_id,
+            customer_value_score: input.customer_value_score,
+            estimated_revenue_band: input.estimated_revenue_band,
+            lifetime_value: input.lifetime_value,
+            service_effort: input.service_effort,
+            trust_level: input.trust_level,
+            decision_style: input.decision_style,
+            implementation_strength: input.implementation_strength,
+            financial_knowledge_level: input.financial_knowledge_level,
+            upsell_potential: input.upsell_potential,
+            cross_sell_potential: input.cross_sell_potential,
+            referral_score: input.referral_score,
+            google_review_received: input.google_review_received,
+            google_review_date: input.google_review_date,
+            moneytree_received: input.moneytree_received,
+            moneytree_date: input.moneytree_date,
+          },
+          { onConflict: 'customer_id' }
+        )
+        .select()
+        .single();
       
-      if (existing) {
-        const { data, error } = await supabase
-          .from('customer_control')
-          .update(updates as any)
-          .eq('customer_id', customer_id)
-          .select()
-          .single();
-        
-        if (error) throw error;
-        return data;
-      } else {
-        const { data, error } = await supabase
-          .from('customer_control')
-          .insert({ customer_id, ...updates } as any)
-          .select()
-          .single();
-        
-        if (error) throw error;
-        return data;
-      }
+      if (error) throw error;
+      return data as CustomerControl;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['customer_control', variables.customer_id] });
@@ -368,7 +525,7 @@ export function useDeleteCustomer() {
         .from('customers')
         .update({ 
           deleted_at: new Date().toISOString(),
-          deleted_by: user?.id
+          deleted_by: user?.id ?? null
         })
         .eq('id', customerId);
       
@@ -379,3 +536,8 @@ export function useDeleteCustomer() {
     }
   });
 }
+
+// Legacy aliases for backward compatibility
+export const useUpdateCustomerProfile = useUpsertCustomerProfile;
+export const useUpdateCustomerEconomics = useUpsertCustomerEconomics;
+export const useUpdateCustomerControl = useUpsertCustomerControl;

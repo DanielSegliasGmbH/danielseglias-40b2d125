@@ -12,6 +12,7 @@ import ClientDashboard from "./pages/ClientDashboard";
 import UserManagement from "./pages/UserManagement";
 import ClientList from "./pages/ClientList";
 import ClientDetail from "./pages/ClientDetail";
+import CustomersList from "./pages/CustomersList";
 import CustomerDetail from "./pages/CustomerDetail";
 import CaseList from "./pages/CaseList";
 import CaseDetail from "./pages/CaseDetail";
@@ -101,12 +102,22 @@ function App() {
                 }
               />
 
-              {/* Protected: Client Detail */}
+              {/* Protected: Client Detail (legacy) */}
               <Route
                 path="/app/clients/:id"
                 element={
                   <RouteGuard allowedRoles={['admin', 'staff']}>
                     <ClientDetail />
+                  </RouteGuard>
+                }
+              />
+
+              {/* Protected: Customers List (new structure) */}
+              <Route
+                path="/app/customers"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <CustomersList />
                   </RouteGuard>
                 }
               />
