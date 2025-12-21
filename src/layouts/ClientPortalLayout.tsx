@@ -100,10 +100,10 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
       <Link
         to={to}
         className={cn(
-          "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+          "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
           isActive
             ? "bg-primary text-primary-foreground"
-            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+            : "text-muted-foreground hover:bg-accent hover:text-foreground",
           sidebarCollapsed && "justify-center px-2"
         )}
       >
@@ -126,10 +126,10 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
 
   return (
     <TooltipProvider delayDuration={0}>
-      <div className="min-h-screen bg-muted/30 flex">
+      <div className="min-h-screen bg-background flex">
         {/* Admin Preview Banner */}
         {isAdminPreview && (
-          <div className="fixed top-0 left-0 right-0 z-[60] bg-amber-500 text-amber-950 px-4 py-2 flex items-center justify-center gap-2 text-sm font-medium">
+          <div className="fixed top-0 left-0 right-0 z-[60] bg-warning/90 text-warning-foreground px-4 py-2 flex items-center justify-center gap-2 text-sm font-medium">
             <Eye className="h-4 w-4" />
             {t('clientPortal.adminPreview')}: {previewClientName || previewClientId?.slice(0, 8) + '…'}
             <Link to="/app/clients" className="ml-4 underline hover:no-underline">
@@ -141,20 +141,20 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
         {/* Desktop Sidebar */}
         <aside 
           className={cn(
-            "hidden lg:flex flex-col bg-background border-r transition-all duration-300",
+            "hidden lg:flex flex-col bg-card border-r border-border transition-all duration-300",
             sidebarCollapsed ? "w-16" : "w-64",
             isAdminPreview && "pt-10"
           )}
         >
-          <div className="p-4 border-b flex items-center justify-between gap-2">
+          <div className="p-4 border-b border-border flex items-center justify-between gap-2">
             {!sidebarCollapsed && (
-              <h1 className="text-lg font-bold text-foreground truncate">{t('clientPortal.title')}</h1>
+              <h1 className="text-lg font-semibold text-foreground truncate">{t('clientPortal.title')}</h1>
             )}
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="h-8 w-8 shrink-0"
+              className="h-8 w-8 shrink-0 hover:bg-accent"
             >
               {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </Button>
@@ -178,21 +178,21 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
               ))}
             </nav>
           </ScrollArea>
-          <div className={cn("p-4 border-t space-y-2", sidebarCollapsed && "p-2")}>
+          <div className={cn("p-4 border-t border-border space-y-2", sidebarCollapsed && "p-2")}>
             {!sidebarCollapsed && (
               <div className="text-sm text-muted-foreground truncate">{user?.email}</div>
             )}
             {sidebarCollapsed ? (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="w-full" onClick={handleLogout}>
+                  <Button variant="ghost" size="icon" className="w-full hover:bg-accent" onClick={handleLogout}>
                     <LogOut className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="right">{t('auth.logout')}</TooltipContent>
               </Tooltip>
             ) : (
-              <Button variant="ghost" size="sm" className="w-full justify-start" onClick={handleLogout}>
+              <Button variant="ghost" size="sm" className="w-full justify-start hover:bg-accent" onClick={handleLogout}>
                 <LogOut className="h-4 w-4 mr-2" />
                 {t('auth.logout')}
               </Button>
@@ -201,12 +201,12 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
         </aside>
 
         {/* Mobile Header */}
-        <div className={cn("lg:hidden fixed left-0 right-0 z-50 bg-background border-b", isAdminPreview ? "top-10" : "top-0")}>
+        <div className={cn("lg:hidden fixed left-0 right-0 z-50 bg-card border-b border-border", isAdminPreview ? "top-10" : "top-0")}>
           <div className="flex items-center justify-between p-4">
-            <h1 className="text-lg font-bold">{t('clientPortal.title')}</h1>
+            <h1 className="text-lg font-semibold">{t('clientPortal.title')}</h1>
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
-              <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+              <Button variant="ghost" size="icon" className="hover:bg-accent" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
                 {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
             </div>
@@ -215,17 +215,17 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className={cn("lg:hidden fixed inset-0 z-40 bg-background", isAdminPreview ? "pt-[6.5rem]" : "pt-16")}>
+          <div className={cn("lg:hidden fixed inset-0 z-40 bg-card", isAdminPreview ? "pt-[6.5rem]" : "pt-16")}>
             <ScrollArea className="h-full">
               <nav className="p-4 space-y-2">
                 <Link
                   to={buildPath('/app/client-portal')}
                   onClick={() => setMobileMenuOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-3 rounded-md text-sm font-medium",
+                    "flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors",
                     location.pathname === '/app/client-portal'
                       ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground"
+                      : "text-muted-foreground hover:bg-accent"
                   )}
                 >
                   <Home className="h-5 w-5" />
@@ -237,19 +237,19 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
                     to={buildPath(section.path)}
                     onClick={() => setMobileMenuOpen(false)}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-3 rounded-md text-sm font-medium",
+                      "flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors",
                       location.pathname === section.path
                         ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground"
+                        : "text-muted-foreground hover:bg-accent"
                     )}
                   >
                     <section.icon className="h-5 w-5" />
                     {t(section.labelKey)}
                   </Link>
                 ))}
-                <div className="border-t pt-4 mt-4">
+                <div className="border-t border-border pt-4 mt-4">
                   <div className="text-sm text-muted-foreground px-3 mb-2">{user?.email}</div>
-                  <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
+                  <Button variant="ghost" className="w-full justify-start hover:bg-accent" onClick={handleLogout}>
                     <LogOut className="h-4 w-4 mr-2" />
                     {t('auth.logout')}
                   </Button>
@@ -260,8 +260,8 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
         )}
 
         {/* Main Content */}
-        <main className={cn("flex-1 pt-16 lg:pt-0", isAdminPreview && "lg:pt-10")}>
-          <div className="hidden lg:flex items-center justify-end gap-4 p-4 border-b bg-background">
+        <main className={cn("flex-1 pt-16 lg:pt-0 bg-background", isAdminPreview && "lg:pt-10")}>
+          <div className="hidden lg:flex items-center justify-end gap-4 p-4 border-b border-border bg-card">
             <LanguageSwitcher />
             <span className="text-sm text-muted-foreground">{firstName}</span>
           </div>
