@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { PasswordStrengthChecker, usePasswordValidation } from '@/components/PasswordStrengthChecker';
 import { z } from 'zod';
 import { AlertTriangle, Eye, EyeOff } from 'lucide-react';
@@ -102,7 +103,8 @@ export default function Signup() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4 relative">
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 flex items-center gap-2">
+        <ThemeSwitcher />
         <LanguageSwitcher />
       </div>
       <Card className="w-full max-w-md">

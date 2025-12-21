@@ -28,6 +28,11 @@
     "main": "Navigation",
     "admin": "Administration"
   },
+  "theme": {
+    "light": "Hell",
+    "dark": "Dunkel",
+    "system": "System"
+  },
   "auth": {
     "login": "Anmelden",
     "logout": "Abmelden",

@@ -28,6 +28,11 @@
     "main": "Navigation",
     "admin": "Administration"
   },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
   "auth": {
     "login": "Login",
     "logout": "Logout",
