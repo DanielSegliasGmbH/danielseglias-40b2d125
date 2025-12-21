@@ -133,7 +133,30 @@
     "status": "Status",
     "priority": "Priorität",
     "due": "Fällig",
-    "assignedTo": "Zugewiesen an"
+    "assignedTo": "Zugewiesen an",
+    "email": "E-Mail",
+    "role": "Rolle",
+    "actions": "Aktionen"
+  },
+  "userManagement": {
+    "title": "Benutzerverwaltung",
+    "allUsers": "Alle Benutzer",
+    "noUsers": "Keine Benutzer vorhanden",
+    "newUser": "Neuer Benutzer",
+    "createUser": "Benutzer erstellen",
+    "creating": "Erstellen...",
+    "roleUpdated": "Rolle erfolgreich aktualisiert",
+    "roleUpdateError": "Fehler beim Aktualisieren der Rolle",
+    "userCreated": "Benutzer erfolgreich erstellt",
+    "userCreateError": "Fehler beim Erstellen des Benutzers",
+    "selectRole": "Rolle auswählen",
+    "selectClient": "Client auswählen",
+    "noRole": "Keine Rolle",
+    "linkClient": "Client verknüpfen",
+    "clientLinked": "Client erfolgreich verknüpft",
+    "clientLinkError": "Fehler beim Verknüpfen des Clients",
+    "requiredFields": "E-Mail, Passwort, Vor- und Nachname sind Pflichtfelder",
+    "clientRequired": "Für Client-Rolle muss ein Client ausgewählt werden"
   },
   "language": {
     "de": "Deutsch",

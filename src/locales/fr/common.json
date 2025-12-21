@@ -133,7 +133,30 @@
     "status": "Statut",
     "priority": "Priorité",
     "due": "Échéance",
-    "assignedTo": "Assigné à"
+    "assignedTo": "Assigné à",
+    "email": "E-mail",
+    "role": "Rôle",
+    "actions": "Actions"
+  },
+  "userManagement": {
+    "title": "Gestion des utilisateurs",
+    "allUsers": "Tous les utilisateurs",
+    "noUsers": "Aucun utilisateur trouvé",
+    "newUser": "Nouvel utilisateur",
+    "createUser": "Créer un utilisateur",
+    "creating": "Création...",
+    "roleUpdated": "Rôle mis à jour avec succès",
+    "roleUpdateError": "Erreur lors de la mise à jour du rôle",
+    "userCreated": "Utilisateur créé avec succès",
+    "userCreateError": "Erreur lors de la création de l'utilisateur",
+    "selectRole": "Sélectionner un rôle",
+    "selectClient": "Sélectionner un client",
+    "noRole": "Aucun rôle",
+    "linkClient": "Lier un client",
+    "clientLinked": "Client lié avec succès",
+    "clientLinkError": "Erreur lors de la liaison du client",
+    "requiredFields": "E-mail, mot de passe, prénom et nom sont obligatoires",
+    "clientRequired": "Un client doit être sélectionné pour le rôle client"
   },
   "language": {
     "de": "Deutsch",
