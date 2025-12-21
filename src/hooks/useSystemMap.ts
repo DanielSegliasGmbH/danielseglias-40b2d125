@@ -188,19 +188,58 @@ export function useCreateEdge() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (edge: Omit<SystemMapEdge, 'id' | 'created_at' | 'updated_at'>) => {
+    mutationFn: async ({
+      source_key,
+      target_key,
+      relation,
+    }: {
+      source_key: string;
+      target_key: string;
+      relation: string;
+    }) => {
+      // Check for existing edge (active or inactive)
+      const { data: existing, error: checkError } = await supabase
+        .from('system_map_edges')
+        .select('id, is_active')
+        .eq('source_key', source_key)
+        .eq('target_key', target_key)
+        .eq('relation', relation)
+        .maybeSingle();
+
+      if (checkError) throw checkError;
+
+      if (existing) {
+        if (existing.is_active) {
+          throw new Error('EDGE_EXISTS');
+        }
+        // Reactivate inactive edge
+        const { error: updateError } = await supabase
+          .from('system_map_edges')
+          .update({ is_active: true })
+          .eq('id', existing.id);
+
+        if (updateError) throw updateError;
+        return { reactivated: true };
+      }
+
+      // Create new edge
       const { error } = await supabase
         .from('system_map_edges')
-        .insert(edge);
+        .insert({ source_key, target_key, relation, is_active: true });
 
       if (error) throw error;
+      return { reactivated: false };
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['system-map', 'edges'] });
-      toast.success('Verbindung erstellt');
+      toast.success(result?.reactivated ? 'Verbindung reaktiviert' : 'Verbindung erstellt');
     },
-    onError: () => {
-      toast.error('Verbindung konnte nicht erstellt werden');
+    onError: (error: Error) => {
+      if (error.message === 'EDGE_EXISTS') {
+        toast.error('Diese Verbindung existiert bereits');
+      } else {
+        toast.error('Verbindung konnte nicht erstellt werden');
+      }
     },
   });
 }

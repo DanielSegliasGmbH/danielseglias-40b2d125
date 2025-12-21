@@ -337,7 +337,8 @@
     "confirmDelete": "Node löschen?",
     "deleteConfirmMessage": "Dieser Vorgang kann nicht rückgängig gemacht werden.",
     "deleteWithEdges": "Dieser Node hat {{count}} Verbindungen. Diese werden ebenfalls gelöscht.",
-    "deleteWithEdgesAction": "Mit Verbindungen löschen",
+    "selfEdgeError": "Verbindung zu sich selbst nicht erlaubt",
+    "edgeExists": "Diese Verbindung existiert bereits",
     "form": {
       "key": "Key (eindeutig)",
       "keyRequired": "Key ist erforderlich",
@@ -350,6 +351,10 @@
       "phase": "Phase",
       "description": "Beschreibung",
       "isActive": "Aktiv"
+    },
+    "edgeForm": {
+      "title": "Verbindung erstellen",
+      "relation": "Beziehungstyp"
     },
     "legend": {
       "title": "Legende",

@@ -328,6 +328,8 @@
     "deleteConfirmMessage": "This action cannot be undone.",
     "deleteWithEdges": "This node has {{count}} connections. They will also be deleted.",
     "deleteWithEdgesAction": "Delete with connections",
+    "selfEdgeError": "Cannot connect a node to itself",
+    "edgeExists": "This connection already exists",
     "form": {
       "key": "Key (unique)",
       "keyRequired": "Key is required",
@@ -340,6 +342,10 @@
       "phase": "Phase",
       "description": "Description",
       "isActive": "Active"
+    },
+    "edgeForm": {
+      "title": "Create Connection",
+      "relation": "Relation Type"
     },
     "legend": {
       "title": "Legend",
