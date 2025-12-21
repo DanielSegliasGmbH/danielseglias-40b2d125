@@ -29,7 +29,7 @@ import { CreateClientDialog } from '@/components/dashboard/CreateClientDialog';
 
 type ClientSortMode = 'last_asc' | 'last_desc' | 'status' | 'created_desc';
 
-const PAGE_SIZE = 25;
+const PAGE_SIZE = 20;
 const STATUS_ORDER: Record<string, number> = { aktiv: 0, pausiert: 1, archiviert: 2 };
 
 export default function ClientList() {
