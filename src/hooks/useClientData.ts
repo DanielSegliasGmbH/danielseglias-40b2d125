@@ -45,6 +45,7 @@ export function useClientCases(clientId: string) {
         .from('cases')
         .select('*')
         .eq('client_id', clientId)
+        .is('deleted_at', null)
         .order('created_at', { ascending: false });
       if (error) {
         toast.error(`Fehler beim Laden der Cases: ${error.message}`);
@@ -61,11 +62,12 @@ export function useClientOpenTasks(clientId: string) {
   return useQuery({
     queryKey: ['client', clientId, 'open-tasks'],
     queryFn: async () => {
-      // First get cases for this client
+      // First get non-deleted cases for this client
       const { data: cases, error: casesError } = await supabase
         .from('cases')
         .select('id')
-        .eq('client_id', clientId);
+        .eq('client_id', clientId)
+        .is('deleted_at', null);
       
       if (casesError) {
         toast.error(`Fehler beim Laden der Tasks: ${casesError.message}`);
@@ -82,6 +84,7 @@ export function useClientOpenTasks(clientId: string) {
           case:cases!fk_tasks_case_id(id, title)
         `)
         .in('case_id', caseIds)
+        .is('deleted_at', null)
         .neq('status', 'erledigt')
         .order('due_date', { ascending: true, nullsFirst: false });
       
@@ -130,10 +133,12 @@ export function useClientMeetings(clientId: string) {
   return useQuery({
     queryKey: ['client', clientId, 'meetings'],
     queryFn: async () => {
+      // Get non-deleted cases for this client
       const { data: cases, error: casesError } = await supabase
         .from('cases')
         .select('id')
-        .eq('client_id', clientId);
+        .eq('client_id', clientId)
+        .is('deleted_at', null);
       
       if (casesError) {
         toast.error(`Fehler beim Laden der Meetings: ${casesError.message}`);
@@ -167,10 +172,12 @@ export function useClientNotes(clientId: string) {
   return useQuery({
     queryKey: ['client', clientId, 'notes'],
     queryFn: async () => {
+      // Get non-deleted cases for this client
       const { data: cases, error: casesError } = await supabase
         .from('cases')
         .select('id')
-        .eq('client_id', clientId);
+        .eq('client_id', clientId)
+        .is('deleted_at', null);
       
       if (casesError) {
         toast.error(`Fehler beim Laden der Notizen: ${casesError.message}`);

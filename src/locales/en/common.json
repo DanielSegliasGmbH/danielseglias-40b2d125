@@ -189,10 +189,13 @@
   },
   "task": {
     "title": "Tasks",
+    "singular": "Task",
+    "list": "Tasks",
     "all": "All",
     "openTasks": "Open Tasks",
     "newTask": "New Task",
     "createTask": "Create Task",
+    "deleteTask": "Delete Task",
     "creating": "Creating...",
     "taskTitle": "Title",
     "description": "Description",

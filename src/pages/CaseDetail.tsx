@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import {
   useCase,
@@ -98,6 +98,7 @@ const PRIORITY_VARIANTS: Record<string, 'default' | 'secondary' | 'destructive' 
 export default function CaseDetail() {
   const { t, i18n } = useTranslation();
   const { id: caseId } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { user, role, signOut } = useAuth();
   const dateLocale = DATE_LOCALES[i18n.language] || de;
 
@@ -121,6 +122,11 @@ export default function CaseDetail() {
   const [taskOpen, setTaskOpen] = useState(false);
   const [meetingOpen, setMeetingOpen] = useState(false);
   const [newNote, setNewNote] = useState('');
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
+
+  const deleteCase = useDeleteCase();
+  const deleteTask = useDeleteTask();
 
   const [editForm, setEditForm] = useState({ title: '', description: '', assigned_to: '', due_date: '' });
   const [taskForm, setTaskForm] = useState({ title: '', description: '', priority: 'mittel' as TaskPriority, due_date: '', assigned_to: '' });
@@ -261,6 +267,26 @@ export default function CaseDetail() {
     }
   };
 
+  const handleDeleteCase = async () => {
+    try {
+      await deleteCase.mutateAsync(caseId!);
+      toast.success(t('trash.deletedSuccess'));
+      navigate(caseData?.client ? `/app/clients/${caseData.client.id}` : '/app/cases');
+    } catch {
+      toast.error(t('app.error'));
+    }
+  };
+
+  const handleDeleteTask = async (taskId: string) => {
+    try {
+      await deleteTask.mutateAsync(taskId);
+      toast.success(t('trash.deletedSuccess'));
+      setTaskToDelete(null);
+    } catch {
+      toast.error(t('app.error'));
+    }
+  };
+
   if (loadingCase) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -369,10 +395,66 @@ export default function CaseDetail() {
                     </div>
                   </DialogContent>
                 </Dialog>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem 
+                      className="text-destructive focus:text-destructive"
+                      onClick={() => setDeleteOpen(true)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      {t('case.deleteCase')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </CardContent>
         </Card>
+
+        <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('case.deleteCase')}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t('trash.softDeleteInfo')}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('app.cancel')}</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteCase}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {t('app.delete')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog open={!!taskToDelete} onOpenChange={(open) => !open && setTaskToDelete(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('task.deleteTask')}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t('trash.softDeleteInfo')}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('app.cancel')}</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => taskToDelete && handleDeleteTask(taskToDelete)}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {t('app.delete')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Tasks */}
@@ -475,6 +557,13 @@ export default function CaseDetail() {
                                 {t(`task.statuses.${status}`)}
                               </DropdownMenuItem>
                             ))}
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive"
+                              onClick={() => setTaskToDelete(task.id)}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              {t('task.deleteTask')}
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
