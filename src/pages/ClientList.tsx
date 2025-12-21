@@ -1,3 +1,4 @@
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -6,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -14,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { LogOut, Users, ArrowLeft, ChevronRight } from 'lucide-react';
+import { LogOut, Users, ArrowLeft, ChevronRight, Search } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { CreateClientDialog } from '@/components/dashboard/CreateClientDialog';
 
@@ -22,6 +24,26 @@ export default function ClientList() {
   const { t } = useTranslation();
   const { user, role, signOut } = useAuth();
   const { data: clients, isLoading } = useClients();
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredClients = useMemo(() => {
+    if (!clients) return [];
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) return clients;
+    
+    return clients.filter((client) => {
+      const searchString = [
+        client.first_name,
+        client.last_name,
+        client.email,
+        client.phone,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      return searchString.includes(term);
+    });
+  }, [clients, searchTerm]);
 
   const roleLabel = role === 'admin' ? t('roles.admin') : t('roles.staff');
   const roleVariant = role === 'admin' ? 'default' : 'secondary';
@@ -71,6 +93,22 @@ export default function ClientList() {
             </CardTitle>
           </CardHeader>
           <CardContent>
+            <div className="mb-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder={t('client.searchPlaceholder')}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+              {clients && clients.length > 0 && (
+                <p className="text-sm text-muted-foreground mt-2">
+                  {filteredClients.length} {t('client.of')} {clients.length} {t('client.title')}
+                </p>
+              )}
+            </div>
             {isLoading ? (
               <div className="space-y-2">
                 <Skeleton className="h-10 w-full" />
@@ -79,6 +117,8 @@ export default function ClientList() {
               </div>
             ) : clients?.length === 0 ? (
               <p className="text-muted-foreground py-4">{t('client.noClients')}</p>
+            ) : filteredClients.length === 0 ? (
+              <p className="text-muted-foreground py-4">{t('client.noClientsFound')}</p>
             ) : (
               <Table>
                 <TableHeader>
@@ -92,7 +132,7 @@ export default function ClientList() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {clients?.map((client) => (
+                  {filteredClients.map((client) => (
                     <TableRow key={client.id} className="cursor-pointer hover:bg-muted/50">
                       <TableCell className="font-medium">{client.last_name}</TableCell>
                       <TableCell>{client.first_name}</TableCell>

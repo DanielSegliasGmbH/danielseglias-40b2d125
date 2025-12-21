@@ -80,6 +80,9 @@
     "updatedSuccess": "Client updated successfully",
     "requiredFields": "First and last name are required",
     "noClients": "No clients found",
+    "noClientsFound": "No clients found",
+    "searchPlaceholder": "Search (name, email, phone)",
+    "of": "of",
     "notFound": "Client not found",
     "statuses": {
       "aktiv": "Active",
