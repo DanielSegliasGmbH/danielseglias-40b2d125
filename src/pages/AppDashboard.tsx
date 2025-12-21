@@ -190,7 +190,11 @@ export default function AppDashboard() {
                 </TableHeader>
                 <TableBody>
                   {openTasks?.slice(0, 10).map((task) => (
-                    <TableRow key={task.id} className="cursor-pointer hover:bg-muted/50">
+                    <TableRow
+                      key={task.id}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => task.case_id && (window.location.href = `/app/cases/${task.case_id}`)}
+                    >
                       <TableCell className="font-medium">{task.title}</TableCell>
                       <TableCell>
                         {task.case?.title}
@@ -245,7 +249,11 @@ export default function AppDashboard() {
                 </TableHeader>
                 <TableBody>
                   {activeCases?.slice(0, 10).map((c) => (
-                    <TableRow key={c.id} className="cursor-pointer hover:bg-muted/50">
+                    <TableRow
+                      key={c.id}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => (window.location.href = `/app/cases/${c.id}`)}
+                    >
                       <TableCell className="font-medium">{c.title}</TableCell>
                       <TableCell>
                         {c.client?.first_name} {c.client?.last_name}

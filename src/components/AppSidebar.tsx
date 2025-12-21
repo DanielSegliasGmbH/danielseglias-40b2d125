@@ -18,6 +18,7 @@ import {
   LayoutDashboard,
   Users,
   Briefcase,
+  ClipboardList,
   Settings,
   LogOut,
   ChevronLeft,
@@ -37,6 +38,7 @@ export function AppSidebar() {
     { title: t('dashboard.title'), url: '/app', icon: LayoutDashboard },
     { title: t('client.list'), url: '/app/clients', icon: Users },
     { title: t('case.list'), url: '/app/cases', icon: Briefcase },
+    { title: t('task.list'), url: '/app/tasks', icon: ClipboardList },
   ];
 
   const adminNavItems = [
@@ -50,21 +52,23 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="border-r">
       <SidebarHeader className="border-b p-4">
-        <div className="flex items-center justify-between">
-          {!isCollapsed && (
-            <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            {!isCollapsed && (
               <span className="font-bold text-lg">{t('app.title')}</span>
-              <Badge variant={roleVariant} className="text-xs">{roleLabel}</Badge>
-            </div>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleSidebar}
+              className="h-8 w-8"
+            >
+              {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            </Button>
+          </div>
+          {!isCollapsed && (
+            <Badge variant={roleVariant} className="text-xs w-fit">{roleLabel}</Badge>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleSidebar}
-            className="h-8 w-8"
-          >
-            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          </Button>
         </div>
       </SidebarHeader>
 

@@ -14,6 +14,7 @@ import ClientList from "./pages/ClientList";
 import ClientDetail from "./pages/ClientDetail";
 import CaseList from "./pages/CaseList";
 import CaseDetail from "./pages/CaseDetail";
+import TaskList from "./pages/TaskList";
 import SystemMap from "./pages/SystemMap";
 import NotFound from "./pages/NotFound";
 
@@ -97,6 +98,16 @@ const App = () => (
               element={
                 <RouteGuard allowedRoles={['admin', 'staff']}>
                   <CaseDetail />
+                </RouteGuard>
+              }
+            />
+
+            {/* Protected: Task List */}
+            <Route
+              path="/app/tasks"
+              element={
+                <RouteGuard allowedRoles={['admin', 'staff']}>
+                  <TaskList />
                 </RouteGuard>
               }
             />
