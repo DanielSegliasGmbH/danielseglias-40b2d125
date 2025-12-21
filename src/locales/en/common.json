@@ -290,7 +290,9 @@
     "clientLinked": "Client linked successfully",
     "clientLinkError": "Error linking client",
     "requiredFields": "Email, password, first and last name are required",
-    "clientRequired": "Client must be selected for client role"
+    "clientRequired": "Client must be selected for client role",
+    "userId": "User ID",
+    "userIdCopied": "User ID copied"
   },
   "language": {
     "de": "Deutsch",
