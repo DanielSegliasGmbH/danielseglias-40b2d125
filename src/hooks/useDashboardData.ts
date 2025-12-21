@@ -127,7 +127,7 @@ export function useCases() {
         .from('cases')
         .select(`
           *,
-          client:clients(id, first_name, last_name)
+          client:clients!fk_cases_client_id(id, first_name, last_name)
         `)
         .order('created_at', { ascending: false });
       if (error) {
@@ -166,7 +166,7 @@ export function useInfiniteCases(sortMode?: CaseSortMode) {
         .from('cases')
         .select(`
           *,
-          client:clients(id, first_name, last_name)
+          client:clients!fk_cases_client_id(id, first_name, last_name)
         `, { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(from, to);
@@ -203,7 +203,7 @@ export function useActiveCases() {
         .from('cases')
         .select(`
           *,
-          client:clients(id, first_name, last_name)
+          client:clients!fk_cases_client_id(id, first_name, last_name)
         `)
         .neq('status', 'abgeschlossen')
         .order('created_at', { ascending: false });
@@ -242,7 +242,7 @@ export function useOpenTasks() {
         .from('tasks')
         .select(`
           *,
-          case:cases(id, title, client:clients(id, first_name, last_name))
+          case:cases!fk_tasks_case_id(id, title, client:clients!fk_cases_client_id(id, first_name, last_name))
         `)
         .neq('status', 'erledigt')
         .order('due_date', { ascending: true, nullsFirst: false })

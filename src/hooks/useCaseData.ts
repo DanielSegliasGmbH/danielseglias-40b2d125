@@ -16,7 +16,7 @@ export function useCase(caseId: string) {
         .from('cases')
         .select(`
           *,
-          client:clients(id, first_name, last_name, email, phone)
+          client:clients!fk_cases_client_id(id, first_name, last_name, email, phone)
         `)
         .eq('id', caseId)
         .single();

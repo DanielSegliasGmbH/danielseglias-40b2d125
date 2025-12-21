@@ -79,7 +79,7 @@ export function useClientOpenTasks(clientId: string) {
         .from('tasks')
         .select(`
           *,
-          case:cases(id, title)
+          case:cases!fk_tasks_case_id(id, title)
         `)
         .in('case_id', caseIds)
         .neq('status', 'erledigt')
@@ -147,7 +147,7 @@ export function useClientMeetings(clientId: string) {
         .from('meetings')
         .select(`
           *,
-          case:cases(id, title)
+          case:cases!fk_meetings_case_id(id, title)
         `)
         .in('case_id', caseIds)
         .order('scheduled_at', { ascending: false });
@@ -184,7 +184,7 @@ export function useClientNotes(clientId: string) {
         .from('notes')
         .select(`
           *,
-          case:cases(id, title)
+          case:cases!fk_notes_case_id(id, title)
         `)
         .in('case_id', caseIds)
         .order('created_at', { ascending: false });
