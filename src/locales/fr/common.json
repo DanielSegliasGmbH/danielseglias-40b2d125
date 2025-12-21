@@ -122,6 +122,14 @@
     "searchPlaceholder": "Rechercher des dossiers...",
     "of": "sur",
     "notFound": "Dossier introuvable",
+    "sortBy": "Trier par",
+    "sortOptions": {
+      "createdDesc": "Plus récents",
+      "createdAsc": "Plus anciens",
+      "dueAsc": "Date d'échéance",
+      "titleAsc": "Titre A–Z",
+      "statusAsc": "Par statut"
+    },
     "statuses": {
       "offen": "Ouvert",
       "in_bearbeitung": "En cours",

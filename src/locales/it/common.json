@@ -122,6 +122,14 @@
     "searchPlaceholder": "Cerca casi...",
     "of": "di",
     "notFound": "Caso non trovato",
+    "sortBy": "Ordina per",
+    "sortOptions": {
+      "createdDesc": "Più recenti",
+      "createdAsc": "Più vecchi",
+      "dueAsc": "Data di scadenza",
+      "titleAsc": "Titolo A–Z",
+      "statusAsc": "Per stato"
+    },
     "statuses": {
       "offen": "Aperto",
       "in_bearbeitung": "In lavorazione",

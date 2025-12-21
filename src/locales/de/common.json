@@ -122,6 +122,14 @@
     "searchPlaceholder": "Cases suchen...",
     "of": "von",
     "notFound": "Case nicht gefunden",
+    "sortBy": "Sortieren nach",
+    "sortOptions": {
+      "createdDesc": "Neueste zuerst",
+      "createdAsc": "Älteste zuerst",
+      "dueAsc": "Fälligkeitsdatum",
+      "titleAsc": "Titel A–Z",
+      "statusAsc": "Nach Status"
+    },
     "statuses": {
       "offen": "Offen",
       "in_bearbeitung": "In Bearbeitung",

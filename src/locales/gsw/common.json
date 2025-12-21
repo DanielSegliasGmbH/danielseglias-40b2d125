@@ -122,6 +122,14 @@
     "searchPlaceholder": "Cases sueche...",
     "of": "vo",
     "notFound": "Case nöd gfunde",
+    "sortBy": "Sortiere nach",
+    "sortOptions": {
+      "createdDesc": "Neuscht zerst",
+      "createdAsc": "Ältischt zerst",
+      "dueAsc": "Fälligkeitsdatum",
+      "titleAsc": "Titel A–Z",
+      "statusAsc": "Nach Status"
+    },
     "statuses": {
       "offen": "Offe",
       "in_bearbeitung": "I Bearbeitig",
