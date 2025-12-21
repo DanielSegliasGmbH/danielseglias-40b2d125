@@ -340,6 +340,46 @@
       "phase": "Phase",
       "description": "Description",
       "isActive": "Active"
+    },
+    "legend": {
+      "title": "Legend",
+      "categories": "Categories",
+      "category": {
+        "core": "Core",
+        "module": "Module",
+        "ui": "UI",
+        "security": "Security",
+        "automation": "Automation",
+        "integration": "Integration"
+      },
+      "relations": "Relations",
+      "relation": {
+        "owns": "Owns",
+        "contains": "Contains",
+        "uses": "Uses",
+        "depends_on": "Depends on",
+        "manages": "Manages",
+        "creates": "Creates"
+      },
+      "importance": "Importance",
+      "importanceLevel": {
+        "core": "Core",
+        "supporting": "Supporting",
+        "optional": "Optional"
+      },
+      "importanceDesc": {
+        "core": "Essential to the system",
+        "supporting": "Extends core functionality",
+        "optional": "Additional feature"
+      },
+      "phases": "Phases",
+      "phase": {
+        "0": "Foundation",
+        "1": "Core CRM",
+        "2": "Processes",
+        "3": "Client Portal",
+        "4": "Expert Modules"
+      }
     }
   }
 }
