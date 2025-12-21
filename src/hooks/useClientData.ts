@@ -1,6 +1,21 @@
+/**
+ * CLIENT DATA HOOKS
+ * 
+ * Task-Queries:
+ * - useClientOpenTasks: holt offene Tasks über Cases eines Clients
+ * - useCreateTaskForClient: erstellt Task für einen Case
+ * - useMarkTaskDone: markiert Task als erledigt
+ */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { toast } from 'sonner';
+import type { Database } from '@/integrations/supabase/types';
+
+type TaskPriority = Database['public']['Enums']['task_priority'];
+
+// Performance: 30s staleTime um häufige Refetches zu vermeiden
+const STALE_TIME = 30 * 1000;
 
 export function useClient(clientId: string) {
   return useQuery({
@@ -11,10 +26,14 @@ export function useClient(clientId: string) {
         .select('*')
         .eq('id', clientId)
         .maybeSingle();
-      if (error) throw error;
+      if (error) {
+        toast.error(`Fehler beim Laden: ${error.message}`);
+        throw error;
+      }
       return data;
     },
     enabled: !!clientId,
+    staleTime: STALE_TIME,
   });
 }
 
@@ -27,10 +46,14 @@ export function useClientCases(clientId: string) {
         .select('*')
         .eq('client_id', clientId)
         .order('created_at', { ascending: false });
-      if (error) throw error;
+      if (error) {
+        toast.error(`Fehler beim Laden der Cases: ${error.message}`);
+        throw error;
+      }
       return data;
     },
     enabled: !!clientId,
+    staleTime: STALE_TIME,
   });
 }
 
@@ -44,7 +67,10 @@ export function useClientOpenTasks(clientId: string) {
         .select('id')
         .eq('client_id', clientId);
       
-      if (casesError) throw casesError;
+      if (casesError) {
+        toast.error(`Fehler beim Laden der Tasks: ${casesError.message}`);
+        throw casesError;
+      }
       if (!cases || cases.length === 0) return [];
 
       const caseIds = cases.map(c => c.id);
@@ -59,10 +85,44 @@ export function useClientOpenTasks(clientId: string) {
         .neq('status', 'erledigt')
         .order('due_date', { ascending: true, nullsFirst: false });
       
-      if (error) throw error;
+      if (error) {
+        toast.error(`Fehler beim Laden der Tasks: ${error.message}`);
+        throw error;
+      }
       return data;
     },
     enabled: !!clientId,
+    staleTime: STALE_TIME,
+  });
+}
+
+export function useCreateTaskForClient() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async (task: {
+      case_id: string;
+      title: string;
+      description?: string;
+      priority?: TaskPriority;
+      due_date?: string;
+    }) => {
+      const { error } = await supabase.from('tasks').insert({
+        case_id: task.case_id,
+        title: task.title,
+        description: task.description || null,
+        priority: task.priority || 'mittel',
+        due_date: task.due_date || null,
+        created_by: user?.id,
+      });
+      if (error) throw error;
+      return { success: true };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['client'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    },
   });
 }
 
@@ -70,13 +130,15 @@ export function useClientMeetings(clientId: string) {
   return useQuery({
     queryKey: ['client', clientId, 'meetings'],
     queryFn: async () => {
-      // First get cases for this client
       const { data: cases, error: casesError } = await supabase
         .from('cases')
         .select('id')
         .eq('client_id', clientId);
       
-      if (casesError) throw casesError;
+      if (casesError) {
+        toast.error(`Fehler beim Laden der Meetings: ${casesError.message}`);
+        throw casesError;
+      }
       if (!cases || cases.length === 0) return [];
 
       const caseIds = cases.map(c => c.id);
@@ -90,10 +152,14 @@ export function useClientMeetings(clientId: string) {
         .in('case_id', caseIds)
         .order('scheduled_at', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        toast.error(`Fehler beim Laden der Meetings: ${error.message}`);
+        throw error;
+      }
       return data;
     },
     enabled: !!clientId,
+    staleTime: STALE_TIME,
   });
 }
 
@@ -101,13 +167,15 @@ export function useClientNotes(clientId: string) {
   return useQuery({
     queryKey: ['client', clientId, 'notes'],
     queryFn: async () => {
-      // First get cases for this client
       const { data: cases, error: casesError } = await supabase
         .from('cases')
         .select('id')
         .eq('client_id', clientId);
       
-      if (casesError) throw casesError;
+      if (casesError) {
+        toast.error(`Fehler beim Laden der Notizen: ${casesError.message}`);
+        throw casesError;
+      }
       if (!cases || cases.length === 0) return [];
 
       const caseIds = cases.map(c => c.id);
@@ -121,10 +189,14 @@ export function useClientNotes(clientId: string) {
         .in('case_id', caseIds)
         .order('created_at', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        toast.error(`Fehler beim Laden der Notizen: ${error.message}`);
+        throw error;
+      }
       return data;
     },
     enabled: !!clientId,
+    staleTime: STALE_TIME,
   });
 }
 
