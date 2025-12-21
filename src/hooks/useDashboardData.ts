@@ -1,5 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { Tables } from '@/integrations/supabase/types';
 import { useAuth } from './useAuth';
 
 export function useClients() {
@@ -43,6 +44,53 @@ export function useCases() {
         .order('created_at', { ascending: false });
       if (error) throw error;
       return data;
+    },
+  });
+}
+
+const CASES_PAGE_SIZE = 25;
+
+type CaseWithClient = Tables<'cases'> & {
+  client: { id: string; first_name: string; last_name: string } | null;
+};
+
+interface InfiniteCasesPage {
+  items: CaseWithClient[];
+  totalCount: number;
+  pageParam: number;
+}
+
+export function useInfiniteCases() {
+  return useInfiniteQuery<InfiniteCasesPage, Error>({
+    queryKey: ['cases', 'infinite'],
+    queryFn: async ({ pageParam = 0 }) => {
+      const from = (pageParam as number) * CASES_PAGE_SIZE;
+      const to = from + CASES_PAGE_SIZE - 1;
+
+      const { data, error, count } = await supabase
+        .from('cases')
+        .select(`
+          *,
+          client:clients(id, first_name, last_name)
+        `, { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (error) throw error;
+
+      return {
+        items: (data ?? []) as CaseWithClient[],
+        totalCount: count ?? 0,
+        pageParam: pageParam as number,
+      };
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      const loadedCount = allPages.reduce((sum, page) => sum + page.items.length, 0);
+      if (loadedCount < lastPage.totalCount) {
+        return lastPage.pageParam + 1;
+      }
+      return undefined;
     },
   });
 }

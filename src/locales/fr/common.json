@@ -149,6 +149,9 @@
     "noCasesFound": "Aucun dossier correspondant",
     "searchPlaceholder": "Rechercher des dossiers...",
     "of": "sur",
+    "loadMore": "Charger plus",
+    "loading": "Chargement...",
+    "noMoreCases": "Aucun autre dossier",
     "notFound": "Dossier introuvable",
     "sortBy": "Trier par",
     "sortOptions": {

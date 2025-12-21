@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useCases, useProfiles } from '@/hooks/useDashboardData';
+import { useInfiniteCases, useProfiles } from '@/hooks/useDashboardData';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -23,7 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { LogOut, Briefcase, ArrowLeft, ChevronRight, Search } from 'lucide-react';
+import { LogOut, Briefcase, ArrowLeft, ChevronRight, Search, Loader2 } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { CreateCaseDialog } from '@/components/dashboard/CreateCaseDialog';
 import { format, Locale } from 'date-fns';
@@ -44,20 +44,35 @@ const STATUS_ORDER: Record<string, number> = {
 export default function CaseList() {
   const { t, i18n } = useTranslation();
   const { user, role, signOut } = useAuth();
-  const { data: cases, isLoading } = useCases();
+  const { 
+    data, 
+    isLoading, 
+    fetchNextPage, 
+    hasNextPage, 
+    isFetchingNextPage 
+  } = useInfiniteCases();
   const { data: profiles } = useProfiles();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortMode, setSortMode] = useState<CaseSortMode>('created_desc');
   const dateLocale = DATE_LOCALES[i18n.language] || de;
 
+  // Flatten all pages into single array
+  const allCases = useMemo(() => {
+    if (!data?.pages) return [];
+    return data.pages.flatMap(page => page.items);
+  }, [data]);
+
+  const totalCount = data?.pages?.[0]?.totalCount ?? 0;
+
+  // Client-side filter and sort (on loaded data)
   const sortedCases = useMemo(() => {
-    if (!cases) return [];
+    if (!allCases.length) return [];
     
     // Filter first
     const term = searchTerm.trim().toLowerCase();
-    let filtered = cases;
+    let filtered = allCases;
     if (term) {
-      filtered = cases.filter((c) => {
+      filtered = allCases.filter((c) => {
         const searchString = [
           c.title,
           c.description,
@@ -91,7 +106,7 @@ export default function CaseList() {
           return 0;
       }
     });
-  }, [cases, searchTerm, sortMode]);
+  }, [allCases, searchTerm, sortMode]);
 
   const roleLabel = role === 'admin' ? t('roles.admin') : t('roles.staff');
   const roleVariant = role === 'admin' ? 'default' : 'secondary';
@@ -178,9 +193,9 @@ export default function CaseList() {
                   </SelectContent>
                 </Select>
               </div>
-              {cases && cases.length > 0 && (
+              {totalCount > 0 && (
                 <p className="text-sm text-muted-foreground">
-                  {sortedCases.length} {t('case.of')} {cases.length} {t('case.title')}
+                  {sortedCases.length} {t('case.of')} {totalCount} {t('case.title')}
                 </p>
               )}
             </div>
@@ -190,55 +205,81 @@ export default function CaseList() {
                 <Skeleton className="h-10 w-full" />
                 <Skeleton className="h-10 w-full" />
               </div>
-            ) : cases?.length === 0 ? (
+            ) : allCases.length === 0 ? (
               <p className="text-muted-foreground py-4">{t('case.noCases')}</p>
             ) : sortedCases.length === 0 ? (
               <p className="text-muted-foreground py-4">{t('case.noCasesFound')}</p>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{t('case.caseTitle')}</TableHead>
-                    <TableHead>{t('table.client')}</TableHead>
-                    <TableHead>{t('case.status')}</TableHead>
-                    <TableHead>{t('case.assignedTo')}</TableHead>
-                    <TableHead>{t('case.dueDate')}</TableHead>
-                    <TableHead></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {sortedCases.map((caseItem) => (
-                    <TableRow key={caseItem.id} className="cursor-pointer hover:bg-muted/50">
-                      <TableCell className="font-medium">{caseItem.title}</TableCell>
-                      <TableCell>
-                        {caseItem.client ? (
-                          <Link 
-                            to={`/app/clients/${caseItem.client.id}`}
-                            className="text-primary hover:underline"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {caseItem.client.first_name} {caseItem.client.last_name}
-                          </Link>
-                        ) : '–'}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={getStatusVariant(caseItem.status)}>
-                          {t(`case.statuses.${caseItem.status}`, caseItem.status)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{getProfileName(caseItem.assigned_to)}</TableCell>
-                      <TableCell>{formatDate(caseItem.due_date)}</TableCell>
-                      <TableCell>
-                        <Link to={`/app/cases/${caseItem.id}`}>
-                          <Button variant="ghost" size="sm">
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
-                        </Link>
-                      </TableCell>
+              <>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t('case.caseTitle')}</TableHead>
+                      <TableHead>{t('table.client')}</TableHead>
+                      <TableHead>{t('case.status')}</TableHead>
+                      <TableHead>{t('case.assignedTo')}</TableHead>
+                      <TableHead>{t('case.dueDate')}</TableHead>
+                      <TableHead></TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {sortedCases.map((caseItem) => (
+                      <TableRow key={caseItem.id} className="cursor-pointer hover:bg-muted/50">
+                        <TableCell className="font-medium">{caseItem.title}</TableCell>
+                        <TableCell>
+                          {caseItem.client ? (
+                            <Link 
+                              to={`/app/clients/${caseItem.client.id}`}
+                              className="text-primary hover:underline"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {caseItem.client.first_name} {caseItem.client.last_name}
+                            </Link>
+                          ) : '–'}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={getStatusVariant(caseItem.status)}>
+                            {t(`case.statuses.${caseItem.status}`, caseItem.status)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{getProfileName(caseItem.assigned_to)}</TableCell>
+                        <TableCell>{formatDate(caseItem.due_date)}</TableCell>
+                        <TableCell>
+                          <Link to={`/app/cases/${caseItem.id}`}>
+                            <Button variant="ghost" size="sm">
+                              <ChevronRight className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+
+                {/* Load More Section */}
+                <div className="mt-4 flex flex-col items-center gap-2 pt-4 border-t">
+                  {hasNextPage ? (
+                    <Button
+                      variant="outline"
+                      onClick={() => fetchNextPage()}
+                      disabled={isFetchingNextPage}
+                    >
+                      {isFetchingNextPage ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          {t('case.loading')}
+                        </>
+                      ) : (
+                        t('case.loadMore')
+                      )}
+                    </Button>
+                  ) : allCases.length > 0 && (
+                    <p className="text-sm text-muted-foreground">
+                      {t('case.noMoreCases')}
+                    </p>
+                  )}
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
