@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -30,12 +30,22 @@ import { CreateClientDialog } from '@/components/dashboard/CreateClientDialog';
 type ClientSortMode = 'last_asc' | 'last_desc' | 'status' | 'created_desc';
 
 const STATUS_ORDER: Record<string, number> = { aktiv: 0, pausiert: 1, archiviert: 2 };
+const DEBOUNCE_MS = 300;
 
 export default function ClientList() {
   const { t } = useTranslation();
   const { user, role, signOut } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedTerm, setDebouncedTerm] = useState('');
   const [sortMode, setSortMode] = useState<ClientSortMode>('last_asc');
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedTerm(searchTerm.trim());
+    }, DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   const {
     data,
@@ -43,7 +53,7 @@ export default function ClientList() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useInfiniteClients();
+  } = useInfiniteClients(debouncedTerm);
 
   // Flatten all pages into single array
   const allClients = useMemo(() => {
@@ -53,30 +63,11 @@ export default function ClientList() {
 
   const totalCount = data?.pages?.[0]?.totalCount ?? 0;
 
-  // Client-side filter and sort (on loaded data)
-  const filteredClients = useMemo(() => {
+  // Client-side sort only (search is now server-side)
+  const sortedClients = useMemo(() => {
     if (!allClients.length) return [];
 
-    // Filter first
-    const term = searchTerm.trim().toLowerCase();
-    let filtered = allClients;
-    if (term) {
-      filtered = allClients.filter((client) => {
-        const searchString = [
-          client.first_name,
-          client.last_name,
-          client.email,
-          client.phone,
-        ]
-          .filter(Boolean)
-          .join(' ')
-          .toLowerCase();
-        return searchString.includes(term);
-      });
-    }
-
-    // Then sort
-    return [...filtered].sort((a, b) => {
+    return [...allClients].sort((a, b) => {
       switch (sortMode) {
         case 'last_asc':
           return (a.last_name || '').localeCompare(b.last_name || '');
@@ -90,7 +81,7 @@ export default function ClientList() {
           return 0;
       }
     });
-  }, [allClients, searchTerm, sortMode]);
+  }, [allClients, sortMode]);
 
   const roleLabel = role === 'admin' ? t('roles.admin') : t('roles.staff');
   const roleVariant = role === 'admin' ? 'default' : 'secondary';
@@ -103,6 +94,8 @@ export default function ClientList() {
       default: return 'outline';
     }
   };
+
+  const isSearchActive = debouncedTerm.length >= 1;
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -163,9 +156,9 @@ export default function ClientList() {
                   </SelectContent>
                 </Select>
               </div>
-              {totalCount > 0 && (
+              {(totalCount > 0 || isSearchActive) && (
                 <p className="text-sm text-muted-foreground">
-                  {filteredClients.length} {t('client.of')} {totalCount} {t('client.title')}
+                  {allClients.length} {t('client.of')} {totalCount} {t('client.title')}
                 </p>
               )}
             </div>
@@ -175,10 +168,10 @@ export default function ClientList() {
                 <Skeleton className="h-10 w-full" />
                 <Skeleton className="h-10 w-full" />
               </div>
-            ) : allClients.length === 0 ? (
-              <p className="text-muted-foreground py-4">{t('client.noClients')}</p>
-            ) : filteredClients.length === 0 ? (
-              <p className="text-muted-foreground py-4">{t('client.noClientsFound')}</p>
+            ) : totalCount === 0 ? (
+              <p className="text-muted-foreground py-4">
+                {isSearchActive ? t('client.noClientsFound') : t('client.noClients')}
+              </p>
             ) : (
               <>
                 <Table>
@@ -193,7 +186,7 @@ export default function ClientList() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredClients.map((client) => (
+                    {sortedClients.map((client) => (
                       <TableRow key={client.id} className="cursor-pointer hover:bg-muted/50">
                         <TableCell className="font-medium">{client.last_name}</TableCell>
                         <TableCell>{client.first_name}</TableCell>

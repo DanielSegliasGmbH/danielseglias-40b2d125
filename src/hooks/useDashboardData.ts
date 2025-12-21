@@ -27,16 +27,37 @@ interface InfiniteClientsPage {
   pageParam: number;
 }
 
-export function useInfiniteClients() {
+// Escape special characters for Supabase ilike filter
+function escapeSearchTerm(term: string): string {
+  return term
+    .trim()
+    .replace(/%/g, '\\%')
+    .replace(/,/g, '\\,')
+    .replace(/_/g, '\\_');
+}
+
+export function useInfiniteClients(searchTerm?: string) {
+  const cleanedTerm = searchTerm?.trim() || '';
+  
   return useInfiniteQuery<InfiniteClientsPage, Error>({
-    queryKey: ['clients', 'infinite'],
+    queryKey: ['clients', 'infinite', cleanedTerm],
     queryFn: async ({ pageParam = 0 }) => {
       const from = (pageParam as number) * CLIENTS_PAGE_SIZE;
       const to = from + CLIENTS_PAGE_SIZE - 1;
 
-      const { data, error, count } = await supabase
+      let query = supabase
         .from('clients')
-        .select('*', { count: 'exact' })
+        .select('*', { count: 'exact' });
+
+      // Apply search filter if term is provided
+      if (cleanedTerm.length >= 1) {
+        const escaped = escapeSearchTerm(cleanedTerm);
+        query = query.or(
+          `first_name.ilike.%${escaped}%,last_name.ilike.%${escaped}%,email.ilike.%${escaped}%,phone.ilike.%${escaped}%`
+        );
+      }
+
+      const { data, error, count } = await query
         .order('created_at', { ascending: false })
         .range(from, to);
 
