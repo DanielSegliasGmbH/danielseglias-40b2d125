@@ -15,31 +15,40 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Search, Plus, Users, ChevronRight } from 'lucide-react';
-import { useCustomers, CustomerStatus, CustomerPriority, CareLevel } from '@/hooks/useCustomerData';
+import { Search, Plus, Users, ChevronRight, Filter } from 'lucide-react';
+import { useCustomers, CustomerStatus, CustomerPriority, CareLevel, CustomerFilters as FilterType } from '@/hooks/useCustomerData';
 import { CreateCustomerDialog } from '@/components/customers/CreateCustomerDialog';
+import { CustomerFiltersBar, CustomerFiltersMobile } from '@/components/customers/CustomerFilters';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function CustomersList() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { data: customers, isLoading } = useCustomers();
-  const [searchTerm, setSearchTerm] = useState('');
+  const isMobile = useIsMobile();
+  
+  const [filters, setFilters] = useState<FilterType>({});
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
-  // Filter customers by search term
-  const filteredCustomers = useMemo(() => {
+  // Pass filters to the hook for server-side filtering
+  const { data: customers, isLoading } = useCustomers(filters);
+
+  // Extract unique acquisition sources for filter dropdown
+  const acquisitionSources = useMemo(() => {
     if (!customers) return [];
-    if (!searchTerm.trim()) return customers;
-    
-    const term = searchTerm.toLowerCase();
-    return customers.filter(customer => {
-      const fullName = `${customer.first_name} ${customer.last_name}`.toLowerCase();
-      const email = customer.customer_profiles?.email?.toLowerCase() || '';
-      const phone = customer.customer_profiles?.phone || '';
-      
-      return fullName.includes(term) || email.includes(term) || phone.includes(term);
-    });
-  }, [customers, searchTerm]);
+    const sources = customers
+      .map(c => c.acquisition_source)
+      .filter((s): s is string => !!s);
+    return [...new Set(sources)].sort();
+  }, [customers]);
+
+  const hasActiveFilters = 
+    filters.status || 
+    filters.priority || 
+    filters.careLevel || 
+    filters.acquisitionSource ||
+    filters.withoutGoogleReview ||
+    filters.withoutMoneytree;
 
   const getStatusBadgeVariant = (status: CustomerStatus) => {
     switch (status) {
@@ -74,6 +83,10 @@ export default function CustomersList() {
     navigate(`/app/customers/${customerId}`);
   };
 
+  const handleSearchChange = (value: string) => {
+    setFilters(prev => ({ ...prev, search: value || undefined }));
+  };
+
   return (
     <AppLayout>
       <div className="p-4 md:p-6 space-y-6">
@@ -84,7 +97,7 @@ export default function CustomersList() {
             <h1 className="text-2xl font-semibold">{t('customer.listTitle', 'Kunden')}</h1>
             {customers && (
               <Badge variant="secondary" className="text-xs">
-                {filteredCustomers.length} / {customers.length}
+                {customers.length}
               </Badge>
             )}
           </div>
@@ -94,16 +107,38 @@ export default function CustomersList() {
           </Button>
         </div>
 
-        {/* Search */}
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder={t('customer.searchPlaceholder', 'Name, E-Mail oder Telefon suchen...')}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
+        {/* Search + Mobile Filter Toggle */}
+        <div className="flex gap-3">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder={t('customer.searchPlaceholder', 'Name suchen...')}
+              value={filters.search || ''}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          
+          {/* Mobile Filter Button */}
+          {isMobile && (
+            <CustomerFiltersMobile
+              filters={filters}
+              onFiltersChange={setFilters}
+              acquisitionSources={acquisitionSources}
+              open={mobileFiltersOpen}
+              onOpenChange={setMobileFiltersOpen}
+            />
+          )}
         </div>
+
+        {/* Desktop Filters */}
+        {!isMobile && (
+          <CustomerFiltersBar
+            filters={filters}
+            onFiltersChange={setFilters}
+            acquisitionSources={acquisitionSources}
+          />
+        )}
 
         {/* Loading State */}
         {isLoading && (
@@ -115,16 +150,16 @@ export default function CustomersList() {
         )}
 
         {/* Empty State */}
-        {!isLoading && filteredCustomers.length === 0 && (
+        {!isLoading && (!customers || customers.length === 0) && (
           <Card>
             <CardContent className="py-12 text-center">
               <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <p className="text-muted-foreground">
-                {searchTerm
+                {hasActiveFilters || filters.search
                   ? t('customer.noSearchResults', 'Keine Kunden gefunden')
                   : t('customer.noCustomers', 'Noch keine Kunden vorhanden')}
               </p>
-              {!searchTerm && (
+              {!hasActiveFilters && !filters.search && (
                 <Button className="mt-4" onClick={() => setCreateDialogOpen(true)}>
                   <Plus className="h-4 w-4 mr-2" />
                   {t('customer.createFirst', 'Ersten Kunden anlegen')}
@@ -135,7 +170,7 @@ export default function CustomersList() {
         )}
 
         {/* Desktop Table */}
-        {!isLoading && filteredCustomers.length > 0 && (
+        {!isLoading && customers && customers.length > 0 && (
           <div className="hidden md:block">
             <Card>
               <Table>
@@ -150,7 +185,7 @@ export default function CustomersList() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredCustomers.map((customer) => (
+                  {customers.map((customer) => (
                     <TableRow
                       key={customer.id}
                       className="cursor-pointer"
@@ -204,9 +239,9 @@ export default function CustomersList() {
         )}
 
         {/* Mobile Cards */}
-        {!isLoading && filteredCustomers.length > 0 && (
+        {!isLoading && customers && customers.length > 0 && (
           <div className="md:hidden space-y-3">
-            {filteredCustomers.map((customer) => (
+            {customers.map((customer) => (
               <Card
                 key={customer.id}
                 className="cursor-pointer active:bg-muted/50 transition-colors"

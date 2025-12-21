@@ -700,7 +700,10 @@
     "validation": {
       "firstNameRequired": "Vorname ist erforderlich",
       "lastNameRequired": "Nachname ist erforderlich"
-    }
+    },
+    "trash": "Kunden-Papierkorb",
+    "withoutGoogleReview": "Ohne Google Review",
+    "withoutMoneytree": "Ohne Moneytree"
   },
   "common": {
     "select": "Auswählen",
@@ -709,7 +712,13 @@
     "cancel": "Abbrechen",
     "delete": "Löschen",
     "create": "Erstellen",
-    "back": "Zurück"
+    "back": "Zurück",
+    "all": "Alle",
+    "filters": "Filter",
+    "resetFilters": "Filter zurücksetzen",
+    "apply": "Anwenden",
+    "items": "Einträge",
+    "actions": "Aktionen"
   },
   "languages": {
     "de": "Deutsch",
