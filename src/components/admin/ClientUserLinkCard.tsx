@@ -30,6 +30,24 @@ interface ClientUserLinkCardProps {
   clientId: string;
 }
 
+// Hook to get client name
+function useClientName(clientId: string) {
+  return useQuery({
+    queryKey: ['client-name', clientId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('clients')
+        .select('first_name, last_name')
+        .eq('id', clientId)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data ? `${data.first_name} ${data.last_name}` : null;
+    },
+    enabled: !!clientId,
+  });
+}
+
 // Hook to get linked user for a client
 function useClientUser(clientId: string) {
   return useQuery({
@@ -173,7 +191,7 @@ export function ClientUserLinkCard({ clientId }: ClientUserLinkCardProps) {
   };
 
   const openPortalPreview = () => {
-    window.open('/app/client-portal', '_blank');
+    window.open(`/app/client-portal?previewClientId=${clientId}`, '_blank');
   };
 
   return (

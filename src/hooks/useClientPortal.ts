@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 
@@ -16,18 +17,37 @@ interface ClientPortalSettings {
 }
 
 // For clients: get their own settings
+// For admins with previewClientId: get that client's settings
 export function useClientPortalSettings() {
   const { user, role } = useAuth();
+  const [searchParams] = useSearchParams();
+  const previewClientId = searchParams.get('previewClientId');
 
   return useQuery({
-    queryKey: ['client-portal-settings', 'own'],
+    queryKey: ['client-portal-settings', 'own', previewClientId],
     queryFn: async () => {
+      // Admin preview mode with specific client
+      if (role === 'admin' && previewClientId) {
+        const { data, error } = await supabase
+          .from('client_portal_settings')
+          .select('*')
+          .eq('client_id', previewClientId)
+          .maybeSingle();
+
+        if (error) {
+          console.error('Error fetching client portal settings for preview:', error);
+          return null;
+        }
+
+        return data as ClientPortalSettings | null;
+      }
+
+      // Admin without previewClientId - show all sections
       if (role === 'admin') {
-        // Admin viewing portal preview - return null to show all
         return null;
       }
 
-      // Get client_id for current user
+      // Client role - get own settings via client_users mapping
       const { data: clientUser, error: clientError } = await supabase
         .from('client_users')
         .select('client_id')
@@ -53,6 +73,12 @@ export function useClientPortalSettings() {
     },
     enabled: !!user && (role === 'client' || role === 'admin'),
   });
+}
+
+// Helper to get preview client id from URL
+export function usePreviewClientId() {
+  const [searchParams] = useSearchParams();
+  return searchParams.get('previewClientId');
 }
 
 // For admins: get settings for a specific client
