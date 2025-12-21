@@ -234,5 +234,12 @@
     "fr": "Français",
     "it": "Italiano",
     "gsw": "Schwiizerdütsch"
+  },
+  "sort": {
+    "sortBy": "Sortiere nach",
+    "lastNameAsc": "Nachname A–Z",
+    "newest": "Neuscht zerst",
+    "status": "Nach Status",
+    "dueSoon": "Bald fällig"
   }
 }

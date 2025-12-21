@@ -9,6 +9,13 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   Table,
   TableBody,
   TableCell,
@@ -24,32 +31,63 @@ import { de, enUS, fr, it } from 'date-fns/locale';
 
 const DATE_LOCALES: Record<string, Locale> = { de, en: enUS, fr, it, gsw: de };
 
+type CaseSortMode = 'newest' | 'dueSoon' | 'status';
+
+const STATUS_ORDER: Record<string, number> = { 
+  offen: 0, 
+  in_bearbeitung: 1, 
+  wartet_auf_kunde: 2, 
+  pausiert: 3, 
+  abgeschlossen: 4 
+};
+
 export default function CaseList() {
   const { t, i18n } = useTranslation();
   const { user, role, signOut } = useAuth();
   const { data: cases, isLoading } = useCases();
   const { data: profiles } = useProfiles();
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortMode, setSortMode] = useState<CaseSortMode>('newest');
   const dateLocale = DATE_LOCALES[i18n.language] || de;
 
-  const filteredCases = useMemo(() => {
+  const sortedCases = useMemo(() => {
     if (!cases) return [];
-    const term = searchTerm.trim().toLowerCase();
-    if (!term) return cases;
     
-    return cases.filter((c) => {
-      const searchString = [
-        c.title,
-        c.description,
-        c.client?.first_name,
-        c.client?.last_name,
-      ]
-        .filter(Boolean)
-        .join(' ')
-        .toLowerCase();
-      return searchString.includes(term);
+    // Filter first
+    const term = searchTerm.trim().toLowerCase();
+    let filtered = cases;
+    if (term) {
+      filtered = cases.filter((c) => {
+        const searchString = [
+          c.title,
+          c.description,
+          c.client?.first_name,
+          c.client?.last_name,
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase();
+        return searchString.includes(term);
+      });
+    }
+    
+    // Then sort
+    return [...filtered].sort((a, b) => {
+      switch (sortMode) {
+        case 'newest':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case 'dueSoon':
+          if (!a.due_date && !b.due_date) return 0;
+          if (!a.due_date) return 1;
+          if (!b.due_date) return -1;
+          return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
+        case 'status':
+          return (STATUS_ORDER[a.status] ?? 99) - (STATUS_ORDER[b.status] ?? 99);
+        default:
+          return 0;
+      }
     });
-  }, [cases, searchTerm]);
+  }, [cases, searchTerm, sortMode]);
 
   const roleLabel = role === 'admin' ? t('roles.admin') : t('roles.staff');
   const roleVariant = role === 'admin' ? 'default' : 'secondary';
@@ -112,19 +150,31 @@ export default function CaseList() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="mb-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder={t('case.searchPlaceholder')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9"
-                />
+            <div className="mb-4 space-y-3">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder={t('case.searchPlaceholder')}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+                <Select value={sortMode} onValueChange={(v) => setSortMode(v as CaseSortMode)}>
+                  <SelectTrigger className="w-full sm:w-48">
+                    <SelectValue placeholder={t('sort.sortBy')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">{t('sort.newest')}</SelectItem>
+                    <SelectItem value="dueSoon">{t('sort.dueSoon')}</SelectItem>
+                    <SelectItem value="status">{t('sort.status')}</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               {cases && cases.length > 0 && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  {filteredCases.length} {t('case.of')} {cases.length} {t('case.title')}
+                <p className="text-sm text-muted-foreground">
+                  {sortedCases.length} {t('case.of')} {cases.length} {t('case.title')}
                 </p>
               )}
             </div>
@@ -136,7 +186,7 @@ export default function CaseList() {
               </div>
             ) : cases?.length === 0 ? (
               <p className="text-muted-foreground py-4">{t('case.noCases')}</p>
-            ) : filteredCases.length === 0 ? (
+            ) : sortedCases.length === 0 ? (
               <p className="text-muted-foreground py-4">{t('case.noCasesFound')}</p>
             ) : (
               <Table>
@@ -151,7 +201,7 @@ export default function CaseList() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredCases.map((caseItem) => (
+                  {sortedCases.map((caseItem) => (
                     <TableRow key={caseItem.id} className="cursor-pointer hover:bg-muted/50">
                       <TableCell className="font-medium">{caseItem.title}</TableCell>
                       <TableCell>
