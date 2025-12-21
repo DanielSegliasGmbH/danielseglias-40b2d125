@@ -241,5 +241,12 @@
     "newest": "Plus récents",
     "status": "Par statut",
     "dueSoon": "Échéance proche"
+  },
+  "pagination": {
+    "perPage": "Par page",
+    "page": "Page",
+    "of": "sur",
+    "prev": "Précédent",
+    "next": "Suivant"
   }
 }

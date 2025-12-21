@@ -241,5 +241,12 @@
     "newest": "Neueste zuerst",
     "status": "Nach Status",
     "dueSoon": "Bald fällig"
+  },
+  "pagination": {
+    "perPage": "Pro Seite",
+    "page": "Seite",
+    "of": "von",
+    "prev": "Zurück",
+    "next": "Weiter"
   }
 }

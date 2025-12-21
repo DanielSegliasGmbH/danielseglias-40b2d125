@@ -241,5 +241,12 @@
     "newest": "Neuscht zerst",
     "status": "Nach Status",
     "dueSoon": "Bald fällig"
+  },
+  "pagination": {
+    "perPage": "Pro Siite",
+    "page": "Siite",
+    "of": "vo",
+    "prev": "Zrugg",
+    "next": "Wiiter"
   }
 }
