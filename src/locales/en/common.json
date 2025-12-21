@@ -13,7 +13,10 @@
     "no": "No",
     "search": "Search",
     "noData": "No data available",
-    "required": "Required"
+    "required": "Required",
+    "back": "Back",
+    "updated": "Updated",
+    "updateError": "Error updating"
   },
   "auth": {
     "login": "Login",
@@ -59,8 +62,11 @@
   },
   "client": {
     "title": "Clients",
+    "list": "Client Overview",
+    "detail": "Client Details",
     "newClient": "New Client",
     "createClient": "Create Client",
+    "editClient": "Edit Client",
     "creating": "Creating...",
     "firstName": "First name",
     "lastName": "Last name",
@@ -71,7 +77,15 @@
     "status": "Status",
     "createdSuccess": "Client created successfully",
     "createError": "Error creating client",
+    "updatedSuccess": "Client updated successfully",
     "requiredFields": "First and last name are required",
+    "noClients": "No clients found",
+    "notFound": "Client not found",
+    "statuses": {
+      "aktiv": "Active",
+      "pausiert": "Paused",
+      "archiviert": "Archived"
+    },
     "portal": {
       "title": "Client Portal",
       "welcome": "Welcome to the Client Portal",
@@ -82,6 +96,7 @@
     "title": "Cases",
     "newCase": "New Case",
     "createCase": "Create Case",
+    "createForClient": "Case for this client",
     "creating": "Creating...",
     "caseTitle": "Title",
     "description": "Description",
@@ -92,6 +107,7 @@
     "createdSuccess": "Case created successfully",
     "createError": "Error creating case",
     "requiredFields": "Client and title are required",
+    "noCases": "No cases found",
     "statuses": {
       "offen": "Open",
       "in_bearbeitung": "In Progress",
@@ -102,6 +118,7 @@
   },
   "task": {
     "title": "Tasks",
+    "openTasks": "Open Tasks",
     "newTask": "New Task",
     "createTask": "Create Task",
     "creating": "Creating...",
@@ -114,6 +131,9 @@
     "createError": "Error creating task",
     "requiredFields": "Case and title are required",
     "caseClient": "Case / Client",
+    "noTasks": "No open tasks",
+    "markDone": "Mark as done",
+    "markedDone": "Task marked as done",
     "statuses": {
       "offen": "Open",
       "in_arbeit": "In Progress",
@@ -126,6 +146,40 @@
       "hoch": "High",
       "dringend": "Urgent"
     }
+  },
+  "meeting": {
+    "title": "Meetings",
+    "newMeeting": "New Meeting",
+    "createMeeting": "Schedule Meeting",
+    "creating": "Creating...",
+    "scheduledAt": "Scheduled",
+    "duration": "Duration (minutes)",
+    "location": "Location",
+    "summary": "Summary",
+    "type": "Type",
+    "selectCase": "Select case",
+    "createdSuccess": "Meeting created successfully",
+    "createError": "Error creating meeting",
+    "requiredFields": "Case and schedule are required",
+    "noMeetings": "No meetings found",
+    "upcoming": "Upcoming Meetings",
+    "past": "Past Meetings",
+    "types": {
+      "erstberatung": "Initial Consultation",
+      "folgeberatung": "Follow-up",
+      "check_in": "Check-in",
+      "telefonat": "Phone Call",
+      "video_call": "Video Call"
+    }
+  },
+  "note": {
+    "title": "Notes",
+    "newNote": "New Note",
+    "createNote": "Save Note",
+    "placeholder": "Enter note...",
+    "createdSuccess": "Note saved successfully",
+    "createError": "Error saving note",
+    "noNotes": "No notes found"
   },
   "table": {
     "title": "Title",

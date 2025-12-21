@@ -13,7 +13,10 @@
     "no": "Nein",
     "search": "Suchen",
     "noData": "Keine Daten vorhanden",
-    "required": "Pflichtfeld"
+    "required": "Pflichtfeld",
+    "back": "Zurück",
+    "updated": "Aktualisiert",
+    "updateError": "Fehler beim Aktualisieren"
   },
   "auth": {
     "login": "Anmelden",
@@ -59,8 +62,11 @@
   },
   "client": {
     "title": "Clients",
+    "list": "Client-Übersicht",
+    "detail": "Client-Details",
     "newClient": "Neuer Client",
     "createClient": "Client erstellen",
+    "editClient": "Client bearbeiten",
     "creating": "Erstellen...",
     "firstName": "Vorname",
     "lastName": "Nachname",
@@ -71,7 +77,15 @@
     "status": "Status",
     "createdSuccess": "Client erfolgreich erstellt",
     "createError": "Fehler beim Erstellen",
+    "updatedSuccess": "Client erfolgreich aktualisiert",
     "requiredFields": "Vor- und Nachname sind Pflichtfelder",
+    "noClients": "Keine Clients vorhanden",
+    "notFound": "Client nicht gefunden",
+    "statuses": {
+      "aktiv": "Aktiv",
+      "pausiert": "Pausiert",
+      "archiviert": "Archiviert"
+    },
     "portal": {
       "title": "Mandanten-Portal",
       "welcome": "Willkommen im Mandanten-Portal",
@@ -82,6 +96,7 @@
     "title": "Cases",
     "newCase": "Neuer Case",
     "createCase": "Case erstellen",
+    "createForClient": "Case für diesen Client",
     "creating": "Erstellen...",
     "caseTitle": "Titel",
     "description": "Beschreibung",
@@ -92,6 +107,7 @@
     "createdSuccess": "Case erfolgreich erstellt",
     "createError": "Fehler beim Erstellen",
     "requiredFields": "Client und Titel sind Pflichtfelder",
+    "noCases": "Keine Cases vorhanden",
     "statuses": {
       "offen": "Offen",
       "in_bearbeitung": "In Bearbeitung",
@@ -102,6 +118,7 @@
   },
   "task": {
     "title": "Tasks",
+    "openTasks": "Offene Tasks",
     "newTask": "Neue Task",
     "createTask": "Task erstellen",
     "creating": "Erstellen...",
@@ -114,6 +131,9 @@
     "createError": "Fehler beim Erstellen",
     "requiredFields": "Case und Titel sind Pflichtfelder",
     "caseClient": "Case / Client",
+    "noTasks": "Keine offenen Tasks",
+    "markDone": "Als erledigt markieren",
+    "markedDone": "Task als erledigt markiert",
     "statuses": {
       "offen": "Offen",
       "in_arbeit": "In Arbeit",
@@ -126,6 +146,40 @@
       "hoch": "Hoch",
       "dringend": "Dringend"
     }
+  },
+  "meeting": {
+    "title": "Meetings",
+    "newMeeting": "Neues Meeting",
+    "createMeeting": "Meeting planen",
+    "creating": "Erstellen...",
+    "scheduledAt": "Termin",
+    "duration": "Dauer (Minuten)",
+    "location": "Ort",
+    "summary": "Zusammenfassung",
+    "type": "Typ",
+    "selectCase": "Case auswählen",
+    "createdSuccess": "Meeting erfolgreich erstellt",
+    "createError": "Fehler beim Erstellen",
+    "requiredFields": "Case und Termin sind Pflichtfelder",
+    "noMeetings": "Keine Meetings vorhanden",
+    "upcoming": "Kommende Meetings",
+    "past": "Vergangene Meetings",
+    "types": {
+      "erstberatung": "Erstberatung",
+      "folgeberatung": "Folgeberatung",
+      "check_in": "Check-in",
+      "telefonat": "Telefonat",
+      "video_call": "Video-Call"
+    }
+  },
+  "note": {
+    "title": "Notizen",
+    "newNote": "Neue Notiz",
+    "createNote": "Notiz speichern",
+    "placeholder": "Notiz eingeben...",
+    "createdSuccess": "Notiz erfolgreich gespeichert",
+    "createError": "Fehler beim Speichern",
+    "noNotes": "Keine Notizen vorhanden"
   },
   "table": {
     "title": "Titel",

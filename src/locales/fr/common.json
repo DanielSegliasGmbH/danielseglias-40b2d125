@@ -13,7 +13,10 @@
     "no": "Non",
     "search": "Rechercher",
     "noData": "Aucune donnée disponible",
-    "required": "Obligatoire"
+    "required": "Obligatoire",
+    "back": "Retour",
+    "updated": "Mis à jour",
+    "updateError": "Erreur lors de la mise à jour"
   },
   "auth": {
     "login": "Connexion",
@@ -59,8 +62,11 @@
   },
   "client": {
     "title": "Clients",
+    "list": "Aperçu des clients",
+    "detail": "Détails du client",
     "newClient": "Nouveau client",
     "createClient": "Créer un client",
+    "editClient": "Modifier le client",
     "creating": "Création...",
     "firstName": "Prénom",
     "lastName": "Nom",
@@ -71,7 +77,15 @@
     "status": "Statut",
     "createdSuccess": "Client créé avec succès",
     "createError": "Erreur lors de la création",
+    "updatedSuccess": "Client mis à jour avec succès",
     "requiredFields": "Le prénom et le nom sont obligatoires",
+    "noClients": "Aucun client trouvé",
+    "notFound": "Client introuvable",
+    "statuses": {
+      "aktiv": "Actif",
+      "pausiert": "En pause",
+      "archiviert": "Archivé"
+    },
     "portal": {
       "title": "Portail client",
       "welcome": "Bienvenue sur le portail client",
@@ -82,6 +96,7 @@
     "title": "Dossiers",
     "newCase": "Nouveau dossier",
     "createCase": "Créer un dossier",
+    "createForClient": "Dossier pour ce client",
     "creating": "Création...",
     "caseTitle": "Titre",
     "description": "Description",
@@ -92,6 +107,7 @@
     "createdSuccess": "Dossier créé avec succès",
     "createError": "Erreur lors de la création",
     "requiredFields": "Le client et le titre sont obligatoires",
+    "noCases": "Aucun dossier trouvé",
     "statuses": {
       "offen": "Ouvert",
       "in_bearbeitung": "En cours",
@@ -102,6 +118,7 @@
   },
   "task": {
     "title": "Tâches",
+    "openTasks": "Tâches ouvertes",
     "newTask": "Nouvelle tâche",
     "createTask": "Créer une tâche",
     "creating": "Création...",
@@ -114,6 +131,9 @@
     "createError": "Erreur lors de la création",
     "requiredFields": "Le dossier et le titre sont obligatoires",
     "caseClient": "Dossier / Client",
+    "noTasks": "Aucune tâche ouverte",
+    "markDone": "Marquer comme terminé",
+    "markedDone": "Tâche marquée comme terminée",
     "statuses": {
       "offen": "Ouvert",
       "in_arbeit": "En cours",
@@ -126,6 +146,40 @@
       "hoch": "Haute",
       "dringend": "Urgente"
     }
+  },
+  "meeting": {
+    "title": "Réunions",
+    "newMeeting": "Nouvelle réunion",
+    "createMeeting": "Planifier une réunion",
+    "creating": "Création...",
+    "scheduledAt": "Programmé",
+    "duration": "Durée (minutes)",
+    "location": "Lieu",
+    "summary": "Résumé",
+    "type": "Type",
+    "selectCase": "Sélectionner un dossier",
+    "createdSuccess": "Réunion créée avec succès",
+    "createError": "Erreur lors de la création",
+    "requiredFields": "Le dossier et la date sont obligatoires",
+    "noMeetings": "Aucune réunion trouvée",
+    "upcoming": "Réunions à venir",
+    "past": "Réunions passées",
+    "types": {
+      "erstberatung": "Consultation initiale",
+      "folgeberatung": "Suivi",
+      "check_in": "Check-in",
+      "telefonat": "Appel téléphonique",
+      "video_call": "Appel vidéo"
+    }
+  },
+  "note": {
+    "title": "Notes",
+    "newNote": "Nouvelle note",
+    "createNote": "Enregistrer la note",
+    "placeholder": "Saisir une note...",
+    "createdSuccess": "Note enregistrée avec succès",
+    "createError": "Erreur lors de l'enregistrement",
+    "noNotes": "Aucune note trouvée"
   },
   "table": {
     "title": "Titre",
