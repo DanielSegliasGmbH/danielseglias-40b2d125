@@ -54,18 +54,18 @@ export function AppSidebar() {
   const roleVariant = role === 'admin' ? 'default' : 'secondary';
 
   return (
-    <Sidebar collapsible="icon" className="border-r">
-      <SidebarHeader className="border-b p-4">
+    <Sidebar collapsible="icon" className="border-r bg-sidebar">
+      <SidebarHeader className="border-b border-sidebar-border p-4">
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             {!isCollapsed && (
-              <span className="font-bold text-lg">{t('app.title')}</span>
+              <span className="font-semibold text-lg text-sidebar-foreground">{t('app.title')}</span>
             )}
             <Button
               variant="ghost"
               size="icon"
               onClick={toggleSidebar}
-              className="h-8 w-8"
+              className="h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent"
             >
               {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </Button>
@@ -78,7 +78,7 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>{!isCollapsed && t('nav.main')}</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-sidebar-muted-foreground">{!isCollapsed && t('nav.main')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainNavItems.map((item) => (
@@ -87,8 +87,8 @@ export function AppSidebar() {
                     <NavLink
                       to={item.url}
                       end={item.url === '/app'}
-                      className="flex items-center gap-3 px-3 py-2 rounded-md transition-colors hover:bg-muted"
-                      activeClassName="bg-primary/10 text-primary font-medium"
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sidebar-foreground hover:bg-sidebar-accent"
+                      activeClassName="bg-primary text-primary-foreground font-medium"
                     >
                       <item.icon className="h-5 w-5 shrink-0" />
                       {!isCollapsed && <span>{item.title}</span>}
@@ -102,7 +102,7 @@ export function AppSidebar() {
 
         {role === 'admin' && (
           <SidebarGroup>
-            <SidebarGroupLabel>{!isCollapsed && t('nav.admin')}</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-sidebar-muted-foreground">{!isCollapsed && t('nav.admin')}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {adminNavItems.map((item) => (
@@ -110,8 +110,8 @@ export function AppSidebar() {
                     <SidebarMenuButton asChild tooltip={isCollapsed ? item.title : undefined}>
                       <NavLink
                         to={item.url}
-                        className="flex items-center gap-3 px-3 py-2 rounded-md transition-colors hover:bg-muted"
-                        activeClassName="bg-primary/10 text-primary font-medium"
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sidebar-foreground hover:bg-sidebar-accent"
+                        activeClassName="bg-primary text-primary-foreground font-medium"
                       >
                         <item.icon className="h-5 w-5 shrink-0" />
                         {!isCollapsed && <span>{item.title}</span>}
@@ -125,12 +125,12 @@ export function AppSidebar() {
         )}
       </SidebarContent>
 
-      <SidebarFooter className="border-t p-4">
+      <SidebarFooter className="border-t border-sidebar-border p-4">
         <Button
           variant="ghost"
           size={isCollapsed ? 'icon' : 'default'}
           onClick={signOut}
-          className={isCollapsed ? 'w-full justify-center' : 'w-full justify-start gap-3'}
+          className={isCollapsed ? 'w-full justify-center text-sidebar-foreground hover:bg-sidebar-accent' : 'w-full justify-start gap-3 text-sidebar-foreground hover:bg-sidebar-accent'}
         >
           <LogOut className="h-5 w-5 shrink-0" />
           {!isCollapsed && <span>{t('auth.logout')}</span>}
