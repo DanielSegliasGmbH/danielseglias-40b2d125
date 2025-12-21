@@ -133,6 +133,8 @@ export default function SystemMap() {
           onShowOnlyCoreChange={setShowOnlyCore}
           editMode={editMode}
           onEditModeChange={setEditMode}
+          existingKeys={nodes?.map((n) => n.key) || []}
+          onNodeCreated={(key) => setSelectedNodeKey(key)}
         />
 
         <div className="flex-1 flex overflow-hidden">
@@ -160,6 +162,7 @@ export default function SystemMap() {
               onCompare={handleCompare}
               compareNodeKey={compareNodeKey}
               shortestPath={shortestPath}
+              editMode={editMode}
             />
           )}
         </div>

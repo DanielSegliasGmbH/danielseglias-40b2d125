@@ -1,10 +1,23 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, ArrowRight, ArrowLeft, GitCompare } from 'lucide-react';
+import { X, ArrowRight, ArrowLeft, GitCompare, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { SystemMapNode, SystemMapEdge } from '@/hooks/useSystemMap';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { SystemMapNode, SystemMapEdge, categoryLabels, importanceLabels } from './types';
+import { SystemMapNodeForm } from './SystemMapNodeForm';
+import { useUpdateNode, useDeleteNodeWithEdges, useNodeEdgeCount } from '@/hooks/useSystemMap';
 
 interface SystemMapDetailPanelProps {
   node: SystemMapNode;
@@ -14,16 +27,8 @@ interface SystemMapDetailPanelProps {
   onCompare: () => void;
   compareNodeKey: string | null;
   shortestPath: string[];
+  editMode: boolean;
 }
-
-const categoryLabels: Record<string, string> = {
-  core: 'Core',
-  module: 'Module',
-  ui: 'UI',
-  security: 'Security',
-  automation: 'Automation',
-  integration: 'Integration',
-};
 
 const categoryColors: Record<string, string> = {
   core: 'bg-primary/10 text-primary',
@@ -42,13 +47,63 @@ export function SystemMapDetailPanel({
   onCompare,
   compareNodeKey,
   shortestPath,
+  editMode,
 }: SystemMapDetailPanelProps) {
   const { t } = useTranslation();
+  const [isEditing, setIsEditing] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const updateNode = useUpdateNode();
+  const deleteNode = useDeleteNodeWithEdges();
+  const edgeCount = useNodeEdgeCount(node.key, edges);
 
   const outgoingEdges = edges.filter((e) => e.source_key === node.key);
   const incomingEdges = edges.filter((e) => e.target_key === node.key);
 
   const getNodeLabel = (key: string) => nodes.find((n) => n.key === key)?.label || key;
+
+  const handleEditSubmit = (data: Parameters<typeof updateNode.mutate>[0]['updates']) => {
+    updateNode.mutate(
+      { key: node.key, updates: data },
+      {
+        onSuccess: () => setIsEditing(false),
+      }
+    );
+  };
+
+  const handleDelete = (withEdges: boolean) => {
+    deleteNode.mutate(
+      { key: node.key, deleteEdges: withEdges },
+      {
+        onSuccess: () => {
+          setShowDeleteDialog(false);
+          onClose();
+        },
+      }
+    );
+  };
+
+  if (isEditing) {
+    return (
+      <div className="w-80 bg-card border-l h-full flex flex-col">
+        <div className="p-4 border-b flex items-center justify-between">
+          <h3 className="font-semibold text-lg">{t('systemMap.editNode')}</h3>
+          <Button variant="ghost" size="icon" onClick={() => setIsEditing(false)}>
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+        <ScrollArea className="flex-1 p-4">
+          <SystemMapNodeForm
+            mode="edit"
+            initialData={node}
+            onSubmit={handleEditSubmit}
+            onCancel={() => setIsEditing(false)}
+            isSubmitting={updateNode.isPending}
+          />
+        </ScrollArea>
+      </div>
+    );
+  }
 
   return (
     <div className="w-80 bg-card border-l h-full flex flex-col">
@@ -67,6 +122,18 @@ export function SystemMapDetailPanel({
             <Badge className={categoryColors[node.category]}>
               {categoryLabels[node.category]}
             </Badge>
+          </div>
+
+          {/* Importance & Phase */}
+          <div className="flex gap-4">
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">{t('systemMap.form.importance')}</p>
+              <Badge variant="outline">{importanceLabels[node.importance] || node.importance}</Badge>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">{t('systemMap.form.phase')}</p>
+              <Badge variant="outline">Phase {node.phase}</Badge>
+            </div>
           </div>
 
           {/* Description */}
@@ -156,8 +223,56 @@ export function SystemMapDetailPanel({
               <p className="text-sm text-destructive">{t('systemMap.noPathFound')}</p>
             </div>
           )}
+
+          {/* Edit Mode Actions */}
+          {editMode && (
+            <>
+              <Separator />
+              <div className="space-y-2">
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setIsEditing(true)}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  {t('systemMap.editNode')}
+                </Button>
+                <Button
+                  variant="destructive"
+                  className="w-full"
+                  onClick={() => setShowDeleteDialog(true)}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {t('systemMap.deleteNode')}
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </ScrollArea>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('systemMap.confirmDelete')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {edgeCount > 0
+                ? t('systemMap.deleteWithEdges', { count: edgeCount })
+                : t('systemMap.deleteConfirmMessage')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('app.cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => handleDelete(edgeCount > 0)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {edgeCount > 0 ? t('systemMap.deleteWithEdgesAction') : t('app.delete')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

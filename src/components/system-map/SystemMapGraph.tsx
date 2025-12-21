@@ -14,20 +14,12 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import dagre from 'dagre';
-import { SystemMapNode, SystemMapEdge, useUpdateNodePosition } from '@/hooks/useSystemMap';
+import { SystemMapNode, SystemMapEdge, useDebouncedPositionUpdate } from '@/hooks/useSystemMap';
 import { SystemMapNodeComponent } from './SystemMapNodeComponent';
+import { categoryColors } from './types';
 
 const nodeTypes = {
   systemNode: SystemMapNodeComponent,
-};
-
-const categoryColors: Record<string, string> = {
-  core: 'hsl(var(--primary))',
-  module: 'hsl(var(--chart-2))',
-  ui: 'hsl(var(--chart-3))',
-  security: 'hsl(var(--destructive))',
-  automation: 'hsl(var(--chart-4))',
-  integration: 'hsl(var(--chart-5))',
 };
 
 interface SystemMapGraphProps {
@@ -94,7 +86,7 @@ export function SystemMapGraph({
   categoryFilter,
   showOnlyCore,
 }: SystemMapGraphProps) {
-  const updatePosition = useUpdateNodePosition();
+  const { debouncedUpdate: updatePosition } = useDebouncedPositionUpdate();
 
   const filteredNodes = useMemo(() => {
     return rawNodes.filter((node) => {
@@ -200,11 +192,7 @@ export function SystemMapGraph({
       if (editMode) {
         changes.forEach((change) => {
           if (change.type === 'position' && change.dragging === false && change.position) {
-            updatePosition.mutate({
-              key: change.id,
-              position_x: change.position.x,
-              position_y: change.position.y,
-            });
+            updatePosition(change.id, change.position.x, change.position.y);
           }
         });
       }

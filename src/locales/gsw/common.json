@@ -319,6 +319,27 @@
     "searchNodes": "Nodes sueche...",
     "coreOnly": "Nur Core",
     "editMode": "Bearbeite",
-    "viewMode": "Aaluege"
+    "viewMode": "Aaluege",
+    "addNode": "Node hinzfüege",
+    "createNode": "Node erstelle",
+    "editNode": "Node bearbeite",
+    "deleteNode": "Node lösche",
+    "confirmDelete": "Node lösche?",
+    "deleteConfirmMessage": "Cha nöd rückgängig gmacht werde.",
+    "deleteWithEdges": "De Node het {{count}} Verbindigä wo au glöscht werded.",
+    "deleteWithEdgesAction": "Mit Verbindigä lösche",
+    "form": {
+      "key": "Key (eindütig)",
+      "keyRequired": "Key isch erforderlich",
+      "keyExists": "De Key existiert scho",
+      "keyImmutable": "Key cha nöd gänderet werde",
+      "label": "Aazeigname",
+      "labelRequired": "Aazeigname isch erforderlich",
+      "category": "Kategorie",
+      "importance": "Wichtigkeit",
+      "phase": "Phase",
+      "description": "Beschriibig",
+      "isActive": "Aktiv"
+    }
   }
 }

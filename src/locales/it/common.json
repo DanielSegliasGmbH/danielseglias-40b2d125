@@ -319,6 +319,27 @@
     "searchNodes": "Cerca...",
     "coreOnly": "Solo Core",
     "editMode": "Modifica",
-    "viewMode": "Visualizza"
+    "viewMode": "Visualizza",
+    "addNode": "Aggiungi Node",
+    "createNode": "Crea Node",
+    "editNode": "Modifica Node",
+    "deleteNode": "Elimina Node",
+    "confirmDelete": "Eliminare?",
+    "deleteConfirmMessage": "Azione irreversibile.",
+    "deleteWithEdges": "Questo node ha {{count}} connessioni che verranno eliminate.",
+    "deleteWithEdgesAction": "Elimina con connessioni",
+    "form": {
+      "key": "Chiave (unica)",
+      "keyRequired": "Chiave richiesta",
+      "keyExists": "Chiave già esistente",
+      "keyImmutable": "Chiave non modificabile",
+      "label": "Nome",
+      "labelRequired": "Nome richiesto",
+      "category": "Categoria",
+      "importance": "Importanza",
+      "phase": "Fase",
+      "description": "Descrizione",
+      "isActive": "Attivo"
+    }
   }
 }

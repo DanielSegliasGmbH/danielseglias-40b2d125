@@ -319,6 +319,27 @@
     "searchNodes": "Rechercher...",
     "coreOnly": "Core uniquement",
     "editMode": "Modifier",
-    "viewMode": "Afficher"
+    "viewMode": "Afficher",
+    "addNode": "Ajouter Node",
+    "createNode": "Créer Node",
+    "editNode": "Modifier Node",
+    "deleteNode": "Supprimer Node",
+    "confirmDelete": "Supprimer?",
+    "deleteConfirmMessage": "Cette action est irréversible.",
+    "deleteWithEdges": "Ce node a {{count}} connexions qui seront supprimées.",
+    "deleteWithEdgesAction": "Supprimer avec connexions",
+    "form": {
+      "key": "Clé (unique)",
+      "keyRequired": "Clé requise",
+      "keyExists": "Cette clé existe déjà",
+      "keyImmutable": "Clé non modifiable",
+      "label": "Nom",
+      "labelRequired": "Nom requis",
+      "category": "Catégorie",
+      "importance": "Importance",
+      "phase": "Phase",
+      "description": "Description",
+      "isActive": "Actif"
+    }
   }
 }

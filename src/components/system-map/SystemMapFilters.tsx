@@ -1,11 +1,21 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Edit, Eye } from 'lucide-react';
+import { Search, Edit, Eye, Plus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
+import { SystemMapNodeForm } from './SystemMapNodeForm';
+import { NodeFormData } from './types';
+import { useCreateNode } from '@/hooks/useSystemMap';
 
 interface SystemMapFiltersProps {
   searchTerm: string;
@@ -16,6 +26,8 @@ interface SystemMapFiltersProps {
   onShowOnlyCoreChange: (value: boolean) => void;
   editMode: boolean;
   onEditModeChange: (value: boolean) => void;
+  existingKeys: string[];
+  onNodeCreated?: (key: string) => void;
 }
 
 const categories = [
@@ -36,8 +48,12 @@ export function SystemMapFilters({
   onShowOnlyCoreChange,
   editMode,
   onEditModeChange,
+  existingKeys,
+  onNodeCreated,
 }: SystemMapFiltersProps) {
   const { t } = useTranslation();
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const createNode = useCreateNode();
 
   const toggleCategory = (category: string) => {
     if (categoryFilter.includes(category)) {
@@ -47,61 +63,100 @@ export function SystemMapFilters({
     }
   };
 
+  const handleCreateSubmit = (data: NodeFormData) => {
+    createNode.mutate(data, {
+      onSuccess: (newNode) => {
+        setShowCreateDialog(false);
+        onNodeCreated?.(newNode.key);
+      },
+    });
+  };
+
   return (
-    <div className="p-4 border-b bg-card space-y-4">
-      <div className="flex items-center gap-4 flex-wrap">
-        {/* Search */}
-        <div className="relative flex-1 min-w-[200px] max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder={t('systemMap.searchNodes')}
-            value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-9"
-          />
-        </div>
+    <>
+      <div className="p-4 border-b bg-card space-y-4">
+        <div className="flex items-center gap-4 flex-wrap">
+          {/* Search */}
+          <div className="relative flex-1 min-w-[200px] max-w-xs">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder={t('systemMap.searchNodes')}
+              value={searchTerm}
+              onChange={(e) => onSearchChange(e.target.value)}
+              className="pl-9"
+            />
+          </div>
 
-        {/* Category Filter */}
-        <div className="flex items-center gap-2 flex-wrap">
-          {categories.map((cat) => (
-            <Badge
-              key={cat.key}
-              variant="outline"
-              className={cn(
-                'cursor-pointer transition-all hover:opacity-80 border',
-                categoryFilter.includes(cat.key) && cat.color,
-                !categoryFilter.includes(cat.key) && 'opacity-50'
-              )}
-              onClick={() => toggleCategory(cat.key)}
+          {/* Category Filter */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {categories.map((cat) => (
+              <Badge
+                key={cat.key}
+                variant="outline"
+                className={cn(
+                  'cursor-pointer transition-all hover:opacity-80 border',
+                  categoryFilter.includes(cat.key) && cat.color,
+                  !categoryFilter.includes(cat.key) && 'opacity-50'
+                )}
+                onClick={() => toggleCategory(cat.key)}
+              >
+                {cat.label}
+              </Badge>
+            ))}
+          </div>
+
+          {/* Show Only Core Toggle */}
+          <div className="flex items-center gap-2">
+            <Switch
+              id="core-only"
+              checked={showOnlyCore}
+              onCheckedChange={onShowOnlyCoreChange}
+            />
+            <Label htmlFor="core-only" className="text-sm cursor-pointer">
+              {t('systemMap.coreOnly')}
+            </Label>
+          </div>
+
+          {/* Edit Mode Toggle */}
+          <Button
+            variant={editMode ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => onEditModeChange(!editMode)}
+            className="gap-2"
+          >
+            {editMode ? <Eye className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
+            {editMode ? t('systemMap.viewMode') : t('systemMap.editMode')}
+          </Button>
+
+          {/* Add Node Button (only in Edit Mode) */}
+          {editMode && (
+            <Button
+              size="sm"
+              onClick={() => setShowCreateDialog(true)}
+              className="gap-2"
             >
-              {cat.label}
-            </Badge>
-          ))}
+              <Plus className="h-4 w-4" />
+              {t('systemMap.addNode')}
+            </Button>
+          )}
         </div>
-
-        {/* Show Only Core Toggle */}
-        <div className="flex items-center gap-2">
-          <Switch
-            id="core-only"
-            checked={showOnlyCore}
-            onCheckedChange={onShowOnlyCoreChange}
-          />
-          <Label htmlFor="core-only" className="text-sm cursor-pointer">
-            {t('systemMap.coreOnly')}
-          </Label>
-        </div>
-
-        {/* Edit Mode Toggle */}
-        <Button
-          variant={editMode ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => onEditModeChange(!editMode)}
-          className="gap-2"
-        >
-          {editMode ? <Eye className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
-          {editMode ? t('systemMap.viewMode') : t('systemMap.editMode')}
-        </Button>
       </div>
-    </div>
+
+      {/* Create Node Dialog */}
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t('systemMap.createNode')}</DialogTitle>
+          </DialogHeader>
+          <SystemMapNodeForm
+            mode="create"
+            onSubmit={handleCreateSubmit}
+            onCancel={() => setShowCreateDialog(false)}
+            isSubmitting={createNode.isPending}
+            existingKeys={existingKeys}
+          />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

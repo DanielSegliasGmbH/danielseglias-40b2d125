@@ -355,9 +355,11 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          importance: string
           is_active: boolean
           key: string
           label: string
+          phase: number
           position_x: number | null
           position_y: number | null
           updated_at: string
@@ -367,9 +369,11 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          importance?: string
           is_active?: boolean
           key: string
           label: string
+          phase?: number
           position_x?: number | null
           position_y?: number | null
           updated_at?: string
@@ -379,9 +383,11 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          importance?: string
           is_active?: boolean
           key?: string
           label?: string
+          phase?: number
           position_x?: number | null
           position_y?: number | null
           updated_at?: string
