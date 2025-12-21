@@ -104,6 +104,8 @@
     "of": "von",
     "showing": "Zeige {{shown}} von {{total}} Clients",
     "loadMore": "Mehr laden",
+    "loadingMore": "Lädt...",
+    "noMore": "Keine weiteren Clients",
     "notFound": "Client nicht gefunden",
     "sortBy": "Sortieren nach",
     "sort": {

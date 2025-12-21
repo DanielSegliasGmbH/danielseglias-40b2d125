@@ -17,6 +17,48 @@ export function useClients() {
   });
 }
 
+const CLIENTS_PAGE_SIZE = 25;
+
+type ClientWithData = Tables<'clients'>;
+
+interface InfiniteClientsPage {
+  items: ClientWithData[];
+  totalCount: number;
+  pageParam: number;
+}
+
+export function useInfiniteClients() {
+  return useInfiniteQuery<InfiniteClientsPage, Error>({
+    queryKey: ['clients', 'infinite'],
+    queryFn: async ({ pageParam = 0 }) => {
+      const from = (pageParam as number) * CLIENTS_PAGE_SIZE;
+      const to = from + CLIENTS_PAGE_SIZE - 1;
+
+      const { data, error, count } = await supabase
+        .from('clients')
+        .select('*', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (error) throw error;
+
+      return {
+        items: (data ?? []) as ClientWithData[],
+        totalCount: count ?? 0,
+        pageParam: pageParam as number,
+      };
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      const loadedCount = allPages.reduce((sum, page) => sum + page.items.length, 0);
+      if (loadedCount < lastPage.totalCount) {
+        return lastPage.pageParam + 1;
+      }
+      return undefined;
+    },
+  });
+}
+
 export function useActiveClientsCount() {
   return useQuery({
     queryKey: ['clients', 'active-count'],

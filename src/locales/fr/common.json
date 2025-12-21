@@ -104,6 +104,8 @@
     "of": "sur",
     "showing": "Affichage de {{shown}} sur {{total}} clients",
     "loadMore": "Charger plus",
+    "loadingMore": "Chargement...",
+    "noMore": "Aucun autre client",
     "notFound": "Client introuvable",
     "sortBy": "Trier par",
     "sort": {
