@@ -1,0 +1,145 @@
+{
+  "app": {
+    "title": "Mandantenverwaltung",
+    "loading": "Laden...",
+    "error": "Fehler",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "create": "Erstellen",
+    "close": "Schliessen",
+    "yes": "Ja",
+    "no": "Nein",
+    "search": "Suchen",
+    "noData": "Keine Daten vorhanden",
+    "required": "Pflichtfeld"
+  },
+  "auth": {
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "signup": "Registrieren",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "phone": "Telefon",
+    "loginTitle": "Anmelden",
+    "loginSubtitle": "Melden Sie sich mit Ihrem Account an",
+    "signupTitle": "Registrieren",
+    "signupSubtitle": "Nur für interne Accounts. Nach der Registrierung muss ein Admin Ihre Rolle zuweisen.",
+    "noAccount": "Noch kein Account?",
+    "hasAccount": "Bereits ein Account?",
+    "loginError": "Anmeldung fehlgeschlagen",
+    "signupError": "Registrierung fehlgeschlagen",
+    "signupSuccess": "Registrierung erfolgreich! Bitte warten Sie auf die Rollenzuweisung durch einen Admin.",
+    "invalidCredentials": "Ungültige Anmeldedaten",
+    "accessDenied": "Kein Zugriff",
+    "accessDeniedMessage": "Sie haben keine Rolle zugewiesen. Bitte kontaktieren Sie einen Administrator.",
+    "backToLogin": "Zurück zum Login"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "staff": "Mitarbeiter",
+    "client": "Mandant"
+  },
+  "dashboard": {
+    "welcome": "Willkommen, {{name}}!",
+    "loggedInAs": "Sie sind angemeldet als:",
+    "activeClients": "Aktive Clients",
+    "activeCases": "Aktive Cases",
+    "openTasks": "Offene Tasks",
+    "statusActive": "Status: aktiv",
+    "statusNotClosed": "Status ≠ abgeschlossen",
+    "statusNotDone": "Status ≠ erledigt",
+    "myOpenTasks": "Meine offenen Tasks",
+    "noOpenTasks": "Keine offenen Tasks",
+    "activeCasesList": "Aktive Cases",
+    "noActiveCases": "Keine aktiven Cases"
+  },
+  "client": {
+    "title": "Clients",
+    "newClient": "Neuer Client",
+    "createClient": "Client erstellen",
+    "creating": "Erstellen...",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "address": "Adresse",
+    "notes": "Notizen",
+    "status": "Status",
+    "createdSuccess": "Client erfolgreich erstellt",
+    "createError": "Fehler beim Erstellen",
+    "requiredFields": "Vor- und Nachname sind Pflichtfelder",
+    "portal": {
+      "title": "Mandanten-Portal",
+      "welcome": "Willkommen im Mandanten-Portal",
+      "description": "Hier können Sie Ihre Fälle und Dokumente einsehen."
+    }
+  },
+  "case": {
+    "title": "Cases",
+    "newCase": "Neuer Case",
+    "createCase": "Case erstellen",
+    "creating": "Erstellen...",
+    "caseTitle": "Titel",
+    "description": "Beschreibung",
+    "status": "Status",
+    "dueDate": "Fälligkeitsdatum",
+    "assignedTo": "Zugewiesen an",
+    "selectClient": "Client auswählen",
+    "createdSuccess": "Case erfolgreich erstellt",
+    "createError": "Fehler beim Erstellen",
+    "requiredFields": "Client und Titel sind Pflichtfelder",
+    "statuses": {
+      "offen": "Offen",
+      "in_bearbeitung": "In Bearbeitung",
+      "wartet_auf_kunde": "Wartet auf Kunde",
+      "abgeschlossen": "Abgeschlossen",
+      "pausiert": "Pausiert"
+    }
+  },
+  "task": {
+    "title": "Tasks",
+    "newTask": "Neue Task",
+    "createTask": "Task erstellen",
+    "creating": "Erstellen...",
+    "taskTitle": "Titel",
+    "description": "Beschreibung",
+    "priority": "Priorität",
+    "dueDate": "Fälligkeitsdatum",
+    "selectCase": "Case auswählen",
+    "createdSuccess": "Task erfolgreich erstellt",
+    "createError": "Fehler beim Erstellen",
+    "requiredFields": "Case und Titel sind Pflichtfelder",
+    "caseClient": "Case / Client",
+    "statuses": {
+      "offen": "Offen",
+      "in_arbeit": "In Arbeit",
+      "erledigt": "Erledigt",
+      "blockiert": "Blockiert"
+    },
+    "priorities": {
+      "niedrig": "Niedrig",
+      "mittel": "Mittel",
+      "hoch": "Hoch",
+      "dringend": "Dringend"
+    }
+  },
+  "table": {
+    "title": "Titel",
+    "client": "Client",
+    "status": "Status",
+    "priority": "Priorität",
+    "due": "Fällig",
+    "assignedTo": "Zugewiesen an"
+  },
+  "language": {
+    "de": "Deutsch",
+    "en": "English",
+    "fr": "Français",
+    "it": "Italiano",
+    "gsw": "Schweizerdeutsch"
+  }
+}

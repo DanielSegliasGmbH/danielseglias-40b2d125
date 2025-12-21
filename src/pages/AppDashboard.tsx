@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import {
   useActiveClientsCount,
@@ -19,39 +20,24 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { LogOut, Users, Briefcase, ClipboardList, Calendar } from 'lucide-react';
+import { LogOut, Users, Briefcase, ClipboardList } from 'lucide-react';
 import { CreateClientDialog } from '@/components/dashboard/CreateClientDialog';
 import { CreateCaseDialog } from '@/components/dashboard/CreateCaseDialog';
 import { CreateTaskDialog } from '@/components/dashboard/CreateTaskDialog';
-import { format } from 'date-fns';
-import { de } from 'date-fns/locale';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { format, Locale } from 'date-fns';
+import { de, enUS, fr, it } from 'date-fns/locale';
 
-const STATUS_LABELS: Record<string, string> = {
-  offen: 'Offen',
-  in_bearbeitung: 'In Bearbeitung',
-  wartet_auf_kunde: 'Wartet auf Kunde',
-  abgeschlossen: 'Abgeschlossen',
-  pausiert: 'Pausiert',
-  in_arbeit: 'In Arbeit',
-  erledigt: 'Erledigt',
-  blockiert: 'Blockiert',
-};
-
-const PRIORITY_VARIANTS: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-  niedrig: 'outline',
-  mittel: 'secondary',
-  hoch: 'default',
-  dringend: 'destructive',
-};
-
-const PRIORITY_LABELS: Record<string, string> = {
-  niedrig: 'Niedrig',
-  mittel: 'Mittel',
-  hoch: 'Hoch',
-  dringend: 'Dringend',
+const DATE_LOCALES: Record<string, Locale> = {
+  de,
+  en: enUS,
+  fr,
+  it,
+  gsw: de,
 };
 
 export default function AppDashboard() {
+  const { t, i18n } = useTranslation();
   const { user, role, signOut } = useAuth();
   const { data: activeClientsCount, isLoading: loadingClients } = useActiveClientsCount();
   const { data: activeCasesCount, isLoading: loadingCasesCount } = useActiveCasesCount();
@@ -60,8 +46,9 @@ export default function AppDashboard() {
   const { data: openTasks, isLoading: loadingTasks } = useOpenTasks();
   const { data: profiles } = useProfiles();
 
-  const roleLabel = role === 'admin' ? 'Administrator' : 'Mitarbeiter';
+  const roleLabel = role === 'admin' ? t('roles.admin') : t('roles.staff');
   const roleVariant = role === 'admin' ? 'default' : 'secondary';
+  const dateLocale = DATE_LOCALES[i18n.language] || de;
 
   const getProfileName = (userId: string | null) => {
     if (!userId || !profiles) return '–';
@@ -71,7 +58,23 @@ export default function AppDashboard() {
 
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return '–';
-    return format(new Date(dateStr), 'dd.MM.yyyy', { locale: de });
+    return format(new Date(dateStr), 'dd.MM.yyyy', { locale: dateLocale });
+  };
+
+  const getStatusLabel = (status: string, type: 'case' | 'task') => {
+    const key = type === 'case' ? `case.statuses.${status}` : `task.statuses.${status}`;
+    return t(key, status);
+  };
+
+  const getPriorityLabel = (priority: string) => {
+    return t(`task.priorities.${priority}`, priority);
+  };
+
+  const PRIORITY_VARIANTS: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+    niedrig: 'outline',
+    mittel: 'secondary',
+    hoch: 'default',
+    dringend: 'destructive',
   };
 
   return (
@@ -79,14 +82,15 @@ export default function AppDashboard() {
       <header className="bg-background border-b">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold text-foreground">Mandantenverwaltung</h1>
+            <h1 className="text-xl font-bold text-foreground">{t('app.title')}</h1>
             <Badge variant={roleVariant}>{roleLabel}</Badge>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{user?.email}</span>
+            <LanguageSwitcher />
+            <span className="text-sm text-muted-foreground hidden sm:inline">{user?.email}</span>
             <Button variant="outline" size="sm" onClick={signOut}>
               <LogOut className="h-4 w-4 mr-2" />
-              Abmelden
+              {t('auth.logout')}
             </Button>
           </div>
         </div>
@@ -96,10 +100,10 @@ export default function AppDashboard() {
         {/* Greeting */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-foreground mb-2">
-            Willkommen, {user?.user_metadata?.first_name || 'Benutzer'}!
+            {t('dashboard.welcome', { name: user?.user_metadata?.first_name || 'User' })}
           </h2>
           <p className="text-muted-foreground">
-            Sie sind angemeldet als: <strong>{roleLabel}</strong>
+            {t('dashboard.loggedInAs')} <strong>{roleLabel}</strong>
           </p>
         </div>
 
@@ -107,7 +111,7 @@ export default function AppDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Aktive Clients</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('dashboard.activeClients')}</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -116,13 +120,13 @@ export default function AppDashboard() {
               ) : (
                 <div className="text-3xl font-bold">{activeClientsCount}</div>
               )}
-              <p className="text-xs text-muted-foreground mt-1">Status: aktiv</p>
+              <p className="text-xs text-muted-foreground mt-1">{t('dashboard.statusActive')}</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Aktive Cases</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('dashboard.activeCases')}</CardTitle>
               <Briefcase className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -131,13 +135,13 @@ export default function AppDashboard() {
               ) : (
                 <div className="text-3xl font-bold">{activeCasesCount}</div>
               )}
-              <p className="text-xs text-muted-foreground mt-1">Status ≠ abgeschlossen</p>
+              <p className="text-xs text-muted-foreground mt-1">{t('dashboard.statusNotClosed')}</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Offene Tasks</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('dashboard.openTasks')}</CardTitle>
               <ClipboardList className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -146,7 +150,7 @@ export default function AppDashboard() {
               ) : (
                 <div className="text-3xl font-bold">{openTasksCount}</div>
               )}
-              <p className="text-xs text-muted-foreground mt-1">Status ≠ erledigt</p>
+              <p className="text-xs text-muted-foreground mt-1">{t('dashboard.statusNotDone')}</p>
             </CardContent>
           </Card>
         </div>
@@ -163,7 +167,7 @@ export default function AppDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ClipboardList className="h-5 w-5" />
-              Meine offenen Tasks
+              {t('dashboard.myOpenTasks')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -174,16 +178,16 @@ export default function AppDashboard() {
                 <Skeleton className="h-10 w-full" />
               </div>
             ) : openTasks?.length === 0 ? (
-              <p className="text-muted-foreground py-4">Keine offenen Tasks</p>
+              <p className="text-muted-foreground py-4">{t('dashboard.noOpenTasks')}</p>
             ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Titel</TableHead>
-                    <TableHead>Case / Client</TableHead>
-                    <TableHead>Priorität</TableHead>
-                    <TableHead>Fällig</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead>{t('table.title')}</TableHead>
+                    <TableHead>{t('task.caseClient')}</TableHead>
+                    <TableHead>{t('table.priority')}</TableHead>
+                    <TableHead>{t('table.due')}</TableHead>
+                    <TableHead>{t('table.status')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -198,12 +202,12 @@ export default function AppDashboard() {
                       </TableCell>
                       <TableCell>
                         <Badge variant={PRIORITY_VARIANTS[task.priority] || 'secondary'}>
-                          {PRIORITY_LABELS[task.priority] || task.priority}
+                          {getPriorityLabel(task.priority)}
                         </Badge>
                       </TableCell>
                       <TableCell>{formatDate(task.due_date)}</TableCell>
                       <TableCell>
-                        <Badge variant="outline">{STATUS_LABELS[task.status] || task.status}</Badge>
+                        <Badge variant="outline">{getStatusLabel(task.status, 'task')}</Badge>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -218,7 +222,7 @@ export default function AppDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Briefcase className="h-5 w-5" />
-              Aktive Cases
+              {t('dashboard.activeCasesList')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -229,16 +233,16 @@ export default function AppDashboard() {
                 <Skeleton className="h-10 w-full" />
               </div>
             ) : activeCases?.length === 0 ? (
-              <p className="text-muted-foreground py-4">Keine aktiven Cases</p>
+              <p className="text-muted-foreground py-4">{t('dashboard.noActiveCases')}</p>
             ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Titel</TableHead>
-                    <TableHead>Client</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Zugewiesen an</TableHead>
-                    <TableHead>Fällig</TableHead>
+                    <TableHead>{t('table.title')}</TableHead>
+                    <TableHead>{t('table.client')}</TableHead>
+                    <TableHead>{t('table.status')}</TableHead>
+                    <TableHead>{t('table.assignedTo')}</TableHead>
+                    <TableHead>{t('table.due')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -249,7 +253,7 @@ export default function AppDashboard() {
                         {c.client?.first_name} {c.client?.last_name}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{STATUS_LABELS[c.status] || c.status}</Badge>
+                        <Badge variant="outline">{getStatusLabel(c.status, 'case')}</Badge>
                       </TableCell>
                       <TableCell>{getProfileName(c.assigned_to)}</TableCell>
                       <TableCell>{formatDate(c.due_date)}</TableCell>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -17,6 +18,7 @@ import { UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
 
 export function CreateClientDialog() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
@@ -34,7 +36,7 @@ export function CreateClientDialog() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.first_name || !formData.last_name) {
-      toast.error('Vor- und Nachname sind Pflichtfelder');
+      toast.error(t('client.requiredFields'));
       return;
     }
 
@@ -46,11 +48,11 @@ export function CreateClientDialog() {
 
     setLoading(false);
     if (error) {
-      toast.error('Fehler beim Erstellen: ' + error.message);
+      toast.error(`${t('client.createError')}: ${error.message}`);
       return;
     }
 
-    toast.success('Client erfolgreich erstellt');
+    toast.success(t('client.createdSuccess'));
     queryClient.invalidateQueries({ queryKey: ['clients'] });
     setOpen(false);
     setFormData({ first_name: '', last_name: '', email: '', phone: '', address: '', notes: '' });
@@ -61,17 +63,17 @@ export function CreateClientDialog() {
       <DialogTrigger asChild>
         <Button variant="outline" className="gap-2">
           <UserPlus className="h-4 w-4" />
-          Neuer Client
+          {t('client.newClient')}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Neuen Client anlegen</DialogTitle>
+          <DialogTitle>{t('client.createClient')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="first_name">Vorname *</Label>
+              <Label htmlFor="first_name">{t('client.firstName')} *</Label>
               <Input
                 id="first_name"
                 value={formData.first_name}
@@ -80,7 +82,7 @@ export function CreateClientDialog() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="last_name">Nachname *</Label>
+              <Label htmlFor="last_name">{t('client.lastName')} *</Label>
               <Input
                 id="last_name"
                 value={formData.last_name}
@@ -90,7 +92,7 @@ export function CreateClientDialog() {
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">E-Mail</Label>
+            <Label htmlFor="email">{t('client.email')}</Label>
             <Input
               id="email"
               type="email"
@@ -99,7 +101,7 @@ export function CreateClientDialog() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="phone">Telefon</Label>
+            <Label htmlFor="phone">{t('client.phone')}</Label>
             <Input
               id="phone"
               value={formData.phone}
@@ -107,7 +109,7 @@ export function CreateClientDialog() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="address">Adresse</Label>
+            <Label htmlFor="address">{t('client.address')}</Label>
             <Input
               id="address"
               value={formData.address}
@@ -115,7 +117,7 @@ export function CreateClientDialog() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="notes">Notizen</Label>
+            <Label htmlFor="notes">{t('client.notes')}</Label>
             <Textarea
               id="notes"
               value={formData.notes}
@@ -125,10 +127,10 @@ export function CreateClientDialog() {
           </div>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
-              Abbrechen
+              {t('app.cancel')}
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? 'Erstellen...' : 'Client erstellen'}
+              {loading ? t('client.creating') : t('client.createClient')}
             </Button>
           </div>
         </form>

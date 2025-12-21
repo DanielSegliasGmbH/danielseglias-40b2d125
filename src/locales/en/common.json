@@ -1,0 +1,145 @@
+{
+  "app": {
+    "title": "Client Management",
+    "loading": "Loading...",
+    "error": "Error",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "search": "Search",
+    "noData": "No data available",
+    "required": "Required"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "signup": "Sign up",
+    "email": "Email",
+    "password": "Password",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "phone": "Phone",
+    "loginTitle": "Login",
+    "loginSubtitle": "Sign in with your account",
+    "signupTitle": "Sign up",
+    "signupSubtitle": "Internal accounts only. After registration, an admin must assign your role.",
+    "noAccount": "No account yet?",
+    "hasAccount": "Already have an account?",
+    "loginError": "Login failed",
+    "signupError": "Registration failed",
+    "signupSuccess": "Registration successful! Please wait for role assignment by an admin.",
+    "invalidCredentials": "Invalid credentials",
+    "accessDenied": "Access Denied",
+    "accessDeniedMessage": "You have no role assigned. Please contact an administrator.",
+    "backToLogin": "Back to login"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "staff": "Staff",
+    "client": "Client"
+  },
+  "dashboard": {
+    "welcome": "Welcome, {{name}}!",
+    "loggedInAs": "You are logged in as:",
+    "activeClients": "Active Clients",
+    "activeCases": "Active Cases",
+    "openTasks": "Open Tasks",
+    "statusActive": "Status: active",
+    "statusNotClosed": "Status ≠ closed",
+    "statusNotDone": "Status ≠ done",
+    "myOpenTasks": "My open tasks",
+    "noOpenTasks": "No open tasks",
+    "activeCasesList": "Active Cases",
+    "noActiveCases": "No active cases"
+  },
+  "client": {
+    "title": "Clients",
+    "newClient": "New Client",
+    "createClient": "Create Client",
+    "creating": "Creating...",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "notes": "Notes",
+    "status": "Status",
+    "createdSuccess": "Client created successfully",
+    "createError": "Error creating client",
+    "requiredFields": "First and last name are required",
+    "portal": {
+      "title": "Client Portal",
+      "welcome": "Welcome to the Client Portal",
+      "description": "Here you can view your cases and documents."
+    }
+  },
+  "case": {
+    "title": "Cases",
+    "newCase": "New Case",
+    "createCase": "Create Case",
+    "creating": "Creating...",
+    "caseTitle": "Title",
+    "description": "Description",
+    "status": "Status",
+    "dueDate": "Due date",
+    "assignedTo": "Assigned to",
+    "selectClient": "Select client",
+    "createdSuccess": "Case created successfully",
+    "createError": "Error creating case",
+    "requiredFields": "Client and title are required",
+    "statuses": {
+      "offen": "Open",
+      "in_bearbeitung": "In Progress",
+      "wartet_auf_kunde": "Waiting for Client",
+      "abgeschlossen": "Closed",
+      "pausiert": "Paused"
+    }
+  },
+  "task": {
+    "title": "Tasks",
+    "newTask": "New Task",
+    "createTask": "Create Task",
+    "creating": "Creating...",
+    "taskTitle": "Title",
+    "description": "Description",
+    "priority": "Priority",
+    "dueDate": "Due date",
+    "selectCase": "Select case",
+    "createdSuccess": "Task created successfully",
+    "createError": "Error creating task",
+    "requiredFields": "Case and title are required",
+    "caseClient": "Case / Client",
+    "statuses": {
+      "offen": "Open",
+      "in_arbeit": "In Progress",
+      "erledigt": "Done",
+      "blockiert": "Blocked"
+    },
+    "priorities": {
+      "niedrig": "Low",
+      "mittel": "Medium",
+      "hoch": "High",
+      "dringend": "Urgent"
+    }
+  },
+  "table": {
+    "title": "Title",
+    "client": "Client",
+    "status": "Status",
+    "priority": "Priority",
+    "due": "Due",
+    "assignedTo": "Assigned to"
+  },
+  "language": {
+    "de": "Deutsch",
+    "en": "English",
+    "fr": "Français",
+    "it": "Italiano",
+    "gsw": "Schweizerdeutsch"
+  }
+}

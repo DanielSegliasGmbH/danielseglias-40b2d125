@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -27,14 +28,10 @@ import type { Database } from '@/integrations/supabase/types';
 
 type TaskPriority = Database['public']['Enums']['task_priority'];
 
-const PRIORITIES: { value: TaskPriority; label: string }[] = [
-  { value: 'niedrig', label: 'Niedrig' },
-  { value: 'mittel', label: 'Mittel' },
-  { value: 'hoch', label: 'Hoch' },
-  { value: 'dringend', label: 'Dringend' },
-];
+const PRIORITY_KEYS: TaskPriority[] = ['niedrig', 'mittel', 'hoch', 'dringend'];
 
 export function CreateTaskDialog() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
@@ -52,7 +49,7 @@ export function CreateTaskDialog() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.case_id || !formData.title) {
-      toast.error('Case und Titel sind Pflichtfelder');
+      toast.error(t('task.requiredFields'));
       return;
     }
 
@@ -69,11 +66,11 @@ export function CreateTaskDialog() {
 
     setLoading(false);
     if (error) {
-      toast.error('Fehler beim Erstellen: ' + error.message);
+      toast.error(`${t('task.createError')}: ${error.message}`);
       return;
     }
 
-    toast.success('Task erfolgreich erstellt');
+    toast.success(t('task.createdSuccess'));
     queryClient.invalidateQueries({ queryKey: ['tasks'] });
     setOpen(false);
     setFormData({ case_id: '', title: '', description: '', priority: 'mittel', due_date: '' });
@@ -84,22 +81,22 @@ export function CreateTaskDialog() {
       <DialogTrigger asChild>
         <Button variant="outline" className="gap-2">
           <ClipboardList className="h-4 w-4" />
-          Neue Task
+          {t('task.newTask')}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Neue Task erstellen</DialogTitle>
+          <DialogTitle>{t('task.createTask')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="case_id">Case *</Label>
+            <Label htmlFor="case_id">{t('case.title')} *</Label>
             <Select
               value={formData.case_id}
               onValueChange={(value) => setFormData({ ...formData, case_id: value })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Case auswählen" />
+                <SelectValue placeholder={t('task.selectCase')} />
               </SelectTrigger>
               <SelectContent>
                 {cases?.map((c) => (
@@ -111,7 +108,7 @@ export function CreateTaskDialog() {
             </Select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="title">Titel *</Label>
+            <Label htmlFor="title">{t('task.taskTitle')} *</Label>
             <Input
               id="title"
               value={formData.title}
@@ -120,7 +117,7 @@ export function CreateTaskDialog() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="description">Beschreibung</Label>
+            <Label htmlFor="description">{t('task.description')}</Label>
             <Textarea
               id="description"
               value={formData.description}
@@ -130,7 +127,7 @@ export function CreateTaskDialog() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="priority">Priorität</Label>
+              <Label htmlFor="priority">{t('task.priority')}</Label>
               <Select
                 value={formData.priority}
                 onValueChange={(value) => setFormData({ ...formData, priority: value as TaskPriority })}
@@ -139,16 +136,16 @@ export function CreateTaskDialog() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {PRIORITIES.map((p) => (
-                    <SelectItem key={p.value} value={p.value}>
-                      {p.label}
+                  {PRIORITY_KEYS.map((p) => (
+                    <SelectItem key={p} value={p}>
+                      {t(`task.priorities.${p}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="due_date">Fälligkeitsdatum</Label>
+              <Label htmlFor="due_date">{t('task.dueDate')}</Label>
               <Input
                 id="due_date"
                 type="date"
@@ -159,10 +156,10 @@ export function CreateTaskDialog() {
           </div>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
-              Abbrechen
+              {t('app.cancel')}
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? 'Erstellen...' : 'Task erstellen'}
+              {loading ? t('task.creating') : t('task.createTask')}
             </Button>
           </div>
         </form>

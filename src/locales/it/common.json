@@ -1,0 +1,145 @@
+{
+  "app": {
+    "title": "Gestione clienti",
+    "loading": "Caricamento...",
+    "error": "Errore",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "create": "Crea",
+    "close": "Chiudi",
+    "yes": "Sì",
+    "no": "No",
+    "search": "Cerca",
+    "noData": "Nessun dato disponibile",
+    "required": "Obbligatorio"
+  },
+  "auth": {
+    "login": "Accedi",
+    "logout": "Esci",
+    "signup": "Registrati",
+    "email": "E-mail",
+    "password": "Password",
+    "firstName": "Nome",
+    "lastName": "Cognome",
+    "phone": "Telefono",
+    "loginTitle": "Accedi",
+    "loginSubtitle": "Accedi con il tuo account",
+    "signupTitle": "Registrati",
+    "signupSubtitle": "Solo account interni. Dopo la registrazione, un amministratore deve assegnare il tuo ruolo.",
+    "noAccount": "Non hai ancora un account?",
+    "hasAccount": "Hai già un account?",
+    "loginError": "Accesso fallito",
+    "signupError": "Registrazione fallita",
+    "signupSuccess": "Registrazione riuscita! Attendi l'assegnazione del ruolo da parte di un amministratore.",
+    "invalidCredentials": "Credenziali non valide",
+    "accessDenied": "Accesso negato",
+    "accessDeniedMessage": "Non hai un ruolo assegnato. Contatta un amministratore.",
+    "backToLogin": "Torna al login"
+  },
+  "roles": {
+    "admin": "Amministratore",
+    "staff": "Collaboratore",
+    "client": "Cliente"
+  },
+  "dashboard": {
+    "welcome": "Benvenuto, {{name}}!",
+    "loggedInAs": "Sei connesso come:",
+    "activeClients": "Clienti attivi",
+    "activeCases": "Casi attivi",
+    "openTasks": "Attività aperte",
+    "statusActive": "Stato: attivo",
+    "statusNotClosed": "Stato ≠ chiuso",
+    "statusNotDone": "Stato ≠ completato",
+    "myOpenTasks": "Le mie attività aperte",
+    "noOpenTasks": "Nessuna attività aperta",
+    "activeCasesList": "Casi attivi",
+    "noActiveCases": "Nessun caso attivo"
+  },
+  "client": {
+    "title": "Clienti",
+    "newClient": "Nuovo cliente",
+    "createClient": "Crea cliente",
+    "creating": "Creazione...",
+    "firstName": "Nome",
+    "lastName": "Cognome",
+    "email": "E-mail",
+    "phone": "Telefono",
+    "address": "Indirizzo",
+    "notes": "Note",
+    "status": "Stato",
+    "createdSuccess": "Cliente creato con successo",
+    "createError": "Errore durante la creazione",
+    "requiredFields": "Nome e cognome sono obbligatori",
+    "portal": {
+      "title": "Portale clienti",
+      "welcome": "Benvenuto nel portale clienti",
+      "description": "Qui puoi visualizzare i tuoi casi e documenti."
+    }
+  },
+  "case": {
+    "title": "Casi",
+    "newCase": "Nuovo caso",
+    "createCase": "Crea caso",
+    "creating": "Creazione...",
+    "caseTitle": "Titolo",
+    "description": "Descrizione",
+    "status": "Stato",
+    "dueDate": "Data di scadenza",
+    "assignedTo": "Assegnato a",
+    "selectClient": "Seleziona cliente",
+    "createdSuccess": "Caso creato con successo",
+    "createError": "Errore durante la creazione",
+    "requiredFields": "Cliente e titolo sono obbligatori",
+    "statuses": {
+      "offen": "Aperto",
+      "in_bearbeitung": "In lavorazione",
+      "wartet_auf_kunde": "In attesa del cliente",
+      "abgeschlossen": "Chiuso",
+      "pausiert": "In pausa"
+    }
+  },
+  "task": {
+    "title": "Attività",
+    "newTask": "Nuova attività",
+    "createTask": "Crea attività",
+    "creating": "Creazione...",
+    "taskTitle": "Titolo",
+    "description": "Descrizione",
+    "priority": "Priorità",
+    "dueDate": "Data di scadenza",
+    "selectCase": "Seleziona caso",
+    "createdSuccess": "Attività creata con successo",
+    "createError": "Errore durante la creazione",
+    "requiredFields": "Caso e titolo sono obbligatori",
+    "caseClient": "Caso / Cliente",
+    "statuses": {
+      "offen": "Aperto",
+      "in_arbeit": "In corso",
+      "erledigt": "Completato",
+      "blockiert": "Bloccato"
+    },
+    "priorities": {
+      "niedrig": "Bassa",
+      "mittel": "Media",
+      "hoch": "Alta",
+      "dringend": "Urgente"
+    }
+  },
+  "table": {
+    "title": "Titolo",
+    "client": "Cliente",
+    "status": "Stato",
+    "priority": "Priorità",
+    "due": "Scadenza",
+    "assignedTo": "Assegnato a"
+  },
+  "language": {
+    "de": "Deutsch",
+    "en": "English",
+    "fr": "Français",
+    "it": "Italiano",
+    "gsw": "Schweizerdeutsch"
+  }
+}
