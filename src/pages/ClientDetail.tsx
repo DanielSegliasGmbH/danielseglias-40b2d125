@@ -1,4 +1,16 @@
-import { useState, useMemo } from 'react';
+/**
+ * CLIENT DETAIL PAGE
+ * 
+ * Hooks für Daten:
+ * - useClient(clientId) -> Client-Stammdaten
+ * - useClientCases(clientId) -> Cases dieses Clients
+ * - useClientOpenTasks(clientId) -> Offene Tasks (über Cases)
+ * - useClientMeetings(clientId) -> Meetings (über Cases)
+ * - useClientNotes(clientId) -> Notizen (über Cases)
+ * 
+ * Task-Erstellung: useCreateTaskForClient Hook
+ */
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -13,6 +25,7 @@ import {
   useCreateCaseForClient,
   useCreateMeeting,
   useUpdateClient,
+  useCreateTaskForClient,
 } from '@/hooks/useClientData';
 import { useProfiles } from '@/hooks/useDashboardData';
 import { Button } from '@/components/ui/button';
@@ -67,10 +80,12 @@ import type { Database } from '@/integrations/supabase/types';
 
 type MeetingType = Database['public']['Enums']['meeting_type'];
 type ClientStatus = Database['public']['Enums']['client_status'];
+type TaskPriority = Database['public']['Enums']['task_priority'];
 
 const DATE_LOCALES: Record<string, Locale> = { de, en: enUS, fr, it, gsw: de };
 const MEETING_TYPES: MeetingType[] = ['erstberatung', 'folgeberatung', 'check_in', 'telefonat', 'video_call'];
 const CLIENT_STATUSES: ClientStatus[] = ['aktiv', 'pausiert', 'archiviert'];
+const TASK_PRIORITIES: TaskPriority[] = ['niedrig', 'mittel', 'hoch', 'dringend'];
 
 export default function ClientDetail() {
   const { t, i18n } = useTranslation();
@@ -91,16 +106,26 @@ export default function ClientDetail() {
   const createCase = useCreateCaseForClient();
   const createMeeting = useCreateMeeting();
   const updateClient = useUpdateClient();
+  const createTask = useCreateTaskForClient();
 
   const [newNote, setNewNote] = useState('');
   const [selectedCaseForNote, setSelectedCaseForNote] = useState('');
   const [editOpen, setEditOpen] = useState(false);
   const [caseOpen, setCaseOpen] = useState(false);
   const [meetingOpen, setMeetingOpen] = useState(false);
+  const [taskOpen, setTaskOpen] = useState(false);
   const [caseSearch, setCaseSearch] = useState('');
   const [editForm, setEditForm] = useState({ first_name: '', last_name: '', email: '', phone: '', address: '', status: 'aktiv' as ClientStatus });
   const [caseForm, setCaseForm] = useState({ title: '', description: '', due_date: '' });
   const [meetingForm, setMeetingForm] = useState({ case_id: '', scheduled_at: '', meeting_type: 'folgeberatung' as MeetingType, duration_minutes: 60, location: '' });
+  const [taskForm, setTaskForm] = useState({ case_id: '', title: '', description: '', priority: 'mittel' as TaskPriority, due_date: '' });
+
+  // Auto-select case wenn nur ein Case existiert
+  useEffect(() => {
+    if (cases && cases.length === 1 && !taskForm.case_id) {
+      setTaskForm(prev => ({ ...prev, case_id: cases[0].id }));
+    }
+  }, [cases, taskForm.case_id]);
 
   const filteredCases = useMemo(() => {
     if (!cases) return [];
@@ -217,6 +242,24 @@ export default function ClientDetail() {
       setMeetingForm({ case_id: '', scheduled_at: '', meeting_type: 'folgeberatung', duration_minutes: 60, location: '' });
     } catch {
       toast.error(t('meeting.createError'));
+    }
+  };
+
+  const handleCreateTask = async () => {
+    if (!taskForm.case_id || !taskForm.title.trim()) return;
+    try {
+      await createTask.mutateAsync({
+        case_id: taskForm.case_id,
+        title: taskForm.title,
+        description: taskForm.description || undefined,
+        priority: taskForm.priority,
+        due_date: taskForm.due_date || undefined,
+      });
+      toast.success(t('task.createdSuccess'));
+      setTaskOpen(false);
+      setTaskForm({ case_id: cases?.length === 1 ? cases[0].id : '', title: '', description: '', priority: 'mittel', due_date: '' });
+    } catch {
+      toast.error(t('task.createError'));
     }
   };
 
@@ -368,15 +411,68 @@ export default function ClientDetail() {
 
           {/* Open Tasks */}
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <ClipboardList className="h-5 w-5" />
                 {t('task.openTasks')}
               </CardTitle>
+              {cases && cases.length > 0 ? (
+                <Dialog open={taskOpen} onOpenChange={setTaskOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="sm"><Plus className="h-4 w-4 mr-1" />{t('task.newTask')}</Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader><DialogTitle>{t('task.createTask')}</DialogTitle></DialogHeader>
+                    <div className="space-y-4">
+                      {cases.length > 1 && (
+                        <div>
+                          <Label>{t('task.selectCase')} *</Label>
+                          <Select value={taskForm.case_id} onValueChange={(v) => setTaskForm({ ...taskForm, case_id: v })}>
+                            <SelectTrigger><SelectValue placeholder={t('task.selectCase')} /></SelectTrigger>
+                            <SelectContent>
+                              {cases.map((c) => <SelectItem key={c.id} value={c.id}>{c.title}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                      {cases.length === 1 && (
+                        <p className="text-sm text-muted-foreground">Case: <strong>{cases[0].title}</strong></p>
+                      )}
+                      <div><Label>{t('task.taskTitle')} *</Label><Input value={taskForm.title} onChange={(e) => setTaskForm({ ...taskForm, title: e.target.value })} /></div>
+                      <div><Label>{t('task.description')}</Label><Textarea value={taskForm.description} onChange={(e) => setTaskForm({ ...taskForm, description: e.target.value })} rows={2} /></div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>{t('task.priority')}</Label>
+                          <Select value={taskForm.priority} onValueChange={(v) => setTaskForm({ ...taskForm, priority: v as TaskPriority })}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              {TASK_PRIORITIES.map((p) => <SelectItem key={p} value={p}>{t(`task.priorities.${p}`)}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div><Label>{t('task.dueDate')}</Label><Input type="date" value={taskForm.due_date} onChange={(e) => setTaskForm({ ...taskForm, due_date: e.target.value })} /></div>
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        <Button variant="ghost" onClick={() => setTaskOpen(false)}>{t('app.cancel')}</Button>
+                        <Button onClick={handleCreateTask} disabled={!taskForm.title.trim() || !taskForm.case_id}>{t('task.createTask')}</Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              ) : (
+                <Link to={`#`} onClick={(e) => { e.preventDefault(); setCaseOpen(true); }}>
+                  <Button size="sm" variant="outline">{t('case.createCase')}</Button>
+                </Link>
+              )}
             </CardHeader>
             <CardContent>
               {loadingTasks ? <Skeleton className="h-20 w-full" /> : openTasks?.length === 0 ? (
-                <p className="text-muted-foreground">{t('task.noTasks')}</p>
+                <p className="text-muted-foreground">
+                  {cases && cases.length === 0 
+                    ? t('case.noCases') 
+                    : t('task.noTasks')
+                  }
+                </p>
               ) : (
                 <div className="space-y-2">
                   {openTasks?.slice(0, 10).map((task) => (
