@@ -247,3 +247,40 @@ export function useCreateCaseForClient() {
     },
   });
 }
+
+export function useDeleteClient() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (clientId: string) => {
+      const { error } = await supabase
+        .from('clients')
+        .delete()
+        .eq('id', clientId);
+      if (error) throw error;
+      return { success: true };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['clients'] });
+    },
+  });
+}
+
+export function useDeleteMeeting() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (meetingId: string) => {
+      const { error } = await supabase
+        .from('meetings')
+        .delete()
+        .eq('id', meetingId);
+      if (error) throw error;
+      return { success: true };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['client'] });
+      queryClient.invalidateQueries({ queryKey: ['meetings'] });
+    },
+  });
+}

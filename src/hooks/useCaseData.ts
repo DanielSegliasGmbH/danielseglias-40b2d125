@@ -214,3 +214,21 @@ export function useCreateNoteForCase() {
     },
   });
 }
+
+export function useDeleteCase() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (caseId: string) => {
+      const { error } = await supabase
+        .from('cases')
+        .delete()
+        .eq('id', caseId);
+      if (error) throw error;
+      return { success: true };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cases'] });
+      queryClient.invalidateQueries({ queryKey: ['client'] });
+    },
+  });
+}
