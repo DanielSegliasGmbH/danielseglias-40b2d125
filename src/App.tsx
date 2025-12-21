@@ -12,6 +12,7 @@ import ClientDashboard from "./pages/ClientDashboard";
 import UserManagement from "./pages/UserManagement";
 import ClientList from "./pages/ClientList";
 import ClientDetail from "./pages/ClientDetail";
+import CaseList from "./pages/CaseList";
 import CaseDetail from "./pages/CaseDetail";
 import NotFound from "./pages/NotFound";
 
@@ -65,6 +66,16 @@ const App = () => (
               element={
                 <RouteGuard allowedRoles={['admin', 'staff']}>
                   <ClientDetail />
+                </RouteGuard>
+              }
+            />
+
+            {/* Protected: Case List */}
+            <Route
+              path="/app/cases"
+              element={
+                <RouteGuard allowedRoles={['admin', 'staff']}>
+                  <CaseList />
                 </RouteGuard>
               }
             />
