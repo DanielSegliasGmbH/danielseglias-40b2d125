@@ -158,6 +158,12 @@ export default function AppDashboard() {
 
         {/* Quick Actions */}
         <div className="flex flex-wrap gap-3 mb-8">
+          <Link to="/app/clients">
+            <Button variant="outline" className="gap-2">
+              <Users className="h-4 w-4" />
+              {t('client.list')}
+            </Button>
+          </Link>
           <CreateClientDialog />
           <CreateCaseDialog />
           <CreateTaskDialog />

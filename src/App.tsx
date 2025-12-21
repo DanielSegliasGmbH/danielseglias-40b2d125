@@ -10,6 +10,8 @@ import Signup from "./pages/Signup";
 import AppDashboard from "./pages/AppDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
 import UserManagement from "./pages/UserManagement";
+import ClientList from "./pages/ClientList";
+import ClientDetail from "./pages/ClientDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +44,26 @@ const App = () => (
               element={
                 <RouteGuard allowedRoles={['admin']}>
                   <UserManagement />
+                </RouteGuard>
+              }
+            />
+
+            {/* Protected: Client List */}
+            <Route
+              path="/app/clients"
+              element={
+                <RouteGuard allowedRoles={['admin', 'staff']}>
+                  <ClientList />
+                </RouteGuard>
+              }
+            />
+
+            {/* Protected: Client Detail */}
+            <Route
+              path="/app/clients/:id"
+              element={
+                <RouteGuard allowedRoles={['admin', 'staff']}>
+                  <ClientDetail />
                 </RouteGuard>
               }
             />
