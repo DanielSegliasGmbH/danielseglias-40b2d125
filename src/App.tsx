@@ -12,6 +12,7 @@ import ClientDashboard from "./pages/ClientDashboard";
 import UserManagement from "./pages/UserManagement";
 import ClientList from "./pages/ClientList";
 import ClientDetail from "./pages/ClientDetail";
+import CustomerDetail from "./pages/CustomerDetail";
 import CaseList from "./pages/CaseList";
 import CaseDetail from "./pages/CaseDetail";
 import TaskList from "./pages/TaskList";
@@ -106,6 +107,16 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['admin', 'staff']}>
                     <ClientDetail />
+                  </RouteGuard>
+                }
+              />
+
+              {/* Protected: Customer Detail (new structure) */}
+              <Route
+                path="/app/customers/:id"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <CustomerDetail />
                   </RouteGuard>
                 }
               />
