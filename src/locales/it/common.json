@@ -150,8 +150,8 @@
     "searchPlaceholder": "Cerca casi...",
     "of": "di",
     "loadMore": "Carica altri",
-    "loading": "Caricamento...",
-    "noMoreCases": "Nessun altro caso",
+    "loadingMore": "Caricamento...",
+    "noMore": "Nessun altro caso",
     "notFound": "Caso non trovato",
     "sortBy": "Ordina per",
     "sortOptions": {

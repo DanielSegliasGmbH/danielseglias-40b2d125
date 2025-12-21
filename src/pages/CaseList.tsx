@@ -267,7 +267,7 @@ export default function CaseList() {
                       {isFetchingNextPage ? (
                         <>
                           <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          {t('case.loading')}
+                          {t('case.loadingMore')}
                         </>
                       ) : (
                         t('case.loadMore')
@@ -275,7 +275,7 @@ export default function CaseList() {
                     </Button>
                   ) : allCases.length > 0 && (
                     <p className="text-sm text-muted-foreground">
-                      {t('case.noMoreCases')}
+                      {t('case.noMore')}
                     </p>
                   )}
                 </div>

@@ -60,9 +60,9 @@ interface InfiniteCasesPage {
   pageParam: number;
 }
 
-export function useInfiniteCases() {
+export function useInfiniteCases(sortMode?: string) {
   return useInfiniteQuery<InfiniteCasesPage, Error>({
-    queryKey: ['cases', 'infinite'],
+    queryKey: ['cases', 'infinite', sortMode],
     queryFn: async ({ pageParam = 0 }) => {
       const from = (pageParam as number) * CASES_PAGE_SIZE;
       const to = from + CASES_PAGE_SIZE - 1;

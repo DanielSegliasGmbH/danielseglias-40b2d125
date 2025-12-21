@@ -150,8 +150,8 @@
     "searchPlaceholder": "Cases suchen...",
     "of": "von",
     "loadMore": "Mehr laden",
-    "loading": "Lädt...",
-    "noMoreCases": "Keine weiteren Cases",
+    "loadingMore": "Lädt...",
+    "noMore": "Keine weiteren Cases",
     "notFound": "Case nicht gefunden",
     "sortBy": "Sortieren nach",
     "sortOptions": {

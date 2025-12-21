@@ -150,8 +150,8 @@
     "searchPlaceholder": "Cases sueche...",
     "of": "vo",
     "loadMore": "Meh lade",
-    "loading": "Am Lade...",
-    "noMoreCases": "Kei witere Cases",
+    "loadingMore": "Am Lade...",
+    "noMore": "Kei witere Cases",
     "notFound": "Case nöd gfunde",
     "sortBy": "Sortiere nach",
     "sortOptions": {
