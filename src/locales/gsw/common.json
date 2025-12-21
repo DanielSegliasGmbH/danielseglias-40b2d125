@@ -149,6 +149,9 @@
     "noCasesFound": "Kei passendi Cases gfunde",
     "searchPlaceholder": "Cases sueche...",
     "of": "vo",
+    "loadMore": "Meh lade",
+    "loading": "Am Lade...",
+    "noMoreCases": "Kei witere Cases",
     "notFound": "Case nöd gfunde",
     "sortBy": "Sortiere nach",
     "sortOptions": {

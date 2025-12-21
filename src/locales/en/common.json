@@ -149,6 +149,9 @@
     "noCasesFound": "No matching cases found",
     "searchPlaceholder": "Search cases...",
     "of": "of",
+    "loadMore": "Load more",
+    "loading": "Loading...",
+    "noMoreCases": "No more cases",
     "notFound": "Case not found",
     "sortBy": "Sort by",
     "sortOptions": {
