@@ -92,6 +92,7 @@
   },
   "client": {
     "title": "Kunden",
+    "singular": "Kunde",
     "list": "Kunden",
     "detail": "Kunden-Details",
     "newClient": "Neuer Kunde",
@@ -141,6 +142,7 @@
   },
   "case": {
     "title": "Projekte",
+    "singular": "Projekt",
     "list": "Projekte",
     "detail": "Projekt-Details",
     "newCase": "Neues Projekt",
@@ -190,6 +192,7 @@
   },
   "task": {
     "title": "Aufgaben",
+    "singular": "Aufgabe",
     "list": "Aufgaben",
     "all": "Alle",
     "openTasks": "Offene Aufgaben",
@@ -304,6 +307,11 @@
     "newest": "Neueste zuerst",
     "status": "Nach Status",
     "dueSoon": "Bald fällig"
+  },
+  "search": {
+    "placeholder": "Suchen...",
+    "loading": "Suche...",
+    "noResults": "Keine Ergebnisse gefunden"
   },
   "systemMap": {
     "title": "System Map",
