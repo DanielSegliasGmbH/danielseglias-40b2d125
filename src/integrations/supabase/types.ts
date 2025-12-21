@@ -307,6 +307,8 @@ export type Database = {
       system_map_edges: {
         Row: {
           created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
           is_active: boolean
           relation: string
@@ -316,6 +318,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           is_active?: boolean
           relation: string
@@ -325,6 +329,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           is_active?: boolean
           relation?: string
@@ -353,6 +359,8 @@ export type Database = {
         Row: {
           category: string
           created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
           description: string | null
           id: string
           importance: string
@@ -367,6 +375,8 @@ export type Database = {
         Insert: {
           category: string
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           id?: string
           importance?: string
@@ -381,6 +391,8 @@ export type Database = {
         Update: {
           category?: string
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           id?: string
           importance?: string
@@ -487,6 +499,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_deleted_items: { Args: never; Returns: number }
       get_client_id_for_user: { Args: { _user_id: string }; Returns: string }
       has_any_role: { Args: { _user_id: string }; Returns: boolean }
       has_role: {

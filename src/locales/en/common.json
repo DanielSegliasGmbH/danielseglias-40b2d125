@@ -399,5 +399,33 @@
         "4": "Expert Modules"
       }
     }
+  },
+  "trash": {
+    "title": "Trash",
+    "subtitle": "{{count}} deleted items",
+    "nodes": "Nodes",
+    "edges": "Connections",
+    "deletedNodes": "Deleted Nodes",
+    "deletedEdges": "Deleted Connections",
+    "noDeletedNodes": "No deleted nodes",
+    "noDeletedEdges": "No deleted connections",
+    "label": "Name",
+    "key": "Key",
+    "category": "Category",
+    "connection": "Connection",
+    "relation": "Relation",
+    "deletedAt": "Deleted at",
+    "restore": "Restore",
+    "restored": "Successfully restored",
+    "restoreError": "Error restoring",
+    "deletePermanently": "Delete permanently",
+    "permanentlyDeleted": "Permanently deleted",
+    "deleteError": "Error deleting",
+    "confirmPermanentDelete": "Delete permanently?",
+    "confirmPermanentDeleteMessage": "This action cannot be undone. The item will be permanently removed.",
+    "retentionInfo": "Items are automatically deleted after 30 days",
+    "cleanupNow": "Cleanup now",
+    "cleanupSuccess": "{{count}} old items removed",
+    "cleanupError": "Error during cleanup"
   }
 }
