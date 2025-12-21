@@ -200,6 +200,7 @@
     "requiredFields": "Case and title are required",
     "caseClient": "Case / Client",
     "noTasks": "No tasks found",
+    "loadError": "Error loading tasks",
     "markDone": "Mark as done",
     "markedDone": "Task marked as done",
     "statusChanged": "Task status changed",

@@ -200,6 +200,7 @@
     "requiredFields": "Le dossier et le titre sont obligatoires",
     "caseClient": "Dossier / Client",
     "noTasks": "Aucune tâche trouvée",
+    "loadError": "Erreur lors du chargement des tâches",
     "markDone": "Marquer comme terminé",
     "markedDone": "Tâche marquée comme terminée",
     "statusChanged": "Statut de la tâche modifié",

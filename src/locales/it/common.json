@@ -200,6 +200,7 @@
     "requiredFields": "Caso e titolo sono obbligatori",
     "caseClient": "Caso / Cliente",
     "noTasks": "Nessuna attività trovata",
+    "loadError": "Errore durante il caricamento delle attività",
     "markDone": "Segna come completato",
     "markedDone": "Attività segnata come completata",
     "statusChanged": "Stato attività modificato",

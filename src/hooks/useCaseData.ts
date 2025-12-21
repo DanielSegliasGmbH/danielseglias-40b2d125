@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { toast } from 'sonner';
 import type { Database } from '@/integrations/supabase/types';
 
 type CaseStatus = Database['public']['Enums']['case_status'];
@@ -19,8 +20,11 @@ export function useCase(caseId: string) {
           client:clients!fk_cases_client_id(id, first_name, last_name, email, phone)
         `)
         .eq('id', caseId)
-        .single();
-      if (error) throw error;
+        .maybeSingle();
+      if (error) {
+        toast.error(`Fehler beim Laden des Cases: ${error.message}`);
+        throw error;
+      }
       return data;
     },
     enabled: !!caseId,
@@ -43,10 +47,14 @@ export function useCaseTasks(caseId: string, statusFilter?: TaskStatus | 'all') 
       }
       
       const { data, error } = await query;
-      if (error) throw error;
-      return data;
+      if (error) {
+        toast.error(`Fehler beim Laden der Tasks: ${error.message}`);
+        throw error;
+      }
+      return data ?? [];
     },
     enabled: !!caseId,
+    staleTime: 30000,
   });
 }
 
