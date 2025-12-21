@@ -1,6 +1,8 @@
 import { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 interface RouteGuardProps {
   children: ReactNode;
@@ -8,6 +10,7 @@ interface RouteGuardProps {
 }
 
 export function RouteGuard({ children, allowedRoles }: RouteGuardProps) {
+  const { t } = useTranslation();
   const { user, role, loading } = useAuth();
   const location = useLocation();
 
@@ -19,35 +22,33 @@ export function RouteGuard({ children, allowedRoles }: RouteGuardProps) {
     );
   }
 
-  // Not authenticated -> redirect to login
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // No role assigned -> show access denied
   if (!role) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="absolute top-4 right-4">
+          <LanguageSwitcher />
+        </div>
         <div className="text-center p-8 max-w-md">
-          <h1 className="text-2xl font-bold text-foreground mb-4">Kein Zugriff</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-4">{t('auth.accessDenied')}</h1>
           <p className="text-muted-foreground mb-4">
-            Ihrem Account wurde noch keine Rolle zugewiesen. 
-            Bitte kontaktieren Sie einen Administrator.
+            {t('auth.accessDeniedMessage')}
           </p>
           <button
             onClick={() => window.location.href = '/login'}
             className="text-primary hover:underline"
           >
-            Zurück zum Login
+            {t('auth.backToLogin')}
           </button>
         </div>
       </div>
     );
   }
 
-  // Check if user has allowed role
   if (allowedRoles && !allowedRoles.includes(role)) {
-    // Redirect to appropriate area based on role
     if (role === 'client') {
       return <Navigate to="/client" replace />;
     }

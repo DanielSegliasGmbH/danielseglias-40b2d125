@@ -1,25 +1,28 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { z } from 'zod';
 
-const loginSchema = z.object({
-  email: z.string().email('Ungültige E-Mail-Adresse'),
-  password: z.string().min(6, 'Passwort muss mindestens 6 Zeichen haben'),
-});
-
 export default function Login() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { signIn, user, role, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const loginSchema = z.object({
+    email: z.string().email(t('auth.invalidCredentials')),
+    password: z.string().min(6, t('auth.invalidCredentials')),
+  });
 
   useEffect(() => {
     if (!loading && user && role) {
@@ -38,7 +41,7 @@ export default function Login() {
     if (!validation.success) {
       toast({
         variant: 'destructive',
-        title: 'Validierungsfehler',
+        title: t('app.error'),
         description: validation.error.errors[0].message,
       });
       return;
@@ -49,16 +52,10 @@ export default function Login() {
     setIsLoading(false);
 
     if (error) {
-      let errorMessage = 'Ein Fehler ist aufgetreten.';
-      if (error.message.includes('Invalid login credentials')) {
-        errorMessage = 'Ungültige E-Mail oder Passwort.';
-      } else if (error.message.includes('Email not confirmed')) {
-        errorMessage = 'Bitte bestätigen Sie Ihre E-Mail-Adresse.';
-      }
       toast({
         variant: 'destructive',
-        title: 'Login fehlgeschlagen',
-        description: errorMessage,
+        title: t('auth.loginError'),
+        description: t('auth.invalidCredentials'),
       });
     }
   };
@@ -72,22 +69,25 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4 relative">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Anmelden</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">{t('auth.loginTitle')}</CardTitle>
           <CardDescription className="text-center">
-            Melden Sie sich mit Ihren Zugangsdaten an
+            {t('auth.loginSubtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">E-Mail</Label>
+              <Label htmlFor="email">{t('auth.email')}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="name@beispiel.de"
+                placeholder="name@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -95,7 +95,7 @@ export default function Login() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Passwort</Label>
+              <Label htmlFor="password">{t('auth.password')}</Label>
               <Input
                 id="password"
                 type="password"
@@ -106,12 +106,13 @@ export default function Login() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Anmelden...' : 'Anmelden'}
+              {isLoading ? `${t('auth.login')}...` : t('auth.login')}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm text-muted-foreground">
+            <span>{t('auth.noAccount')} </span>
             <Link to="/signup" className="text-primary hover:underline">
-              Interner Account? Zur Registrierung
+              {t('auth.signup')}
             </Link>
           </div>
         </CardContent>

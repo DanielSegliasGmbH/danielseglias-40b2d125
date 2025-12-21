@@ -1,0 +1,145 @@
+{
+  "app": {
+    "title": "Gestion des clients",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "create": "Créer",
+    "close": "Fermer",
+    "yes": "Oui",
+    "no": "Non",
+    "search": "Rechercher",
+    "noData": "Aucune donnée disponible",
+    "required": "Obligatoire"
+  },
+  "auth": {
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "signup": "Inscription",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "phone": "Téléphone",
+    "loginTitle": "Connexion",
+    "loginSubtitle": "Connectez-vous avec votre compte",
+    "signupTitle": "Inscription",
+    "signupSubtitle": "Comptes internes uniquement. Après l'inscription, un administrateur doit attribuer votre rôle.",
+    "noAccount": "Pas encore de compte?",
+    "hasAccount": "Déjà un compte?",
+    "loginError": "Échec de la connexion",
+    "signupError": "Échec de l'inscription",
+    "signupSuccess": "Inscription réussie! Veuillez attendre l'attribution du rôle par un administrateur.",
+    "invalidCredentials": "Identifiants invalides",
+    "accessDenied": "Accès refusé",
+    "accessDeniedMessage": "Vous n'avez pas de rôle attribué. Veuillez contacter un administrateur.",
+    "backToLogin": "Retour à la connexion"
+  },
+  "roles": {
+    "admin": "Administrateur",
+    "staff": "Collaborateur",
+    "client": "Client"
+  },
+  "dashboard": {
+    "welcome": "Bienvenue, {{name}}!",
+    "loggedInAs": "Vous êtes connecté en tant que:",
+    "activeClients": "Clients actifs",
+    "activeCases": "Dossiers actifs",
+    "openTasks": "Tâches ouvertes",
+    "statusActive": "Statut: actif",
+    "statusNotClosed": "Statut ≠ clôturé",
+    "statusNotDone": "Statut ≠ terminé",
+    "myOpenTasks": "Mes tâches ouvertes",
+    "noOpenTasks": "Aucune tâche ouverte",
+    "activeCasesList": "Dossiers actifs",
+    "noActiveCases": "Aucun dossier actif"
+  },
+  "client": {
+    "title": "Clients",
+    "newClient": "Nouveau client",
+    "createClient": "Créer un client",
+    "creating": "Création...",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "E-mail",
+    "phone": "Téléphone",
+    "address": "Adresse",
+    "notes": "Notes",
+    "status": "Statut",
+    "createdSuccess": "Client créé avec succès",
+    "createError": "Erreur lors de la création",
+    "requiredFields": "Le prénom et le nom sont obligatoires",
+    "portal": {
+      "title": "Portail client",
+      "welcome": "Bienvenue sur le portail client",
+      "description": "Ici, vous pouvez consulter vos dossiers et documents."
+    }
+  },
+  "case": {
+    "title": "Dossiers",
+    "newCase": "Nouveau dossier",
+    "createCase": "Créer un dossier",
+    "creating": "Création...",
+    "caseTitle": "Titre",
+    "description": "Description",
+    "status": "Statut",
+    "dueDate": "Date d'échéance",
+    "assignedTo": "Assigné à",
+    "selectClient": "Sélectionner un client",
+    "createdSuccess": "Dossier créé avec succès",
+    "createError": "Erreur lors de la création",
+    "requiredFields": "Le client et le titre sont obligatoires",
+    "statuses": {
+      "offen": "Ouvert",
+      "in_bearbeitung": "En cours",
+      "wartet_auf_kunde": "En attente du client",
+      "abgeschlossen": "Clôturé",
+      "pausiert": "En pause"
+    }
+  },
+  "task": {
+    "title": "Tâches",
+    "newTask": "Nouvelle tâche",
+    "createTask": "Créer une tâche",
+    "creating": "Création...",
+    "taskTitle": "Titre",
+    "description": "Description",
+    "priority": "Priorité",
+    "dueDate": "Date d'échéance",
+    "selectCase": "Sélectionner un dossier",
+    "createdSuccess": "Tâche créée avec succès",
+    "createError": "Erreur lors de la création",
+    "requiredFields": "Le dossier et le titre sont obligatoires",
+    "caseClient": "Dossier / Client",
+    "statuses": {
+      "offen": "Ouvert",
+      "in_arbeit": "En cours",
+      "erledigt": "Terminé",
+      "blockiert": "Bloqué"
+    },
+    "priorities": {
+      "niedrig": "Basse",
+      "mittel": "Moyenne",
+      "hoch": "Haute",
+      "dringend": "Urgente"
+    }
+  },
+  "table": {
+    "title": "Titre",
+    "client": "Client",
+    "status": "Statut",
+    "priority": "Priorité",
+    "due": "Échéance",
+    "assignedTo": "Assigné à"
+  },
+  "language": {
+    "de": "Deutsch",
+    "en": "English",
+    "fr": "Français",
+    "it": "Italiano",
+    "gsw": "Schweizerdeutsch"
+  }
+}

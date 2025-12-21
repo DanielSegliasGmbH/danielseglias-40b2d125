@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,17 +8,12 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { z } from 'zod';
 import { AlertTriangle } from 'lucide-react';
 
-const signupSchema = z.object({
-  firstName: z.string().min(1, 'Vorname ist erforderlich'),
-  lastName: z.string().min(1, 'Nachname ist erforderlich'),
-  email: z.string().email('Ungültige E-Mail-Adresse'),
-  password: z.string().min(6, 'Passwort muss mindestens 6 Zeichen haben'),
-});
-
 export default function Signup() {
+  const { t } = useTranslation();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -26,6 +22,13 @@ export default function Signup() {
   const { signUp, user, role, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const signupSchema = z.object({
+    firstName: z.string().min(1, t('app.required')),
+    lastName: z.string().min(1, t('app.required')),
+    email: z.string().email(t('auth.invalidCredentials')),
+    password: z.string().min(6, t('auth.invalidCredentials')),
+  });
 
   useEffect(() => {
     if (!loading && user && role) {
@@ -44,7 +47,7 @@ export default function Signup() {
     if (!validation.success) {
       toast({
         variant: 'destructive',
-        title: 'Validierungsfehler',
+        title: t('app.error'),
         description: validation.error.errors[0].message,
       });
       return;
@@ -55,19 +58,15 @@ export default function Signup() {
     setIsLoading(false);
 
     if (error) {
-      let errorMessage = 'Ein Fehler ist aufgetreten.';
-      if (error.message.includes('User already registered')) {
-        errorMessage = 'Diese E-Mail ist bereits registriert.';
-      }
       toast({
         variant: 'destructive',
-        title: 'Registrierung fehlgeschlagen',
-        description: errorMessage,
+        title: t('auth.signupError'),
+        description: error.message,
       });
     } else {
       toast({
-        title: 'Account erstellt',
-        description: 'Ihr Account wurde erstellt. Ein Administrator muss Ihnen noch eine Rolle zuweisen.',
+        title: t('auth.signup'),
+        description: t('auth.signupSuccess'),
       });
     }
   };
@@ -81,27 +80,29 @@ export default function Signup() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4 relative">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Registrierung</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">{t('auth.signupTitle')}</CardTitle>
           <CardDescription className="text-center">
-            Erstellen Sie einen internen Account
+            {t('auth.signupSubtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Alert className="mb-4 border-amber-500/50 bg-amber-500/10">
             <AlertTriangle className="h-4 w-4 text-amber-500" />
             <AlertDescription className="text-amber-700 dark:text-amber-400">
-              Nur für interne Mitarbeiter. Nach der Registrierung muss ein Administrator 
-              Ihrem Account eine Rolle zuweisen.
+              {t('auth.signupSubtitle')}
             </AlertDescription>
           </Alert>
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">Vorname</Label>
+                <Label htmlFor="firstName">{t('auth.firstName')}</Label>
                 <Input
                   id="firstName"
                   value={firstName}
@@ -111,7 +112,7 @@ export default function Signup() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Nachname</Label>
+                <Label htmlFor="lastName">{t('auth.lastName')}</Label>
                 <Input
                   id="lastName"
                   value={lastName}
@@ -122,11 +123,11 @@ export default function Signup() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">E-Mail</Label>
+              <Label htmlFor="email">{t('auth.email')}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="name@beispiel.de"
+                placeholder="name@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -134,7 +135,7 @@ export default function Signup() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Passwort</Label>
+              <Label htmlFor="password">{t('auth.password')}</Label>
               <Input
                 id="password"
                 type="password"
@@ -145,12 +146,13 @@ export default function Signup() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Registrieren...' : 'Registrieren'}
+              {isLoading ? `${t('auth.signup')}...` : t('auth.signup')}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm text-muted-foreground">
+            <span>{t('auth.hasAccount')} </span>
             <Link to="/login" className="text-primary hover:underline">
-              Bereits registriert? Zum Login
+              {t('auth.login')}
             </Link>
           </div>
         </CardContent>
