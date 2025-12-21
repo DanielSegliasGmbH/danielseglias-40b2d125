@@ -9,6 +9,13 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   Table,
   TableBody,
   TableCell,
@@ -20,30 +27,52 @@ import { LogOut, Users, ArrowLeft, ChevronRight, Search } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { CreateClientDialog } from '@/components/dashboard/CreateClientDialog';
 
+type ClientSortMode = 'lastNameAsc' | 'newest' | 'status';
+
+const STATUS_ORDER: Record<string, number> = { aktiv: 0, pausiert: 1, archiviert: 2 };
+
 export default function ClientList() {
   const { t } = useTranslation();
   const { user, role, signOut } = useAuth();
   const { data: clients, isLoading } = useClients();
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortMode, setSortMode] = useState<ClientSortMode>('lastNameAsc');
 
-  const filteredClients = useMemo(() => {
+  const sortedClients = useMemo(() => {
     if (!clients) return [];
-    const term = searchTerm.trim().toLowerCase();
-    if (!term) return clients;
     
-    return clients.filter((client) => {
-      const searchString = [
-        client.first_name,
-        client.last_name,
-        client.email,
-        client.phone,
-      ]
-        .filter(Boolean)
-        .join(' ')
-        .toLowerCase();
-      return searchString.includes(term);
+    // Filter first
+    const term = searchTerm.trim().toLowerCase();
+    let filtered = clients;
+    if (term) {
+      filtered = clients.filter((client) => {
+        const searchString = [
+          client.first_name,
+          client.last_name,
+          client.email,
+          client.phone,
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase();
+        return searchString.includes(term);
+      });
+    }
+    
+    // Then sort
+    return [...filtered].sort((a, b) => {
+      switch (sortMode) {
+        case 'lastNameAsc':
+          return a.last_name.localeCompare(b.last_name);
+        case 'newest':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case 'status':
+          return (STATUS_ORDER[a.status] ?? 99) - (STATUS_ORDER[b.status] ?? 99);
+        default:
+          return 0;
+      }
     });
-  }, [clients, searchTerm]);
+  }, [clients, searchTerm, sortMode]);
 
   const roleLabel = role === 'admin' ? t('roles.admin') : t('roles.staff');
   const roleVariant = role === 'admin' ? 'default' : 'secondary';
@@ -93,19 +122,31 @@ export default function ClientList() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="mb-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder={t('client.searchPlaceholder')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9"
-                />
+            <div className="mb-4 space-y-3">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder={t('client.searchPlaceholder')}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+                <Select value={sortMode} onValueChange={(v) => setSortMode(v as ClientSortMode)}>
+                  <SelectTrigger className="w-full sm:w-48">
+                    <SelectValue placeholder={t('sort.sortBy')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="lastNameAsc">{t('sort.lastNameAsc')}</SelectItem>
+                    <SelectItem value="newest">{t('sort.newest')}</SelectItem>
+                    <SelectItem value="status">{t('sort.status')}</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               {clients && clients.length > 0 && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  {filteredClients.length} {t('client.of')} {clients.length} {t('client.title')}
+                <p className="text-sm text-muted-foreground">
+                  {sortedClients.length} {t('client.of')} {clients.length} {t('client.title')}
                 </p>
               )}
             </div>
@@ -117,7 +158,7 @@ export default function ClientList() {
               </div>
             ) : clients?.length === 0 ? (
               <p className="text-muted-foreground py-4">{t('client.noClients')}</p>
-            ) : filteredClients.length === 0 ? (
+            ) : sortedClients.length === 0 ? (
               <p className="text-muted-foreground py-4">{t('client.noClientsFound')}</p>
             ) : (
               <Table>
@@ -132,7 +173,7 @@ export default function ClientList() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredClients.map((client) => (
+                  {sortedClients.map((client) => (
                     <TableRow key={client.id} className="cursor-pointer hover:bg-muted/50">
                       <TableCell className="font-medium">{client.last_name}</TableCell>
                       <TableCell>{client.first_name}</TableCell>
