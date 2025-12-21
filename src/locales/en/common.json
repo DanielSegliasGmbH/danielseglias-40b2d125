@@ -24,6 +24,10 @@
     "confirmDelete": "Confirm delete?",
     "confirmDeleteMessage": "This action cannot be undone."
   },
+  "nav": {
+    "main": "Navigation",
+    "admin": "Administration"
+  },
   "auth": {
     "login": "Login",
     "logout": "Logout",

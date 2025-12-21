@@ -20,11 +20,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { LogOut, Users, Briefcase, ClipboardList, Settings } from 'lucide-react';
+import { Users, Briefcase, ClipboardList } from 'lucide-react';
 import { CreateClientDialog } from '@/components/dashboard/CreateClientDialog';
 import { CreateCaseDialog } from '@/components/dashboard/CreateCaseDialog';
 import { CreateTaskDialog } from '@/components/dashboard/CreateTaskDialog';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { AppLayout } from '@/components/AppLayout';
 import { Link } from 'react-router-dom';
 import { format, Locale } from 'date-fns';
 import { de, enUS, fr, it } from 'date-fns/locale';
@@ -79,23 +80,19 @@ export default function AppDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <header className="bg-background border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold text-foreground">{t('app.title')}</h1>
-            <Badge variant={roleVariant}>{roleLabel}</Badge>
+    <AppLayout>
+      <div className="min-h-screen bg-muted/30">
+        <header className="bg-background border-b">
+          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <h1 className="text-xl font-bold text-foreground">{t('dashboard.title')}</h1>
+            </div>
+            <div className="flex items-center gap-4">
+              <LanguageSwitcher />
+              <span className="text-sm text-muted-foreground hidden sm:inline">{user?.email}</span>
+            </div>
           </div>
-          <div className="flex items-center gap-4">
-            <LanguageSwitcher />
-            <span className="text-sm text-muted-foreground hidden sm:inline">{user?.email}</span>
-            <Button variant="outline" size="sm" onClick={signOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              {t('auth.logout')}
-            </Button>
-          </div>
-        </div>
-      </header>
+        </header>
 
       <main className="container mx-auto px-4 py-8">
         {/* Greeting */}
@@ -158,29 +155,9 @@ export default function AppDashboard() {
 
         {/* Quick Actions */}
         <div className="flex flex-wrap gap-3 mb-8">
-          <Link to="/app/clients">
-            <Button variant="outline" className="gap-2">
-              <Users className="h-4 w-4" />
-              {t('client.list')}
-            </Button>
-          </Link>
-          <Link to="/app/cases">
-            <Button variant="outline" className="gap-2">
-              <Briefcase className="h-4 w-4" />
-              {t('case.list')}
-            </Button>
-          </Link>
           <CreateClientDialog />
           <CreateCaseDialog />
           <CreateTaskDialog />
-          {role === 'admin' && (
-            <Link to="/app/users">
-              <Button variant="outline" className="gap-2">
-                <Settings className="h-4 w-4" />
-                {t('userManagement.title')}
-              </Button>
-            </Link>
-          )}
         </div>
 
         {/* Open Tasks */}
@@ -287,5 +264,6 @@ export default function AppDashboard() {
         </Card>
       </main>
     </div>
+    </AppLayout>
   );
 }

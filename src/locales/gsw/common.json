@@ -24,6 +24,10 @@
     "confirmDelete": "Würkli lösche?",
     "confirmDeleteMessage": "Das chan nöd rückgängig gmacht wärde."
   },
+  "nav": {
+    "main": "Navigation",
+    "admin": "Administratio"
+  },
   "auth": {
     "login": "Amälde",
     "logout": "Abmälde",

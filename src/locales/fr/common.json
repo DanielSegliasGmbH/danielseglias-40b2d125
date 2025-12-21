@@ -24,6 +24,10 @@
     "confirmDelete": "Confirmer la suppression?",
     "confirmDeleteMessage": "Cette action est irréversible."
   },
+  "nav": {
+    "main": "Navigation",
+    "admin": "Administration"
+  },
   "auth": {
     "login": "Connexion",
     "logout": "Déconnexion",
