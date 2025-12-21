@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useClientPortalSettings, usePreviewClientId } from '@/hooks/useClientPortal';
 import { useQuery } from '@tanstack/react-query';
@@ -8,7 +8,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
 import {
   Shield,
   Target,
@@ -21,9 +20,16 @@ import {
   Menu,
   X,
   Eye,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
-import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from '@/components/ui/tooltip';
 
 interface ClientPortalLayoutProps {
   children: ReactNode;
@@ -60,8 +66,8 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
   const { t } = useTranslation();
   const { user, role, signOut } = useAuth();
   const location = useLocation();
-  const [searchParams] = useSearchParams();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { data: settings } = useClientPortalSettings();
   
   const previewClientId = usePreviewClientId();
@@ -89,133 +95,181 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
 
   const firstName = user?.user_metadata?.first_name || 'Kunde';
 
+  const NavItem = ({ to, icon: Icon, label, isActive }: { to: string; icon: React.ElementType; label: string; isActive: boolean }) => {
+    const content = (
+      <Link
+        to={to}
+        className={cn(
+          "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+          isActive
+            ? "bg-primary text-primary-foreground"
+            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+          sidebarCollapsed && "justify-center px-2"
+        )}
+      >
+        <Icon className="h-4 w-4 shrink-0" />
+        {!sidebarCollapsed && <span>{label}</span>}
+      </Link>
+    );
+
+    if (sidebarCollapsed) {
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>{content}</TooltipTrigger>
+          <TooltipContent side="right">{label}</TooltipContent>
+        </Tooltip>
+      );
+    }
+
+    return content;
+  };
+
   return (
-    <div className="min-h-screen bg-muted/30 flex">
-      {/* Admin Preview Banner */}
-      {isAdminPreview && (
-        <div className="fixed top-0 left-0 right-0 z-[60] bg-amber-500 text-amber-950 px-4 py-2 flex items-center justify-center gap-2 text-sm font-medium">
-          <Eye className="h-4 w-4" />
-          {t('clientPortal.adminPreview')}: {previewClientName || previewClientId?.slice(0, 8) + '…'}
-          <Link to="/app/clients" className="ml-4 underline hover:no-underline">
-            {t('app.back')}
-          </Link>
-        </div>
-      )}
-
-      {/* Desktop Sidebar */}
-      <aside className={cn("hidden lg:flex w-64 flex-col bg-background border-r", isAdminPreview && "pt-10")}>
-        <div className="p-4 border-b">
-          <h1 className="text-lg font-bold text-foreground">{t('clientPortal.title')}</h1>
-        </div>
-        <ScrollArea className="flex-1 py-4">
-          <nav className="px-2 space-y-1">
-            <Link
-              to={buildPath('/app/client-portal')}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                location.pathname === '/app/client-portal'
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              <Home className="h-4 w-4" />
-              {t('clientPortal.home')}
+    <TooltipProvider delayDuration={0}>
+      <div className="min-h-screen bg-muted/30 flex">
+        {/* Admin Preview Banner */}
+        {isAdminPreview && (
+          <div className="fixed top-0 left-0 right-0 z-[60] bg-amber-500 text-amber-950 px-4 py-2 flex items-center justify-center gap-2 text-sm font-medium">
+            <Eye className="h-4 w-4" />
+            {t('clientPortal.adminPreview')}: {previewClientName || previewClientId?.slice(0, 8) + '…'}
+            <Link to="/app/clients" className="ml-4 underline hover:no-underline">
+              {t('app.back')}
             </Link>
-            {visibleSections.map(section => (
-              <Link
-                key={section.key}
-                to={buildPath(section.path)}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                  location.pathname === section.path
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                )}
-              >
-                <section.icon className="h-4 w-4" />
-                {t(section.labelKey)}
-              </Link>
-            ))}
-          </nav>
-        </ScrollArea>
-        <div className="p-4 border-t space-y-2">
-          <div className="text-sm text-muted-foreground truncate">{user?.email}</div>
-          <Button variant="ghost" size="sm" className="w-full justify-start" onClick={handleLogout}>
-            <LogOut className="h-4 w-4 mr-2" />
-            {t('auth.logout')}
-          </Button>
-        </div>
-      </aside>
+          </div>
+        )}
 
-      {/* Mobile Header */}
-      <div className={cn("lg:hidden fixed left-0 right-0 z-50 bg-background border-b", isAdminPreview ? "top-10" : "top-0")}>
-        <div className="flex items-center justify-between p-4">
-          <h1 className="text-lg font-bold">{t('clientPortal.title')}</h1>
-          <div className="flex items-center gap-2">
-            <LanguageSwitcher />
-            <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        {/* Desktop Sidebar */}
+        <aside 
+          className={cn(
+            "hidden lg:flex flex-col bg-background border-r transition-all duration-300",
+            sidebarCollapsed ? "w-16" : "w-64",
+            isAdminPreview && "pt-10"
+          )}
+        >
+          <div className="p-4 border-b flex items-center justify-between gap-2">
+            {!sidebarCollapsed && (
+              <h1 className="text-lg font-bold text-foreground truncate">{t('clientPortal.title')}</h1>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              className="h-8 w-8 shrink-0"
+            >
+              {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </Button>
           </div>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className={cn("lg:hidden fixed inset-0 z-40 bg-background", isAdminPreview ? "pt-[6.5rem]" : "pt-16")}>
-          <ScrollArea className="h-full">
-            <nav className="p-4 space-y-2">
-              <Link
+          <ScrollArea className="flex-1 py-4">
+            <nav className={cn("px-2 space-y-1", sidebarCollapsed && "px-1")}>
+              <NavItem
                 to={buildPath('/app/client-portal')}
-                onClick={() => setMobileMenuOpen(false)}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-3 rounded-md text-sm font-medium",
-                  location.pathname === '/app/client-portal'
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground"
-                )}
-              >
-                <Home className="h-5 w-5" />
-                {t('clientPortal.home')}
-              </Link>
+                icon={Home}
+                label={t('clientPortal.home')}
+                isActive={location.pathname === '/app/client-portal'}
+              />
               {visibleSections.map(section => (
-                <Link
+                <NavItem
                   key={section.key}
                   to={buildPath(section.path)}
+                  icon={section.icon}
+                  label={t(section.labelKey)}
+                  isActive={location.pathname === section.path}
+                />
+              ))}
+            </nav>
+          </ScrollArea>
+          <div className={cn("p-4 border-t space-y-2", sidebarCollapsed && "p-2")}>
+            {!sidebarCollapsed && (
+              <div className="text-sm text-muted-foreground truncate">{user?.email}</div>
+            )}
+            {sidebarCollapsed ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="w-full" onClick={handleLogout}>
+                    <LogOut className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">{t('auth.logout')}</TooltipContent>
+              </Tooltip>
+            ) : (
+              <Button variant="ghost" size="sm" className="w-full justify-start" onClick={handleLogout}>
+                <LogOut className="h-4 w-4 mr-2" />
+                {t('auth.logout')}
+              </Button>
+            )}
+          </div>
+        </aside>
+
+        {/* Mobile Header */}
+        <div className={cn("lg:hidden fixed left-0 right-0 z-50 bg-background border-b", isAdminPreview ? "top-10" : "top-0")}>
+          <div className="flex items-center justify-between p-4">
+            <h1 className="text-lg font-bold">{t('clientPortal.title')}</h1>
+            <div className="flex items-center gap-2">
+              <LanguageSwitcher />
+              <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className={cn("lg:hidden fixed inset-0 z-40 bg-background", isAdminPreview ? "pt-[6.5rem]" : "pt-16")}>
+            <ScrollArea className="h-full">
+              <nav className="p-4 space-y-2">
+                <Link
+                  to={buildPath('/app/client-portal')}
                   onClick={() => setMobileMenuOpen(false)}
                   className={cn(
                     "flex items-center gap-3 px-3 py-3 rounded-md text-sm font-medium",
-                    location.pathname === section.path
+                    location.pathname === '/app/client-portal'
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground"
                   )}
                 >
-                  <section.icon className="h-5 w-5" />
-                  {t(section.labelKey)}
+                  <Home className="h-5 w-5" />
+                  {t('clientPortal.home')}
                 </Link>
-              ))}
-              <div className="border-t pt-4 mt-4">
-                <div className="text-sm text-muted-foreground px-3 mb-2">{user?.email}</div>
-                <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
-                  <LogOut className="h-4 w-4 mr-2" />
-                  {t('auth.logout')}
-                </Button>
-              </div>
-            </nav>
-          </ScrollArea>
-        </div>
-      )}
+                {visibleSections.map(section => (
+                  <Link
+                    key={section.key}
+                    to={buildPath(section.path)}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-3 rounded-md text-sm font-medium",
+                      location.pathname === section.path
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    <section.icon className="h-5 w-5" />
+                    {t(section.labelKey)}
+                  </Link>
+                ))}
+                <div className="border-t pt-4 mt-4">
+                  <div className="text-sm text-muted-foreground px-3 mb-2">{user?.email}</div>
+                  <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    {t('auth.logout')}
+                  </Button>
+                </div>
+              </nav>
+            </ScrollArea>
+          </div>
+        )}
 
-      {/* Main Content */}
-      <main className={cn("flex-1 pt-16 lg:pt-0", isAdminPreview && "lg:pt-10")}>
-        <div className="hidden lg:flex items-center justify-end gap-4 p-4 border-b bg-background">
-          <LanguageSwitcher />
-          <span className="text-sm text-muted-foreground">{firstName}</span>
-        </div>
-        <div className="p-4 lg:p-8">
-          {children}
-        </div>
-      </main>
-    </div>
+        {/* Main Content */}
+        <main className={cn("flex-1 pt-16 lg:pt-0", isAdminPreview && "lg:pt-10")}>
+          <div className="hidden lg:flex items-center justify-end gap-4 p-4 border-b bg-background">
+            <LanguageSwitcher />
+            <span className="text-sm text-muted-foreground">{firstName}</span>
+          </div>
+          <div className="p-4 lg:p-8">
+            {children}
+          </div>
+        </main>
+      </div>
+    </TooltipProvider>
   );
 }
