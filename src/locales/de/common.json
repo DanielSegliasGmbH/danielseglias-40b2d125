@@ -293,7 +293,9 @@
     "clientLinked": "Client erfolgreich verknüpft",
     "clientLinkError": "Fehler beim Verknüpfen des Clients",
     "requiredFields": "E-Mail, Passwort, Vor- und Nachname sind Pflichtfelder",
-    "clientRequired": "Für Client-Rolle muss ein Client ausgewählt werden"
+    "clientRequired": "Für Client-Rolle muss ein Client ausgewählt werden",
+    "userId": "User ID",
+    "userIdCopied": "User ID kopiert"
   },
   "language": {
     "de": "Deutsch",

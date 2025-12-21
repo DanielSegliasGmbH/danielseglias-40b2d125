@@ -5,6 +5,7 @@ import { useClients } from '@/hooks/useDashboardData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -20,7 +21,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Users } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Users, Copy } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { CreateUserDialog } from '@/components/admin/CreateUserDialog';
 import { LinkClientDialog } from '@/components/admin/LinkClientDialog';
@@ -51,6 +58,15 @@ export default function UserManagement() {
     if (!clientId || !clients) return null;
     const client = clients.find((c) => c.id === clientId);
     return client ? `${client.first_name} ${client.last_name}` : null;
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success(t('userManagement.userIdCopied'));
+    } catch {
+      toast.error(t('app.error'));
+    }
   };
 
   return (
@@ -91,55 +107,80 @@ export default function UserManagement() {
             ) : users?.length === 0 ? (
               <p className="text-muted-foreground py-4">{t('userManagement.noUsers')}</p>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{t('auth.firstName')}</TableHead>
-                    <TableHead>{t('auth.lastName')}</TableHead>
-                    <TableHead>{t('auth.phone')}</TableHead>
-                    <TableHead>{t('table.role')}</TableHead>
-                    <TableHead>{t('table.client')}</TableHead>
-                    <TableHead>{t('table.actions')}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {users?.map((u) => (
-                    <TableRow key={u.id}>
-                      <TableCell className="font-medium">{u.first_name}</TableCell>
-                      <TableCell>{u.last_name}</TableCell>
-                      <TableCell>{u.phone || '–'}</TableCell>
-                      <TableCell>
-                        <Select
-                          value={u.role || 'none'}
-                          onValueChange={(value) => handleRoleChange(u.id, value)}
-                        >
-                          <SelectTrigger className="w-[140px]">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="none">{t('userManagement.noRole')}</SelectItem>
-                            <SelectItem value="admin">{t('roles.admin')}</SelectItem>
-                            <SelectItem value="staff">{t('roles.staff')}</SelectItem>
-                            <SelectItem value="client">{t('roles.client')}</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </TableCell>
-                      <TableCell>
-                        {u.client_id ? (
-                          <Badge variant="outline">{getClientName(u.client_id)}</Badge>
-                        ) : (
-                          <span className="text-muted-foreground">–</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {u.role === 'client' && (
-                          <LinkClientDialog userId={u.id} currentClientId={u.client_id} />
-                        )}
-                      </TableCell>
+              <TooltipProvider>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t('userManagement.userId')}</TableHead>
+                      <TableHead>{t('auth.firstName')}</TableHead>
+                      <TableHead>{t('auth.lastName')}</TableHead>
+                      <TableHead>{t('auth.phone')}</TableHead>
+                      <TableHead>{t('table.role')}</TableHead>
+                      <TableHead>{t('table.client')}</TableHead>
+                      <TableHead>{t('table.actions')}</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {users?.map((u) => (
+                      <TableRow key={u.id}>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <code className="text-xs font-mono bg-muted px-1.5 py-0.5 rounded cursor-default">
+                                  {u.id.slice(0, 8)}…
+                                </code>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="font-mono text-xs">
+                                {u.id}
+                              </TooltipContent>
+                            </Tooltip>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6"
+                              onClick={() => copyToClipboard(u.id)}
+                            >
+                              <Copy className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-medium">{u.first_name}</TableCell>
+                        <TableCell>{u.last_name}</TableCell>
+                        <TableCell>{u.phone || '–'}</TableCell>
+                        <TableCell>
+                          <Select
+                            value={u.role || 'none'}
+                            onValueChange={(value) => handleRoleChange(u.id, value)}
+                          >
+                            <SelectTrigger className="w-[140px]">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">{t('userManagement.noRole')}</SelectItem>
+                              <SelectItem value="admin">{t('roles.admin')}</SelectItem>
+                              <SelectItem value="staff">{t('roles.staff')}</SelectItem>
+                              <SelectItem value="client">{t('roles.client')}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </TableCell>
+                        <TableCell>
+                          {u.client_id ? (
+                            <Badge variant="outline">{getClientName(u.client_id)}</Badge>
+                          ) : (
+                            <span className="text-muted-foreground">–</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {u.role === 'client' && (
+                            <LinkClientDialog userId={u.id} currentClientId={u.client_id} />
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TooltipProvider>
             )}
           </CardContent>
         </Card>
