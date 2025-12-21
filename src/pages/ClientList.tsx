@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -23,11 +23,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { LogOut, Users, ArrowLeft, ChevronRight, Search } from 'lucide-react';
+import { LogOut, Users, ArrowLeft, ChevronRight, ChevronLeft, Search } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { CreateClientDialog } from '@/components/dashboard/CreateClientDialog';
 
 type ClientSortMode = 'lastNameAsc' | 'newest' | 'status';
+type PageSize = 25 | 50;
 
 const STATUS_ORDER: Record<string, number> = { aktiv: 0, pausiert: 1, archiviert: 2 };
 
@@ -37,6 +38,13 @@ export default function ClientList() {
   const { data: clients, isLoading } = useClients();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortMode, setSortMode] = useState<ClientSortMode>('lastNameAsc');
+  const [pageSize, setPageSize] = useState<PageSize>(25);
+  const [page, setPage] = useState(1);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, sortMode, pageSize]);
 
   const sortedClients = useMemo(() => {
     if (!clients) return [];
@@ -73,6 +81,13 @@ export default function ClientList() {
       }
     });
   }, [clients, searchTerm, sortMode]);
+
+  // Pagination
+  const total = sortedClients.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const pageSafe = Math.min(page, totalPages);
+  const start = (pageSafe - 1) * pageSize;
+  const paginatedClients = sortedClients.slice(start, start + pageSize);
 
   const roleLabel = role === 'admin' ? t('roles.admin') : t('roles.staff');
   const roleVariant = role === 'admin' ? 'default' : 'secondary';
@@ -144,11 +159,52 @@ export default function ClientList() {
                   </SelectContent>
                 </Select>
               </div>
-              {clients && clients.length > 0 && (
+              
+              {/* Pagination Controls */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <p className="text-sm text-muted-foreground">
-                  {sortedClients.length} {t('client.of')} {clients.length} {t('client.title')}
+                  {sortedClients.length} {t('client.of')} {clients?.length || 0} {t('client.title')}
                 </p>
-              )}
+                {total > 0 && (
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground">{t('pagination.perPage')}</span>
+                      <Select value={String(pageSize)} onValueChange={(v) => setPageSize(Number(v) as PageSize)}>
+                        <SelectTrigger className="w-20">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="25">25</SelectItem>
+                          <SelectItem value="50">50</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <span className="text-sm text-muted-foreground">
+                      {t('pagination.page')} {pageSafe} {t('pagination.of')} {totalPages}
+                    </span>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPage(pageSafe - 1)}
+                        disabled={pageSafe === 1}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                        <span className="hidden sm:inline ml-1">{t('pagination.prev')}</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPage(pageSafe + 1)}
+                        disabled={pageSafe === totalPages}
+                      >
+                        <span className="hidden sm:inline mr-1">{t('pagination.next')}</span>
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
             {isLoading ? (
               <div className="space-y-2">
@@ -173,7 +229,7 @@ export default function ClientList() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {sortedClients.map((client) => (
+                  {paginatedClients.map((client) => (
                     <TableRow key={client.id} className="cursor-pointer hover:bg-muted/50">
                       <TableCell className="font-medium">{client.last_name}</TableCell>
                       <TableCell>{client.first_name}</TableCell>
