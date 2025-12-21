@@ -303,11 +303,22 @@
     "status": "By status",
     "dueSoon": "Due soon"
   },
-  "pagination": {
-    "perPage": "Per page",
-    "page": "Page",
-    "of": "of",
-    "prev": "Previous",
-    "next": "Next"
+  "systemMap": {
+    "title": "System Map",
+    "subtitle": "Visual architecture of the application",
+    "loadError": "Error loading System Map",
+    "category": "Category",
+    "description": "Description",
+    "uses": "Uses",
+    "dependsOn": "Depends on",
+    "noConnections": "No connections",
+    "selectForCompare": "Select for comparison",
+    "compareTo": "Calculate path",
+    "shortestPath": "Shortest path",
+    "noPathFound": "No path found between these nodes",
+    "searchNodes": "Search nodes...",
+    "coreOnly": "Core only",
+    "editMode": "Edit",
+    "viewMode": "View"
   }
 }

@@ -303,11 +303,22 @@
     "status": "Per stato",
     "dueSoon": "Scadenza prossima"
   },
-  "pagination": {
-    "perPage": "Per pagina",
-    "page": "Pagina",
-    "of": "di",
-    "prev": "Precedente",
-    "next": "Successivo"
+  "systemMap": {
+    "title": "System Map",
+    "subtitle": "Architettura visiva dell'applicazione",
+    "loadError": "Errore di caricamento",
+    "category": "Categoria",
+    "description": "Descrizione",
+    "uses": "Utilizza",
+    "dependsOn": "Dipende da",
+    "noConnections": "Nessuna connessione",
+    "selectForCompare": "Seleziona per confronto",
+    "compareTo": "Calcola percorso",
+    "shortestPath": "Percorso più breve",
+    "noPathFound": "Nessun percorso trovato",
+    "searchNodes": "Cerca...",
+    "coreOnly": "Solo Core",
+    "editMode": "Modifica",
+    "viewMode": "Visualizza"
   }
 }

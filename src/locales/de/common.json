@@ -303,11 +303,22 @@
     "status": "Nach Status",
     "dueSoon": "Bald fällig"
   },
-  "pagination": {
-    "perPage": "Pro Seite",
-    "page": "Seite",
-    "of": "von",
-    "prev": "Zurück",
-    "next": "Weiter"
+  "systemMap": {
+    "title": "System Map",
+    "subtitle": "Visuelle Architektur der Applikation",
+    "loadError": "Fehler beim Laden der System Map",
+    "category": "Kategorie",
+    "description": "Beschreibung",
+    "uses": "Nutzt",
+    "dependsOn": "Abhängig von",
+    "noConnections": "Keine Verbindungen",
+    "selectForCompare": "Zum Vergleichen auswählen",
+    "compareTo": "Pfad berechnen",
+    "shortestPath": "Kürzester Pfad",
+    "noPathFound": "Kein Pfad zwischen diesen Nodes gefunden",
+    "searchNodes": "Nodes suchen...",
+    "coreOnly": "Nur Core",
+    "editMode": "Bearbeiten",
+    "viewMode": "Ansicht"
   }
 }

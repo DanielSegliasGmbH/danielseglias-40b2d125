@@ -303,11 +303,22 @@
     "status": "Nach Status",
     "dueSoon": "Bald fällig"
   },
-  "pagination": {
-    "perPage": "Pro Siite",
-    "page": "Siite",
-    "of": "vo",
-    "prev": "Zrugg",
-    "next": "Wiiter"
+  "systemMap": {
+    "title": "System Map",
+    "subtitle": "Visuelle Architektur vo de App",
+    "loadError": "Fehler bim Lade",
+    "category": "Kategorie",
+    "description": "Beschriibig",
+    "uses": "Bruucht",
+    "dependsOn": "Abhängig vo",
+    "noConnections": "Kei Verbindigä",
+    "selectForCompare": "Zum Vergliiche uuswähle",
+    "compareTo": "Pfad berechne",
+    "shortestPath": "Kürzischte Pfad",
+    "noPathFound": "Kei Pfad gfunde",
+    "searchNodes": "Nodes sueche...",
+    "coreOnly": "Nur Core",
+    "editMode": "Bearbeite",
+    "viewMode": "Aaluege"
   }
 }
