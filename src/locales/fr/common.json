@@ -86,6 +86,13 @@
     "showing": "Affichage de {{shown}} sur {{total}} clients",
     "loadMore": "Charger plus",
     "notFound": "Client introuvable",
+    "sortBy": "Trier par",
+    "sort": {
+      "lastAsc": "Nom A–Z",
+      "lastDesc": "Nom Z–A",
+      "status": "Par statut",
+      "createdDesc": "Plus récents"
+    },
     "statuses": {
       "aktiv": "Actif",
       "pausiert": "En pause",

@@ -86,6 +86,13 @@
     "showing": "Showing {{shown}} of {{total}} Clients",
     "loadMore": "Load more",
     "notFound": "Client not found",
+    "sortBy": "Sort by",
+    "sort": {
+      "lastAsc": "Last name A–Z",
+      "lastDesc": "Last name Z–A",
+      "status": "By status",
+      "createdDesc": "Newest first"
+    },
     "statuses": {
       "aktiv": "Active",
       "pausiert": "Paused",
