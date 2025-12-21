@@ -21,6 +21,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           description: string | null
+          due_date: string | null
           id: string
           status: Database["public"]["Enums"]["case_status"]
           title: string
@@ -32,6 +33,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          due_date?: string | null
           id?: string
           status?: Database["public"]["Enums"]["case_status"]
           title: string
@@ -43,6 +45,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          due_date?: string | null
           id?: string
           status?: Database["public"]["Enums"]["case_status"]
           title?: string
@@ -149,30 +152,40 @@ export type Database = {
       }
       notes: {
         Row: {
+          author_id: string | null
+          case_id: string | null
           content: string
           created_at: string
-          created_by: string | null
           id: string
-          meeting_id: string
+          meeting_id: string | null
           updated_at: string
         }
         Insert: {
+          author_id?: string | null
+          case_id?: string | null
           content: string
           created_at?: string
-          created_by?: string | null
           id?: string
-          meeting_id: string
+          meeting_id?: string | null
           updated_at?: string
         }
         Update: {
+          author_id?: string | null
+          case_id?: string | null
           content?: string
           created_at?: string
-          created_by?: string | null
           id?: string
-          meeting_id?: string
+          meeting_id?: string | null
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "notes_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "notes_meeting_id_fkey"
             columns: ["meeting_id"]
@@ -220,6 +233,7 @@ export type Database = {
           due_date: string | null
           id: string
           priority: Database["public"]["Enums"]["task_priority"]
+          status: Database["public"]["Enums"]["task_status"]
           title: string
           updated_at: string
         }
@@ -233,6 +247,7 @@ export type Database = {
           due_date?: string | null
           id?: string
           priority?: Database["public"]["Enums"]["task_priority"]
+          status?: Database["public"]["Enums"]["task_status"]
           title: string
           updated_at?: string
         }
@@ -246,6 +261,7 @@ export type Database = {
           due_date?: string | null
           id?: string
           priority?: Database["public"]["Enums"]["task_priority"]
+          status?: Database["public"]["Enums"]["task_status"]
           title?: string
           updated_at?: string
         }
@@ -310,6 +326,7 @@ export type Database = {
         | "telefonat"
         | "video_call"
       task_priority: "niedrig" | "mittel" | "hoch" | "dringend"
+      task_status: "offen" | "in_arbeit" | "erledigt" | "blockiert"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -454,6 +471,7 @@ export const Constants = {
         "video_call",
       ],
       task_priority: ["niedrig", "mittel", "hoch", "dringend"],
+      task_status: ["offen", "in_arbeit", "erledigt", "blockiert"],
     },
   },
 } as const
