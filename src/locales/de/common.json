@@ -24,6 +24,10 @@
     "confirmDelete": "Wirklich löschen?",
     "confirmDeleteMessage": "Dieser Vorgang kann nicht rückgängig gemacht werden."
   },
+  "nav": {
+    "main": "Navigation",
+    "admin": "Administration"
+  },
   "auth": {
     "login": "Anmelden",
     "logout": "Abmelden",

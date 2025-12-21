@@ -58,7 +58,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  LogOut,
   ArrowLeft,
   Briefcase,
   ClipboardList,
@@ -73,6 +72,7 @@ import {
   Search,
 } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { AppLayout } from '@/components/AppLayout';
 import { toast } from 'sonner';
 import { format, Locale } from 'date-fns';
 import { de, enUS, fr, it } from 'date-fns/locale';
@@ -289,26 +289,22 @@ export default function ClientDetail() {
   const pastMeetings = meetings?.filter(m => new Date(m.scheduled_at) < now).slice(0, 5) || [];
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <header className="bg-background border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/app/clients" className="text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-            <h1 className="text-xl font-bold text-foreground">{t('client.detail')}</h1>
-            <Badge variant={roleVariant}>{roleLabel}</Badge>
+    <AppLayout>
+      <div className="min-h-screen bg-muted/30">
+        <header className="bg-background border-b">
+          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link to="/app/clients" className="text-muted-foreground hover:text-foreground">
+                <ArrowLeft className="h-5 w-5" />
+              </Link>
+              <h1 className="text-xl font-bold text-foreground">{t('client.detail')}</h1>
+            </div>
+            <div className="flex items-center gap-4">
+              <LanguageSwitcher />
+              <span className="text-sm text-muted-foreground hidden sm:inline">{user?.email}</span>
+            </div>
           </div>
-          <div className="flex items-center gap-4">
-            <LanguageSwitcher />
-            <span className="text-sm text-muted-foreground hidden sm:inline">{user?.email}</span>
-            <Button variant="outline" size="sm" onClick={signOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              {t('auth.logout')}
-            </Button>
-          </div>
-        </div>
-      </header>
+        </header>
 
       <main className="container mx-auto px-4 py-8">
         {/* Client Header */}
@@ -650,5 +646,6 @@ export default function ClientDetail() {
         </Dialog>
       </main>
     </div>
+    </AppLayout>
   );
 }

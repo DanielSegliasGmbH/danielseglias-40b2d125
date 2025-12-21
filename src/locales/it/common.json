@@ -24,6 +24,10 @@
     "confirmDelete": "Conferma eliminazione?",
     "confirmDeleteMessage": "Questa azione non può essere annullata."
   },
+  "nav": {
+    "main": "Navigazione",
+    "admin": "Amministrazione"
+  },
   "auth": {
     "login": "Accedi",
     "logout": "Esci",

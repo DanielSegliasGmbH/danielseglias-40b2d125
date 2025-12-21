@@ -23,9 +23,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { LogOut, Users, ArrowLeft, ChevronRight, Search, Loader2 } from 'lucide-react';
+import { Users, ChevronRight, Search, Loader2 } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { CreateClientDialog } from '@/components/dashboard/CreateClientDialog';
+import { AppLayout } from '@/components/AppLayout';
 
 type ClientSortMode = 'last_asc' | 'last_desc' | 'status' | 'created_desc';
 
@@ -98,26 +99,19 @@ export default function ClientList() {
   const isSearchActive = debouncedTerm.length >= 1;
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <header className="bg-background border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/app" className="text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-            <h1 className="text-xl font-bold text-foreground">{t('client.list')}</h1>
-            <Badge variant={roleVariant}>{roleLabel}</Badge>
+    <AppLayout>
+      <div className="min-h-screen bg-muted/30">
+        <header className="bg-background border-b">
+          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <h1 className="text-xl font-bold text-foreground">{t('client.list')}</h1>
+            </div>
+            <div className="flex items-center gap-4">
+              <LanguageSwitcher />
+              <span className="text-sm text-muted-foreground hidden sm:inline">{user?.email}</span>
+            </div>
           </div>
-          <div className="flex items-center gap-4">
-            <LanguageSwitcher />
-            <span className="text-sm text-muted-foreground hidden sm:inline">{user?.email}</span>
-            <Button variant="outline" size="sm" onClick={signOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              {t('auth.logout')}
-            </Button>
-          </div>
-        </div>
-      </header>
+        </header>
 
       <main className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
@@ -238,5 +232,6 @@ export default function ClientList() {
         </Card>
       </main>
     </div>
+    </AppLayout>
   );
 }

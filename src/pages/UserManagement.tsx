@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { useAllUsers, useUpdateUserRole } from '@/hooks/useUserManagement';
 import { useClients } from '@/hooks/useDashboardData';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -21,11 +20,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { LogOut, Users, ArrowLeft } from 'lucide-react';
+import { Users } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { CreateUserDialog } from '@/components/admin/CreateUserDialog';
 import { LinkClientDialog } from '@/components/admin/LinkClientDialog';
-import { Link } from 'react-router-dom';
+import { AppLayout } from '@/components/AppLayout';
 import { toast } from 'sonner';
 import type { Database } from '@/integrations/supabase/types';
 
@@ -55,26 +54,19 @@ export default function UserManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <header className="bg-background border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/app" className="text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-            <h1 className="text-xl font-bold text-foreground">{t('userManagement.title')}</h1>
-            <Badge variant="default">{t('roles.admin')}</Badge>
+    <AppLayout>
+      <div className="min-h-screen bg-muted/30">
+        <header className="bg-background border-b">
+          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <h1 className="text-xl font-bold text-foreground">{t('userManagement.title')}</h1>
+            </div>
+            <div className="flex items-center gap-4">
+              <LanguageSwitcher />
+              <span className="text-sm text-muted-foreground hidden sm:inline">{user?.email}</span>
+            </div>
           </div>
-          <div className="flex items-center gap-4">
-            <LanguageSwitcher />
-            <span className="text-sm text-muted-foreground hidden sm:inline">{user?.email}</span>
-            <Button variant="outline" size="sm" onClick={signOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              {t('auth.logout')}
-            </Button>
-          </div>
-        </div>
-      </header>
+        </header>
 
       <main className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
@@ -153,5 +145,6 @@ export default function UserManagement() {
         </Card>
       </main>
     </div>
+    </AppLayout>
   );
 }
