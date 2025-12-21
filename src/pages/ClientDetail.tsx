@@ -28,6 +28,7 @@ import {
   useCreateTaskForClient,
   useDeleteClient,
 } from '@/hooks/useClientData';
+import { useDeleteTask } from '@/hooks/useCaseData';
 import { useProfiles } from '@/hooks/useDashboardData';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -127,6 +128,7 @@ export default function ClientDetail() {
   const updateClient = useUpdateClient();
   const createTask = useCreateTaskForClient();
   const deleteClient = useDeleteClient();
+  const deleteTask = useDeleteTask();
 
   const [newNote, setNewNote] = useState('');
   const [selectedCaseForNote, setSelectedCaseForNote] = useState('');
@@ -136,6 +138,7 @@ export default function ClientDetail() {
   const [taskOpen, setTaskOpen] = useState(false);
   const [caseSearch, setCaseSearch] = useState('');
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({ first_name: '', last_name: '', email: '', phone: '', address: '', status: 'aktiv' as ClientStatus });
   const [caseForm, setCaseForm] = useState({ title: '', description: '', due_date: '' });
   const [meetingForm, setMeetingForm] = useState({ case_id: '', scheduled_at: '', meeting_type: 'folgeberatung' as MeetingType, duration_minutes: 60, location: '' });
@@ -236,6 +239,16 @@ export default function ClientDetail() {
       await deleteClient.mutateAsync(clientId!);
       toast.success(t('trash.deletedSuccess'));
       navigate('/app/clients');
+    } catch {
+      toast.error(t('app.error'));
+    }
+  };
+
+  const handleDeleteTask = async (taskId: string) => {
+    try {
+      await deleteTask.mutateAsync(taskId);
+      toast.success(t('trash.deletedSuccess'));
+      setTaskToDelete(null);
     } catch {
       toast.error(t('app.error'));
     }
@@ -407,6 +420,26 @@ export default function ClientDetail() {
           </AlertDialogContent>
         </AlertDialog>
 
+        <AlertDialog open={!!taskToDelete} onOpenChange={(open) => !open && setTaskToDelete(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('task.deleteTask')}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t('trash.softDeleteInfo')}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('app.cancel')}</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => taskToDelete && handleDeleteTask(taskToDelete)}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {t('app.delete')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Cases */}
           <Card>
@@ -548,9 +581,25 @@ export default function ClientDetail() {
                           {task.case?.title} {task.due_date && `• ${formatDate(task.due_date)}`}
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm" onClick={() => handleMarkDone(task.id)}>
-                        <Check className="h-4 w-4" />
-                      </Button>
+                      <div className="flex items-center gap-1">
+                        <Button variant="ghost" size="sm" onClick={() => handleMarkDone(task.id)}>
+                          <Check className="h-4 w-4" />
+                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm"><MoreVertical className="h-4 w-4" /></Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive"
+                              onClick={() => setTaskToDelete(task.id)}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              {t('task.deleteTask')}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </div>
                   ))}
                 </div>

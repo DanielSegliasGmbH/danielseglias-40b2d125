@@ -198,6 +198,7 @@
     "openTasks": "Offene Aufgaben",
     "newTask": "Neue Aufgabe",
     "createTask": "Aufgabe erstellen",
+    "deleteTask": "Aufgabe löschen",
     "creating": "Erstellen...",
     "taskTitle": "Titel",
     "description": "Beschreibung",

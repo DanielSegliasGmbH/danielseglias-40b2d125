@@ -39,6 +39,7 @@ export function useCaseTasks(caseId: string, statusFilter?: TaskStatus | 'all') 
         .from('tasks')
         .select('*')
         .eq('case_id', caseId)
+        .is('deleted_at', null)
         .order('due_date', { ascending: true, nullsFirst: false })
         .order('priority', { ascending: false });
       

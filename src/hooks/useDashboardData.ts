@@ -23,6 +23,7 @@ export function useClients() {
       const { data, error } = await supabase
         .from('clients')
         .select('*')
+        .is('deleted_at', null)
         .order('created_at', { ascending: false });
       if (error) {
         toast.error(`Fehler beim Laden der Clients: ${error.message}`);
@@ -65,7 +66,8 @@ export function useInfiniteClients(searchTerm?: string) {
 
       let query = supabase
         .from('clients')
-        .select('*', { count: 'exact' });
+        .select('*', { count: 'exact' })
+        .is('deleted_at', null);
 
       // Apply search filter if term is provided
       if (cleanedTerm.length >= 1) {
@@ -110,6 +112,7 @@ export function useActiveClientsCount() {
       const { count, error } = await supabase
         .from('clients')
         .select('*', { count: 'exact', head: true })
+        .is('deleted_at', null)
         .eq('status', 'aktiv');
       if (error) throw error;
       return count ?? 0;
@@ -129,6 +132,7 @@ export function useCases() {
           *,
           client:clients!fk_cases_client_id(id, first_name, last_name)
         `)
+        .is('deleted_at', null)
         .order('created_at', { ascending: false });
       if (error) {
         toast.error(`Fehler beim Laden der Cases: ${error.message}`);
@@ -168,6 +172,7 @@ export function useInfiniteCases(sortMode?: CaseSortMode) {
           *,
           client:clients!fk_cases_client_id(id, first_name, last_name)
         `, { count: 'exact' })
+        .is('deleted_at', null)
         .order('created_at', { ascending: false })
         .range(from, to);
 
@@ -205,6 +210,7 @@ export function useActiveCases() {
           *,
           client:clients!fk_cases_client_id(id, first_name, last_name)
         `)
+        .is('deleted_at', null)
         .neq('status', 'abgeschlossen')
         .order('created_at', { ascending: false });
       if (error) {
@@ -225,6 +231,7 @@ export function useActiveCasesCount() {
       const { count, error } = await supabase
         .from('cases')
         .select('*', { count: 'exact', head: true })
+        .is('deleted_at', null)
         .neq('status', 'abgeschlossen');
       if (error) throw error;
       return count ?? 0;
@@ -242,8 +249,9 @@ export function useOpenTasks() {
         .from('tasks')
         .select(`
           *,
-          case:cases!fk_tasks_case_id(id, title, client:clients!fk_cases_client_id(id, first_name, last_name))
+          case:cases!fk_tasks_case_id(id, title, deleted_at, client:clients!fk_cases_client_id(id, first_name, last_name, deleted_at))
         `)
+        .is('deleted_at', null)
         .neq('status', 'erledigt')
         .order('due_date', { ascending: true, nullsFirst: false })
         .order('priority', { ascending: false });
@@ -251,7 +259,10 @@ export function useOpenTasks() {
         toast.error(`Fehler beim Laden der Tasks: ${error.message}`);
         throw error;
       }
-      return data;
+      // Filter out tasks whose case or client is deleted
+      return (data ?? []).filter(task => 
+        !task.case?.deleted_at && !task.case?.client?.deleted_at
+      );
     },
     staleTime: STALE_TIME,
     refetchOnWindowFocus: false,
@@ -265,6 +276,7 @@ export function useOpenTasksCount() {
       const { count, error } = await supabase
         .from('tasks')
         .select('*', { count: 'exact', head: true })
+        .is('deleted_at', null)
         .neq('status', 'erledigt');
       if (error) throw error;
       return count ?? 0;
