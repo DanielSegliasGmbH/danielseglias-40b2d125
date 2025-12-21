@@ -21,14 +21,16 @@ import {
 import {
   useCustomer,
   useUpdateCustomer,
-  useUpdateCustomerProfile,
-  useUpdateCustomerEconomics,
-  useUpdateCustomerControl,
+  useUpsertCustomerProfile,
+  useUpsertCustomerEconomics,
+  useUpsertCustomerControl,
   useDeleteCustomer,
   CustomerWithRelations,
   CustomerProfile,
   CustomerEconomics,
   CustomerControl,
+  CustomerStatus,
+  CustomerPriority,
 } from '@/hooks/useCustomerData';
 import { CustomerCoreTab } from '@/components/customers/CustomerCoreTab';
 import { CustomerProfileTab } from '@/components/customers/CustomerProfileTab';
@@ -42,9 +44,9 @@ export default function CustomerDetail() {
   
   const { data: customer, isLoading, error } = useCustomer(id || '');
   const updateCustomer = useUpdateCustomer();
-  const updateProfile = useUpdateCustomerProfile();
-  const updateEconomics = useUpdateCustomerEconomics();
-  const updateControl = useUpdateCustomerControl();
+  const updateProfile = useUpsertCustomerProfile();
+  const updateEconomics = useUpsertCustomerEconomics();
+  const updateControl = useUpsertCustomerControl();
   const deleteCustomer = useDeleteCustomer();
   
   const [activeTab, setActiveTab] = useState('core');
