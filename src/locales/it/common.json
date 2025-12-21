@@ -104,6 +104,8 @@
     "of": "di",
     "showing": "Visualizzando {{shown}} di {{total}} clienti",
     "loadMore": "Carica altri",
+    "loadingMore": "Caricamento...",
+    "noMore": "Nessun altro cliente",
     "notFound": "Cliente non trovato",
     "sortBy": "Ordina per",
     "sort": {

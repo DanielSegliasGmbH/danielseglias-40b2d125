@@ -104,6 +104,8 @@
     "of": "vo",
     "showing": "Zeig {{shown}} vo {{total}} Clients",
     "loadMore": "Meh lade",
+    "loadingMore": "Am Lade...",
+    "noMore": "Kei witere Clients",
     "notFound": "Client nöd gfunde",
     "sortBy": "Sortiere nach",
     "sort": {

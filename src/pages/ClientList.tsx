@@ -1,8 +1,8 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useClients } from '@/hooks/useDashboardData';
+import { useInfiniteClients } from '@/hooks/useDashboardData';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -23,36 +23,45 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { LogOut, Users, ArrowLeft, ChevronRight, Search } from 'lucide-react';
+import { LogOut, Users, ArrowLeft, ChevronRight, Search, Loader2 } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { CreateClientDialog } from '@/components/dashboard/CreateClientDialog';
 
 type ClientSortMode = 'last_asc' | 'last_desc' | 'status' | 'created_desc';
 
-const PAGE_SIZE = 20;
 const STATUS_ORDER: Record<string, number> = { aktiv: 0, pausiert: 1, archiviert: 2 };
 
 export default function ClientList() {
   const { t } = useTranslation();
   const { user, role, signOut } = useAuth();
-  const { data: clients, isLoading } = useClients();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortMode, setSortMode] = useState<ClientSortMode>('last_asc');
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
-  // Reset visible count when filters change
-  useEffect(() => {
-    setVisibleCount(PAGE_SIZE);
-  }, [searchTerm, sortMode]);
+  const {
+    data,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteClients();
 
-  const sortedClients = useMemo(() => {
-    if (!clients) return [];
-    
+  // Flatten all pages into single array
+  const allClients = useMemo(() => {
+    if (!data?.pages) return [];
+    return data.pages.flatMap(page => page.items);
+  }, [data]);
+
+  const totalCount = data?.pages?.[0]?.totalCount ?? 0;
+
+  // Client-side filter and sort (on loaded data)
+  const filteredClients = useMemo(() => {
+    if (!allClients.length) return [];
+
     // Filter first
     const term = searchTerm.trim().toLowerCase();
-    let filtered = clients;
+    let filtered = allClients;
     if (term) {
-      filtered = clients.filter((client) => {
+      filtered = allClients.filter((client) => {
         const searchString = [
           client.first_name,
           client.last_name,
@@ -65,7 +74,7 @@ export default function ClientList() {
         return searchString.includes(term);
       });
     }
-    
+
     // Then sort
     return [...filtered].sort((a, b) => {
       switch (sortMode) {
@@ -81,13 +90,7 @@ export default function ClientList() {
           return 0;
       }
     });
-  }, [clients, searchTerm, sortMode]);
-
-  // "Load more" pagination
-  const visibleClients = useMemo(() => 
-    sortedClients.slice(0, visibleCount), 
-    [sortedClients, visibleCount]
-  );
+  }, [allClients, searchTerm, sortMode]);
 
   const roleLabel = role === 'admin' ? t('roles.admin') : t('roles.staff');
   const roleVariant = role === 'admin' ? 'default' : 'secondary';
@@ -160,7 +163,11 @@ export default function ClientList() {
                   </SelectContent>
                 </Select>
               </div>
-              
+              {totalCount > 0 && (
+                <p className="text-sm text-muted-foreground">
+                  {filteredClients.length} {t('client.of')} {totalCount} {t('client.title')}
+                </p>
+              )}
             </div>
             {isLoading ? (
               <div className="space-y-2">
@@ -168,62 +175,71 @@ export default function ClientList() {
                 <Skeleton className="h-10 w-full" />
                 <Skeleton className="h-10 w-full" />
               </div>
-            ) : clients?.length === 0 ? (
+            ) : allClients.length === 0 ? (
               <p className="text-muted-foreground py-4">{t('client.noClients')}</p>
-            ) : sortedClients.length === 0 ? (
+            ) : filteredClients.length === 0 ? (
               <p className="text-muted-foreground py-4">{t('client.noClientsFound')}</p>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{t('client.lastName')}</TableHead>
-                    <TableHead>{t('client.firstName')}</TableHead>
-                    <TableHead>{t('client.email')}</TableHead>
-                    <TableHead>{t('client.phone')}</TableHead>
-                    <TableHead>{t('client.status')}</TableHead>
-                    <TableHead></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {visibleClients.map((client) => (
-                    <TableRow key={client.id} className="cursor-pointer hover:bg-muted/50">
-                      <TableCell className="font-medium">{client.last_name}</TableCell>
-                      <TableCell>{client.first_name}</TableCell>
-                      <TableCell>{client.email || '–'}</TableCell>
-                      <TableCell>{client.phone || '–'}</TableCell>
-                      <TableCell>
-                        <Badge variant={getStatusVariant(client.status)}>
-                          {t(`client.statuses.${client.status}`, client.status)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Link to={`/app/clients/${client.id}`}>
-                          <Button variant="ghost" size="sm">
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
-                        </Link>
-                      </TableCell>
+              <>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t('client.lastName')}</TableHead>
+                      <TableHead>{t('client.firstName')}</TableHead>
+                      <TableHead>{t('client.email')}</TableHead>
+                      <TableHead>{t('client.phone')}</TableHead>
+                      <TableHead>{t('client.status')}</TableHead>
+                      <TableHead></TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-            
-            {/* Load More Section */}
-            {sortedClients.length > 0 && (
-              <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t">
-                <p className="text-sm text-muted-foreground">
-                  {t('client.showing', { shown: visibleClients.length, total: sortedClients.length })}
-                </p>
-                {visibleCount < sortedClients.length && (
-                  <Button
-                    variant="outline"
-                    onClick={() => setVisibleCount((v) => Math.min(v + PAGE_SIZE, sortedClients.length))}
-                  >
-                    {t('client.loadMore')}
-                  </Button>
-                )}
-              </div>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredClients.map((client) => (
+                      <TableRow key={client.id} className="cursor-pointer hover:bg-muted/50">
+                        <TableCell className="font-medium">{client.last_name}</TableCell>
+                        <TableCell>{client.first_name}</TableCell>
+                        <TableCell>{client.email || '–'}</TableCell>
+                        <TableCell>{client.phone || '–'}</TableCell>
+                        <TableCell>
+                          <Badge variant={getStatusVariant(client.status)}>
+                            {t(`client.statuses.${client.status}`, client.status)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Link to={`/app/clients/${client.id}`}>
+                            <Button variant="ghost" size="sm">
+                              <ChevronRight className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+
+                {/* Load More Section */}
+                <div className="mt-4 flex flex-col items-center gap-2 pt-4 border-t">
+                  {hasNextPage ? (
+                    <Button
+                      variant="outline"
+                      onClick={() => fetchNextPage()}
+                      disabled={isFetchingNextPage}
+                    >
+                      {isFetchingNextPage ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          {t('client.loadingMore')}
+                        </>
+                      ) : (
+                        t('client.loadMore')
+                      )}
+                    </Button>
+                  ) : allClients.length > 0 && (
+                    <p className="text-sm text-muted-foreground">
+                      {t('client.noMore')}
+                    </p>
+                  )}
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
