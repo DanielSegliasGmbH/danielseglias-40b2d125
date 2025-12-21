@@ -4,6 +4,7 @@ import { AppLayout } from '@/components/AppLayout';
 import { SystemMapGraph } from '@/components/system-map/SystemMapGraph';
 import { SystemMapDetailPanel } from '@/components/system-map/SystemMapDetailPanel';
 import { SystemMapFilters } from '@/components/system-map/SystemMapFilters';
+import { SystemMapLegend } from '@/components/system-map/SystemMapLegend';
 import { useSystemMapNodes, useSystemMapEdges, SystemMapEdge } from '@/hooks/useSystemMap';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -139,6 +140,7 @@ export default function SystemMap() {
 
         <div className="flex-1 flex overflow-hidden">
           <div className="flex-1 relative">
+            <SystemMapLegend />
             <SystemMapGraph
               nodes={nodes || []}
               edges={edges || []}
