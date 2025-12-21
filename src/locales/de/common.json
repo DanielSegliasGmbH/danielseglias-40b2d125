@@ -356,6 +356,13 @@
       "title": "Verbindung erstellen",
       "relation": "Beziehungstyp"
     },
+    "edgeDetail": {
+      "title": "Verbindung",
+      "relation": "Beziehung",
+      "delete": "Verbindung löschen",
+      "confirmTitle": "Verbindung löschen?",
+      "confirmMessage": "Die Verbindung von \"{{source}}\" nach \"{{target}}\" wird gelöscht."
+    },
     "legend": {
       "title": "Legende",
       "categories": "Kategorien",

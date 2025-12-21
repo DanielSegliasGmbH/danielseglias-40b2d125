@@ -347,6 +347,13 @@
       "title": "Create Connection",
       "relation": "Relation Type"
     },
+    "edgeDetail": {
+      "title": "Connection",
+      "relation": "Relation",
+      "delete": "Delete Connection",
+      "confirmTitle": "Delete Connection?",
+      "confirmMessage": "The connection from \"{{source}}\" to \"{{target}}\" will be deleted."
+    },
     "legend": {
       "title": "Legend",
       "categories": "Categories",
