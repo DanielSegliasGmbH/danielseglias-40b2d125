@@ -9,8 +9,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { PasswordStrengthChecker, usePasswordValidation } from '@/components/PasswordStrengthChecker';
 import { z } from 'zod';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Eye, EyeOff } from 'lucide-react';
 
 export default function Signup() {
   const { t } = useTranslation();
@@ -18,16 +19,19 @@ export default function Signup() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { signUp, user, role, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const passwordContext = { email, firstName, lastName };
+  const { allPassed: passwordValid } = usePasswordValidation(password, passwordContext);
+
   const signupSchema = z.object({
     firstName: z.string().min(1, t('app.required')),
     lastName: z.string().min(1, t('app.required')),
     email: z.string().email(t('auth.invalidCredentials')),
-    password: z.string().min(6, t('auth.invalidCredentials')),
   });
 
   useEffect(() => {
@@ -43,7 +47,7 @@ export default function Signup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const validation = signupSchema.safeParse({ firstName, lastName, email, password });
+    const validation = signupSchema.safeParse({ firstName, lastName, email });
     if (!validation.success) {
       toast({
         variant: 'destructive',
@@ -53,15 +57,30 @@ export default function Signup() {
       return;
     }
 
+    if (!passwordValid) {
+      toast({
+        variant: 'destructive',
+        title: t('app.error'),
+        description: t('auth.password.invalid'),
+      });
+      return;
+    }
+
     setIsLoading(true);
     const { error } = await signUp(email, password, firstName, lastName);
     setIsLoading(false);
 
     if (error) {
+      // Handle Supabase password policy errors gracefully
+      const isPasswordPolicyError = 
+        error.message?.toLowerCase().includes('password') ||
+        error.message?.toLowerCase().includes('weak') ||
+        error.message?.toLowerCase().includes('strength');
+      
       toast({
         variant: 'destructive',
         title: t('auth.signupError'),
-        description: error.message,
+        description: isPasswordPolicyError ? t('auth.password.invalid') : error.message,
       });
     } else {
       toast({
@@ -70,6 +89,8 @@ export default function Signup() {
       });
     }
   };
+
+  const isFormValid = firstName.trim() && lastName.trim() && email.trim() && passwordValid;
 
   if (loading) {
     return (
@@ -135,17 +156,39 @@ export default function Signup() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">{t('auth.password')}</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={isLoading}
+              <Label htmlFor="password">{t('auth.passwordLabel')}</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={isLoading}
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              
+              {/* Password Strength Checker */}
+              <PasswordStrengthChecker 
+                password={password} 
+                context={passwordContext}
+                className="mt-3"
               />
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={isLoading || !isFormValid}
+            >
               {isLoading ? `${t('auth.signup')}...` : t('auth.signup')}
             </Button>
           </form>

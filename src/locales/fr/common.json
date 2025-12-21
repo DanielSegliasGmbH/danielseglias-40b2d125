@@ -23,7 +23,26 @@
     "logout": "Déconnexion",
     "signup": "Inscription",
     "email": "E-mail",
-    "password": "Mot de passe",
+    "passwordLabel": "Mot de passe",
+    "password": {
+      "rules": {
+        "minLength": "Au moins 12 caractères",
+        "uppercase": "Au moins 1 majuscule",
+        "lowercase": "Au moins 1 minuscule",
+        "number": "Au moins 1 chiffre",
+        "special": "Au moins 1 caractère spécial",
+        "noEmail": "Ne doit pas contenir l'e-mail",
+        "noName": "Ne doit pas contenir le nom"
+      },
+      "strength": {
+        "label": "Force du mot de passe",
+        "weak": "Faible",
+        "medium": "Moyen",
+        "strong": "Fort"
+      },
+      "rulesFulfilled": "règles remplies",
+      "invalid": "Le mot de passe ne répond pas à toutes les exigences de sécurité"
+    },
     "firstName": "Prénom",
     "lastName": "Nom",
     "phone": "Téléphone",
