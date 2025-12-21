@@ -493,37 +493,37 @@
     "unlinkError": "Fehler beim Entfernen der Verknüpfung",
     "unlinkConfirm": "Sind Sie sicher? Der Benutzer verliert den Zugang zum Kundenbereich.",
     "userIdHint": "Finden Sie die User ID in der Benutzerverwaltung oder kopieren Sie sie aus dem Auth-System.",
-    "insurance": {
+    "insuranceFeatures": {
       "feature1": "Übersicht aller Versicherungspolicen",
       "feature2": "Leistungsdetails und Deckungssummen",
       "feature3": "Vertragsunterlagen zum Download",
       "feature4": "Schadensmeldung und Status"
     },
-    "goals": {
+    "goalsFeatures": {
       "feature1": "Finanzielle Ziele definieren",
       "feature2": "Fortschrittsanzeige",
       "feature3": "Meilensteine setzen",
       "feature4": "Zielerreichung verfolgen"
     },
-    "tasks": {
+    "tasksFeatures": {
       "feature1": "Offene Aufgaben einsehen",
       "feature2": "Dokumente hochladen",
       "feature3": "Formulare ausfüllen",
       "feature4": "Statusverfolgung"
     },
-    "strategies": {
+    "strategiesFeatures": {
       "feature1": "Aktuelle Anlagestrategie",
       "feature2": "Portfolio-Übersicht",
       "feature3": "Risikoanalyse",
       "feature4": "Performance-Berichte"
     },
-    "library": {
+    "libraryFeatures": {
       "feature1": "Finanzwissen-Artikel",
       "feature2": "Erklärungs-Videos",
       "feature3": "FAQ und Hilfe",
       "feature4": "Persönliche Dokumente"
     },
-    "tools": {
+    "toolsFeatures": {
       "feature1": "Zinseszinsrechner",
       "feature2": "Budgetplaner",
       "feature3": "Steuerrechner",

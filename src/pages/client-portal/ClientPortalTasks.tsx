@@ -31,10 +31,10 @@ export default function ClientPortalTasks() {
             <div className="bg-muted/50 rounded-lg p-6">
               <h3 className="font-medium mb-3">{t('clientPortal.plannedFeatures')}</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>• {t('clientPortal.tasks.feature1')}</li>
-                <li>• {t('clientPortal.tasks.feature2')}</li>
-                <li>• {t('clientPortal.tasks.feature3')}</li>
-                <li>• {t('clientPortal.tasks.feature4')}</li>
+                <li>• {t('clientPortal.tasksFeatures.feature1')}</li>
+                <li>• {t('clientPortal.tasksFeatures.feature2')}</li>
+                <li>• {t('clientPortal.tasksFeatures.feature3')}</li>
+                <li>• {t('clientPortal.tasksFeatures.feature4')}</li>
               </ul>
             </div>
           </CardContent>

@@ -486,37 +486,37 @@
     "unlinkError": "Error unlinking user",
     "unlinkConfirm": "Are you sure? The user will lose access to the client portal.",
     "userIdHint": "Find the User ID in User Management or copy it from the auth system.",
-    "insurance": {
+    "insuranceFeatures": {
       "feature1": "Overview of all insurance policies",
       "feature2": "Coverage details and limits",
       "feature3": "Contract documents for download",
       "feature4": "Claims reporting and status"
     },
-    "goals": {
+    "goalsFeatures": {
       "feature1": "Define financial goals",
       "feature2": "Progress display",
       "feature3": "Set milestones",
       "feature4": "Track goal achievement"
     },
-    "tasks": {
+    "tasksFeatures": {
       "feature1": "View open tasks",
       "feature2": "Upload documents",
       "feature3": "Fill out forms",
       "feature4": "Status tracking"
     },
-    "strategies": {
+    "strategiesFeatures": {
       "feature1": "Current investment strategy",
       "feature2": "Portfolio overview",
       "feature3": "Risk analysis",
       "feature4": "Performance reports"
     },
-    "library": {
+    "libraryFeatures": {
       "feature1": "Financial knowledge articles",
       "feature2": "Explanation videos",
       "feature3": "FAQ and help",
       "feature4": "Personal documents"
     },
-    "tools": {
+    "toolsFeatures": {
       "feature1": "Compound interest calculator",
       "feature2": "Budget planner",
       "feature3": "Tax calculator",
