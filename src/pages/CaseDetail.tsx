@@ -90,7 +90,7 @@ export default function CaseDetail() {
 
   const [taskFilter, setTaskFilter] = useState<TaskStatus | 'all'>('all');
   const { data: caseData, isLoading: loadingCase } = useCase(caseId!);
-  const { data: tasks, isLoading: loadingTasks } = useCaseTasks(caseId!, taskFilter);
+  const { data: tasks, isLoading: loadingTasks, error: tasksError } = useCaseTasks(caseId!, taskFilter);
   const { data: meetings, isLoading: loadingMeetings } = useCaseMeetings(caseId!);
   const { data: notes, isLoading: loadingNotes } = useCaseNotes(caseId!);
   const { data: profiles } = useProfiles();
@@ -421,7 +421,11 @@ export default function CaseDetail() {
                   <TabsTrigger value="erledigt">{t('task.statuses.erledigt')}</TabsTrigger>
                 </TabsList>
               </Tabs>
-              {loadingTasks ? <Skeleton className="h-20 w-full" /> : tasks?.length === 0 ? (
+              {loadingTasks ? (
+                <Skeleton className="h-20 w-full" />
+              ) : tasksError ? (
+                <p className="text-destructive">{t('task.loadError')}: {(tasksError as Error).message}</p>
+              ) : tasks?.length === 0 ? (
                 <p className="text-muted-foreground">{t('task.noTasks')}</p>
               ) : (
                 <div className="space-y-2">

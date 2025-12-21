@@ -200,6 +200,7 @@
     "requiredFields": "Case und Titel sind Pflichtfälder",
     "caseClient": "Case / Client",
     "noTasks": "Kei Tasks gfunde",
+    "loadError": "Fähler bim Lade vo de Tasks",
     "markDone": "Als erledigt markiere",
     "markedDone": "Task als erledigt markiert",
     "statusChanged": "Task-Status gänderet",
