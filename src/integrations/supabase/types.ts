@@ -230,6 +230,340 @@ export type Database = {
           },
         ]
       }
+      customer_control: {
+        Row: {
+          created_at: string
+          cross_sell_potential:
+            | Database["public"]["Enums"]["potential_level"]
+            | null
+          customer_id: string
+          customer_value_score: number | null
+          decision_style: Database["public"]["Enums"]["decision_style"] | null
+          estimated_revenue_band:
+            | Database["public"]["Enums"]["revenue_band"]
+            | null
+          financial_knowledge_level:
+            | Database["public"]["Enums"]["financial_knowledge_level"]
+            | null
+          google_review_date: string | null
+          google_review_received: boolean | null
+          id: string
+          implementation_strength: number | null
+          lifetime_value: number | null
+          moneytree_date: string | null
+          moneytree_received: boolean | null
+          referral_score: number | null
+          service_effort: Database["public"]["Enums"]["service_effort"] | null
+          trust_level: number | null
+          updated_at: string
+          upsell_potential:
+            | Database["public"]["Enums"]["potential_level"]
+            | null
+        }
+        Insert: {
+          created_at?: string
+          cross_sell_potential?:
+            | Database["public"]["Enums"]["potential_level"]
+            | null
+          customer_id: string
+          customer_value_score?: number | null
+          decision_style?: Database["public"]["Enums"]["decision_style"] | null
+          estimated_revenue_band?:
+            | Database["public"]["Enums"]["revenue_band"]
+            | null
+          financial_knowledge_level?:
+            | Database["public"]["Enums"]["financial_knowledge_level"]
+            | null
+          google_review_date?: string | null
+          google_review_received?: boolean | null
+          id?: string
+          implementation_strength?: number | null
+          lifetime_value?: number | null
+          moneytree_date?: string | null
+          moneytree_received?: boolean | null
+          referral_score?: number | null
+          service_effort?: Database["public"]["Enums"]["service_effort"] | null
+          trust_level?: number | null
+          updated_at?: string
+          upsell_potential?:
+            | Database["public"]["Enums"]["potential_level"]
+            | null
+        }
+        Update: {
+          created_at?: string
+          cross_sell_potential?:
+            | Database["public"]["Enums"]["potential_level"]
+            | null
+          customer_id?: string
+          customer_value_score?: number | null
+          decision_style?: Database["public"]["Enums"]["decision_style"] | null
+          estimated_revenue_band?:
+            | Database["public"]["Enums"]["revenue_band"]
+            | null
+          financial_knowledge_level?:
+            | Database["public"]["Enums"]["financial_knowledge_level"]
+            | null
+          google_review_date?: string | null
+          google_review_received?: boolean | null
+          id?: string
+          implementation_strength?: number | null
+          lifetime_value?: number | null
+          moneytree_date?: string | null
+          moneytree_received?: boolean | null
+          referral_score?: number | null
+          service_effort?: Database["public"]["Enums"]["service_effort"] | null
+          trust_level?: number | null
+          updated_at?: string
+          upsell_potential?:
+            | Database["public"]["Enums"]["potential_level"]
+            | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_control_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: true
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_economics: {
+        Row: {
+          banks: string[] | null
+          bonus_income: boolean | null
+          created_at: string
+          customer_id: string
+          employer: string | null
+          employment_type: Database["public"]["Enums"]["employment_type"] | null
+          entrepreneurial_activity: boolean | null
+          has_liabilities: boolean | null
+          ibans: string[] | null
+          id: string
+          income_range: Database["public"]["Enums"]["income_range"] | null
+          industry: string | null
+          job_title: string | null
+          owns_real_estate: boolean | null
+          side_income: boolean | null
+          updated_at: string
+          workload_percentage: number | null
+        }
+        Insert: {
+          banks?: string[] | null
+          bonus_income?: boolean | null
+          created_at?: string
+          customer_id: string
+          employer?: string | null
+          employment_type?:
+            | Database["public"]["Enums"]["employment_type"]
+            | null
+          entrepreneurial_activity?: boolean | null
+          has_liabilities?: boolean | null
+          ibans?: string[] | null
+          id?: string
+          income_range?: Database["public"]["Enums"]["income_range"] | null
+          industry?: string | null
+          job_title?: string | null
+          owns_real_estate?: boolean | null
+          side_income?: boolean | null
+          updated_at?: string
+          workload_percentage?: number | null
+        }
+        Update: {
+          banks?: string[] | null
+          bonus_income?: boolean | null
+          created_at?: string
+          customer_id?: string
+          employer?: string | null
+          employment_type?:
+            | Database["public"]["Enums"]["employment_type"]
+            | null
+          entrepreneurial_activity?: boolean | null
+          has_liabilities?: boolean | null
+          ibans?: string[] | null
+          id?: string
+          income_range?: Database["public"]["Enums"]["income_range"] | null
+          industry?: string | null
+          job_title?: string | null
+          owns_real_estate?: boolean | null
+          side_income?: boolean | null
+          updated_at?: string
+          workload_percentage?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_economics_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: true
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_profiles: {
+        Row: {
+          canton: string | null
+          children_birth_years: number[] | null
+          city: string | null
+          communication_preference:
+            | Database["public"]["Enums"]["communication_preference"]
+            | null
+          country: string | null
+          created_at: string
+          customer_id: string
+          email: string | null
+          gdpr_consent_at: string | null
+          house_number: string | null
+          id: string
+          language_preference: string | null
+          phone: string | null
+          postal_code: string | null
+          street: string | null
+          updated_at: string
+          wedding_date: string | null
+        }
+        Insert: {
+          canton?: string | null
+          children_birth_years?: number[] | null
+          city?: string | null
+          communication_preference?:
+            | Database["public"]["Enums"]["communication_preference"]
+            | null
+          country?: string | null
+          created_at?: string
+          customer_id: string
+          email?: string | null
+          gdpr_consent_at?: string | null
+          house_number?: string | null
+          id?: string
+          language_preference?: string | null
+          phone?: string | null
+          postal_code?: string | null
+          street?: string | null
+          updated_at?: string
+          wedding_date?: string | null
+        }
+        Update: {
+          canton?: string | null
+          children_birth_years?: number[] | null
+          city?: string | null
+          communication_preference?:
+            | Database["public"]["Enums"]["communication_preference"]
+            | null
+          country?: string | null
+          created_at?: string
+          customer_id?: string
+          email?: string | null
+          gdpr_consent_at?: string | null
+          house_number?: string | null
+          id?: string
+          language_preference?: string | null
+          phone?: string | null
+          postal_code?: string | null
+          street?: string | null
+          updated_at?: string
+          wedding_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_profiles_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: true
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customers: {
+        Row: {
+          acquisition_source: string | null
+          ahv_number: string | null
+          care_level: Database["public"]["Enums"]["care_level"] | null
+          civil_status: Database["public"]["Enums"]["civil_status"] | null
+          created_at: string
+          created_by: string | null
+          customer_status: Database["public"]["Enums"]["customer_status"]
+          date_of_birth: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          first_contact_date: string | null
+          first_name: string
+          id: string
+          last_name: string
+          nationality: string | null
+          number_of_children: number | null
+          partner_customer_id: string | null
+          preferred_name: string | null
+          priority: Database["public"]["Enums"]["customer_priority"] | null
+          referrer_customer_id: string | null
+          salutation: string | null
+          updated_at: string
+        }
+        Insert: {
+          acquisition_source?: string | null
+          ahv_number?: string | null
+          care_level?: Database["public"]["Enums"]["care_level"] | null
+          civil_status?: Database["public"]["Enums"]["civil_status"] | null
+          created_at?: string
+          created_by?: string | null
+          customer_status?: Database["public"]["Enums"]["customer_status"]
+          date_of_birth?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          first_contact_date?: string | null
+          first_name: string
+          id?: string
+          last_name: string
+          nationality?: string | null
+          number_of_children?: number | null
+          partner_customer_id?: string | null
+          preferred_name?: string | null
+          priority?: Database["public"]["Enums"]["customer_priority"] | null
+          referrer_customer_id?: string | null
+          salutation?: string | null
+          updated_at?: string
+        }
+        Update: {
+          acquisition_source?: string | null
+          ahv_number?: string | null
+          care_level?: Database["public"]["Enums"]["care_level"] | null
+          civil_status?: Database["public"]["Enums"]["civil_status"] | null
+          created_at?: string
+          created_by?: string | null
+          customer_status?: Database["public"]["Enums"]["customer_status"]
+          date_of_birth?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          first_contact_date?: string | null
+          first_name?: string
+          id?: string
+          last_name?: string
+          nationality?: string | null
+          number_of_children?: number | null
+          partner_customer_id?: string | null
+          preferred_name?: string | null
+          priority?: Database["public"]["Enums"]["customer_priority"] | null
+          referrer_customer_id?: string | null
+          salutation?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customers_partner_customer_id_fkey"
+            columns: ["partner_customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customers_referrer_customer_id_fkey"
+            columns: ["referrer_customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       meetings: {
         Row: {
           case_id: string
@@ -566,6 +900,7 @@ export type Database = {
     Functions: {
       cleanup_deleted_items: { Args: never; Returns: number }
       get_client_id_for_user: { Args: { _user_id: string }; Returns: string }
+      get_customer_id_for_user: { Args: { _user_id: string }; Returns: string }
       has_any_role: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
@@ -585,22 +920,57 @@ export type Database = {
         Args: { _client_id: string; _user_id: string }
         Returns: boolean
       }
+      staff_has_customer_access: {
+        Args: { _customer_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "staff" | "client"
+      care_level: "vip" | "standard" | "light"
       case_status:
         | "offen"
         | "in_bearbeitung"
         | "wartet_auf_kunde"
         | "abgeschlossen"
         | "pausiert"
+      civil_status:
+        | "single"
+        | "married"
+        | "divorced"
+        | "widowed"
+        | "partnership"
       client_status: "aktiv" | "pausiert" | "archiviert"
+      communication_preference: "whatsapp" | "email" | "phone"
+      customer_priority: "A" | "B" | "C"
+      customer_status: "lead" | "active" | "passive" | "former"
+      decision_style: "fast" | "analytical" | "hesitant"
+      employment_type:
+        | "employed"
+        | "self_employed"
+        | "entrepreneur"
+        | "unemployed"
+        | "retired"
+      financial_knowledge_level:
+        | "beginner"
+        | "intermediate"
+        | "advanced"
+        | "expert"
+      income_range:
+        | "under_50k"
+        | "50k_80k"
+        | "80k_120k"
+        | "120k_200k"
+        | "200k_plus"
       meeting_type:
         | "erstberatung"
         | "folgeberatung"
         | "check_in"
         | "telefonat"
         | "video_call"
+      potential_level: "none" | "low" | "medium" | "high"
+      revenue_band: "low" | "medium" | "high" | "very_high"
+      service_effort: "low" | "medium" | "high"
       task_priority: "niedrig" | "mittel" | "hoch" | "dringend"
       task_status: "offen" | "in_arbeit" | "erledigt" | "blockiert"
     }
@@ -731,6 +1101,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "staff", "client"],
+      care_level: ["vip", "standard", "light"],
       case_status: [
         "offen",
         "in_bearbeitung",
@@ -738,7 +1109,32 @@ export const Constants = {
         "abgeschlossen",
         "pausiert",
       ],
+      civil_status: ["single", "married", "divorced", "widowed", "partnership"],
       client_status: ["aktiv", "pausiert", "archiviert"],
+      communication_preference: ["whatsapp", "email", "phone"],
+      customer_priority: ["A", "B", "C"],
+      customer_status: ["lead", "active", "passive", "former"],
+      decision_style: ["fast", "analytical", "hesitant"],
+      employment_type: [
+        "employed",
+        "self_employed",
+        "entrepreneur",
+        "unemployed",
+        "retired",
+      ],
+      financial_knowledge_level: [
+        "beginner",
+        "intermediate",
+        "advanced",
+        "expert",
+      ],
+      income_range: [
+        "under_50k",
+        "50k_80k",
+        "80k_120k",
+        "120k_200k",
+        "200k_plus",
+      ],
       meeting_type: [
         "erstberatung",
         "folgeberatung",
@@ -746,6 +1142,9 @@ export const Constants = {
         "telefonat",
         "video_call",
       ],
+      potential_level: ["none", "low", "medium", "high"],
+      revenue_band: ["low", "medium", "high", "very_high"],
+      service_effort: ["low", "medium", "high"],
       task_priority: ["niedrig", "mittel", "hoch", "dringend"],
       task_status: ["offen", "in_arbeit", "erledigt", "blockiert"],
     },
