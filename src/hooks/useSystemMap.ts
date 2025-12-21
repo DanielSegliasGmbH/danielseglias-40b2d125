@@ -266,6 +266,85 @@ export function useDeleteEdge() {
   });
 }
 
+export function useUpdateEdge() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      currentEdgeId,
+      source_key,
+      target_key,
+      relation,
+    }: {
+      currentEdgeId: string;
+      source_key: string;
+      target_key: string;
+      relation: string;
+    }) => {
+      // Check for self-edge
+      if (source_key === target_key) {
+        throw new Error('SELF_EDGE');
+      }
+
+      // Check for existing edge with new params (active or inactive)
+      const { data: existing, error: checkError } = await supabase
+        .from('system_map_edges')
+        .select('id, is_active')
+        .eq('source_key', source_key)
+        .eq('target_key', target_key)
+        .eq('relation', relation)
+        .neq('id', currentEdgeId)
+        .maybeSingle();
+
+      if (checkError) throw checkError;
+
+      if (existing) {
+        if (existing.is_active) {
+          throw new Error('EDGE_EXISTS');
+        }
+        // Reactivate the existing inactive edge and deactivate current
+        const { error: reactivateError } = await supabase
+          .from('system_map_edges')
+          .update({ is_active: true })
+          .eq('id', existing.id);
+
+        if (reactivateError) throw reactivateError;
+
+        const { error: deactivateError } = await supabase
+          .from('system_map_edges')
+          .update({ is_active: false })
+          .eq('id', currentEdgeId);
+
+        if (deactivateError) throw deactivateError;
+
+        return { merged: true };
+      }
+
+      // Update current edge with new values
+      const { error } = await supabase
+        .from('system_map_edges')
+        .update({ source_key, target_key, relation })
+        .eq('id', currentEdgeId);
+
+      if (error) throw error;
+      return { merged: false };
+    },
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: ['system-map', 'edges'] });
+      toast.success(result?.merged ? 'Verbindung zusammengeführt' : 'Verbindung aktualisiert');
+    },
+    onError: (error: Error) => {
+      if (error.message === 'EDGE_EXISTS') {
+        toast.error('Diese Verbindung existiert bereits');
+      } else if (error.message === 'SELF_EDGE') {
+        toast.error('Verbindung zu sich selbst nicht erlaubt');
+      } else {
+        toast.error('Verbindung konnte nicht aktualisiert werden');
+      }
+    },
+  });
+}
+
 // Check if key is unique
 export function useCheckKeyUnique() {
   return useMutation({

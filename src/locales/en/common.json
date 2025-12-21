@@ -354,6 +354,11 @@
       "confirmTitle": "Delete Connection?",
       "confirmMessage": "The connection from \"{{source}}\" to \"{{target}}\" will be deleted."
     },
+    "edgeEdit": {
+      "title": "Edit Connection",
+      "swap": "Swap direction",
+      "swapHint": "Direction will be swapped on save"
+    },
     "legend": {
       "title": "Legend",
       "categories": "Categories",
