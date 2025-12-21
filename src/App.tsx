@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AppDashboard from "./pages/AppDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
+import UserManagement from "./pages/UserManagement";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,16 @@ const App = () => (
               element={
                 <RouteGuard allowedRoles={['admin', 'staff']}>
                   <AppDashboard />
+                </RouteGuard>
+              }
+            />
+
+            {/* Protected: Admin only - User Management */}
+            <Route
+              path="/app/users"
+              element={
+                <RouteGuard allowedRoles={['admin']}>
+                  <UserManagement />
                 </RouteGuard>
               }
             />

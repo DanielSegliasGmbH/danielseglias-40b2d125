@@ -133,7 +133,30 @@
     "status": "Status",
     "priority": "Priority",
     "due": "Due",
-    "assignedTo": "Assigned to"
+    "assignedTo": "Assigned to",
+    "email": "Email",
+    "role": "Role",
+    "actions": "Actions"
+  },
+  "userManagement": {
+    "title": "User Management",
+    "allUsers": "All Users",
+    "noUsers": "No users found",
+    "newUser": "New User",
+    "createUser": "Create User",
+    "creating": "Creating...",
+    "roleUpdated": "Role updated successfully",
+    "roleUpdateError": "Error updating role",
+    "userCreated": "User created successfully",
+    "userCreateError": "Error creating user",
+    "selectRole": "Select role",
+    "selectClient": "Select client",
+    "noRole": "No role",
+    "linkClient": "Link Client",
+    "clientLinked": "Client linked successfully",
+    "clientLinkError": "Error linking client",
+    "requiredFields": "Email, password, first and last name are required",
+    "clientRequired": "Client must be selected for client role"
   },
   "language": {
     "de": "Deutsch",

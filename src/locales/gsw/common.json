@@ -133,7 +133,30 @@
     "status": "Status",
     "priority": "Priorität",
     "due": "Fällig",
-    "assignedTo": "Zuegwiise an"
+    "assignedTo": "Zuegwiise an",
+    "email": "E-Mail",
+    "role": "Rolle",
+    "actions": "Aktione"
+  },
+  "userManagement": {
+    "title": "Benutzerverwautig",
+    "allUsers": "Alli Benutzer",
+    "noUsers": "Kei Benutzer gfunde",
+    "newUser": "Neue Benutzer",
+    "createUser": "Benutzer erstelle",
+    "creating": "Am Erstelle...",
+    "roleUpdated": "Rolle erfolgriich aktualisiert",
+    "roleUpdateError": "Fähler bim Aktualisiere vo de Rolle",
+    "userCreated": "Benutzer erfolgriich erstellt",
+    "userCreateError": "Fähler bim Erstelle vom Benutzer",
+    "selectRole": "Rolle uswähle",
+    "selectClient": "Client uswähle",
+    "noRole": "Kei Rolle",
+    "linkClient": "Client verknüpfe",
+    "clientLinked": "Client erfolgriich verknüpft",
+    "clientLinkError": "Fähler bim Verknüpfe vom Client",
+    "requiredFields": "E-Mail, Passwort, Vor- und Nachname sind Pflichtfälder",
+    "clientRequired": "Für Client-Rolle mues en Client usgwählt wärde"
   },
   "language": {
     "de": "Deutsch",
