@@ -319,6 +319,27 @@
     "searchNodes": "Search nodes...",
     "coreOnly": "Core only",
     "editMode": "Edit",
-    "viewMode": "View"
+    "viewMode": "View",
+    "addNode": "Add Node",
+    "createNode": "Create Node",
+    "editNode": "Edit Node",
+    "deleteNode": "Delete Node",
+    "confirmDelete": "Delete Node?",
+    "deleteConfirmMessage": "This action cannot be undone.",
+    "deleteWithEdges": "This node has {{count}} connections. They will also be deleted.",
+    "deleteWithEdgesAction": "Delete with connections",
+    "form": {
+      "key": "Key (unique)",
+      "keyRequired": "Key is required",
+      "keyExists": "This key already exists",
+      "keyImmutable": "Key cannot be changed after creation",
+      "label": "Display name",
+      "labelRequired": "Display name is required",
+      "category": "Category",
+      "importance": "Importance",
+      "phase": "Phase",
+      "description": "Description",
+      "isActive": "Active"
+    }
   }
 }

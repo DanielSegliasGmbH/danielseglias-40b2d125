@@ -319,6 +319,27 @@
     "searchNodes": "Nodes suchen...",
     "coreOnly": "Nur Core",
     "editMode": "Bearbeiten",
-    "viewMode": "Ansicht"
+    "viewMode": "Ansicht",
+    "addNode": "Node hinzufügen",
+    "createNode": "Neuen Node erstellen",
+    "editNode": "Node bearbeiten",
+    "deleteNode": "Node löschen",
+    "confirmDelete": "Node löschen?",
+    "deleteConfirmMessage": "Dieser Vorgang kann nicht rückgängig gemacht werden.",
+    "deleteWithEdges": "Dieser Node hat {{count}} Verbindungen. Diese werden ebenfalls gelöscht.",
+    "deleteWithEdgesAction": "Mit Verbindungen löschen",
+    "form": {
+      "key": "Key (eindeutig)",
+      "keyRequired": "Key ist erforderlich",
+      "keyExists": "Dieser Key existiert bereits",
+      "keyImmutable": "Key kann nach Erstellung nicht geändert werden",
+      "label": "Anzeigename",
+      "labelRequired": "Anzeigename ist erforderlich",
+      "category": "Kategorie",
+      "importance": "Wichtigkeit",
+      "phase": "Phase",
+      "description": "Beschreibung",
+      "isActive": "Aktiv"
+    }
   }
 }
