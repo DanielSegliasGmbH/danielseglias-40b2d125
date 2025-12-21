@@ -23,7 +23,26 @@
     "logout": "Esci",
     "signup": "Registrati",
     "email": "E-mail",
-    "password": "Password",
+    "passwordLabel": "Password",
+    "password": {
+      "rules": {
+        "minLength": "Almeno 12 caratteri",
+        "uppercase": "Almeno 1 lettera maiuscola",
+        "lowercase": "Almeno 1 lettera minuscola",
+        "number": "Almeno 1 numero",
+        "special": "Almeno 1 carattere speciale",
+        "noEmail": "Non deve contenere l'email",
+        "noName": "Non deve contenere il nome"
+      },
+      "strength": {
+        "label": "Forza password",
+        "weak": "Debole",
+        "medium": "Media",
+        "strong": "Forte"
+      },
+      "rulesFulfilled": "regole soddisfatte",
+      "invalid": "La password non soddisfa tutti i requisiti di sicurezza"
+    },
     "firstName": "Nome",
     "lastName": "Cognome",
     "phone": "Telefono",

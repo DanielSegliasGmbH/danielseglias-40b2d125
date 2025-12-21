@@ -23,7 +23,26 @@
     "logout": "Logout",
     "signup": "Sign up",
     "email": "Email",
-    "password": "Password",
+    "passwordLabel": "Password",
+    "password": {
+      "rules": {
+        "minLength": "At least 12 characters",
+        "uppercase": "At least 1 uppercase letter",
+        "lowercase": "At least 1 lowercase letter",
+        "number": "At least 1 number",
+        "special": "At least 1 special character",
+        "noEmail": "Must not contain your email",
+        "noName": "Must not contain your name"
+      },
+      "strength": {
+        "label": "Password strength",
+        "weak": "Weak",
+        "medium": "Medium",
+        "strong": "Strong"
+      },
+      "rulesFulfilled": "rules fulfilled",
+      "invalid": "Password does not meet all security requirements"
+    },
     "firstName": "First name",
     "lastName": "Last name",
     "phone": "Phone",

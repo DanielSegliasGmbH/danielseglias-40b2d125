@@ -23,7 +23,26 @@
     "logout": "Abmälde",
     "signup": "Registriere",
     "email": "E-Mail",
-    "password": "Passwort",
+    "passwordLabel": "Passwort",
+    "password": {
+      "rules": {
+        "minLength": "Mindestens 12 Zeiche",
+        "uppercase": "Mindestens 1 Grossbuechstabe",
+        "lowercase": "Mindestens 1 Chliibuechstabe",
+        "number": "Mindestens 1 Zahl",
+        "special": "Mindestens 1 Sonderzeiche",
+        "noEmail": "Dörf nöd d'E-Mail enthalte",
+        "noName": "Dörf nöd de Name enthalte"
+      },
+      "strength": {
+        "label": "Passwortstärchi",
+        "weak": "Schwach",
+        "medium": "Mittel",
+        "strong": "Starch"
+      },
+      "rulesFulfilled": "Regle erfüllt",
+      "invalid": "S'Passwort erfüllt nöd alli Sicherheitsaaforderige"
+    },
     "firstName": "Vorname",
     "lastName": "Nachname",
     "phone": "Telefon",

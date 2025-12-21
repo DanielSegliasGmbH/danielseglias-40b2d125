@@ -23,7 +23,26 @@
     "logout": "Abmelden",
     "signup": "Registrieren",
     "email": "E-Mail",
-    "password": "Passwort",
+    "passwordLabel": "Passwort",
+    "password": {
+      "rules": {
+        "minLength": "Mindestens 12 Zeichen",
+        "uppercase": "Mindestens 1 Grossbuchstabe",
+        "lowercase": "Mindestens 1 Kleinbuchstabe",
+        "number": "Mindestens 1 Zahl",
+        "special": "Mindestens 1 Sonderzeichen",
+        "noEmail": "Darf nicht die E-Mail enthalten",
+        "noName": "Darf nicht den Namen enthalten"
+      },
+      "strength": {
+        "label": "Passwortstärke",
+        "weak": "Schwach",
+        "medium": "Mittel",
+        "strong": "Stark"
+      },
+      "rulesFulfilled": "Regeln erfüllt",
+      "invalid": "Das Passwort erfüllt nicht alle Sicherheitsanforderungen"
+    },
     "firstName": "Vorname",
     "lastName": "Nachname",
     "phone": "Telefon",
