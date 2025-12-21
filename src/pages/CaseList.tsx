@@ -44,16 +44,17 @@ const STATUS_ORDER: Record<string, number> = {
 export default function CaseList() {
   const { t, i18n } = useTranslation();
   const { user, role, signOut } = useAuth();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortMode, setSortMode] = useState<CaseSortMode>('created_desc');
+  
   const { 
     data, 
     isLoading, 
     fetchNextPage, 
     hasNextPage, 
     isFetchingNextPage 
-  } = useInfiniteCases();
+  } = useInfiniteCases(sortMode);
   const { data: profiles } = useProfiles();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortMode, setSortMode] = useState<CaseSortMode>('created_desc');
   const dateLocale = DATE_LOCALES[i18n.language] || de;
 
   // Flatten all pages into single array

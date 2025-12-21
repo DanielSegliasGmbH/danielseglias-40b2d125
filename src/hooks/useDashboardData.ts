@@ -50,6 +50,8 @@ export function useCases() {
 
 const CASES_PAGE_SIZE = 25;
 
+type CaseSortMode = 'created_desc' | 'created_asc' | 'due_asc' | 'title_asc' | 'status_asc';
+
 type CaseWithClient = Tables<'cases'> & {
   client: { id: string; first_name: string; last_name: string } | null;
 };
@@ -60,7 +62,7 @@ interface InfiniteCasesPage {
   pageParam: number;
 }
 
-export function useInfiniteCases(sortMode?: string) {
+export function useInfiniteCases(sortMode?: CaseSortMode) {
   return useInfiniteQuery<InfiniteCasesPage, Error>({
     queryKey: ['cases', 'infinite', sortMode],
     queryFn: async ({ pageParam = 0 }) => {
