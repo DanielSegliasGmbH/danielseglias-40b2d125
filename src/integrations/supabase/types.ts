@@ -59,6 +59,13 @@ export type Database = {
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "fk_cases_client_id"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
         ]
       }
       client_users: {
@@ -174,6 +181,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_meetings_case_id"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "meetings_case_id_fkey"
             columns: ["case_id"]
             isOneToOne: false
@@ -185,7 +199,7 @@ export type Database = {
       notes: {
         Row: {
           author_id: string | null
-          case_id: string | null
+          case_id: string
           content: string
           created_at: string
           id: string
@@ -194,7 +208,7 @@ export type Database = {
         }
         Insert: {
           author_id?: string | null
-          case_id?: string | null
+          case_id: string
           content: string
           created_at?: string
           id?: string
@@ -203,7 +217,7 @@ export type Database = {
         }
         Update: {
           author_id?: string | null
-          case_id?: string | null
+          case_id?: string
           content?: string
           created_at?: string
           id?: string
@@ -211,6 +225,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_notes_case_id"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "notes_case_id_fkey"
             columns: ["case_id"]
@@ -298,6 +319,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_tasks_case_id"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tasks_case_id_fkey"
             columns: ["case_id"]
