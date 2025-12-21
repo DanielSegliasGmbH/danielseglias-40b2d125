@@ -48,6 +48,7 @@ export function AppSidebar() {
     { title: t('userManagement.title'), url: '/app/users', icon: Settings },
     { title: t('systemMap.title'), url: '/app/system-map', icon: Network },
     { title: t('trash.title'), url: '/app/trash', icon: Trash2 },
+    { title: t('customer.trash', 'Kunden-Papierkorb'), url: '/app/customers/trash', icon: Trash2 },
     { title: t('clientPortal.preview'), url: '/app/client-portal', icon: Eye },
   ];
 

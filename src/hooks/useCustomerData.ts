@@ -188,16 +188,90 @@ export interface CustomerControlUpsert {
 // QUERY HOOKS
 // ============================================
 
-// Fetch all non-deleted customers
-export function useCustomers() {
+// Filter parameters for customers list
+export interface CustomerFilters {
+  search?: string;
+  status?: CustomerStatus | null;
+  priority?: CustomerPriority | null;
+  careLevel?: CareLevel | null;
+  acquisitionSource?: string | null;
+  withoutGoogleReview?: boolean;
+  withoutMoneytree?: boolean;
+}
+
+// Fetch all non-deleted customers with server-side filters
+export function useCustomers(filters: CustomerFilters = {}) {
   return useQuery({
-    queryKey: ['customers'],
+    queryKey: ['customers', filters],
+    queryFn: async () => {
+      let query = supabase
+        .from('customers')
+        .select(`
+          *,
+          customer_profiles(email, phone),
+          customer_control(google_review_received, moneytree_received)
+        `)
+        .is('deleted_at', null);
+
+      // Status filter
+      if (filters.status) {
+        query = query.eq('customer_status', filters.status);
+      }
+
+      // Priority filter
+      if (filters.priority) {
+        query = query.eq('priority', filters.priority);
+      }
+
+      // Care level filter
+      if (filters.careLevel) {
+        query = query.eq('care_level', filters.careLevel);
+      }
+
+      // Acquisition source filter
+      if (filters.acquisitionSource) {
+        query = query.eq('acquisition_source', filters.acquisitionSource);
+      }
+
+      // Search filter (server-side ilike)
+      if (filters.search?.trim()) {
+        const term = `%${filters.search.trim()}%`;
+        query = query.or(`first_name.ilike.${term},last_name.ilike.${term}`);
+      }
+
+      const { data, error } = await query.order('last_name', { ascending: true });
+      
+      if (error) throw error;
+
+      // Client-side filtering for google_review and moneytree (requires join data)
+      let results = data as (Customer & { 
+        customer_profiles: { email: string | null; phone: string | null } | null;
+        customer_control: { google_review_received: boolean | null; moneytree_received: boolean | null } | null;
+      })[];
+
+      if (filters.withoutGoogleReview) {
+        results = results.filter(c => !c.customer_control?.google_review_received);
+      }
+
+      if (filters.withoutMoneytree) {
+        results = results.filter(c => !c.customer_control?.moneytree_received);
+      }
+
+      return results;
+    }
+  });
+}
+
+// Fetch all soft-deleted customers (for trash view)
+export function useDeletedCustomers() {
+  return useQuery({
+    queryKey: ['customers', 'deleted'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('customers')
         .select('*, customer_profiles(email, phone)')
-        .is('deleted_at', null)
-        .order('last_name', { ascending: true });
+        .not('deleted_at', 'is', null)
+        .order('deleted_at', { ascending: false });
       
       if (error) throw error;
       return data as (Customer & { customer_profiles: { email: string | null; phone: string | null } | null })[];
@@ -527,6 +601,52 @@ export function useDeleteCustomer() {
           deleted_at: new Date().toISOString(),
           deleted_by: user?.id ?? null
         })
+        .eq('id', customerId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customers'] });
+    }
+  });
+}
+
+// Restore soft-deleted customer
+export function useRestoreCustomer() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (customerId: string) => {
+      const { error } = await supabase
+        .from('customers')
+        .update({ 
+          deleted_at: null,
+          deleted_by: null
+        })
+        .eq('id', customerId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customers'] });
+    }
+  });
+}
+
+// Permanently delete customer (hard delete)
+export function useHardDeleteCustomer() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (customerId: string) => {
+      // Delete related records first (if not using CASCADE)
+      await supabase.from('customer_control').delete().eq('customer_id', customerId);
+      await supabase.from('customer_economics').delete().eq('customer_id', customerId);
+      await supabase.from('customer_profiles').delete().eq('customer_id', customerId);
+      
+      const { error } = await supabase
+        .from('customers')
+        .delete()
         .eq('id', customerId);
       
       if (error) throw error;
