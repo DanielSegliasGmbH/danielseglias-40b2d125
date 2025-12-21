@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useClientPortalSettings } from '@/hooks/useClientPortal';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChevronRight } from 'lucide-react';
 import {
   Shield,
   Target,
@@ -12,6 +13,7 @@ import {
   BookOpen,
   Wrench,
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const portalSections = [
   { 
@@ -20,8 +22,6 @@ const portalSections = [
     icon: Shield, 
     titleKey: 'clientPortal.insurances',
     descKey: 'clientPortal.insurancesDesc',
-    color: 'text-blue-500',
-    bgColor: 'bg-blue-500/10',
   },
   { 
     key: 'goals', 
@@ -29,8 +29,6 @@ const portalSections = [
     icon: Target, 
     titleKey: 'clientPortal.goals',
     descKey: 'clientPortal.goalsDesc',
-    color: 'text-green-500',
-    bgColor: 'bg-green-500/10',
   },
   { 
     key: 'tasks', 
@@ -38,8 +36,6 @@ const portalSections = [
     icon: ClipboardList, 
     titleKey: 'clientPortal.tasks',
     descKey: 'clientPortal.tasksDesc',
-    color: 'text-orange-500',
-    bgColor: 'bg-orange-500/10',
   },
   { 
     key: 'strategies', 
@@ -47,8 +43,6 @@ const portalSections = [
     icon: TrendingUp, 
     titleKey: 'clientPortal.strategies',
     descKey: 'clientPortal.strategiesDesc',
-    color: 'text-purple-500',
-    bgColor: 'bg-purple-500/10',
   },
   { 
     key: 'library', 
@@ -56,8 +50,6 @@ const portalSections = [
     icon: BookOpen, 
     titleKey: 'clientPortal.library',
     descKey: 'clientPortal.libraryDesc',
-    color: 'text-amber-500',
-    bgColor: 'bg-amber-500/10',
   },
   { 
     key: 'tools', 
@@ -65,8 +57,6 @@ const portalSections = [
     icon: Wrench, 
     titleKey: 'clientPortal.tools',
     descKey: 'clientPortal.toolsDesc',
-    color: 'text-slate-500',
-    bgColor: 'bg-slate-500/10',
   },
 ] as const;
 
@@ -78,7 +68,7 @@ export default function ClientPortalHome() {
   const firstName = user?.user_metadata?.first_name || 'Kunde';
 
   const visibleSections = portalSections.filter(section => {
-    if (!settings) return true; // Show all if no settings (default)
+    if (!settings) return true;
     const settingKey = `show_${section.key}` as keyof typeof settings;
     return settings[settingKey] !== false;
   });
@@ -86,22 +76,54 @@ export default function ClientPortalHome() {
   return (
     <ClientPortalLayout>
       <div className="max-w-5xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
+        {/* Welcome Section */}
+        <div className="mb-6 lg:mb-8">
+          <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-1 lg:mb-2">
             {t('clientPortal.welcome', { name: firstName })}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm lg:text-base text-muted-foreground">
             {t('clientPortal.welcomeSubtitle')}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Mobile: Vertical stacked cards */}
+        <div className="flex flex-col gap-3 lg:hidden">
+          {visibleSections.map(section => (
+            <Link key={section.key} to={section.path} className="block">
+              <Card className={cn(
+                "w-full transition-all",
+                "active:scale-[0.98] touch-manipulation",
+                "hover:shadow-md"
+              )}>
+                <CardContent className="flex items-center justify-between p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <section.icon className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-semibold text-foreground truncate">
+                        {t(section.titleKey)}
+                      </h3>
+                      <p className="text-sm text-muted-foreground line-clamp-1">
+                        {t(section.descKey)}
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0 ml-2" />
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+
+        {/* Desktop: Grid layout */}
+        <div className="hidden lg:grid lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {visibleSections.map(section => (
             <Link key={section.key} to={section.path}>
               <Card className="h-full hover:shadow-md transition-shadow cursor-pointer group">
                 <CardHeader>
-                  <div className={`w-12 h-12 rounded-lg ${section.bgColor} flex items-center justify-center mb-2 group-hover:scale-110 transition-transform`}>
-                    <section.icon className={`h-6 w-6 ${section.color}`} />
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                    <section.icon className="h-6 w-6 text-primary" />
                   </div>
                   <CardTitle className="text-lg">{t(section.titleKey)}</CardTitle>
                   <CardDescription>{t(section.descKey)}</CardDescription>

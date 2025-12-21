@@ -456,6 +456,7 @@
   "clientPortal": {
     "title": "Kundenbereich",
     "home": "Übersicht",
+    "more": "Mehr",
     "preview": "Kundenbereich (Vorschau)",
     "welcome": "Willkommen, {{name}}!",
     "welcomeSubtitle": "Hier finden Sie alle wichtigen Informationen zu Ihren Finanzen und Versicherungen.",
