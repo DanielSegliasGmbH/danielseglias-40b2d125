@@ -116,6 +116,8 @@ export default function CustomersList() {
               value={filters.search || ''}
               onChange={(e) => handleSearchChange(e.target.value)}
               className="pl-10"
+              inputMode="search"
+              autoComplete="off"
             />
           </div>
           
@@ -240,36 +242,36 @@ export default function CustomersList() {
 
         {/* Mobile Cards */}
         {!isLoading && customers && customers.length > 0 && (
-          <div className="md:hidden space-y-3">
+          <div className="md:hidden space-y-2">
             {customers.map((customer) => (
               <Card
                 key={customer.id}
                 className="cursor-pointer active:bg-muted/50 transition-colors"
                 onClick={() => navigate(`/app/customers/${customer.id}`)}
               >
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between gap-3">
+                <CardContent className="p-4 py-3">
+                  <div className="flex items-center justify-between gap-3 min-h-[48px]">
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate">
+                      <div className="font-medium truncate leading-tight">
                         {customer.first_name} {customer.last_name}
                       </div>
                       {customer.customer_profiles?.email && (
-                        <div className="text-sm text-muted-foreground truncate">
+                        <div className="text-sm text-muted-foreground truncate leading-tight mt-0.5">
                           {customer.customer_profiles.email}
                         </div>
                       )}
-                      <div className="flex items-center gap-2 mt-2 flex-wrap">
-                        <Badge variant={getStatusBadgeVariant(customer.customer_status)} className="text-xs">
+                      <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                        <Badge variant={getStatusBadgeVariant(customer.customer_status)} className="text-xs px-2 py-0.5">
                           {t(`customer.statuses.${customer.customer_status}`, customer.customer_status)}
                         </Badge>
                         {customer.priority && (
-                          <Badge variant={getPriorityBadgeVariant(customer.priority)} className="text-xs">
+                          <Badge variant={getPriorityBadgeVariant(customer.priority)} className="text-xs px-2 py-0.5">
                             {customer.priority}
                           </Badge>
                         )}
                       </div>
                     </div>
-                    <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0" />
+                    <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0 ml-2" />
                   </div>
                 </CardContent>
               </Card>

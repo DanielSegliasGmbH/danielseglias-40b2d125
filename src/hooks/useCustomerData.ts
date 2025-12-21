@@ -199,10 +199,44 @@ export interface CustomerFilters {
   withoutMoneytree?: boolean;
 }
 
+// Normalized filter type for stable queryKey
+interface NormalizedFilters {
+  search: string;
+  status: string;
+  priority: string;
+  careLevel: string;
+  acquisitionSource: string;
+  withoutGoogleReview: boolean;
+  withoutMoneytree: boolean;
+}
+
+// Normalize filters for stable queryKey (no undefined/null)
+function normalizeFilters(filters: CustomerFilters): NormalizedFilters {
+  return {
+    search: (filters.search ?? '').trim(),
+    status: filters.status ?? '',
+    priority: filters.priority ?? '',
+    careLevel: filters.careLevel ?? '',
+    acquisitionSource: filters.acquisitionSource ?? '',
+    withoutGoogleReview: filters.withoutGoogleReview ?? false,
+    withoutMoneytree: filters.withoutMoneytree ?? false,
+  };
+}
+
+// Escape SQL LIKE special characters for safe search
+function escapeLikePattern(str: string): string {
+  return str
+    .replace(/\\/g, '\\\\')
+    .replace(/%/g, '\\%')
+    .replace(/_/g, '\\_');
+}
+
 // Fetch all non-deleted customers with server-side filters
 export function useCustomers(filters: CustomerFilters = {}) {
+  const normalized = normalizeFilters(filters);
+
   return useQuery({
-    queryKey: ['customers', filters],
+    queryKey: ['customers', normalized],
     queryFn: async () => {
       let query = supabase
         .from('customers')
@@ -214,29 +248,30 @@ export function useCustomers(filters: CustomerFilters = {}) {
         .is('deleted_at', null);
 
       // Status filter
-      if (filters.status) {
-        query = query.eq('customer_status', filters.status);
+      if (normalized.status) {
+        query = query.eq('customer_status', normalized.status as CustomerStatus);
       }
 
       // Priority filter
-      if (filters.priority) {
-        query = query.eq('priority', filters.priority);
+      if (normalized.priority) {
+        query = query.eq('priority', normalized.priority as CustomerPriority);
       }
 
       // Care level filter
-      if (filters.careLevel) {
-        query = query.eq('care_level', filters.careLevel);
+      if (normalized.careLevel) {
+        query = query.eq('care_level', normalized.careLevel as CareLevel);
       }
 
       // Acquisition source filter
-      if (filters.acquisitionSource) {
-        query = query.eq('acquisition_source', filters.acquisitionSource);
+      if (normalized.acquisitionSource) {
+        query = query.eq('acquisition_source', normalized.acquisitionSource);
       }
 
-      // Search filter (server-side ilike)
-      if (filters.search?.trim()) {
-        const term = `%${filters.search.trim()}%`;
-        query = query.or(`first_name.ilike.${term},last_name.ilike.${term}`);
+      // Search filter (server-side ilike with escaped special chars)
+      if (normalized.search) {
+        const escapedTerm = escapeLikePattern(normalized.search);
+        const orFilter = `first_name.ilike.%${escapedTerm}%,last_name.ilike.%${escapedTerm}%`;
+        query = query.or(orFilter);
       }
 
       const { data, error } = await query.order('last_name', { ascending: true });
@@ -249,11 +284,11 @@ export function useCustomers(filters: CustomerFilters = {}) {
         customer_control: { google_review_received: boolean | null; moneytree_received: boolean | null } | null;
       })[];
 
-      if (filters.withoutGoogleReview) {
+      if (normalized.withoutGoogleReview) {
         results = results.filter(c => !c.customer_control?.google_review_received);
       }
 
-      if (filters.withoutMoneytree) {
+      if (normalized.withoutMoneytree) {
         results = results.filter(c => !c.customer_control?.moneytree_received);
       }
 
@@ -640,19 +675,35 @@ export function useHardDeleteCustomer() {
   return useMutation({
     mutationFn: async (customerId: string) => {
       // Delete related records first (if not using CASCADE)
-      await supabase.from('customer_control').delete().eq('customer_id', customerId);
-      await supabase.from('customer_economics').delete().eq('customer_id', customerId);
-      await supabase.from('customer_profiles').delete().eq('customer_id', customerId);
-      
-      const { error } = await supabase
+      // Check each delete for errors
+      const { error: controlError } = await supabase
+        .from('customer_control')
+        .delete()
+        .eq('customer_id', customerId);
+      if (controlError) throw controlError;
+
+      const { error: economicsError } = await supabase
+        .from('customer_economics')
+        .delete()
+        .eq('customer_id', customerId);
+      if (economicsError) throw economicsError;
+
+      const { error: profilesError } = await supabase
+        .from('customer_profiles')
+        .delete()
+        .eq('customer_id', customerId);
+      if (profilesError) throw profilesError;
+
+      const { error: customerError } = await supabase
         .from('customers')
         .delete()
         .eq('id', customerId);
-      
-      if (error) throw error;
+      if (customerError) throw customerError;
     },
-    onSuccess: () => {
+    onSuccess: (_, customerId) => {
       queryClient.invalidateQueries({ queryKey: ['customers'] });
+      queryClient.invalidateQueries({ queryKey: ['customers', 'deleted'] });
+      queryClient.invalidateQueries({ queryKey: ['customer', customerId] });
     }
   });
 }
