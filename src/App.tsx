@@ -19,6 +19,15 @@ import SystemMap from "./pages/SystemMap";
 import Trash from "./pages/Trash";
 import NotFound from "./pages/NotFound";
 
+// Client Portal Pages
+import ClientPortalHome from "./pages/client-portal/ClientPortalHome";
+import ClientPortalInsurances from "./pages/client-portal/ClientPortalInsurances";
+import ClientPortalGoals from "./pages/client-portal/ClientPortalGoals";
+import ClientPortalTasks from "./pages/client-portal/ClientPortalTasks";
+import ClientPortalStrategies from "./pages/client-portal/ClientPortalStrategies";
+import ClientPortalLibrary from "./pages/client-portal/ClientPortalLibrary";
+import ClientPortalTools from "./pages/client-portal/ClientPortalTools";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -130,15 +139,69 @@ function App() {
                   </RouteGuard>
                 }
               />
-              
-              {/* Protected: Client area */}
+
+              {/* Client Portal Routes (client + admin) */}
               <Route
-                path="/client"
+                path="/app/client-portal"
                 element={
-                  <RouteGuard allowedRoles={['client']}>
-                    <ClientDashboard />
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalHome />
                   </RouteGuard>
                 }
+              />
+              <Route
+                path="/app/client-portal/insurances"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalInsurances />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/goals"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalGoals />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/tasks"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalTasks />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/strategies"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalStrategies />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/library"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalLibrary />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/tools"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalTools />
+                  </RouteGuard>
+                }
+              />
+              
+              {/* Old client route - redirect to new portal */}
+              <Route
+                path="/client"
+                element={<Navigate to="/app/client-portal" replace />}
               />
               
               {/* Root redirect */}

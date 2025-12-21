@@ -25,6 +25,7 @@ import {
   ChevronRight,
   Network,
   Trash2,
+  Eye,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -46,6 +47,7 @@ export function AppSidebar() {
     { title: t('userManagement.title'), url: '/app/users', icon: Settings },
     { title: t('systemMap.title'), url: '/app/system-map', icon: Network },
     { title: t('trash.title'), url: '/app/trash', icon: Trash2 },
+    { title: t('clientPortal.preview'), url: '/app/client-portal', icon: Eye },
   ];
 
   const roleLabel = role === 'admin' ? t('roles.admin') : t('roles.staff');

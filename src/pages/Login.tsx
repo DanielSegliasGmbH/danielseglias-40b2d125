@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
+import { getDefaultRouteForRole } from '@/components/RouteGuard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,11 +27,8 @@ export default function Login() {
 
   useEffect(() => {
     if (!loading && user && role) {
-      if (role === 'client') {
-        navigate('/client', { replace: true });
-      } else {
-        navigate('/app', { replace: true });
-      }
+      const defaultRoute = getDefaultRouteForRole(role);
+      navigate(defaultRoute, { replace: true });
     }
   }, [user, role, loading, navigate]);
 

@@ -81,6 +81,53 @@ export type Database = {
           },
         ]
       }
+      client_portal_settings: {
+        Row: {
+          client_id: string
+          created_at: string
+          id: string
+          show_goals: boolean
+          show_insurances: boolean
+          show_library: boolean
+          show_strategies: boolean
+          show_tasks: boolean
+          show_tools: boolean
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          id?: string
+          show_goals?: boolean
+          show_insurances?: boolean
+          show_library?: boolean
+          show_strategies?: boolean
+          show_tasks?: boolean
+          show_tools?: boolean
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          id?: string
+          show_goals?: boolean
+          show_insurances?: boolean
+          show_library?: boolean
+          show_strategies?: boolean
+          show_tasks?: boolean
+          show_tools?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_portal_settings_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: true
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_users: {
         Row: {
           client_id: string

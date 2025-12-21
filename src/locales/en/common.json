@@ -443,5 +443,67 @@
     "cleanupError": "Error during cleanup",
     "softDeleteInfo": "The item will be moved to trash and can be restored within 30 days.",
     "deletedSuccess": "Moved to trash"
+  },
+  "clientPortal": {
+    "title": "Client Portal",
+    "home": "Overview",
+    "preview": "Client Portal (Preview)",
+    "welcome": "Welcome, {{name}}!",
+    "welcomeSubtitle": "Here you can find all important information about your finances and insurances.",
+    "noSections": "No sections available.",
+    "insurances": "My Insurances",
+    "insurancesDesc": "Overview of your existing insurance policies",
+    "goals": "My Goals",
+    "goalsDesc": "Your financial goals and progress",
+    "tasks": "My Tasks",
+    "tasksDesc": "Open tasks and to-dos for you",
+    "strategies": "Investment Strategies",
+    "strategiesDesc": "Your personal investment strategies",
+    "library": "Knowledge Library",
+    "libraryDesc": "Helpful articles and documents",
+    "tools": "Tools",
+    "toolsDesc": "Practical calculators and tools",
+    "comingSoon": "Coming Soon",
+    "inDevelopment": "This section is currently under development and will be available soon.",
+    "plannedFeatures": "What you will find here later:",
+    "settingsTitle": "Client Portal Settings",
+    "settingsDesc": "Choose which sections should be visible for this client.",
+    "settingsUpdated": "Settings saved",
+    "insurance": {
+      "feature1": "Overview of all insurance policies",
+      "feature2": "Coverage details and limits",
+      "feature3": "Contract documents for download",
+      "feature4": "Claims reporting and status"
+    },
+    "goals": {
+      "feature1": "Define financial goals",
+      "feature2": "Progress display",
+      "feature3": "Set milestones",
+      "feature4": "Track goal achievement"
+    },
+    "tasks": {
+      "feature1": "View open tasks",
+      "feature2": "Upload documents",
+      "feature3": "Fill out forms",
+      "feature4": "Status tracking"
+    },
+    "strategies": {
+      "feature1": "Current investment strategy",
+      "feature2": "Portfolio overview",
+      "feature3": "Risk analysis",
+      "feature4": "Performance reports"
+    },
+    "library": {
+      "feature1": "Financial knowledge articles",
+      "feature2": "Explanation videos",
+      "feature3": "FAQ and help",
+      "feature4": "Personal documents"
+    },
+    "tools": {
+      "feature1": "Compound interest calculator",
+      "feature2": "Budget planner",
+      "feature3": "Tax calculator",
+      "feature4": "Retirement check"
+    }
   }
 }
