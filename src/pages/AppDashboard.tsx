@@ -24,6 +24,7 @@ import { Users, Briefcase, ClipboardList } from 'lucide-react';
 import { CreateClientDialog } from '@/components/dashboard/CreateClientDialog';
 import { CreateCaseDialog } from '@/components/dashboard/CreateCaseDialog';
 import { CreateTaskDialog } from '@/components/dashboard/CreateTaskDialog';
+import { GlobalSearch } from '@/components/dashboard/GlobalSearch';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { AppLayout } from '@/components/AppLayout';
 import { Link } from 'react-router-dom';
@@ -88,6 +89,7 @@ export default function AppDashboard() {
               <h1 className="text-xl font-bold text-foreground">{t('dashboard.title')}</h1>
             </div>
             <div className="flex items-center gap-4">
+              <GlobalSearch />
               <LanguageSwitcher />
               <span className="text-sm text-muted-foreground hidden sm:inline">{user?.email}</span>
             </div>
