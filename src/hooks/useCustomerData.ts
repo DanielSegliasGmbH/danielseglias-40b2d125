@@ -199,7 +199,7 @@ export function useCreateCustomer() {
     mutationFn: async (customer: Partial<Customer>) => {
       const { data, error } = await supabase
         .from('customers')
-        .insert(customer)
+        .insert(customer as any)
         .select()
         .single();
       
