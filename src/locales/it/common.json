@@ -13,7 +13,10 @@
     "no": "No",
     "search": "Cerca",
     "noData": "Nessun dato disponibile",
-    "required": "Obbligatorio"
+    "required": "Obbligatorio",
+    "back": "Indietro",
+    "updated": "Aggiornato",
+    "updateError": "Errore durante l'aggiornamento"
   },
   "auth": {
     "login": "Accedi",
@@ -59,8 +62,11 @@
   },
   "client": {
     "title": "Clienti",
+    "list": "Panoramica clienti",
+    "detail": "Dettagli cliente",
     "newClient": "Nuovo cliente",
     "createClient": "Crea cliente",
+    "editClient": "Modifica cliente",
     "creating": "Creazione...",
     "firstName": "Nome",
     "lastName": "Cognome",
@@ -71,7 +77,15 @@
     "status": "Stato",
     "createdSuccess": "Cliente creato con successo",
     "createError": "Errore durante la creazione",
+    "updatedSuccess": "Cliente aggiornato con successo",
     "requiredFields": "Nome e cognome sono obbligatori",
+    "noClients": "Nessun cliente trovato",
+    "notFound": "Cliente non trovato",
+    "statuses": {
+      "aktiv": "Attivo",
+      "pausiert": "In pausa",
+      "archiviert": "Archiviato"
+    },
     "portal": {
       "title": "Portale clienti",
       "welcome": "Benvenuto nel portale clienti",
@@ -82,6 +96,7 @@
     "title": "Casi",
     "newCase": "Nuovo caso",
     "createCase": "Crea caso",
+    "createForClient": "Caso per questo cliente",
     "creating": "Creazione...",
     "caseTitle": "Titolo",
     "description": "Descrizione",
@@ -92,6 +107,7 @@
     "createdSuccess": "Caso creato con successo",
     "createError": "Errore durante la creazione",
     "requiredFields": "Cliente e titolo sono obbligatori",
+    "noCases": "Nessun caso trovato",
     "statuses": {
       "offen": "Aperto",
       "in_bearbeitung": "In lavorazione",
@@ -102,6 +118,7 @@
   },
   "task": {
     "title": "Attività",
+    "openTasks": "Attività aperte",
     "newTask": "Nuova attività",
     "createTask": "Crea attività",
     "creating": "Creazione...",
@@ -114,6 +131,9 @@
     "createError": "Errore durante la creazione",
     "requiredFields": "Caso e titolo sono obbligatori",
     "caseClient": "Caso / Cliente",
+    "noTasks": "Nessuna attività aperta",
+    "markDone": "Segna come completato",
+    "markedDone": "Attività segnata come completata",
     "statuses": {
       "offen": "Aperto",
       "in_arbeit": "In corso",
@@ -126,6 +146,40 @@
       "hoch": "Alta",
       "dringend": "Urgente"
     }
+  },
+  "meeting": {
+    "title": "Riunioni",
+    "newMeeting": "Nuova riunione",
+    "createMeeting": "Pianifica riunione",
+    "creating": "Creazione...",
+    "scheduledAt": "Programmato",
+    "duration": "Durata (minuti)",
+    "location": "Luogo",
+    "summary": "Riepilogo",
+    "type": "Tipo",
+    "selectCase": "Seleziona caso",
+    "createdSuccess": "Riunione creata con successo",
+    "createError": "Errore durante la creazione",
+    "requiredFields": "Caso e data sono obbligatori",
+    "noMeetings": "Nessuna riunione trovata",
+    "upcoming": "Riunioni future",
+    "past": "Riunioni passate",
+    "types": {
+      "erstberatung": "Consulenza iniziale",
+      "folgeberatung": "Follow-up",
+      "check_in": "Check-in",
+      "telefonat": "Telefonata",
+      "video_call": "Videochiamata"
+    }
+  },
+  "note": {
+    "title": "Note",
+    "newNote": "Nuova nota",
+    "createNote": "Salva nota",
+    "placeholder": "Inserisci nota...",
+    "createdSuccess": "Nota salvata con successo",
+    "createError": "Errore durante il salvataggio",
+    "noNotes": "Nessuna nota trovata"
   },
   "table": {
     "title": "Titolo",

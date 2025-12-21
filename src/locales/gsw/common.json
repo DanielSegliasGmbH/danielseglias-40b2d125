@@ -13,7 +13,10 @@
     "no": "Nei",
     "search": "Sueche",
     "noData": "Kei Date vorhande",
-    "required": "Pflichtfäld"
+    "required": "Pflichtfäld",
+    "back": "Zrugg",
+    "updated": "Aktualisiert",
+    "updateError": "Fähler bim Aktualisiere"
   },
   "auth": {
     "login": "Amälde",
@@ -59,8 +62,11 @@
   },
   "client": {
     "title": "Clients",
+    "list": "Client-Übersicht",
+    "detail": "Client-Details",
     "newClient": "Neue Client",
     "createClient": "Client erstelle",
+    "editClient": "Client bearbeite",
     "creating": "Am Erstelle...",
     "firstName": "Vorname",
     "lastName": "Nachname",
@@ -71,7 +77,15 @@
     "status": "Status",
     "createdSuccess": "Client erfolgriich erstellt",
     "createError": "Fähler bim Erstelle",
+    "updatedSuccess": "Client erfolgriich aktualisiert",
     "requiredFields": "Vor- und Nachname sind Pflichtfälder",
+    "noClients": "Kei Clients gfunde",
+    "notFound": "Client nöd gfunde",
+    "statuses": {
+      "aktiv": "Aktiv",
+      "pausiert": "Pausiert",
+      "archiviert": "Archiviert"
+    },
     "portal": {
       "title": "Mandante-Portal",
       "welcome": "Willkomme im Mandante-Portal",
@@ -82,6 +96,7 @@
     "title": "Cases",
     "newCase": "Neue Case",
     "createCase": "Case erstelle",
+    "createForClient": "Case für dä Client",
     "creating": "Am Erstelle...",
     "caseTitle": "Titel",
     "description": "Beschriibig",
@@ -92,6 +107,7 @@
     "createdSuccess": "Case erfolgriich erstellt",
     "createError": "Fähler bim Erstelle",
     "requiredFields": "Client und Titel sind Pflichtfälder",
+    "noCases": "Kei Cases gfunde",
     "statuses": {
       "offen": "Offe",
       "in_bearbeitung": "I Bearbeitig",
@@ -102,6 +118,7 @@
   },
   "task": {
     "title": "Tasks",
+    "openTasks": "Offeni Tasks",
     "newTask": "Neui Task",
     "createTask": "Task erstelle",
     "creating": "Am Erstelle...",
@@ -114,6 +131,9 @@
     "createError": "Fähler bim Erstelle",
     "requiredFields": "Case und Titel sind Pflichtfälder",
     "caseClient": "Case / Client",
+    "noTasks": "Kei offeni Tasks",
+    "markDone": "Als erledigt markiere",
+    "markedDone": "Task als erledigt markiert",
     "statuses": {
       "offen": "Offe",
       "in_arbeit": "I Arbeit",
@@ -126,6 +146,40 @@
       "hoch": "Hoch",
       "dringend": "Dringend"
     }
+  },
+  "meeting": {
+    "title": "Meetings",
+    "newMeeting": "Neus Meeting",
+    "createMeeting": "Meeting plane",
+    "creating": "Am Erstelle...",
+    "scheduledAt": "Termin",
+    "duration": "Duur (Minute)",
+    "location": "Ort",
+    "summary": "Zämefassig",
+    "type": "Typ",
+    "selectCase": "Case uswähle",
+    "createdSuccess": "Meeting erfolgriich erstellt",
+    "createError": "Fähler bim Erstelle",
+    "requiredFields": "Case und Termin sind Pflichtfälder",
+    "noMeetings": "Kei Meetings gfunde",
+    "upcoming": "Kommendi Meetings",
+    "past": "Vergangeni Meetings",
+    "types": {
+      "erstberatung": "Erschtberatig",
+      "folgeberatung": "Folgeberatig",
+      "check_in": "Check-in",
+      "telefonat": "Telefonat",
+      "video_call": "Video-Call"
+    }
+  },
+  "note": {
+    "title": "Notize",
+    "newNote": "Neui Notiz",
+    "createNote": "Notiz speichere",
+    "placeholder": "Notiz iigeh...",
+    "createdSuccess": "Notiz erfolgriich gspeicheret",
+    "createError": "Fähler bim Speichere",
+    "noNotes": "Kei Notize gfunde"
   },
   "table": {
     "title": "Titel",
