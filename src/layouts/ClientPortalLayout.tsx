@@ -6,6 +6,7 @@ import { useClientPortalSettings, usePreviewClientId } from '@/hooks/useClientPo
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { BottomNavigation } from '@/components/client-portal/BottomNavigation';
@@ -204,7 +205,10 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
         <div className={cn("lg:hidden fixed left-0 right-0 z-50 bg-card border-b border-border", isAdminPreview ? "top-10" : "top-0")}>
           <div className="flex items-center justify-between px-4 h-14">
             <h1 className="text-lg font-semibold">{t('clientPortal.title')}</h1>
-            <LanguageSwitcher />
+            <div className="flex items-center gap-2">
+              <ThemeSwitcher />
+              <LanguageSwitcher />
+            </div>
           </div>
         </div>
 
@@ -215,6 +219,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
           isAdminPreview && "lg:pt-10"
         )}>
           <div className="hidden lg:flex items-center justify-end gap-4 p-4 border-b border-border bg-card">
+            <ThemeSwitcher />
             <LanguageSwitcher />
             <span className="text-sm text-muted-foreground">{firstName}</span>
           </div>

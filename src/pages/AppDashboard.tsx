@@ -26,6 +26,7 @@ import { CreateCaseDialog } from '@/components/dashboard/CreateCaseDialog';
 import { CreateTaskDialog } from '@/components/dashboard/CreateTaskDialog';
 import { GlobalSearch } from '@/components/dashboard/GlobalSearch';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { AppLayout } from '@/components/AppLayout';
 import { Link } from 'react-router-dom';
 import { format, Locale } from 'date-fns';
@@ -90,6 +91,7 @@ export default function AppDashboard() {
             </div>
             <div className="flex items-center gap-4">
               <GlobalSearch />
+              <ThemeSwitcher />
               <LanguageSwitcher />
               <span className="text-sm text-muted-foreground hidden sm:inline">{user?.email}</span>
             </div>

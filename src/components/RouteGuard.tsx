@@ -3,6 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 
 interface RouteGuardProps {
   children: ReactNode;
@@ -29,7 +30,8 @@ export function RouteGuard({ children, allowedRoles }: RouteGuardProps) {
   if (!role) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="absolute top-4 right-4">
+        <div className="absolute top-4 right-4 flex items-center gap-2">
+          <ThemeSwitcher />
           <LanguageSwitcher />
         </div>
         <div className="text-center p-8 max-w-md">
