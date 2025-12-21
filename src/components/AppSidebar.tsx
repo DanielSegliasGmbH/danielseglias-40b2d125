@@ -24,6 +24,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Network,
+  Trash2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -44,6 +45,7 @@ export function AppSidebar() {
   const adminNavItems = [
     { title: t('userManagement.title'), url: '/app/users', icon: Settings },
     { title: t('systemMap.title'), url: '/app/system-map', icon: Network },
+    { title: t('trash.title'), url: '/app/trash', icon: Trash2 },
   ];
 
   const roleLabel = role === 'admin' ? t('roles.admin') : t('roles.staff');

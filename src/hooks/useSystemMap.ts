@@ -14,6 +14,7 @@ export function useSystemMapNodes() {
         .from('system_map_nodes')
         .select('*')
         .eq('is_active', true)
+        .is('deleted_at', null)
         .order('label');
 
       if (error) {
@@ -32,7 +33,8 @@ export function useSystemMapEdges() {
       const { data, error } = await supabase
         .from('system_map_edges')
         .select('*')
-        .eq('is_active', true);
+        .eq('is_active', true)
+        .is('deleted_at', null);
 
       if (error) {
         toast.error('Fehler beim Laden der Edges');
@@ -113,20 +115,24 @@ export function useDeleteNodeWithEdges() {
 
   return useMutation({
     mutationFn: async ({ key, deleteEdges }: { key: string; deleteEdges: boolean }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = user?.id;
+
       if (deleteEdges) {
-        // First delete all connected edges
+        // First soft-delete all connected edges
         const { error: edgeError } = await supabase
           .from('system_map_edges')
-          .update({ is_active: false })
-          .or(`source_key.eq.${key},target_key.eq.${key}`);
+          .update({ deleted_at: new Date().toISOString(), deleted_by: userId })
+          .or(`source_key.eq.${key},target_key.eq.${key}`)
+          .is('deleted_at', null);
 
         if (edgeError) throw edgeError;
       }
 
-      // Then delete the node
+      // Then soft-delete the node
       const { error } = await supabase
         .from('system_map_nodes')
-        .update({ is_active: false })
+        .update({ deleted_at: new Date().toISOString(), deleted_by: userId })
         .eq('key', key);
 
       if (error) throw error;
@@ -249,9 +255,10 @@ export function useDeleteEdge() {
 
   return useMutation({
     mutationFn: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
       const { error } = await supabase
         .from('system_map_edges')
-        .update({ is_active: false })
+        .update({ deleted_at: new Date().toISOString(), deleted_by: user?.id })
         .eq('id', id);
 
       if (error) throw error;

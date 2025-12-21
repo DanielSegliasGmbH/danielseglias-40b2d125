@@ -16,6 +16,7 @@ import CaseList from "./pages/CaseList";
 import CaseDetail from "./pages/CaseDetail";
 import TaskList from "./pages/TaskList";
 import SystemMap from "./pages/SystemMap";
+import Trash from "./pages/Trash";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -66,6 +67,16 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['admin']}>
                     <SystemMap />
+                  </RouteGuard>
+                }
+              />
+
+              {/* Protected: Admin only - Trash */}
+              <Route
+                path="/app/trash"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <Trash />
                   </RouteGuard>
                 }
               />

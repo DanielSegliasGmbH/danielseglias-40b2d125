@@ -408,5 +408,33 @@
         "4": "Expert Modules"
       }
     }
+  },
+  "trash": {
+    "title": "Papierkorb",
+    "subtitle": "{{count}} gelöschte Elemente",
+    "nodes": "Nodes",
+    "edges": "Verbindungen",
+    "deletedNodes": "Gelöschte Nodes",
+    "deletedEdges": "Gelöschte Verbindungen",
+    "noDeletedNodes": "Keine gelöschten Nodes",
+    "noDeletedEdges": "Keine gelöschten Verbindungen",
+    "label": "Name",
+    "key": "Key",
+    "category": "Kategorie",
+    "connection": "Verbindung",
+    "relation": "Beziehung",
+    "deletedAt": "Gelöscht am",
+    "restore": "Wiederherstellen",
+    "restored": "Erfolgreich wiederhergestellt",
+    "restoreError": "Fehler beim Wiederherstellen",
+    "deletePermanently": "Endgültig löschen",
+    "permanentlyDeleted": "Endgültig gelöscht",
+    "deleteError": "Fehler beim Löschen",
+    "confirmPermanentDelete": "Endgültig löschen?",
+    "confirmPermanentDeleteMessage": "Dieser Vorgang kann nicht rückgängig gemacht werden. Das Element wird dauerhaft entfernt.",
+    "retentionInfo": "Elemente werden nach 30 Tagen automatisch gelöscht",
+    "cleanupNow": "Jetzt aufräumen",
+    "cleanupSuccess": "{{count}} alte Elemente entfernt",
+    "cleanupError": "Fehler beim Aufräumen"
   }
 }
