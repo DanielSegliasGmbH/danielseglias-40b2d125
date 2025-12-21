@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Trash2, X, ArrowRight } from 'lucide-react';
+import { Trash2, X, ArrowRight, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -21,6 +21,7 @@ interface SystemMapEdgePopoverProps {
   targetLabel: string;
   editMode: boolean;
   onClose: () => void;
+  onEdit: () => void;
   onDelete: () => void;
   showDeleteConfirm: boolean;
   onConfirmDelete: () => void;
@@ -34,6 +35,7 @@ export function SystemMapEdgePopover({
   targetLabel,
   editMode,
   onClose,
+  onEdit,
   onDelete,
   showDeleteConfirm,
   onConfirmDelete,
@@ -79,18 +81,29 @@ export function SystemMapEdgePopover({
               </Badge>
             </div>
 
-            {/* Delete button (edit mode only) */}
+            {/* Actions (edit mode only) */}
             {editMode && (
-              <Button
-                variant="destructive"
-                size="sm"
-                className="w-full"
-                onClick={onDelete}
-                disabled={isDeleting}
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                {t('systemMap.edgeDetail.delete')}
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1"
+                  onClick={onEdit}
+                >
+                  <Pencil className="h-4 w-4 mr-2" />
+                  {t('app.edit')}
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="flex-1"
+                  onClick={onDelete}
+                  disabled={isDeleting}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {t('app.delete')}
+                </Button>
+              </div>
             )}
           </CardContent>
         </Card>

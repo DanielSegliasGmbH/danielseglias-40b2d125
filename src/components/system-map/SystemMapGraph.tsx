@@ -17,9 +17,10 @@ import {
 import '@xyflow/react/dist/style.css';
 import dagre from 'dagre';
 import { toast } from 'sonner';
-import { SystemMapNode, SystemMapEdge, useDebouncedPositionUpdate, useCreateEdge, useDeleteEdge } from '@/hooks/useSystemMap';
+import { SystemMapNode, SystemMapEdge, useDebouncedPositionUpdate, useCreateEdge, useDeleteEdge, useUpdateEdge } from '@/hooks/useSystemMap';
 import { SystemMapNodeComponent } from './SystemMapNodeComponent';
 import { SystemMapEdgeForm } from './SystemMapEdgeForm';
+import { SystemMapEdgeEditForm } from './SystemMapEdgeEditForm';
 import { SystemMapEdgePopover } from './SystemMapEdgePopover';
 import { categoryColors, EdgeRelation } from './types';
 
@@ -144,6 +145,7 @@ export function SystemMapGraph({
   const { debouncedUpdate: updatePosition } = useDebouncedPositionUpdate();
   const createEdge = useCreateEdge();
   const deleteEdge = useDeleteEdge();
+  const updateEdge = useUpdateEdge();
 
   // State for edge creation modal
   const [pendingConnection, setPendingConnection] = useState<{
@@ -156,6 +158,7 @@ export function SystemMapGraph({
   // State for selected edge
   const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const filteredNodes = useMemo(() => {
     return rawNodes.filter((node) => {
@@ -361,6 +364,11 @@ export function SystemMapGraph({
     setShowDeleteConfirm(true);
   }, [selectedEdgeId]);
 
+  const handleEditEdge = useCallback(() => {
+    if (!selectedEdgeId) return;
+    setShowEditModal(true);
+  }, [selectedEdgeId]);
+
   const confirmDeleteEdge = useCallback(() => {
     if (!selectedEdgeId) return;
 
@@ -371,6 +379,31 @@ export function SystemMapGraph({
       },
     });
   }, [selectedEdgeId, deleteEdge]);
+
+  const handleEdgeUpdate = useCallback(
+    (data: { relation: EdgeRelation; swapDirection: boolean }) => {
+      if (!selectedEdge) return;
+
+      const newSourceKey = data.swapDirection ? selectedEdge.target_key : selectedEdge.source_key;
+      const newTargetKey = data.swapDirection ? selectedEdge.source_key : selectedEdge.target_key;
+
+      updateEdge.mutate(
+        {
+          currentEdgeId: selectedEdge.id,
+          source_key: newSourceKey,
+          target_key: newTargetKey,
+          relation: data.relation,
+        },
+        {
+          onSuccess: () => {
+            setShowEditModal(false);
+            setSelectedEdgeId(null);
+          },
+        }
+      );
+    },
+    [selectedEdge, updateEdge]
+  );
 
   return (
     <div className="w-full h-full">
@@ -412,18 +445,31 @@ export function SystemMapGraph({
         />
       )}
 
-      {selectedEdge && (
+      {selectedEdge && !showEditModal && (
         <SystemMapEdgePopover
           edge={selectedEdge}
           sourceLabel={nodeKeyToLabel[selectedEdge.source_key] || selectedEdge.source_key}
           targetLabel={nodeKeyToLabel[selectedEdge.target_key] || selectedEdge.target_key}
           editMode={editMode}
           onClose={() => setSelectedEdgeId(null)}
+          onEdit={handleEditEdge}
           onDelete={handleDeleteEdge}
           showDeleteConfirm={showDeleteConfirm}
           onConfirmDelete={confirmDeleteEdge}
           onCancelDelete={() => setShowDeleteConfirm(false)}
           isDeleting={deleteEdge.isPending}
+        />
+      )}
+
+      {selectedEdge && showEditModal && (
+        <SystemMapEdgeEditForm
+          open={showEditModal}
+          onOpenChange={(open) => !open && setShowEditModal(false)}
+          edge={selectedEdge}
+          sourceLabel={nodeKeyToLabel[selectedEdge.source_key] || selectedEdge.source_key}
+          targetLabel={nodeKeyToLabel[selectedEdge.target_key] || selectedEdge.target_key}
+          onSubmit={handleEdgeUpdate}
+          isPending={updateEdge.isPending}
         />
       )}
     </div>

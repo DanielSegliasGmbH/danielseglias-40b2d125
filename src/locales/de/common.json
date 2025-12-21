@@ -363,6 +363,11 @@
       "confirmTitle": "Verbindung löschen?",
       "confirmMessage": "Die Verbindung von \"{{source}}\" nach \"{{target}}\" wird gelöscht."
     },
+    "edgeEdit": {
+      "title": "Verbindung bearbeiten",
+      "swap": "Richtung tauschen",
+      "swapHint": "Richtung wird beim Speichern getauscht"
+    },
     "legend": {
       "title": "Legende",
       "categories": "Kategorien",
