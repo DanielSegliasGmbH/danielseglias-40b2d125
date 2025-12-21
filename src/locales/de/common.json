@@ -414,11 +414,22 @@
     "subtitle": "{{count}} gelöschte Elemente",
     "nodes": "Nodes",
     "edges": "Verbindungen",
+    "clients": "Kunden",
+    "cases": "Projekte",
+    "tasks": "Aufgaben",
     "deletedNodes": "Gelöschte Nodes",
     "deletedEdges": "Gelöschte Verbindungen",
+    "deletedClients": "Gelöschte Kunden",
+    "deletedCases": "Gelöschte Projekte",
+    "deletedTasks": "Gelöschte Aufgaben",
     "noDeletedNodes": "Keine gelöschten Nodes",
     "noDeletedEdges": "Keine gelöschten Verbindungen",
+    "noDeletedClients": "Keine gelöschten Kunden",
+    "noDeletedCases": "Keine gelöschten Projekte",
+    "noDeletedTasks": "Keine gelöschten Aufgaben",
     "label": "Name",
+    "name": "Name",
+    "email": "E-Mail",
     "key": "Key",
     "category": "Kategorie",
     "connection": "Verbindung",
@@ -435,6 +446,8 @@
     "retentionInfo": "Elemente werden nach 30 Tagen automatisch gelöscht",
     "cleanupNow": "Jetzt aufräumen",
     "cleanupSuccess": "{{count}} alte Elemente entfernt",
-    "cleanupError": "Fehler beim Aufräumen"
+    "cleanupError": "Fehler beim Aufräumen",
+    "softDeleteInfo": "Der Eintrag wird in den Papierkorb verschoben und kann innerhalb von 30 Tagen wiederhergestellt werden.",
+    "deletedSuccess": "In den Papierkorb verschoben"
   }
 }

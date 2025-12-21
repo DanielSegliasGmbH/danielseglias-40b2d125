@@ -227,16 +227,40 @@ export function useDeleteCase() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (caseId: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
       const { error } = await supabase
         .from('cases')
-        .delete()
+        .update({ deleted_at: new Date().toISOString(), deleted_by: user?.id })
         .eq('id', caseId);
       if (error) throw error;
       return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
+      queryClient.invalidateQueries({ queryKey: ['case'] });
       queryClient.invalidateQueries({ queryKey: ['client'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+    },
+  });
+}
+
+export function useDeleteTask() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (taskId: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { error } = await supabase
+        .from('tasks')
+        .update({ deleted_at: new Date().toISOString(), deleted_by: user?.id })
+        .eq('id', taskId);
+      if (error) throw error;
+      return { success: true };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['case-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['client'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 }

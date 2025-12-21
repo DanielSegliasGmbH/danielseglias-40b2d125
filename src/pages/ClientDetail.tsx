@@ -26,6 +26,7 @@ import {
   useCreateMeeting,
   useUpdateClient,
   useCreateTaskForClient,
+  useDeleteClient,
 } from '@/hooks/useClientData';
 import { useProfiles } from '@/hooks/useDashboardData';
 import { Button } from '@/components/ui/button';
@@ -70,7 +71,25 @@ import {
   Mail,
   MapPin,
   Search,
+  Trash2,
+  MoreVertical,
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { AppLayout } from '@/components/AppLayout';
 import { toast } from 'sonner';
@@ -107,6 +126,7 @@ export default function ClientDetail() {
   const createMeeting = useCreateMeeting();
   const updateClient = useUpdateClient();
   const createTask = useCreateTaskForClient();
+  const deleteClient = useDeleteClient();
 
   const [newNote, setNewNote] = useState('');
   const [selectedCaseForNote, setSelectedCaseForNote] = useState('');
@@ -115,6 +135,7 @@ export default function ClientDetail() {
   const [meetingOpen, setMeetingOpen] = useState(false);
   const [taskOpen, setTaskOpen] = useState(false);
   const [caseSearch, setCaseSearch] = useState('');
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [editForm, setEditForm] = useState({ first_name: '', last_name: '', email: '', phone: '', address: '', status: 'aktiv' as ClientStatus });
   const [caseForm, setCaseForm] = useState({ title: '', description: '', due_date: '' });
   const [meetingForm, setMeetingForm] = useState({ case_id: '', scheduled_at: '', meeting_type: 'folgeberatung' as MeetingType, duration_minutes: 60, location: '' });
@@ -207,6 +228,16 @@ export default function ClientDetail() {
       setEditOpen(false);
     } catch {
       toast.error(t('app.updateError'));
+    }
+  };
+
+  const handleDeleteClient = async () => {
+    try {
+      await deleteClient.mutateAsync(clientId!);
+      toast.success(t('trash.deletedSuccess'));
+      navigate('/app/clients');
+    } catch {
+      toast.error(t('app.error'));
     }
   };
 
@@ -330,13 +361,51 @@ export default function ClientDetail() {
                   )}
                 </div>
               </div>
-              <Button variant="outline" onClick={handleEditClient}>
-                <Edit className="h-4 w-4 mr-2" />
-                {t('client.editClient')}
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={handleEditClient}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  {t('client.editClient')}
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem 
+                      className="text-destructive focus:text-destructive"
+                      onClick={() => setDeleteOpen(true)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      {t('client.deleteClient')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
           </CardContent>
         </Card>
+
+        <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('client.deleteClient')}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t('trash.softDeleteInfo')}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('app.cancel')}</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteClient}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {t('app.delete')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Cases */}

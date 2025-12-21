@@ -405,11 +405,22 @@
     "subtitle": "{{count}} deleted items",
     "nodes": "Nodes",
     "edges": "Connections",
+    "clients": "Clients",
+    "cases": "Cases",
+    "tasks": "Tasks",
     "deletedNodes": "Deleted Nodes",
     "deletedEdges": "Deleted Connections",
+    "deletedClients": "Deleted Clients",
+    "deletedCases": "Deleted Cases",
+    "deletedTasks": "Deleted Tasks",
     "noDeletedNodes": "No deleted nodes",
     "noDeletedEdges": "No deleted connections",
+    "noDeletedClients": "No deleted clients",
+    "noDeletedCases": "No deleted cases",
+    "noDeletedTasks": "No deleted tasks",
     "label": "Name",
+    "name": "Name",
+    "email": "Email",
     "key": "Key",
     "category": "Category",
     "connection": "Connection",
@@ -426,6 +437,8 @@
     "retentionInfo": "Items are automatically deleted after 30 days",
     "cleanupNow": "Cleanup now",
     "cleanupSuccess": "{{count}} old items removed",
-    "cleanupError": "Error during cleanup"
+    "cleanupError": "Error during cleanup",
+    "softDeleteInfo": "The item will be moved to trash and can be restored within 30 days.",
+    "deletedSuccess": "Moved to trash"
   }
 }

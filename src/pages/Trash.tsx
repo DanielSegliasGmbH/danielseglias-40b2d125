@@ -23,20 +23,39 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Trash2, RotateCcw, Network, ArrowRight, Loader2 } from 'lucide-react';
+import { Trash2, RotateCcw, Network, ArrowRight, Loader2, Users, Briefcase, ClipboardList } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { de, enUS } from 'date-fns/locale';
 import {
   useDeletedNodes,
   useDeletedEdges,
+  useDeletedClients,
+  useDeletedCases,
+  useDeletedTasks,
   useRestoreNode,
   useRestoreEdge,
+  useRestoreClient,
+  useRestoreCase,
+  useRestoreTask,
   usePermanentDeleteNode,
   usePermanentDeleteEdge,
+  usePermanentDeleteClient,
+  usePermanentDeleteCase,
+  usePermanentDeleteTask,
   useCleanupTrash,
   DeletedNode,
   DeletedEdge,
+  DeletedClient,
+  DeletedCase,
+  DeletedTask,
 } from '@/hooks/useTrash';
+
+type DeleteItem = 
+  | { type: 'node'; item: DeletedNode }
+  | { type: 'edge'; item: DeletedEdge }
+  | { type: 'client'; item: DeletedClient }
+  | { type: 'case'; item: DeletedCase }
+  | { type: 'task'; item: DeletedTask };
 
 export default function Trash() {
   const { t, i18n } = useTranslation();
@@ -44,26 +63,60 @@ export default function Trash() {
 
   const { data: deletedNodes, isLoading: nodesLoading } = useDeletedNodes();
   const { data: deletedEdges, isLoading: edgesLoading } = useDeletedEdges();
+  const { data: deletedClients, isLoading: clientsLoading } = useDeletedClients();
+  const { data: deletedCases, isLoading: casesLoading } = useDeletedCases();
+  const { data: deletedTasks, isLoading: tasksLoading } = useDeletedTasks();
 
   const restoreNode = useRestoreNode();
   const restoreEdge = useRestoreEdge();
+  const restoreClient = useRestoreClient();
+  const restoreCase = useRestoreCase();
+  const restoreTask = useRestoreTask();
   const permanentDeleteNode = usePermanentDeleteNode();
   const permanentDeleteEdge = usePermanentDeleteEdge();
+  const permanentDeleteClient = usePermanentDeleteClient();
+  const permanentDeleteCase = usePermanentDeleteCase();
+  const permanentDeleteTask = usePermanentDeleteTask();
   const cleanup = useCleanupTrash();
 
-  const [confirmDelete, setConfirmDelete] = useState<{ type: 'node' | 'edge'; item: DeletedNode | DeletedEdge } | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<DeleteItem | null>(null);
 
   const handlePermanentDelete = () => {
     if (!confirmDelete) return;
-    if (confirmDelete.type === 'node') {
-      permanentDeleteNode.mutate((confirmDelete.item as DeletedNode).key);
-    } else {
-      permanentDeleteEdge.mutate(confirmDelete.item.id);
+    switch (confirmDelete.type) {
+      case 'node':
+        permanentDeleteNode.mutate((confirmDelete.item as DeletedNode).key);
+        break;
+      case 'edge':
+        permanentDeleteEdge.mutate(confirmDelete.item.id);
+        break;
+      case 'client':
+        permanentDeleteClient.mutate(confirmDelete.item.id);
+        break;
+      case 'case':
+        permanentDeleteCase.mutate(confirmDelete.item.id);
+        break;
+      case 'task':
+        permanentDeleteTask.mutate(confirmDelete.item.id);
+        break;
     }
     setConfirmDelete(null);
   };
 
-  const totalItems = (deletedNodes?.length || 0) + (deletedEdges?.length || 0);
+  const totalItems = 
+    (deletedNodes?.length || 0) + 
+    (deletedEdges?.length || 0) + 
+    (deletedClients?.length || 0) + 
+    (deletedCases?.length || 0) + 
+    (deletedTasks?.length || 0);
+
+  const formatDeletedAt = (dateStr: string) => {
+    return formatDistanceToNow(new Date(dateStr), { addSuffix: true, locale: dateLocale });
+  };
+
+  const formatDeletedAtTitle = (dateStr: string) => {
+    return format(new Date(dateStr), 'PPpp', { locale: dateLocale });
+  };
 
   return (
     <AppLayout>
@@ -88,8 +141,20 @@ export default function Trash() {
           </Button>
         </div>
 
-        <Tabs defaultValue="nodes">
-          <TabsList>
+        <Tabs defaultValue="clients">
+          <TabsList className="flex-wrap h-auto gap-1">
+            <TabsTrigger value="clients" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              {t('trash.clients')} ({deletedClients?.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="cases" className="flex items-center gap-2">
+              <Briefcase className="h-4 w-4" />
+              {t('trash.cases')} ({deletedCases?.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="tasks" className="flex items-center gap-2">
+              <ClipboardList className="h-4 w-4" />
+              {t('trash.tasks')} ({deletedTasks?.length || 0})
+            </TabsTrigger>
             <TabsTrigger value="nodes" className="flex items-center gap-2">
               <Network className="h-4 w-4" />
               {t('trash.nodes')} ({deletedNodes?.length || 0})
@@ -100,6 +165,194 @@ export default function Trash() {
             </TabsTrigger>
           </TabsList>
 
+          {/* Clients Tab */}
+          <TabsContent value="clients" className="mt-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('trash.deletedClients')}</CardTitle>
+                <CardDescription>{t('trash.retentionInfo')}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {clientsLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                  </div>
+                ) : !deletedClients?.length ? (
+                  <p className="text-muted-foreground text-center py-8">{t('trash.noDeletedClients')}</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>{t('trash.name')}</TableHead>
+                        <TableHead>{t('trash.email')}</TableHead>
+                        <TableHead>{t('trash.deletedAt')}</TableHead>
+                        <TableHead className="text-right">{t('table.actions')}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {deletedClients.map((client) => (
+                        <TableRow key={client.id}>
+                          <TableCell className="font-medium">{client.first_name} {client.last_name}</TableCell>
+                          <TableCell>{client.email || '–'}</TableCell>
+                          <TableCell title={formatDeletedAtTitle(client.deleted_at)}>
+                            {formatDeletedAt(client.deleted_at)}
+                          </TableCell>
+                          <TableCell className="text-right space-x-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => restoreClient.mutate(client.id)}
+                              disabled={restoreClient.isPending}
+                            >
+                              <RotateCcw className="h-4 w-4 mr-1" />
+                              {t('trash.restore')}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive hover:text-destructive"
+                              onClick={() => setConfirmDelete({ type: 'client', item: client })}
+                            >
+                              <Trash2 className="h-4 w-4 mr-1" />
+                              {t('trash.deletePermanently')}
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Cases Tab */}
+          <TabsContent value="cases" className="mt-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('trash.deletedCases')}</CardTitle>
+                <CardDescription>{t('trash.retentionInfo')}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {casesLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                  </div>
+                ) : !deletedCases?.length ? (
+                  <p className="text-muted-foreground text-center py-8">{t('trash.noDeletedCases')}</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>{t('table.title')}</TableHead>
+                        <TableHead>{t('table.status')}</TableHead>
+                        <TableHead>{t('trash.deletedAt')}</TableHead>
+                        <TableHead className="text-right">{t('table.actions')}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {deletedCases.map((caseItem) => (
+                        <TableRow key={caseItem.id}>
+                          <TableCell className="font-medium">{caseItem.title}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline">{t(`case.statuses.${caseItem.status}`, caseItem.status)}</Badge>
+                          </TableCell>
+                          <TableCell title={formatDeletedAtTitle(caseItem.deleted_at)}>
+                            {formatDeletedAt(caseItem.deleted_at)}
+                          </TableCell>
+                          <TableCell className="text-right space-x-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => restoreCase.mutate(caseItem.id)}
+                              disabled={restoreCase.isPending}
+                            >
+                              <RotateCcw className="h-4 w-4 mr-1" />
+                              {t('trash.restore')}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive hover:text-destructive"
+                              onClick={() => setConfirmDelete({ type: 'case', item: caseItem })}
+                            >
+                              <Trash2 className="h-4 w-4 mr-1" />
+                              {t('trash.deletePermanently')}
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Tasks Tab */}
+          <TabsContent value="tasks" className="mt-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('trash.deletedTasks')}</CardTitle>
+                <CardDescription>{t('trash.retentionInfo')}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {tasksLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                  </div>
+                ) : !deletedTasks?.length ? (
+                  <p className="text-muted-foreground text-center py-8">{t('trash.noDeletedTasks')}</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>{t('table.title')}</TableHead>
+                        <TableHead>{t('table.priority')}</TableHead>
+                        <TableHead>{t('trash.deletedAt')}</TableHead>
+                        <TableHead className="text-right">{t('table.actions')}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {deletedTasks.map((task) => (
+                        <TableRow key={task.id}>
+                          <TableCell className="font-medium">{task.title}</TableCell>
+                          <TableCell>
+                            <Badge variant="secondary">{t(`task.priorities.${task.priority}`, task.priority)}</Badge>
+                          </TableCell>
+                          <TableCell title={formatDeletedAtTitle(task.deleted_at)}>
+                            {formatDeletedAt(task.deleted_at)}
+                          </TableCell>
+                          <TableCell className="text-right space-x-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => restoreTask.mutate(task.id)}
+                              disabled={restoreTask.isPending}
+                            >
+                              <RotateCcw className="h-4 w-4 mr-1" />
+                              {t('trash.restore')}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive hover:text-destructive"
+                              onClick={() => setConfirmDelete({ type: 'task', item: task })}
+                            >
+                              <Trash2 className="h-4 w-4 mr-1" />
+                              {t('trash.deletePermanently')}
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Nodes Tab */}
           <TabsContent value="nodes" className="mt-4">
             <Card>
               <CardHeader>
@@ -134,8 +387,8 @@ export default function Trash() {
                           <TableCell>
                             <Badge variant="outline">{node.category}</Badge>
                           </TableCell>
-                          <TableCell title={format(new Date(node.deleted_at), 'PPpp', { locale: dateLocale })}>
-                            {formatDistanceToNow(new Date(node.deleted_at), { addSuffix: true, locale: dateLocale })}
+                          <TableCell title={formatDeletedAtTitle(node.deleted_at)}>
+                            {formatDeletedAt(node.deleted_at)}
                           </TableCell>
                           <TableCell className="text-right space-x-2">
                             <Button
@@ -166,6 +419,7 @@ export default function Trash() {
             </Card>
           </TabsContent>
 
+          {/* Edges Tab */}
           <TabsContent value="edges" className="mt-4">
             <Card>
               <CardHeader>
@@ -202,8 +456,8 @@ export default function Trash() {
                           <TableCell>
                             <Badge variant="secondary">{edge.relation}</Badge>
                           </TableCell>
-                          <TableCell title={format(new Date(edge.deleted_at), 'PPpp', { locale: dateLocale })}>
-                            {formatDistanceToNow(new Date(edge.deleted_at), { addSuffix: true, locale: dateLocale })}
+                          <TableCell title={formatDeletedAtTitle(edge.deleted_at)}>
+                            {formatDeletedAt(edge.deleted_at)}
                           </TableCell>
                           <TableCell className="text-right space-x-2">
                             <Button
