@@ -477,6 +477,7 @@
     "linkUser": "Link User",
     "unlinkUser": "Unlink User",
     "previewPortal": "Portal Preview",
+    "adminPreview": "Admin Preview",
     "userLinked": "User successfully linked",
     "userUnlinked": "User unlinked",
     "userAlreadyLinked": "This user is already linked to another client",

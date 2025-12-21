@@ -1,11 +1,14 @@
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useClientPortalSettings } from '@/hooks/useClientPortal';
+import { useClientPortalSettings, usePreviewClientId } from '@/hooks/useClientPortal';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
 import {
   Shield,
   Target,
@@ -17,6 +20,7 @@ import {
   LogOut,
   Menu,
   X,
+  Eye,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -34,12 +38,43 @@ const portalSections = [
   { key: 'tools', path: '/app/client-portal/tools', icon: Wrench, labelKey: 'clientPortal.tools' },
 ] as const;
 
+// Hook to get client name for preview
+function usePreviewClientName(clientId: string | null) {
+  return useQuery({
+    queryKey: ['preview-client-name', clientId],
+    queryFn: async () => {
+      if (!clientId) return null;
+      const { data, error } = await supabase
+        .from('clients')
+        .select('first_name, last_name')
+        .eq('id', clientId)
+        .maybeSingle();
+      if (error) return null;
+      return data ? `${data.first_name} ${data.last_name}` : null;
+    },
+    enabled: !!clientId,
+  });
+}
+
 export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
   const { t } = useTranslation();
-  const { user, signOut } = useAuth();
+  const { user, role, signOut } = useAuth();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { data: settings } = useClientPortalSettings();
+  
+  const previewClientId = usePreviewClientId();
+  const isAdminPreview = role === 'admin' && !!previewClientId;
+  const { data: previewClientName } = usePreviewClientName(previewClientId);
+
+  // Build paths with preview param preserved
+  const buildPath = (basePath: string) => {
+    if (previewClientId) {
+      return `${basePath}?previewClientId=${previewClientId}`;
+    }
+    return basePath;
+  };
 
   const visibleSections = portalSections.filter(section => {
     if (!settings) return true; // Show all if no settings (default)
@@ -56,15 +91,26 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
 
   return (
     <div className="min-h-screen bg-muted/30 flex">
+      {/* Admin Preview Banner */}
+      {isAdminPreview && (
+        <div className="fixed top-0 left-0 right-0 z-[60] bg-amber-500 text-amber-950 px-4 py-2 flex items-center justify-center gap-2 text-sm font-medium">
+          <Eye className="h-4 w-4" />
+          {t('clientPortal.adminPreview')}: {previewClientName || previewClientId?.slice(0, 8) + '…'}
+          <Link to="/app/clients" className="ml-4 underline hover:no-underline">
+            {t('app.back')}
+          </Link>
+        </div>
+      )}
+
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex w-64 flex-col bg-background border-r">
+      <aside className={cn("hidden lg:flex w-64 flex-col bg-background border-r", isAdminPreview && "pt-10")}>
         <div className="p-4 border-b">
           <h1 className="text-lg font-bold text-foreground">{t('clientPortal.title')}</h1>
         </div>
         <ScrollArea className="flex-1 py-4">
           <nav className="px-2 space-y-1">
             <Link
-              to="/app/client-portal"
+              to={buildPath('/app/client-portal')}
               className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
                 location.pathname === '/app/client-portal'
@@ -78,7 +124,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
             {visibleSections.map(section => (
               <Link
                 key={section.key}
-                to={section.path}
+                to={buildPath(section.path)}
                 className={cn(
                   "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
                   location.pathname === section.path
@@ -102,7 +148,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
       </aside>
 
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-background border-b">
+      <div className={cn("lg:hidden fixed left-0 right-0 z-50 bg-background border-b", isAdminPreview ? "top-10" : "top-0")}>
         <div className="flex items-center justify-between p-4">
           <h1 className="text-lg font-bold">{t('clientPortal.title')}</h1>
           <div className="flex items-center gap-2">
@@ -116,11 +162,11 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-40 bg-background pt-16">
+        <div className={cn("lg:hidden fixed inset-0 z-40 bg-background", isAdminPreview ? "pt-[6.5rem]" : "pt-16")}>
           <ScrollArea className="h-full">
             <nav className="p-4 space-y-2">
               <Link
-                to="/app/client-portal"
+                to={buildPath('/app/client-portal')}
                 onClick={() => setMobileMenuOpen(false)}
                 className={cn(
                   "flex items-center gap-3 px-3 py-3 rounded-md text-sm font-medium",
@@ -135,7 +181,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
               {visibleSections.map(section => (
                 <Link
                   key={section.key}
-                  to={section.path}
+                  to={buildPath(section.path)}
                   onClick={() => setMobileMenuOpen(false)}
                   className={cn(
                     "flex items-center gap-3 px-3 py-3 rounded-md text-sm font-medium",
@@ -161,7 +207,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
       )}
 
       {/* Main Content */}
-      <main className="flex-1 lg:pt-0 pt-16">
+      <main className={cn("flex-1 pt-16 lg:pt-0", isAdminPreview && "lg:pt-10")}>
         <div className="hidden lg:flex items-center justify-end gap-4 p-4 border-b bg-background">
           <LanguageSwitcher />
           <span className="text-sm text-muted-foreground">{firstName}</span>

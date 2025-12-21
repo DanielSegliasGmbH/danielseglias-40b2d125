@@ -484,6 +484,7 @@
     "linkUser": "Benutzer verknüpfen",
     "unlinkUser": "Verknüpfung entfernen",
     "previewPortal": "Portal Vorschau",
+    "adminPreview": "Admin Vorschau",
     "userLinked": "Benutzer erfolgreich verknüpft",
     "userUnlinked": "Verknüpfung entfernt",
     "userAlreadyLinked": "Dieser Benutzer ist bereits mit einem anderen Kunden verknüpft",
