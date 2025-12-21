@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -57,6 +57,7 @@ import {
   Phone,
   Mail,
   MapPin,
+  Search,
 } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { toast } from 'sonner';
@@ -96,9 +97,20 @@ export default function ClientDetail() {
   const [editOpen, setEditOpen] = useState(false);
   const [caseOpen, setCaseOpen] = useState(false);
   const [meetingOpen, setMeetingOpen] = useState(false);
+  const [caseSearch, setCaseSearch] = useState('');
   const [editForm, setEditForm] = useState({ first_name: '', last_name: '', email: '', phone: '', address: '', status: 'aktiv' as ClientStatus });
   const [caseForm, setCaseForm] = useState({ title: '', description: '', due_date: '' });
   const [meetingForm, setMeetingForm] = useState({ case_id: '', scheduled_at: '', meeting_type: 'folgeberatung' as MeetingType, duration_minutes: 60, location: '' });
+
+  const filteredCases = useMemo(() => {
+    if (!cases) return [];
+    const term = caseSearch.trim().toLowerCase();
+    if (!term) return cases;
+    return cases.filter((c) => {
+      const searchString = [c.title, c.description || ''].join(' ').toLowerCase();
+      return searchString.includes(term);
+    });
+  }, [cases, caseSearch]);
 
   const roleLabel = role === 'admin' ? t('roles.admin') : t('roles.staff');
   const roleVariant = role === 'admin' ? 'default' : 'secondary';
@@ -317,18 +329,38 @@ export default function ClientDetail() {
               {loadingCases ? <Skeleton className="h-20 w-full" /> : cases?.length === 0 ? (
                 <p className="text-muted-foreground">{t('case.noCases')}</p>
               ) : (
-                <div className="space-y-2">
-                  {cases?.map((c) => (
-                    <Link key={c.id} to={`/app/cases/${c.id}`} className="block p-3 rounded border hover:bg-muted/50 transition-colors">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium">{c.title}</span>
-                        <Badge variant={getStatusVariant(c.status)}>{t(`case.statuses.${c.status}`, c.status)}</Badge>
-                      </div>
-                      <div className="text-sm text-muted-foreground mt-1">
-                        {t('table.assignedTo')}: {getProfileName(c.assigned_to)} {c.due_date && `• ${t('table.due')}: ${formatDate(c.due_date)}`}
-                      </div>
-                    </Link>
-                  ))}
+                <div className="space-y-3">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder={t('case.searchPlaceholder')}
+                      value={caseSearch}
+                      onChange={(e) => setCaseSearch(e.target.value)}
+                      className="pl-9"
+                    />
+                  </div>
+                  {cases && cases.length > 0 && (
+                    <p className="text-sm text-muted-foreground">
+                      {filteredCases.length} {t('case.of')} {cases.length} {t('case.title')}
+                    </p>
+                  )}
+                  {filteredCases.length === 0 ? (
+                    <p className="text-muted-foreground py-2">{t('case.noCasesFound')}</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {filteredCases.map((c) => (
+                        <Link key={c.id} to={`/app/cases/${c.id}`} className="block p-3 rounded border hover:bg-muted/50 transition-colors">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium">{c.title}</span>
+                            <Badge variant={getStatusVariant(c.status)}>{t(`case.statuses.${c.status}`, c.status)}</Badge>
+                          </div>
+                          <div className="text-sm text-muted-foreground mt-1">
+                            {t('table.assignedTo')}: {getProfileName(c.assigned_to)} {c.due_date && `• ${t('table.due')}: ${formatDate(c.due_date)}`}
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
