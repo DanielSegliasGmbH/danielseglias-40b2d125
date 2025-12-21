@@ -31,7 +31,7 @@ import { de, enUS, fr, it } from 'date-fns/locale';
 
 const DATE_LOCALES: Record<string, Locale> = { de, en: enUS, fr, it, gsw: de };
 
-type CaseSortMode = 'newest' | 'dueSoon' | 'status';
+type CaseSortMode = 'created_desc' | 'created_asc' | 'due_asc' | 'title_asc' | 'status_asc';
 
 const STATUS_ORDER: Record<string, number> = { 
   offen: 0, 
@@ -47,7 +47,7 @@ export default function CaseList() {
   const { data: cases, isLoading } = useCases();
   const { data: profiles } = useProfiles();
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortMode, setSortMode] = useState<CaseSortMode>('newest');
+  const [sortMode, setSortMode] = useState<CaseSortMode>('created_desc');
   const dateLocale = DATE_LOCALES[i18n.language] || de;
 
   const sortedCases = useMemo(() => {
@@ -74,14 +74,18 @@ export default function CaseList() {
     // Then sort
     return [...filtered].sort((a, b) => {
       switch (sortMode) {
-        case 'newest':
+        case 'created_desc':
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-        case 'dueSoon':
+        case 'created_asc':
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case 'due_asc':
           if (!a.due_date && !b.due_date) return 0;
           if (!a.due_date) return 1;
           if (!b.due_date) return -1;
           return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
-        case 'status':
+        case 'title_asc':
+          return a.title.localeCompare(b.title);
+        case 'status_asc':
           return (STATUS_ORDER[a.status] ?? 99) - (STATUS_ORDER[b.status] ?? 99);
         default:
           return 0;
@@ -162,13 +166,15 @@ export default function CaseList() {
                   />
                 </div>
                 <Select value={sortMode} onValueChange={(v) => setSortMode(v as CaseSortMode)}>
-                  <SelectTrigger className="w-full sm:w-48">
-                    <SelectValue placeholder={t('sort.sortBy')} />
+                  <SelectTrigger className="w-full sm:w-52">
+                    <SelectValue placeholder={t('case.sortBy')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="newest">{t('sort.newest')}</SelectItem>
-                    <SelectItem value="dueSoon">{t('sort.dueSoon')}</SelectItem>
-                    <SelectItem value="status">{t('sort.status')}</SelectItem>
+                    <SelectItem value="created_desc">{t('case.sortOptions.createdDesc')}</SelectItem>
+                    <SelectItem value="created_asc">{t('case.sortOptions.createdAsc')}</SelectItem>
+                    <SelectItem value="due_asc">{t('case.sortOptions.dueAsc')}</SelectItem>
+                    <SelectItem value="title_asc">{t('case.sortOptions.titleAsc')}</SelectItem>
+                    <SelectItem value="status_asc">{t('case.sortOptions.statusAsc')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
