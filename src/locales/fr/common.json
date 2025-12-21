@@ -80,6 +80,9 @@
     "updatedSuccess": "Client mis à jour avec succès",
     "requiredFields": "Le prénom et le nom sont obligatoires",
     "noClients": "Aucun client trouvé",
+    "noClientsFound": "Aucun client trouvé",
+    "searchPlaceholder": "Rechercher (nom, e-mail, téléphone)",
+    "of": "sur",
     "notFound": "Client introuvable",
     "statuses": {
       "aktiv": "Actif",
