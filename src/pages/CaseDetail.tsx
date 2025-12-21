@@ -14,6 +14,8 @@ import {
   useMarkCaseTaskDone,
   useCreateMeetingForCase,
   useCreateNoteForCase,
+  useDeleteCase,
+  useDeleteTask,
 } from '@/hooks/useCaseData';
 import { useProfiles } from '@/hooks/useDashboardData';
 import { Button } from '@/components/ui/button';
@@ -56,7 +58,18 @@ import {
   User,
   Clock,
   MoreVertical,
+  Trash2,
 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { AppLayout } from '@/components/AppLayout';
 import { toast } from 'sonner';

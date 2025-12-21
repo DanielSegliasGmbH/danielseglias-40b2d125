@@ -325,15 +325,18 @@ export function useDeleteClient() {
 
   return useMutation({
     mutationFn: async (clientId: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
       const { error } = await supabase
         .from('clients')
-        .delete()
+        .update({ deleted_at: new Date().toISOString(), deleted_by: user?.id })
         .eq('id', clientId);
       if (error) throw error;
       return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clients'] });
+      queryClient.invalidateQueries({ queryKey: ['client'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 }
