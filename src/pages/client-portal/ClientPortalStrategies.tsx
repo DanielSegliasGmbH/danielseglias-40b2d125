@@ -31,10 +31,10 @@ export default function ClientPortalStrategies() {
             <div className="bg-muted/50 rounded-lg p-6">
               <h3 className="font-medium mb-3">{t('clientPortal.plannedFeatures')}</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>• {t('clientPortal.strategies.feature1')}</li>
-                <li>• {t('clientPortal.strategies.feature2')}</li>
-                <li>• {t('clientPortal.strategies.feature3')}</li>
-                <li>• {t('clientPortal.strategies.feature4')}</li>
+                <li>• {t('clientPortal.strategiesFeatures.feature1')}</li>
+                <li>• {t('clientPortal.strategiesFeatures.feature2')}</li>
+                <li>• {t('clientPortal.strategiesFeatures.feature3')}</li>
+                <li>• {t('clientPortal.strategiesFeatures.feature4')}</li>
               </ul>
             </div>
           </CardContent>

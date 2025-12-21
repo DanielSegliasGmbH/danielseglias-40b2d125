@@ -31,10 +31,10 @@ export default function ClientPortalTools() {
             <div className="bg-muted/50 rounded-lg p-6">
               <h3 className="font-medium mb-3">{t('clientPortal.plannedFeatures')}</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>• {t('clientPortal.tools.feature1')}</li>
-                <li>• {t('clientPortal.tools.feature2')}</li>
-                <li>• {t('clientPortal.tools.feature3')}</li>
-                <li>• {t('clientPortal.tools.feature4')}</li>
+                <li>• {t('clientPortal.toolsFeatures.feature1')}</li>
+                <li>• {t('clientPortal.toolsFeatures.feature2')}</li>
+                <li>• {t('clientPortal.toolsFeatures.feature3')}</li>
+                <li>• {t('clientPortal.toolsFeatures.feature4')}</li>
               </ul>
             </div>
           </CardContent>
