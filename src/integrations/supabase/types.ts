@@ -304,6 +304,90 @@ export type Database = {
         }
         Relationships: []
       }
+      system_map_edges: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          relation: string
+          source_key: string
+          target_key: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          relation: string
+          source_key: string
+          target_key: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          relation?: string
+          source_key?: string
+          target_key?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "system_map_edges_source_key_fkey"
+            columns: ["source_key"]
+            isOneToOne: false
+            referencedRelation: "system_map_nodes"
+            referencedColumns: ["key"]
+          },
+          {
+            foreignKeyName: "system_map_edges_target_key_fkey"
+            columns: ["target_key"]
+            isOneToOne: false
+            referencedRelation: "system_map_nodes"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
+      system_map_nodes: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          key: string
+          label: string
+          position_x: number | null
+          position_y: number | null
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          key: string
+          label: string
+          position_x?: number | null
+          position_y?: number | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          key?: string
+          label?: string
+          position_x?: number | null
+          position_y?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           assigned_to: string | null

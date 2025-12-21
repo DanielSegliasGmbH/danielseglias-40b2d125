@@ -14,6 +14,7 @@ import ClientList from "./pages/ClientList";
 import ClientDetail from "./pages/ClientDetail";
 import CaseList from "./pages/CaseList";
 import CaseDetail from "./pages/CaseDetail";
+import SystemMap from "./pages/SystemMap";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,6 +47,16 @@ const App = () => (
               element={
                 <RouteGuard allowedRoles={['admin']}>
                   <UserManagement />
+                </RouteGuard>
+              }
+            />
+
+            {/* Protected: Admin only - System Map */}
+            <Route
+              path="/app/system-map"
+              element={
+                <RouteGuard allowedRoles={['admin']}>
+                  <SystemMap />
                 </RouteGuard>
               }
             />
