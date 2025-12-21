@@ -83,6 +83,8 @@
     "noClientsFound": "Keine Clients gefunden",
     "searchPlaceholder": "Suchen (Name, E-Mail, Telefon)",
     "of": "von",
+    "showing": "Zeige {{shown}} von {{total}} Clients",
+    "loadMore": "Mehr laden",
     "notFound": "Client nicht gefunden",
     "statuses": {
       "aktiv": "Aktiv",

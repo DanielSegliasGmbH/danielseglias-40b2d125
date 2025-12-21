@@ -83,6 +83,8 @@
     "noClientsFound": "Kei Clients gfunde",
     "searchPlaceholder": "Sueche (Name, E-Mail, Telefon)",
     "of": "vo",
+    "showing": "Zeig {{shown}} vo {{total}} Clients",
+    "loadMore": "Meh lade",
     "notFound": "Client nöd gfunde",
     "statuses": {
       "aktiv": "Aktiv",
