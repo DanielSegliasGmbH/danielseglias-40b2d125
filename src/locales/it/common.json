@@ -97,6 +97,7 @@
   },
   "case": {
     "title": "Casi",
+    "list": "Panoramica casi",
     "detail": "Dettagli caso",
     "newCase": "Nuovo caso",
     "createCase": "Crea caso",

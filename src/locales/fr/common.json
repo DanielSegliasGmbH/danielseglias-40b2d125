@@ -97,6 +97,7 @@
   },
   "case": {
     "title": "Dossiers",
+    "list": "Aperçu des dossiers",
     "detail": "Détails du dossier",
     "newCase": "Nouveau dossier",
     "createCase": "Créer un dossier",

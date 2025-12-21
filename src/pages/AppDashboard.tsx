@@ -164,6 +164,12 @@ export default function AppDashboard() {
               {t('client.list')}
             </Button>
           </Link>
+          <Link to="/app/cases">
+            <Button variant="outline" className="gap-2">
+              <Briefcase className="h-4 w-4" />
+              {t('case.list')}
+            </Button>
+          </Link>
           <CreateClientDialog />
           <CreateCaseDialog />
           <CreateTaskDialog />
