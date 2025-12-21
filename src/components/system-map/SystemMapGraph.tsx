@@ -13,14 +13,14 @@ import {
   MarkerType,
   Panel,
   Connection,
-  addEdge,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import dagre from 'dagre';
 import { toast } from 'sonner';
-import { SystemMapNode, SystemMapEdge, useDebouncedPositionUpdate, useCreateEdge } from '@/hooks/useSystemMap';
+import { SystemMapNode, SystemMapEdge, useDebouncedPositionUpdate, useCreateEdge, useDeleteEdge } from '@/hooks/useSystemMap';
 import { SystemMapNodeComponent } from './SystemMapNodeComponent';
 import { SystemMapEdgeForm } from './SystemMapEdgeForm';
+import { SystemMapEdgePopover } from './SystemMapEdgePopover';
 import { categoryColors, EdgeRelation } from './types';
 
 const nodeTypes = {
@@ -28,14 +28,24 @@ const nodeTypes = {
 };
 
 // Edge styles based on relation type
-const getEdgeStyle = (relation: string, isOnPath: boolean, isDirectConnection: boolean, selectedNodeKey: string | null) => {
+const getEdgeStyle = (
+  relation: string,
+  isOnPath: boolean,
+  isDirectConnection: boolean,
+  selectedNodeKey: string | null,
+  isSelected: boolean
+) => {
+  const baseStroke = isSelected
+    ? 'hsl(var(--primary))'
+    : isOnPath
+    ? 'hsl(var(--primary))'
+    : isDirectConnection
+    ? 'hsl(var(--chart-1))'
+    : 'hsl(var(--muted-foreground))';
+
   const baseStyle = {
-    stroke: isOnPath
-      ? 'hsl(var(--primary))'
-      : isDirectConnection
-      ? 'hsl(var(--chart-1))'
-      : 'hsl(var(--muted-foreground))',
-    opacity: selectedNodeKey && !isDirectConnection && !isOnPath ? 0.3 : 1,
+    stroke: baseStroke,
+    opacity: selectedNodeKey && !isDirectConnection && !isOnPath && !isSelected ? 0.3 : 1,
   };
 
   // Relation-specific styles
@@ -43,25 +53,25 @@ const getEdgeStyle = (relation: string, isOnPath: boolean, isDirectConnection: b
     case 'depends_on':
       return {
         ...baseStyle,
-        strokeWidth: isOnPath ? 3 : isDirectConnection ? 2 : 1.5,
+        strokeWidth: isSelected ? 3 : isOnPath ? 3 : isDirectConnection ? 2 : 1.5,
         strokeDasharray: '5 3',
       };
     case 'owns':
     case 'contains':
       return {
         ...baseStyle,
-        strokeWidth: isOnPath ? 4 : isDirectConnection ? 3 : 2.5,
+        strokeWidth: isSelected ? 4 : isOnPath ? 4 : isDirectConnection ? 3 : 2.5,
       };
     case 'creates':
       return {
         ...baseStyle,
-        strokeWidth: isOnPath ? 3 : isDirectConnection ? 2 : 1.5,
+        strokeWidth: isSelected ? 3 : isOnPath ? 3 : isDirectConnection ? 2 : 1.5,
         strokeDasharray: '3 2',
       };
     default: // uses, manages
       return {
         ...baseStyle,
-        strokeWidth: isOnPath ? 3 : isDirectConnection ? 2 : 1.5,
+        strokeWidth: isSelected ? 3 : isOnPath ? 3 : isDirectConnection ? 2 : 1.5,
       };
   }
 };
@@ -133,6 +143,7 @@ export function SystemMapGraph({
   const { t } = useTranslation();
   const { debouncedUpdate: updatePosition } = useDebouncedPositionUpdate();
   const createEdge = useCreateEdge();
+  const deleteEdge = useDeleteEdge();
 
   // State for edge creation modal
   const [pendingConnection, setPendingConnection] = useState<{
@@ -141,6 +152,10 @@ export function SystemMapGraph({
     sourceLabel: string;
     targetLabel: string;
   } | null>(null);
+
+  // State for selected edge
+  const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const filteredNodes = useMemo(() => {
     return rawNodes.filter((node) => {
@@ -160,6 +175,17 @@ export function SystemMapGraph({
     });
     return map;
   }, [rawNodes]);
+
+  // Map edge ID to edge data
+  const edgeIdToEdge = useMemo(() => {
+    const map: Record<string, SystemMapEdge> = {};
+    rawEdges.forEach((e) => {
+      map[e.id] = e;
+    });
+    return map;
+  }, [rawEdges]);
+
+  const selectedEdge = selectedEdgeId ? edgeIdToEdge[selectedEdgeId] : null;
 
   const flowNodes: Node[] = useMemo(() => {
     return filteredNodes.map((node) => ({
@@ -198,7 +224,9 @@ export function SystemMapGraph({
           selectedNodeKey &&
           (edge.source_key === selectedNodeKey || edge.target_key === selectedNodeKey);
 
-        const edgeStyle = getEdgeStyle(edge.relation, isOnPath, !!isDirectConnection, selectedNodeKey);
+        const isSelected = edge.id === selectedEdgeId;
+
+        const edgeStyle = getEdgeStyle(edge.relation, isOnPath, !!isDirectConnection, selectedNodeKey, isSelected);
 
         return {
           id: edge.id,
@@ -206,15 +234,19 @@ export function SystemMapGraph({
           target: edge.target_key,
           label: edge.relation,
           type: 'smoothstep',
-          animated: isOnPath,
-          style: edgeStyle,
+          animated: isOnPath || isSelected,
+          style: {
+            ...edgeStyle,
+            cursor: 'pointer',
+          },
           markerEnd: {
             type: MarkerType.ArrowClosed,
             color: edgeStyle.stroke,
           },
           labelStyle: {
             fontSize: 10,
-            fill: 'hsl(var(--muted-foreground))',
+            fill: isSelected ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))',
+            fontWeight: isSelected ? 600 : 400,
           },
           labelBgStyle: {
             fill: 'hsl(var(--background))',
@@ -222,7 +254,7 @@ export function SystemMapGraph({
           },
         };
       });
-  }, [rawEdges, filteredNodeKeys, selectedNodeKey, shortestPath]);
+  }, [rawEdges, filteredNodeKeys, selectedNodeKey, shortestPath, selectedEdgeId]);
 
   const { nodes: layoutedNodes, edges: layoutedEdges } = useMemo(
     () => getLayoutedElements(flowNodes, flowEdges, 'TB'),
@@ -236,6 +268,13 @@ export function SystemMapGraph({
     setNodes(layoutedNodes);
     setEdges(layoutedEdges);
   }, [layoutedNodes, layoutedEdges, setNodes, setEdges]);
+
+  // Clear selected edge when it no longer exists
+  useEffect(() => {
+    if (selectedEdgeId && !edgeIdToEdge[selectedEdgeId]) {
+      setSelectedEdgeId(null);
+    }
+  }, [selectedEdgeId, edgeIdToEdge]);
 
   const handleNodesChange = useCallback(
     (changes: NodeChange<Node>[]) => {
@@ -298,14 +337,40 @@ export function SystemMapGraph({
 
   const handleNodeClick = useCallback(
     (_: React.MouseEvent, node: Node) => {
+      setSelectedEdgeId(null); // Clear edge selection when clicking node
       onNodeSelect(node.id === selectedNodeKey ? null : node.id);
     },
     [onNodeSelect, selectedNodeKey]
   );
 
+  const handleEdgeClick = useCallback(
+    (_: React.MouseEvent, edge: Edge) => {
+      onNodeSelect(null); // Clear node selection when clicking edge
+      setSelectedEdgeId(edge.id === selectedEdgeId ? null : edge.id);
+    },
+    [selectedEdgeId, onNodeSelect]
+  );
+
   const handlePaneClick = useCallback(() => {
     onNodeSelect(null);
+    setSelectedEdgeId(null);
   }, [onNodeSelect]);
+
+  const handleDeleteEdge = useCallback(() => {
+    if (!selectedEdgeId) return;
+    setShowDeleteConfirm(true);
+  }, [selectedEdgeId]);
+
+  const confirmDeleteEdge = useCallback(() => {
+    if (!selectedEdgeId) return;
+
+    deleteEdge.mutate(selectedEdgeId, {
+      onSuccess: () => {
+        setSelectedEdgeId(null);
+        setShowDeleteConfirm(false);
+      },
+    });
+  }, [selectedEdgeId, deleteEdge]);
 
   return (
     <div className="w-full h-full">
@@ -314,6 +379,7 @@ export function SystemMapGraph({
         edges={edges}
         onNodesChange={handleNodesChange}
         onNodeClick={handleNodeClick}
+        onEdgeClick={handleEdgeClick}
         onPaneClick={handlePaneClick}
         onConnect={handleConnect}
         nodeTypes={nodeTypes}
@@ -343,6 +409,21 @@ export function SystemMapGraph({
           targetLabel={pendingConnection.targetLabel}
           onSubmit={handleEdgeSubmit}
           isPending={createEdge.isPending}
+        />
+      )}
+
+      {selectedEdge && (
+        <SystemMapEdgePopover
+          edge={selectedEdge}
+          sourceLabel={nodeKeyToLabel[selectedEdge.source_key] || selectedEdge.source_key}
+          targetLabel={nodeKeyToLabel[selectedEdge.target_key] || selectedEdge.target_key}
+          editMode={editMode}
+          onClose={() => setSelectedEdgeId(null)}
+          onDelete={handleDeleteEdge}
+          showDeleteConfirm={showDeleteConfirm}
+          onConfirmDelete={confirmDeleteEdge}
+          onCancelDelete={() => setShowDeleteConfirm(false)}
+          isDeleting={deleteEdge.isPending}
         />
       )}
     </div>
