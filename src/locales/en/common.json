@@ -449,6 +449,7 @@
   "clientPortal": {
     "title": "Client Portal",
     "home": "Overview",
+    "more": "More",
     "preview": "Client Portal (Preview)",
     "welcome": "Welcome, {{name}}!",
     "welcomeSubtitle": "Here you can find all important information about your finances and insurances.",

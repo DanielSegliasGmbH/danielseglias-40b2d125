@@ -4,6 +4,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Safe area for mobile bottom navigation */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 /* 
   Daniel Seglias Design System
   - Ruhig, hochwertig, seriös

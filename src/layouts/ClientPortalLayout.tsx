@@ -8,6 +8,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { BottomNavigation } from '@/components/client-portal/BottomNavigation';
+import { MoreSheet } from '@/components/client-portal/MoreSheet';
 import {
   Shield,
   Target,
@@ -17,8 +19,6 @@ import {
   Wrench,
   Home,
   LogOut,
-  Menu,
-  X,
   Eye,
   ChevronLeft,
   ChevronRight,
@@ -66,7 +66,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
   const { t } = useTranslation();
   const { user, role, signOut } = useAuth();
   const location = useLocation();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [moreSheetOpen, setMoreSheetOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { data: settings } = useClientPortalSettings();
   
@@ -200,67 +200,20 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
           </div>
         </aside>
 
-        {/* Mobile Header */}
+        {/* Mobile Header - Simplified */}
         <div className={cn("lg:hidden fixed left-0 right-0 z-50 bg-card border-b border-border", isAdminPreview ? "top-10" : "top-0")}>
-          <div className="flex items-center justify-between p-4">
+          <div className="flex items-center justify-between px-4 h-14">
             <h1 className="text-lg font-semibold">{t('clientPortal.title')}</h1>
-            <div className="flex items-center gap-2">
-              <LanguageSwitcher />
-              <Button variant="ghost" size="icon" className="hover:bg-accent" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </Button>
-            </div>
+            <LanguageSwitcher />
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className={cn("lg:hidden fixed inset-0 z-40 bg-card", isAdminPreview ? "pt-[6.5rem]" : "pt-16")}>
-            <ScrollArea className="h-full">
-              <nav className="p-4 space-y-2">
-                <Link
-                  to={buildPath('/app/client-portal')}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors",
-                    location.pathname === '/app/client-portal'
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-accent"
-                  )}
-                >
-                  <Home className="h-5 w-5" />
-                  {t('clientPortal.home')}
-                </Link>
-                {visibleSections.map(section => (
-                  <Link
-                    key={section.key}
-                    to={buildPath(section.path)}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={cn(
-                      "flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors",
-                      location.pathname === section.path
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:bg-accent"
-                    )}
-                  >
-                    <section.icon className="h-5 w-5" />
-                    {t(section.labelKey)}
-                  </Link>
-                ))}
-                <div className="border-t border-border pt-4 mt-4">
-                  <div className="text-sm text-muted-foreground px-3 mb-2">{user?.email}</div>
-                  <Button variant="ghost" className="w-full justify-start hover:bg-accent" onClick={handleLogout}>
-                    <LogOut className="h-4 w-4 mr-2" />
-                    {t('auth.logout')}
-                  </Button>
-                </div>
-              </nav>
-            </ScrollArea>
-          </div>
-        )}
-
         {/* Main Content */}
-        <main className={cn("flex-1 pt-16 lg:pt-0 bg-background", isAdminPreview && "lg:pt-10")}>
+        <main className={cn(
+          "flex-1 bg-background",
+          "pt-14 pb-20 lg:pb-0 lg:pt-0", // Mobile: header + bottom nav padding
+          isAdminPreview && "lg:pt-10"
+        )}>
           <div className="hidden lg:flex items-center justify-end gap-4 p-4 border-b border-border bg-card">
             <LanguageSwitcher />
             <span className="text-sm text-muted-foreground">{firstName}</span>
@@ -269,6 +222,21 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
             {children}
           </div>
         </main>
+
+        {/* Mobile Bottom Navigation */}
+        <BottomNavigation 
+          onMoreClick={() => setMoreSheetOpen(true)} 
+          buildPath={buildPath}
+        />
+
+        {/* More Sheet */}
+        <MoreSheet
+          open={moreSheetOpen}
+          onOpenChange={setMoreSheetOpen}
+          buildPath={buildPath}
+          onLogout={handleLogout}
+          visibleSections={visibleSections}
+        />
       </div>
     </TooltipProvider>
   );
