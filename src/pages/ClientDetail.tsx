@@ -31,6 +31,7 @@ import {
 import { useDeleteTask } from '@/hooks/useCaseData';
 import { useProfiles } from '@/hooks/useDashboardData';
 import { ClientPortalSettingsCard } from '@/components/admin/ClientPortalSettingsCard';
+import { ClientUserLinkCard } from '@/components/admin/ClientUserLinkCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -735,9 +736,10 @@ export default function ClientDetail() {
           </Card>
         </div>
 
-        {/* Admin: Client Portal Settings */}
+        {/* Admin: Client Portal Access & Settings */}
         {role === 'admin' && (
-          <div className="mt-6">
+          <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ClientUserLinkCard clientId={clientId!} />
             <ClientPortalSettingsCard clientId={clientId!} />
           </div>
         )}
