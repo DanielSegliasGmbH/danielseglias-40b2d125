@@ -117,6 +117,9 @@
     "createError": "Error creating case",
     "requiredFields": "Client and title are required",
     "noCases": "No cases found",
+    "noCasesFound": "No matching cases found",
+    "searchPlaceholder": "Search cases...",
+    "of": "of",
     "notFound": "Case not found",
     "statuses": {
       "offen": "Open",

@@ -117,6 +117,9 @@
     "createError": "Erreur lors de la création",
     "requiredFields": "Le client et le titre sont obligatoires",
     "noCases": "Aucun dossier trouvé",
+    "noCasesFound": "Aucun dossier correspondant",
+    "searchPlaceholder": "Rechercher des dossiers...",
+    "of": "sur",
     "notFound": "Dossier introuvable",
     "statuses": {
       "offen": "Ouvert",

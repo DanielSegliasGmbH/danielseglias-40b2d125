@@ -117,6 +117,9 @@
     "createError": "Fehler beim Erstellen",
     "requiredFields": "Client und Titel sind Pflichtfelder",
     "noCases": "Keine Cases vorhanden",
+    "noCasesFound": "Keine passenden Cases gefunden",
+    "searchPlaceholder": "Cases suchen...",
+    "of": "von",
     "notFound": "Case nicht gefunden",
     "statuses": {
       "offen": "Offen",
