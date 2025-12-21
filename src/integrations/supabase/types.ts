@@ -301,12 +301,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_client_id_for_user: { Args: { _user_id: string }; Returns: string }
       has_any_role: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_client: { Args: { _user_id: string }; Returns: boolean }
+      is_staff_or_admin: { Args: { _user_id: string }; Returns: boolean }
+      staff_has_case_access: {
+        Args: { _case_id: string; _user_id: string }
+        Returns: boolean
+      }
+      staff_has_client_access: {
+        Args: { _client_id: string; _user_id: string }
         Returns: boolean
       }
     }
