@@ -450,5 +450,67 @@
     "cleanupError": "Fehler beim Aufräumen",
     "softDeleteInfo": "Der Eintrag wird in den Papierkorb verschoben und kann innerhalb von 30 Tagen wiederhergestellt werden.",
     "deletedSuccess": "In den Papierkorb verschoben"
+  },
+  "clientPortal": {
+    "title": "Kundenbereich",
+    "home": "Übersicht",
+    "preview": "Kundenbereich (Vorschau)",
+    "welcome": "Willkommen, {{name}}!",
+    "welcomeSubtitle": "Hier finden Sie alle wichtigen Informationen zu Ihren Finanzen und Versicherungen.",
+    "noSections": "Keine Bereiche verfügbar.",
+    "insurances": "Meine Versicherungen",
+    "insurancesDesc": "Übersicht Ihrer bestehenden Versicherungspolicen",
+    "goals": "Meine Ziele",
+    "goalsDesc": "Ihre finanziellen Ziele und Fortschritte",
+    "tasks": "Meine Aufgaben",
+    "tasksDesc": "Offene Aufgaben und To-Dos für Sie",
+    "strategies": "Anlagestrategien",
+    "strategiesDesc": "Ihre persönlichen Anlagestrategien",
+    "library": "Wissensbibliothek",
+    "libraryDesc": "Hilfreiche Artikel und Dokumente",
+    "tools": "Werkzeuge",
+    "toolsDesc": "Praktische Rechner und Tools",
+    "comingSoon": "In Entwicklung",
+    "inDevelopment": "Dieser Bereich wird derzeit entwickelt und ist bald verfügbar.",
+    "plannedFeatures": "Was Sie hier später finden werden:",
+    "settingsTitle": "Kundenbereich Einstellungen",
+    "settingsDesc": "Wählen Sie, welche Bereiche für diesen Kunden sichtbar sein sollen.",
+    "settingsUpdated": "Einstellungen gespeichert",
+    "insurance": {
+      "feature1": "Übersicht aller Versicherungspolicen",
+      "feature2": "Leistungsdetails und Deckungssummen",
+      "feature3": "Vertragsunterlagen zum Download",
+      "feature4": "Schadensmeldung und Status"
+    },
+    "goals": {
+      "feature1": "Finanzielle Ziele definieren",
+      "feature2": "Fortschrittsanzeige",
+      "feature3": "Meilensteine setzen",
+      "feature4": "Zielerreichung verfolgen"
+    },
+    "tasks": {
+      "feature1": "Offene Aufgaben einsehen",
+      "feature2": "Dokumente hochladen",
+      "feature3": "Formulare ausfüllen",
+      "feature4": "Statusverfolgung"
+    },
+    "strategies": {
+      "feature1": "Aktuelle Anlagestrategie",
+      "feature2": "Portfolio-Übersicht",
+      "feature3": "Risikoanalyse",
+      "feature4": "Performance-Berichte"
+    },
+    "library": {
+      "feature1": "Finanzwissen-Artikel",
+      "feature2": "Erklärungs-Videos",
+      "feature3": "FAQ und Hilfe",
+      "feature4": "Persönliche Dokumente"
+    },
+    "tools": {
+      "feature1": "Zinseszinsrechner",
+      "feature2": "Budgetplaner",
+      "feature3": "Steuerrechner",
+      "feature4": "Vorsorge-Check"
+    }
   }
 }

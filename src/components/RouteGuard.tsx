@@ -49,11 +49,25 @@ export function RouteGuard({ children, allowedRoles }: RouteGuardProps) {
   }
 
   if (allowedRoles && !allowedRoles.includes(role)) {
+    // Redirect based on role
     if (role === 'client') {
-      return <Navigate to="/client" replace />;
+      return <Navigate to="/app/client-portal" replace />;
     }
     return <Navigate to="/app" replace />;
   }
 
   return <>{children}</>;
+}
+
+// Role-based redirect after login
+export function getDefaultRouteForRole(role: 'admin' | 'staff' | 'client' | null): string {
+  switch (role) {
+    case 'client':
+      return '/app/client-portal';
+    case 'admin':
+    case 'staff':
+      return '/app';
+    default:
+      return '/login';
+  }
 }

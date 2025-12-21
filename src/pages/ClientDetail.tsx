@@ -30,6 +30,7 @@ import {
 } from '@/hooks/useClientData';
 import { useDeleteTask } from '@/hooks/useCaseData';
 import { useProfiles } from '@/hooks/useDashboardData';
+import { ClientPortalSettingsCard } from '@/components/admin/ClientPortalSettingsCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -733,6 +734,13 @@ export default function ClientDetail() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Admin: Client Portal Settings */}
+        {role === 'admin' && (
+          <div className="mt-6">
+            <ClientPortalSettingsCard clientId={clientId!} />
+          </div>
+        )}
 
         {/* Edit Client Dialog */}
         <Dialog open={editOpen} onOpenChange={setEditOpen}>
