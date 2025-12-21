@@ -27,7 +27,7 @@ import { LogOut, Users, ArrowLeft, ChevronRight, Search } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { CreateClientDialog } from '@/components/dashboard/CreateClientDialog';
 
-type ClientSortMode = 'lastNameAsc' | 'newest' | 'status';
+type ClientSortMode = 'last_asc' | 'last_desc' | 'status' | 'created_desc';
 
 const PAGE_SIZE = 25;
 const STATUS_ORDER: Record<string, number> = { aktiv: 0, pausiert: 1, archiviert: 2 };
@@ -37,7 +37,7 @@ export default function ClientList() {
   const { user, role, signOut } = useAuth();
   const { data: clients, isLoading } = useClients();
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortMode, setSortMode] = useState<ClientSortMode>('lastNameAsc');
+  const [sortMode, setSortMode] = useState<ClientSortMode>('last_asc');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   // Reset visible count when filters change
@@ -69,12 +69,14 @@ export default function ClientList() {
     // Then sort
     return [...filtered].sort((a, b) => {
       switch (sortMode) {
-        case 'lastNameAsc':
-          return a.last_name.localeCompare(b.last_name);
-        case 'newest':
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case 'last_asc':
+          return (a.last_name || '').localeCompare(b.last_name || '');
+        case 'last_desc':
+          return (b.last_name || '').localeCompare(a.last_name || '');
         case 'status':
           return (STATUS_ORDER[a.status] ?? 99) - (STATUS_ORDER[b.status] ?? 99);
+        case 'created_desc':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
         default:
           return 0;
       }
@@ -148,12 +150,13 @@ export default function ClientList() {
                 </div>
                 <Select value={sortMode} onValueChange={(v) => setSortMode(v as ClientSortMode)}>
                   <SelectTrigger className="w-full sm:w-48">
-                    <SelectValue placeholder={t('sort.sortBy')} />
+                    <SelectValue placeholder={t('client.sortBy')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="lastNameAsc">{t('sort.lastNameAsc')}</SelectItem>
-                    <SelectItem value="newest">{t('sort.newest')}</SelectItem>
-                    <SelectItem value="status">{t('sort.status')}</SelectItem>
+                    <SelectItem value="last_asc">{t('client.sort.lastAsc')}</SelectItem>
+                    <SelectItem value="last_desc">{t('client.sort.lastDesc')}</SelectItem>
+                    <SelectItem value="status">{t('client.sort.status')}</SelectItem>
+                    <SelectItem value="created_desc">{t('client.sort.createdDesc')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

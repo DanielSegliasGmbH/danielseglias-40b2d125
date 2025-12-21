@@ -86,6 +86,13 @@
     "showing": "Visualizzando {{shown}} di {{total}} clienti",
     "loadMore": "Carica altri",
     "notFound": "Cliente non trovato",
+    "sortBy": "Ordina per",
+    "sort": {
+      "lastAsc": "Cognome A–Z",
+      "lastDesc": "Cognome Z–A",
+      "status": "Per stato",
+      "createdDesc": "Più recenti"
+    },
     "statuses": {
       "aktiv": "Attivo",
       "pausiert": "In pausa",
