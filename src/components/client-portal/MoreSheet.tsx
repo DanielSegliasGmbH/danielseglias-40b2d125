@@ -10,7 +10,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 interface MoreSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -63,6 +64,15 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
         </div>
 
         <Separator className="my-4" />
+
+        {/* Settings Section */}
+        <div className="flex items-center justify-between px-4 py-3 bg-muted/30 rounded-xl mb-4">
+          <span className="text-sm font-medium text-muted-foreground">{t('app.settings', 'Einstellungen')}</span>
+          <div className="flex items-center gap-2">
+            <ThemeSwitcher />
+            <LanguageSwitcher />
+          </div>
+        </div>
 
         <Button
           variant="ghost"
