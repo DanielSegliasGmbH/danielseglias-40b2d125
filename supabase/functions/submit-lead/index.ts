@@ -37,7 +37,18 @@ interface LeadSubmission {
   honeypot?: string // Hidden field - if filled, it's a bot
 }
 
-function getClientIP(req: Request): string {
+// Simple hash function for fallback key
+function simpleHash(str: string): string {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash // Convert to 32bit integer
+  }
+  return `hash_${Math.abs(hash).toString(36)}`
+}
+
+function getClientIP(req: Request, email: string): string {
   // Check various headers for client IP
   const cfConnectingIP = req.headers.get('cf-connecting-ip')
   if (cfConnectingIP) return cfConnectingIP
@@ -51,7 +62,21 @@ function getClientIP(req: Request): string {
   const xRealIP = req.headers.get('x-real-ip')
   if (xRealIP) return xRealIP
 
-  return 'unknown'
+  // Fallback: use hash of email + user-agent
+  const userAgent = req.headers.get('user-agent') || ''
+  return simpleHash(email.toLowerCase() + userAgent)
+}
+
+function getBucketWindowStart(): string {
+  const now = Date.now()
+  const bucketMs = RATE_LIMIT_WINDOW_MINUTES * 60 * 1000
+  const bucketStart = Math.floor(now / bucketMs) * bucketMs
+  return new Date(bucketStart).toISOString()
+}
+
+function getDayStart(): string {
+  const now = new Date()
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
 }
 
 function validateEmail(email: string): boolean {
@@ -132,6 +157,8 @@ Deno.serve(async (req) => {
     )
   }
 
+  let rateLimitDegraded = false
+
   try {
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -167,44 +194,45 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Get client IP for rate limiting
-    const clientIP = getClientIP(req)
-    const now = new Date()
-    const windowStart = new Date(now.getTime() - RATE_LIMIT_WINDOW_MINUTES * 60 * 1000)
-    const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    // Get client IP (with email fallback for unknown)
+    const clientIP = getClientIP(req, data.email)
+    const bucketWindowStart = getBucketWindowStart()
+    const dayStart = getDayStart()
 
-    // Check rate limit for time window
-    const { data: recentRequests, error: rateError } = await supabase
+    // Check rate limit for current bucket
+    const { data: bucketData, error: bucketError } = await supabase
       .from('lead_rate_limits')
-      .select('id, request_count')
+      .select('request_count')
       .eq('ip_address', clientIP)
-      .gte('window_start', windowStart.toISOString())
+      .eq('window_start', bucketWindowStart)
+      .maybeSingle()
 
-    if (rateError) {
-      console.error('Rate limit check error:', rateError)
-      // Continue anyway - don't block legitimate users due to DB issues
-    } else {
-      const totalRecentRequests = recentRequests?.reduce((sum, r) => sum + r.request_count, 0) ?? 0
-      if (totalRecentRequests >= RATE_LIMIT_MAX_REQUESTS) {
-        console.log(`Rate limit exceeded for IP ${clientIP}: ${totalRecentRequests} requests in window`)
-        return new Response(
-          JSON.stringify({ success: false, code: 'RATE_LIMIT' }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
-      }
+    if (bucketError) {
+      console.warn('Rate limit bucket check error:', bucketError)
+      rateLimitDegraded = true
+      // In degraded mode, allow 1 request but don't insert - fail safe
+    } else if (bucketData && bucketData.request_count >= RATE_LIMIT_MAX_REQUESTS) {
+      console.log(`Rate limit exceeded for ${clientIP}: ${bucketData.request_count} in bucket`)
+      return new Response(
+        JSON.stringify({ success: false, code: 'RATE_LIMIT' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
     // Check daily limit
-    const { data: dailyRequests, error: dailyError } = await supabase
+    const { data: dailyData, error: dailyError } = await supabase
       .from('lead_rate_limits')
-      .select('id, request_count')
+      .select('request_count')
       .eq('ip_address', clientIP)
-      .gte('window_start', dayStart.toISOString())
+      .gte('window_start', dayStart)
 
-    if (!dailyError) {
-      const totalDailyRequests = dailyRequests?.reduce((sum, r) => sum + r.request_count, 0) ?? 0
-      if (totalDailyRequests >= DAILY_LIMIT_MAX_REQUESTS) {
-        console.log(`Daily limit exceeded for IP ${clientIP}: ${totalDailyRequests} requests today`)
+    if (dailyError) {
+      console.warn('Daily limit check error:', dailyError)
+      rateLimitDegraded = true
+    } else {
+      const totalDaily = dailyData?.reduce((sum, r) => sum + r.request_count, 0) ?? 0
+      if (totalDaily >= DAILY_LIMIT_MAX_REQUESTS) {
+        console.log(`Daily limit exceeded for ${clientIP}: ${totalDaily} today`)
         return new Response(
           JSON.stringify({ success: false, code: 'RATE_LIMIT' }),
           { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -212,18 +240,35 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Record this request for rate limiting
-    const { error: insertRateError } = await supabase
-      .from('lead_rate_limits')
-      .insert({
-        ip_address: clientIP,
-        window_start: now.toISOString(),
-        request_count: 1
-      })
+    // Upsert rate limit bucket (increment counter)
+    if (!rateLimitDegraded) {
+      const { error: upsertError } = await supabase
+        .from('lead_rate_limits')
+        .upsert(
+          {
+            ip_address: clientIP,
+            window_start: bucketWindowStart,
+            request_count: 1
+          },
+          {
+            onConflict: 'ip_address,window_start',
+            ignoreDuplicates: false
+          }
+        )
 
-    if (insertRateError) {
-      console.error('Failed to record rate limit:', insertRateError)
-      // Continue anyway
+      if (upsertError) {
+        // If upsert failed, try incrementing existing row
+        const { error: updateError } = await supabase
+          .rpc('increment_rate_limit', { 
+            p_ip: clientIP, 
+            p_window: bucketWindowStart 
+          })
+        
+        if (updateError) {
+          console.warn('Failed to record rate limit:', updateError)
+          rateLimitDegraded = true
+        }
+      }
     }
 
     // Insert lead
@@ -254,10 +299,18 @@ Deno.serve(async (req) => {
       )
     }
 
+    const responseHeaders: Record<string, string> = {
+      ...corsHeaders,
+      'Content-Type': 'application/json'
+    }
+    if (rateLimitDegraded) {
+      responseHeaders['X-RateLimit-Degraded'] = 'true'
+    }
+
     console.log(`Lead submitted successfully from ${clientIP}: ${data.email}`)
     return new Response(
       JSON.stringify({ success: true }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 200, headers: responseHeaders }
     )
 
   } catch (error) {
