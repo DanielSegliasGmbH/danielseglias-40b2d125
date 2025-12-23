@@ -21,22 +21,22 @@ const iconMap: Record<string, LucideIcon> = {
 
 export default function PublicToolDetail() {
   const { t } = useTranslation();
-  const { toolKey } = useParams<{ toolKey: string }>();
+  const { slug } = useParams<{ slug: string }>();
 
   const { data: tool, isLoading, error } = useQuery({
-    queryKey: ['public-tool', toolKey],
+    queryKey: ['public-tool', slug],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tools')
         .select('*')
-        .eq('slug', toolKey)
+        .eq('slug', slug)
         .eq('enabled_for_public', true)
         .maybeSingle();
 
       if (error) throw error;
       return data;
     },
-    enabled: !!toolKey,
+    enabled: !!slug,
   });
 
   const IconComponent = tool?.icon ? iconMap[tool.icon] || Wrench : Wrench;
