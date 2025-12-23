@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowLeft, Calculator, PieChart, TrendingUp, FileText, Wrench, LucideIcon } from 'lucide-react';
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
+import VorsorgecheckTool from '@/components/tools/vorsorgecheck/VorsorgecheckTool';
 
 const iconMap: Record<string, LucideIcon> = {
   'calculator': Calculator,
@@ -47,6 +48,8 @@ export default function ClientPortalToolDetail() {
     switch (tool.slug) {
       case 'finanzcheck':
         return <FinanzcheckTool mode="internal" />;
+      case 'vorsorgecheck-3a':
+        return <VorsorgecheckTool />;
       default:
         return (
           <Card>
