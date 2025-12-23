@@ -3,6 +3,7 @@
     "title": "Client Management",
     "loading": "Loading...",
     "error": "Error",
+    "loadError": "Error loading data",
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
@@ -586,16 +587,57 @@
     "subtitle": "Central management of all client portal tools",
     "overviewTitle": "Tool Management",
     "overviewDesc": "Manage all tools that can be made available in the client portal.",
-    "budgetCalculator": "Budget Calculator",
-    "budgetCalculatorDesc": "Helps clients create and analyze their monthly budget.",
-    "retirementPlanner": "Retirement Planner",
-    "retirementPlannerDesc": "Calculate and visualize retirement planning situation.",
-    "investmentSimulator": "Investment Simulator",
-    "investmentSimulatorDesc": "Simulate different investment strategies and their returns.",
-    "documentGenerator": "Document Generator",
-    "documentGeneratorDesc": "Automatic creation of templates and documents.",
     "planned": "Planned",
     "enableForClients": "Enable for clients",
-    "moreToolsPlanned": "More tools are planned. Let us know if you have ideas!"
+    "enableForPublic": "Enable for public",
+    "clients": "Clients",
+    "public": "Public",
+    "moreToolsPlanned": "More tools are planned. Let us know if you have ideas!",
+    "updateSuccess": "Tool setting updated",
+    "updateError": "Error updating"
+  },
+  "tools": {
+    "budgetCalculator": {
+      "name": "Budget Calculator",
+      "description": "Helps create and analyze monthly budgets."
+    },
+    "retirementPlanner": {
+      "name": "Retirement Planner",
+      "description": "Calculate and visualize retirement planning."
+    },
+    "investmentSimulator": {
+      "name": "Investment Simulator",
+      "description": "Simulate investment strategies and their returns."
+    },
+    "documentGenerator": {
+      "name": "Document Generator",
+      "description": "Automatic creation of templates and documents."
+    }
+  },
+  "clientPortal": {
+    "tools": "Tools",
+    "toolsDesc": "Practical calculators and tools",
+    "startTool": "Start",
+    "comingSoon": "Coming Soon",
+    "inDevelopment": "This area is currently being developed and will be available soon.",
+    "plannedFeatures": "What you will find here later:",
+    "toolsFeatures": {
+      "feature1": "Compound interest calculator",
+      "feature2": "Budget planner",
+      "feature3": "Tax calculator",
+      "feature4": "Retirement check"
+    }
+  },
+  "public": {
+    "tools": {
+      "title": "Tools",
+      "subtitle": "Practical calculators for your financial planning",
+      "comingSoon": "Coming Soon",
+      "startTool": "Start",
+      "noToolsAvailable": "No tools available currently.",
+      "ctaTitle": "Want personal advice?",
+      "ctaDescription": "Our experts are happy to help.",
+      "ctaButton": "Request consultation"
+    }
   }
 }

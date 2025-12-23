@@ -950,6 +950,48 @@ export type Database = {
           },
         ]
       }
+      tools: {
+        Row: {
+          created_at: string
+          description_key: string
+          enabled_for_clients: boolean
+          enabled_for_public: boolean
+          icon: string
+          id: string
+          key: string
+          name_key: string
+          sort_order: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description_key: string
+          enabled_for_clients?: boolean
+          enabled_for_public?: boolean
+          icon?: string
+          id?: string
+          key: string
+          name_key: string
+          sort_order?: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description_key?: string
+          enabled_for_clients?: boolean
+          enabled_for_public?: boolean
+          icon?: string
+          id?: string
+          key?: string
+          name_key?: string
+          sort_order?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
