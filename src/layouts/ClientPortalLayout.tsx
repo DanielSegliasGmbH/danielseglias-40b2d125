@@ -133,8 +133,9 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
           <div className="fixed top-0 left-0 right-0 z-[60] bg-warning/90 text-warning-foreground px-4 py-2 flex items-center justify-center gap-2 text-sm font-medium">
             <Eye className="h-4 w-4" />
             {t('clientPortal.adminPreview')}: {previewClientName || previewClientId?.slice(0, 8) + '…'}
-            <Link to="/app/clients" className="ml-4 underline hover:no-underline">
-              {t('app.back')}
+            <Link to="/app" className="ml-4 inline-flex items-center gap-1 bg-background/20 hover:bg-background/30 px-3 py-1 rounded-md transition-colors">
+              <ChevronLeft className="h-3 w-3" />
+              {t('clientPortal.backToDashboard')}
             </Link>
           </div>
         )}

@@ -26,7 +26,8 @@
   },
   "nav": {
     "main": "Navigation",
-    "admin": "Administration"
+    "admin": "Administration",
+    "tools": "Tools"
   },
   "theme": {
     "light": "Light",
@@ -484,6 +485,7 @@
     "unlinkUser": "Unlink User",
     "previewPortal": "Portal Preview",
     "adminPreview": "Admin Preview",
+    "backToDashboard": "Back to Dashboard",
     "userLinked": "User successfully linked",
     "userUnlinked": "User unlinked",
     "userAlreadyLinked": "This user is already linked to another client",
@@ -578,5 +580,22 @@
     "fr": "French",
     "it": "Italian",
     "en": "English"
+  },
+  "adminTools": {
+    "title": "Tools",
+    "subtitle": "Central management of all client portal tools",
+    "overviewTitle": "Tool Management",
+    "overviewDesc": "Manage all tools that can be made available in the client portal.",
+    "budgetCalculator": "Budget Calculator",
+    "budgetCalculatorDesc": "Helps clients create and analyze their monthly budget.",
+    "retirementPlanner": "Retirement Planner",
+    "retirementPlannerDesc": "Calculate and visualize retirement planning situation.",
+    "investmentSimulator": "Investment Simulator",
+    "investmentSimulatorDesc": "Simulate different investment strategies and their returns.",
+    "documentGenerator": "Document Generator",
+    "documentGeneratorDesc": "Automatic creation of templates and documents.",
+    "planned": "Planned",
+    "enableForClients": "Enable for clients",
+    "moreToolsPlanned": "More tools are planned. Let us know if you have ideas!"
   }
 }
