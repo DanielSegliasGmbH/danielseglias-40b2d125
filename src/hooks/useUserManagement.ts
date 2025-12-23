@@ -11,7 +11,7 @@ export interface UserWithRole {
   last_name: string;
   phone: string | null;
   role: AppRole | null;
-  client_id: string | null;
+  customer_id: string | null;
 }
 
 export function useAllUsers() {
@@ -33,25 +33,25 @@ export function useAllUsers() {
 
       if (rolesError) throw rolesError;
 
-      // Fetch client_users mappings
-      const { data: clientUsers, error: clientUsersError } = await supabase
-        .from('client_users')
-        .select('user_id, client_id');
+      // Fetch customer_users mappings (Phase 2: use customer_users instead of client_users)
+      const { data: customerUsers, error: customerUsersError } = await supabase
+        .from('customer_users')
+        .select('user_id, customer_id');
 
-      if (clientUsersError) throw clientUsersError;
+      if (customerUsersError) throw customerUsersError;
 
       // Combine data
       const users: UserWithRole[] = profiles.map((profile) => {
         const userRole = roles?.find((r) => r.user_id === profile.id);
-        const clientUser = clientUsers?.find((cu) => cu.user_id === profile.id);
+        const customerUser = customerUsers?.find((cu) => cu.user_id === profile.id);
         return {
           id: profile.id,
-          email: '', // We'll need to get this from auth, but profiles don't have it
+          email: '', // Profiles don't have email
           first_name: profile.first_name,
           last_name: profile.last_name,
           phone: profile.phone,
           role: userRole?.role || null,
-          client_id: clientUser?.client_id || null,
+          customer_id: customerUser?.customer_id || null,
         };
       });
 
@@ -90,14 +90,15 @@ export function useUpdateUserRole() {
   });
 }
 
-export function useLinkClientToUser() {
+// Phase 2: Link customer to user (using customer_users instead of client_users)
+export function useLinkCustomerToUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ userId, clientId }: { userId: string; clientId: string }) => {
-      // Check if user already has a client link
+    mutationFn: async ({ userId, customerId }: { userId: string; customerId: string }) => {
+      // Check if user already has a customer link
       const { data: existing } = await supabase
-        .from('client_users')
+        .from('customer_users')
         .select('id')
         .eq('user_id', userId)
         .maybeSingle();
@@ -105,16 +106,16 @@ export function useLinkClientToUser() {
       if (existing) {
         // Update existing
         const { error } = await supabase
-          .from('client_users')
-          .update({ client_id: clientId })
+          .from('customer_users')
+          .update({ customer_id: customerId })
           .eq('user_id', userId);
 
         if (error) throw error;
       } else {
         // Insert new
         const { error } = await supabase
-          .from('client_users')
-          .insert({ user_id: userId, client_id: clientId });
+          .from('customer_users')
+          .insert({ user_id: userId, customer_id: customerId });
 
         if (error) throw error;
       }
@@ -127,6 +128,11 @@ export function useLinkClientToUser() {
   });
 }
 
+// Deprecated: Keep for backward compatibility but redirect to useLinkCustomerToUser
+export function useLinkClientToUser() {
+  return useLinkCustomerToUser();
+}
+
 export function useCreateUser() {
   const queryClient = useQueryClient();
 
@@ -137,10 +143,15 @@ export function useCreateUser() {
       firstName: string;
       lastName: string;
       role: AppRole;
-      clientId?: string;
+      customerId?: string;
     }) => {
       const { data: result, error } = await supabase.functions.invoke('admin-create-user', {
-        body: data,
+        body: {
+          ...data,
+          // Pass customerId as clientId for backward compatibility with edge function
+          // Edge function will be updated to handle both
+          clientId: data.customerId,
+        },
       });
 
       if (error) throw error;

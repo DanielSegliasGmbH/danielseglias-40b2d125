@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCreateUser } from '@/hooks/useUserManagement';
-import { useClients } from '@/hooks/useDashboardData';
+import { useCustomers } from '@/hooks/useCustomerData';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,7 +30,7 @@ export function CreateUserDialog() {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { data: clients } = useClients();
+  const { data: customers } = useCustomers();
   const createUser = useCreateUser();
 
   const [formData, setFormData] = useState({
@@ -39,7 +39,7 @@ export function CreateUserDialog() {
     firstName: '',
     lastName: '',
     role: '' as AppRole | '',
-    clientId: '',
+    customerId: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,7 +50,7 @@ export function CreateUserDialog() {
       return;
     }
 
-    if (formData.role === 'client' && !formData.clientId) {
+    if (formData.role === 'client' && !formData.customerId) {
       toast.error(t('userManagement.clientRequired'));
       return;
     }
@@ -63,12 +63,12 @@ export function CreateUserDialog() {
         firstName: formData.firstName,
         lastName: formData.lastName,
         role: formData.role as AppRole,
-        clientId: formData.clientId || undefined,
+        customerId: formData.customerId || undefined,
       });
 
       toast.success(t('userManagement.userCreated'));
       setOpen(false);
-      setFormData({ email: '', password: '', firstName: '', lastName: '', role: '', clientId: '' });
+      setFormData({ email: '', password: '', firstName: '', lastName: '', role: '', customerId: '' });
     } catch (error: any) {
       toast.error(`${t('userManagement.userCreateError')}: ${error.message}`);
     } finally {
@@ -134,7 +134,7 @@ export function CreateUserDialog() {
             <Label htmlFor="role">{t('table.role')} *</Label>
             <Select
               value={formData.role}
-              onValueChange={(value) => setFormData({ ...formData, role: value as AppRole, clientId: '' })}
+              onValueChange={(value) => setFormData({ ...formData, role: value as AppRole, customerId: '' })}
             >
               <SelectTrigger>
                 <SelectValue placeholder={t('userManagement.selectRole')} />
@@ -149,18 +149,18 @@ export function CreateUserDialog() {
 
           {formData.role === 'client' && (
             <div className="space-y-2">
-              <Label htmlFor="clientId">{t('table.client')} *</Label>
+              <Label htmlFor="customerId">{t('customer.singular', 'Kunde')} *</Label>
               <Select
-                value={formData.clientId}
-                onValueChange={(value) => setFormData({ ...formData, clientId: value })}
+                value={formData.customerId}
+                onValueChange={(value) => setFormData({ ...formData, customerId: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={t('userManagement.selectClient')} />
+                  <SelectValue placeholder={t('userManagement.selectCustomer', 'Kunde auswählen')} />
                 </SelectTrigger>
                 <SelectContent>
-                  {clients?.map((client) => (
-                    <SelectItem key={client.id} value={client.id}>
-                      {client.first_name} {client.last_name}
+                  {customers?.map((customer) => (
+                    <SelectItem key={customer.id} value={customer.id}>
+                      {customer.first_name} {customer.last_name}
                     </SelectItem>
                   ))}
                 </SelectContent>
