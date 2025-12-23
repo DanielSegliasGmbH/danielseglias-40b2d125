@@ -21,7 +21,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Users, Briefcase, ClipboardList } from 'lucide-react';
-import { CreateClientDialog } from '@/components/dashboard/CreateClientDialog';
+import { CreateCustomerDialog } from '@/components/customers/CreateCustomerDialog';
 import { CreateCaseDialog } from '@/components/dashboard/CreateCaseDialog';
 import { CreateTaskDialog } from '@/components/dashboard/CreateTaskDialog';
 import { GlobalSearch } from '@/components/dashboard/GlobalSearch';

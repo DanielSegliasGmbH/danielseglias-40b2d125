@@ -18,10 +18,10 @@ interface CustomerPortalSettings {
 
 // For clients: get their own settings
 // For admins with previewCustomerId: get that customer's settings
-export function useClientPortalSettings() {
+export function useCustomerPortalSettings() {
   const { user, role } = useAuth();
   const [searchParams] = useSearchParams();
-  const previewCustomerId = searchParams.get('previewClientId') || searchParams.get('previewCustomerId');
+  const previewCustomerId = searchParams.get('previewCustomerId');
 
   return useQuery({
     queryKey: ['customer-portal-settings', 'own', previewCustomerId],
@@ -47,7 +47,7 @@ export function useClientPortalSettings() {
         return null;
       }
 
-      // Client role - get own settings via customer_users mapping (Phase 2)
+      // Client role - get own settings via customer_users mapping
       const { data: customerUser, error: customerError } = await supabase
         .from('customer_users')
         .select('customer_id')
@@ -76,13 +76,13 @@ export function useClientPortalSettings() {
 }
 
 // Helper to get preview customer id from URL
-export function usePreviewClientId() {
+export function usePreviewCustomerId() {
   const [searchParams] = useSearchParams();
-  return searchParams.get('previewClientId') || searchParams.get('previewCustomerId');
+  return searchParams.get('previewCustomerId');
 }
 
 // For admins: get settings for a specific customer
-export function useClientPortalSettingsForClient(customerId: string) {
+export function useCustomerPortalSettingsForCustomer(customerId: string) {
   return useQuery({
     queryKey: ['customer-portal-settings', customerId],
     queryFn: async () => {
@@ -103,26 +103,23 @@ export function useClientPortalSettingsForClient(customerId: string) {
   });
 }
 
-// Alias for Phase 2 consistency
-export const useCustomerPortalSettingsForCustomer = useClientPortalSettingsForClient;
-
 // For admins: update settings for a customer
-export function useUpdateClientPortalSettings() {
+export function useUpdateCustomerPortalSettings() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({
-      clientId,
+      customerId,
       settings,
     }: {
-      clientId: string; // Actually customerId now
+      customerId: string;
       settings: Partial<Omit<CustomerPortalSettings, 'id' | 'customer_id' | 'created_at' | 'updated_at'>>;
     }) => {
       // Check if settings exist
       const { data: existing } = await supabase
         .from('customer_portal_settings')
         .select('id')
-        .eq('customer_id', clientId)
+        .eq('customer_id', customerId)
         .maybeSingle();
 
       if (existing) {
@@ -130,23 +127,20 @@ export function useUpdateClientPortalSettings() {
         const { error } = await supabase
           .from('customer_portal_settings')
           .update(settings)
-          .eq('customer_id', clientId);
+          .eq('customer_id', customerId);
         if (error) throw error;
       } else {
         // Insert new
         const { error } = await supabase
           .from('customer_portal_settings')
-          .insert({ customer_id: clientId, ...settings });
+          .insert({ customer_id: customerId, ...settings });
         if (error) throw error;
       }
 
       return { success: true };
     },
-    onSuccess: (_, { clientId }) => {
-      queryClient.invalidateQueries({ queryKey: ['customer-portal-settings', clientId] });
+    onSuccess: (_, { customerId }) => {
+      queryClient.invalidateQueries({ queryKey: ['customer-portal-settings', customerId] });
     },
   });
 }
-
-// Alias for Phase 2 consistency
-export const useUpdateCustomerPortalSettings = useUpdateClientPortalSettings;

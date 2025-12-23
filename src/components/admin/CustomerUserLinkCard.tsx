@@ -26,37 +26,37 @@ import {
 import { Link, UserPlus, Unlink, ExternalLink, User } from 'lucide-react';
 import { toast } from 'sonner';
 
-interface ClientUserLinkCardProps {
-  clientId: string;
+interface CustomerUserLinkCardProps {
+  customerId: string;
 }
 
-// Hook to get client name
-function useClientName(clientId: string) {
+// Hook to get customer name
+function useCustomerName(customerId: string) {
   return useQuery({
-    queryKey: ['client-name', clientId],
+    queryKey: ['customer-name', customerId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('clients')
+        .from('customers')
         .select('first_name, last_name')
-        .eq('id', clientId)
+        .eq('id', customerId)
         .maybeSingle();
 
       if (error) throw error;
       return data ? `${data.first_name} ${data.last_name}` : null;
     },
-    enabled: !!clientId,
+    enabled: !!customerId,
   });
 }
 
-// Hook to get linked user for a client
-function useClientUser(clientId: string) {
+// Hook to get linked user for a customer
+function useCustomerUser(customerId: string) {
   return useQuery({
-    queryKey: ['client-user', clientId],
+    queryKey: ['customer-user', customerId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('client_users')
+        .from('customer_users')
         .select('id, user_id, created_at')
-        .eq('client_id', clientId)
+        .eq('customer_id', customerId)
         .maybeSingle();
 
       if (error) throw error;
@@ -77,20 +77,20 @@ function useClientUser(clientId: string) {
       
       return null;
     },
-    enabled: !!clientId,
+    enabled: !!customerId,
   });
 }
 
-// Hook to link a user to a client
-function useLinkUserToClient() {
+// Hook to link a user to a customer
+function useLinkUserToCustomer() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ userId, clientId }: { userId: string; clientId: string }) => {
-      // Check if this user already has a client link
+    mutationFn: async ({ userId, customerId }: { userId: string; customerId: string }) => {
+      // Check if this user already has a customer link
       const { data: existingUserLink } = await supabase
-        .from('client_users')
-        .select('id, client_id')
+        .from('customer_users')
+        .select('id, customer_id')
         .eq('user_id', userId)
         .maybeSingle();
 
@@ -98,60 +98,60 @@ function useLinkUserToClient() {
         throw new Error('user_already_linked');
       }
 
-      // Check if this client already has a user link
-      const { data: existingClientLink } = await supabase
-        .from('client_users')
+      // Check if this customer already has a user link
+      const { data: existingCustomerLink } = await supabase
+        .from('customer_users')
         .select('id')
-        .eq('client_id', clientId)
+        .eq('customer_id', customerId)
         .maybeSingle();
 
-      if (existingClientLink) {
-        throw new Error('client_already_linked');
+      if (existingCustomerLink) {
+        throw new Error('customer_already_linked');
       }
 
       // Insert new link
       const { error } = await supabase
-        .from('client_users')
-        .insert({ user_id: userId, client_id: clientId });
+        .from('customer_users')
+        .insert({ user_id: userId, customer_id: customerId });
 
       if (error) throw error;
 
       return { success: true };
     },
-    onSuccess: (_, { clientId }) => {
-      queryClient.invalidateQueries({ queryKey: ['client-user', clientId] });
+    onSuccess: (_, { customerId }) => {
+      queryClient.invalidateQueries({ queryKey: ['customer-user', customerId] });
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
     },
   });
 }
 
-// Hook to unlink a user from a client
-function useUnlinkUserFromClient() {
+// Hook to unlink a user from a customer
+function useUnlinkUserFromCustomer() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ clientId }: { clientId: string }) => {
+    mutationFn: async ({ customerId }: { customerId: string }) => {
       const { error } = await supabase
-        .from('client_users')
+        .from('customer_users')
         .delete()
-        .eq('client_id', clientId);
+        .eq('customer_id', customerId);
 
       if (error) throw error;
 
       return { success: true };
     },
-    onSuccess: (_, { clientId }) => {
-      queryClient.invalidateQueries({ queryKey: ['client-user', clientId] });
+    onSuccess: (_, { customerId }) => {
+      queryClient.invalidateQueries({ queryKey: ['customer-user', customerId] });
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
     },
   });
 }
 
-export function ClientUserLinkCard({ clientId }: ClientUserLinkCardProps) {
+export function CustomerUserLinkCard({ customerId }: CustomerUserLinkCardProps) {
   const { t } = useTranslation();
-  const { data: clientUser, isLoading } = useClientUser(clientId);
-  const linkUser = useLinkUserToClient();
-  const unlinkUser = useUnlinkUserFromClient();
+  const { data: customerUser, isLoading } = useCustomerUser(customerId);
+  const linkUser = useLinkUserToCustomer();
+  const unlinkUser = useUnlinkUserFromCustomer();
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [unlinkDialogOpen, setUnlinkDialogOpen] = useState(false);
@@ -163,15 +163,15 @@ export function ClientUserLinkCard({ clientId }: ClientUserLinkCardProps) {
 
     setLinking(true);
     try {
-      await linkUser.mutateAsync({ userId: userId.trim(), clientId });
+      await linkUser.mutateAsync({ userId: userId.trim(), customerId });
       toast.success(t('clientPortal.userLinked'));
       setLinkDialogOpen(false);
       setUserId('');
     } catch (error: any) {
       if (error.message === 'user_already_linked') {
         toast.error(t('clientPortal.userAlreadyLinked'));
-      } else if (error.message === 'client_already_linked') {
-        toast.error(t('clientPortal.clientAlreadyLinked'));
+      } else if (error.message === 'customer_already_linked') {
+        toast.error(t('clientPortal.customerAlreadyLinked', t('clientPortal.clientAlreadyLinked')));
       } else {
         toast.error(`${t('clientPortal.linkError')}: ${error.message}`);
       }
@@ -182,7 +182,7 @@ export function ClientUserLinkCard({ clientId }: ClientUserLinkCardProps) {
 
   const handleUnlink = async () => {
     try {
-      await unlinkUser.mutateAsync({ clientId });
+      await unlinkUser.mutateAsync({ customerId });
       toast.success(t('clientPortal.userUnlinked'));
       setUnlinkDialogOpen(false);
     } catch (error: any) {
@@ -191,7 +191,7 @@ export function ClientUserLinkCard({ clientId }: ClientUserLinkCardProps) {
   };
 
   const openPortalPreview = () => {
-    window.open(`/app/client-portal?previewClientId=${clientId}`, '_blank');
+    window.open(`/app/client-portal?previewCustomerId=${customerId}`, '_blank');
   };
 
   return (
@@ -208,7 +208,7 @@ export function ClientUserLinkCard({ clientId }: ClientUserLinkCardProps) {
       <CardContent className="space-y-4">
         {isLoading ? (
           <div className="animate-pulse h-10 bg-muted rounded" />
-        ) : clientUser ? (
+        ) : customerUser ? (
           <div className="space-y-4">
             <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
               <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -216,10 +216,10 @@ export function ClientUserLinkCard({ clientId }: ClientUserLinkCardProps) {
               </div>
               <div className="flex-1">
                 <p className="font-medium">
-                  {clientUser.profile?.first_name} {clientUser.profile?.last_name}
+                  {customerUser.profile?.first_name} {customerUser.profile?.last_name}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  User ID: {clientUser.user_id.slice(0, 8)}...
+                  User ID: {customerUser.user_id.slice(0, 8)}...
                 </p>
               </div>
             </div>

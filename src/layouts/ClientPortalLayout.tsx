@@ -2,7 +2,7 @@ import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useClientPortalSettings, usePreviewClientId } from '@/hooks/useClientPortal';
+import { useCustomerPortalSettings, usePreviewCustomerId } from '@/hooks/useClientPortal';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
@@ -69,16 +69,16 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
   const location = useLocation();
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { data: settings } = useClientPortalSettings();
+  const { data: settings } = useCustomerPortalSettings();
   
-  const previewCustomerId = usePreviewClientId();
+  const previewCustomerId = usePreviewCustomerId();
   const isAdminPreview = role === 'admin' && !!previewCustomerId;
   const { data: previewCustomerName } = usePreviewCustomerName(previewCustomerId);
 
   // Build paths with preview param preserved
   const buildPath = (basePath: string) => {
     if (previewCustomerId) {
-      return `${basePath}?previewClientId=${previewCustomerId}`;
+      return `${basePath}?previewCustomerId=${previewCustomerId}`;
     }
     return basePath;
   };

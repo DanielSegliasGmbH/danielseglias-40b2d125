@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useClientPortalSettings } from '@/hooks/useClientPortal';
+import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronRight } from 'lucide-react';
@@ -63,7 +63,7 @@ const portalSections = [
 export default function ClientPortalHome() {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { data: settings } = useClientPortalSettings();
+  const { data: settings } = useCustomerPortalSettings();
 
   const firstName = user?.user_metadata?.first_name || 'Kunde';
 

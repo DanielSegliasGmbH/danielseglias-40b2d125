@@ -33,7 +33,7 @@ export function useAllUsers() {
 
       if (rolesError) throw rolesError;
 
-      // Fetch customer_users mappings (Phase 2: use customer_users instead of client_users)
+      // Fetch customer_users mappings
       const { data: customerUsers, error: customerUsersError } = await supabase
         .from('customer_users')
         .select('user_id, customer_id');
@@ -46,7 +46,7 @@ export function useAllUsers() {
         const customerUser = customerUsers?.find((cu) => cu.user_id === profile.id);
         return {
           id: profile.id,
-          email: '', // Profiles don't have email
+          email: '',
           first_name: profile.first_name,
           last_name: profile.last_name,
           phone: profile.phone,
@@ -90,7 +90,7 @@ export function useUpdateUserRole() {
   });
 }
 
-// Phase 2: Link customer to user (using customer_users instead of client_users)
+// Link customer to user
 export function useLinkCustomerToUser() {
   const queryClient = useQueryClient();
 
@@ -128,11 +128,6 @@ export function useLinkCustomerToUser() {
   });
 }
 
-// Deprecated: Keep for backward compatibility but redirect to useLinkCustomerToUser
-export function useLinkClientToUser() {
-  return useLinkCustomerToUser();
-}
-
 export function useCreateUser() {
   const queryClient = useQueryClient();
 
@@ -148,9 +143,7 @@ export function useCreateUser() {
       const { data: result, error } = await supabase.functions.invoke('admin-create-user', {
         body: {
           ...data,
-          // Pass customerId as clientId for backward compatibility with edge function
-          // Edge function will be updated to handle both
-          clientId: data.customerId,
+          customerId: data.customerId,
         },
       });
 
