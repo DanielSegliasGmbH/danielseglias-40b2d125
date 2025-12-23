@@ -16,20 +16,31 @@ import { toast } from 'sonner';
 // Performance: 30s staleTime um häufige Refetches zu vermeiden
 const STALE_TIME = 30 * 1000;
 
+// DEPRECATED: Use useCustomers() from useCustomerData.ts instead
+// Kept for backward compatibility during Phase 2
 export function useClients() {
   return useQuery({
-    queryKey: ['clients'],
+    queryKey: ['customers-compat'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('clients')
-        .select('*')
+        .from('customers')
+        .select('*, customer_profiles(email, phone)')
         .is('deleted_at', null)
         .order('created_at', { ascending: false });
       if (error) {
-        toast.error(`Fehler beim Laden der Clients: ${error.message}`);
+        toast.error(`Fehler beim Laden der Kunden: ${error.message}`);
         throw error;
       }
-      return data;
+      // Map to client-like structure for compatibility
+      return data?.map(c => ({
+        id: c.id,
+        first_name: c.first_name,
+        last_name: c.last_name,
+        email: c.customer_profiles?.email || null,
+        phone: c.customer_profiles?.phone || null,
+        status: c.customer_status === 'active' ? 'aktiv' : c.customer_status,
+        created_at: c.created_at,
+      })) ?? [];
     },
     staleTime: STALE_TIME,
     refetchOnWindowFocus: false,
@@ -130,7 +141,7 @@ export function useCases() {
         .from('cases')
         .select(`
           *,
-          client:clients!fk_cases_client_id(id, first_name, last_name)
+          customer:customers!cases_customer_id_fkey(id, first_name, last_name)
         `)
         .is('deleted_at', null)
         .order('created_at', { ascending: false });
@@ -138,7 +149,11 @@ export function useCases() {
         toast.error(`Fehler beim Laden der Cases: ${error.message}`);
         throw error;
       }
-      return data;
+      // Map customer to client for backward compatibility
+      return data?.map(c => ({
+        ...c,
+        client: c.customer,
+      })) ?? [];
     },
     staleTime: STALE_TIME,
     refetchOnWindowFocus: false,
@@ -170,7 +185,7 @@ export function useInfiniteCases(sortMode?: CaseSortMode) {
         .from('cases')
         .select(`
           *,
-          client:clients!fk_cases_client_id(id, first_name, last_name)
+          customer:customers!cases_customer_id_fkey(id, first_name, last_name)
         `, { count: 'exact' })
         .is('deleted_at', null)
         .order('created_at', { ascending: false })
@@ -181,8 +196,14 @@ export function useInfiniteCases(sortMode?: CaseSortMode) {
         throw error;
       }
 
+      // Map customer to client for backward compatibility
+      const mappedData = (data ?? []).map(c => ({
+        ...c,
+        client: c.customer,
+      }));
+
       return {
-        items: (data ?? []) as CaseWithClient[],
+        items: mappedData as CaseWithClient[],
         totalCount: count ?? 0,
         pageParam: pageParam as number,
       };
@@ -208,7 +229,7 @@ export function useActiveCases() {
         .from('cases')
         .select(`
           *,
-          client:clients!fk_cases_client_id(id, first_name, last_name)
+          customer:customers!cases_customer_id_fkey(id, first_name, last_name)
         `)
         .is('deleted_at', null)
         .neq('status', 'abgeschlossen')
@@ -217,7 +238,11 @@ export function useActiveCases() {
         toast.error(`Fehler beim Laden der aktiven Cases: ${error.message}`);
         throw error;
       }
-      return data;
+      // Map customer to client for backward compatibility
+      return data?.map(c => ({
+        ...c,
+        client: c.customer,
+      })) ?? [];
     },
     staleTime: STALE_TIME,
     refetchOnWindowFocus: false,
@@ -249,7 +274,7 @@ export function useOpenTasks() {
         .from('tasks')
         .select(`
           *,
-          case:cases!fk_tasks_case_id(id, title, deleted_at, client:clients!fk_cases_client_id(id, first_name, last_name, deleted_at))
+          case:cases!fk_tasks_case_id(id, title, deleted_at, customer:customers!cases_customer_id_fkey(id, first_name, last_name, deleted_at))
         `)
         .is('deleted_at', null)
         .neq('status', 'erledigt')
@@ -259,10 +284,16 @@ export function useOpenTasks() {
         toast.error(`Fehler beim Laden der Tasks: ${error.message}`);
         throw error;
       }
-      // Filter out tasks whose case or client is deleted
+      // Filter out tasks whose case or customer is deleted, map customer to client for compat
       return (data ?? []).filter(task => 
-        !task.case?.deleted_at && !task.case?.client?.deleted_at
-      );
+        !task.case?.deleted_at && !task.case?.customer?.deleted_at
+      ).map(task => ({
+        ...task,
+        case: task.case ? {
+          ...task.case,
+          client: task.case.customer,
+        } : null,
+      }));
     },
     staleTime: STALE_TIME,
     refetchOnWindowFocus: false,

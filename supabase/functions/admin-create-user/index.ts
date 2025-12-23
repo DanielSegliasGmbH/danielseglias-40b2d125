@@ -11,7 +11,8 @@ interface CreateUserRequest {
   firstName: string
   lastName: string
   role: 'admin' | 'staff' | 'client'
-  clientId?: string
+  customerId?: string
+  clientId?: string // Backward compatibility alias for customerId
 }
 
 Deno.serve(async (req) => {
@@ -68,7 +69,10 @@ Deno.serve(async (req) => {
 
     // Parse the request body
     const body: CreateUserRequest = await req.json()
-    const { email, password, firstName, lastName, role, clientId } = body
+    const { email, password, firstName, lastName, role, customerId, clientId } = body
+
+    // Use customerId, fallback to clientId for backward compatibility
+    const targetCustomerId = customerId || clientId
 
     // Validate required fields
     if (!email || !password || !firstName || !lastName || !role) {
@@ -88,11 +92,11 @@ Deno.serve(async (req) => {
       )
     }
 
-    // If role is client, clientId is required
-    if (role === 'client' && !clientId) {
-      console.error('clientId required for client role')
+    // If role is client, customerId is required
+    if (role === 'client' && !targetCustomerId) {
+      console.error('customerId required for client role')
       return new Response(
-        JSON.stringify({ error: 'clientId is required when role is client' }),
+        JSON.stringify({ error: 'customerId is required when role is client' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
@@ -144,27 +148,27 @@ Deno.serve(async (req) => {
 
     console.log('Role assigned:', role)
 
-    // If role is client, link to client_users
-    if (role === 'client' && clientId) {
-      const { error: clientUserError } = await adminClient
-        .from('client_users')
+    // If role is client, link to customer_users (Phase 2: using customer_users instead of client_users)
+    if (role === 'client' && targetCustomerId) {
+      const { error: customerUserError } = await adminClient
+        .from('customer_users')
         .insert({
           user_id: newUserId,
-          client_id: clientId,
+          customer_id: targetCustomerId,
           created_by: callingUser.id,
         })
 
-      if (clientUserError) {
-        console.error('Error linking client:', clientUserError)
+      if (customerUserError) {
+        console.error('Error linking customer:', customerUserError)
         // Clean up
         await adminClient.from('user_roles').delete().eq('user_id', newUserId)
         await adminClient.auth.admin.deleteUser(newUserId)
         return new Response(
-          JSON.stringify({ error: 'Failed to link client: ' + clientUserError.message }),
+          JSON.stringify({ error: 'Failed to link customer: ' + customerUserError.message }),
           { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
-      console.log('Client linked:', clientId)
+      console.log('Customer linked:', targetCustomerId)
     }
 
     return new Response(

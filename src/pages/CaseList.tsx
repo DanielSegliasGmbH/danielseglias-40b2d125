@@ -224,7 +224,7 @@ export default function CaseList() {
                         <TableCell>
                           {caseItem.client ? (
                             <Link 
-                              to={`/app/clients/${caseItem.client.id}`}
+                              to={`/app/customers/${caseItem.client.id}`}
                               className="text-primary hover:underline"
                               onClick={(e) => e.stopPropagation()}
                             >

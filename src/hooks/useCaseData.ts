@@ -17,13 +17,20 @@ export function useCase(caseId: string) {
         .from('cases')
         .select(`
           *,
-          client:clients!fk_cases_client_id(id, first_name, last_name, email, phone)
+          customer:customers!cases_customer_id_fkey(id, first_name, last_name)
         `)
         .eq('id', caseId)
         .maybeSingle();
       if (error) {
         toast.error(`Fehler beim Laden des Cases: ${error.message}`);
         throw error;
+      }
+      // Map customer to client for backward compatibility
+      if (data) {
+        return {
+          ...data,
+          client: data.customer,
+        };
       }
       return data;
     },
