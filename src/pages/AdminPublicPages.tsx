@@ -271,7 +271,11 @@ export default function AdminPublicPages() {
                     <div className="flex items-center gap-2 shrink-0">
                       {page.is_published && (
                         <Button variant="ghost" size="icon" asChild>
-                          <a href={`/blog/${page.slug}`} target="_blank" rel="noopener noreferrer">
+                          <a 
+                            href={page.page_type === 'tool' ? `/tools/${page.slug}` : `/blog/${page.slug}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                          >
                             <ExternalLink className="h-4 w-4" />
                           </a>
                         </Button>

@@ -8,8 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LeadCaptureForm } from '@/components/public/LeadCaptureForm';
-import { ArrowLeft, Clock, Wrench, Calculator, PieChart, TrendingUp, FileText, ClipboardCheck, LucideIcon } from 'lucide-react';
+import { ArrowLeft, Clock, Wrench, Calculator, PieChart, TrendingUp, FileText, ClipboardCheck, LucideIcon, AlertCircle } from 'lucide-react';
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
+import NotFound from '@/pages/NotFound';
 
 // Icon mapping
 const iconMap: Record<string, LucideIcon> = {
@@ -25,14 +26,16 @@ export default function PublicToolDetail() {
   const { t } = useTranslation();
   const { slug } = useParams<{ slug: string }>();
 
-  const { data: tool, isLoading, error } = useQuery({
-    queryKey: ['public-tool', slug],
+  // First try to load from public_pages (published only)
+  const { data: publicPage, isLoading: pageLoading } = useQuery({
+    queryKey: ['public-page-tool', slug],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('tools')
+        .from('public_pages')
         .select('*')
         .eq('slug', slug)
-        .eq('enabled_for_public', true)
+        .eq('page_type', 'tool')
+        .eq('is_published', true)
         .maybeSingle();
 
       if (error) throw error;
@@ -41,8 +44,36 @@ export default function PublicToolDetail() {
     enabled: !!slug,
   });
 
-  const IconComponent = tool?.icon ? iconMap[tool.icon] || Wrench : Wrench;
+  // Fallback: load from tools table (for tools not managed via public_pages)
+  const { data: tool, isLoading: toolLoading } = useQuery({
+    queryKey: ['public-tool', slug],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tools')
+        .select('*')
+        .eq('slug', slug)
+        .eq('enabled_for_public', true)
+        .eq('status', 'active')
+        .maybeSingle();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!slug && !publicPage,
+  });
+
+  const isLoading = pageLoading || (toolLoading && !publicPage);
+  const hasContent = publicPage || tool;
+
+  // Determine icon
+  const iconKey = tool?.icon || 'wrench';
+  const IconComponent = iconMap[iconKey] || Wrench;
   const isPlanned = tool?.status === 'planned';
+
+  // If not loading and no content found → 404
+  if (!isLoading && !hasContent) {
+    return <NotFound />;
+  }
 
   return (
     <PublicLayout>
@@ -66,37 +97,61 @@ export default function PublicToolDetail() {
             </div>
           )}
 
-          {error && (
-            <Card className="border-destructive">
-              <CardContent className="py-12 text-center text-destructive">
-                {t('app.loadError')}
-              </CardContent>
-            </Card>
-          )}
-
-          {!isLoading && !tool && (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <Wrench className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h2 className="text-xl font-bold text-foreground mb-2">
-                  {t('public.tools.notFound')}
-                </h2>
-                <p className="text-muted-foreground mb-6">
-                  {t('public.tools.notFoundDesc')}
-                </p>
-                <Link to="/tools">
-                  <Button variant="outline">
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    {t('public.tools.backToList')}
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          )}
-
-          {tool && (
+          {/* Render based on public_page or tool */}
+          {publicPage && (
             <>
-              {/* Tool Header */}
+              {/* Header from public_page */}
+              <div className="flex items-start gap-4 mb-8">
+                <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <IconComponent className="h-8 w-8 text-primary" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold text-foreground mb-2">
+                    {publicPage.title}
+                  </h1>
+                  {publicPage.excerpt && (
+                    <p className="text-lg text-muted-foreground">
+                      {publicPage.excerpt}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Tool Content - Check if it's finanzcheck */}
+              {slug === 'finanzcheck' ? (
+                <div className="mb-8">
+                  <FinanzcheckTool mode="public" />
+                </div>
+              ) : publicPage.content ? (
+                <Card className="mb-8">
+                  <CardContent className="py-6 prose prose-neutral dark:prose-invert max-w-none">
+                    <div dangerouslySetInnerHTML={{ __html: publicPage.content }} />
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card className="mb-8">
+                  <CardContent className="py-12 text-center">
+                    <IconComponent className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground">{t('public.tools.toolPlaceholder')}</p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* CTA */}
+              <LeadCaptureForm
+                source="tool_cta"
+                toolKey={slug || ''}
+                title={t('public.tools.ctaTitle')}
+                description={t('public.tools.ctaDescription')}
+                showMessage
+                compact
+              />
+            </>
+          )}
+
+          {/* Fallback: Render from tools table */}
+          {!publicPage && tool && (
+            <>
               <div className="flex items-start gap-4 mb-8">
                 <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                   <IconComponent className="h-8 w-8 text-primary" />
@@ -119,7 +174,6 @@ export default function PublicToolDetail() {
                 </div>
               </div>
 
-              {/* Tool Content Area */}
               {isPlanned ? (
                 <Card className="mb-8">
                   <CardHeader>
@@ -136,7 +190,6 @@ export default function PublicToolDetail() {
                   </CardContent>
                 </Card>
               ) : tool.slug === 'finanzcheck' ? (
-                /* Finanzcheck Tool */
                 <div className="mb-8">
                   <FinanzcheckTool mode="public" />
                 </div>
@@ -146,7 +199,6 @@ export default function PublicToolDetail() {
                     <CardTitle>{t(tool.name_key)}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {/* Placeholder for other tools */}
                     <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">
                       <div>
                         <IconComponent className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
@@ -159,7 +211,6 @@ export default function PublicToolDetail() {
                 </Card>
               )}
 
-              {/* CTA Section */}
               <LeadCaptureForm
                 source="tool_cta"
                 toolKey={tool.key}
