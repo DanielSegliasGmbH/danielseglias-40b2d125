@@ -23,7 +23,7 @@ export default function PublicTools() {
 
   // Load from public_pages - only published tools
   const { data: tools, isLoading, error } = useQuery({
-    queryKey: ['public-pages-tools'],
+    queryKey: ['public-pages', 'tools'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('public_pages')
@@ -35,6 +35,8 @@ export default function PublicTools() {
       if (error) throw error;
       return data as PublicPage[];
     },
+    staleTime: 60 * 1000, // 60 seconds
+    refetchOnWindowFocus: false,
   });
 
   return (
@@ -70,9 +72,12 @@ export default function PublicTools() {
 
           {error && (
             <Card className="border-destructive">
-              <CardContent className="p-6 flex items-center gap-3 text-destructive">
-                <AlertCircle className="h-5 w-5" />
-                <span>{t('app.loadError')}</span>
+              <CardContent className="p-6 text-center">
+                <AlertCircle className="h-10 w-10 text-destructive mx-auto mb-4" />
+                <h3 className="font-medium text-destructive mb-2">{t('app.loadError')}</h3>
+                <p className="text-muted-foreground text-sm">
+                  {t('public.tools.tryAgainLater', 'Bitte versuchen Sie es später erneut.')}
+                </p>
               </CardContent>
             </Card>
           )}
