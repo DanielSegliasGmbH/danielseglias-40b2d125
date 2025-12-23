@@ -3,12 +3,10 @@ import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { PublicLayout } from '@/layouts/PublicLayout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LeadCaptureForm } from '@/components/public/LeadCaptureForm';
-import { ArrowLeft, Clock, Wrench, Calculator, PieChart, TrendingUp, FileText, ClipboardCheck, LucideIcon, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, ClipboardCheck, LucideIcon } from 'lucide-react';
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
 import NotFound from '@/pages/NotFound';
 
@@ -26,8 +24,8 @@ export default function PublicToolDetail() {
   const { t } = useTranslation();
   const { slug } = useParams<{ slug: string }>();
 
-  // First try to load from public_pages (published only)
-  const { data: publicPage, isLoading: pageLoading } = useQuery({
+  // Load ONLY from public_pages (published tools only)
+  const { data: publicPage, isLoading, error } = useQuery({
     queryKey: ['public-page-tool', slug],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -44,34 +42,10 @@ export default function PublicToolDetail() {
     enabled: !!slug,
   });
 
-  // Fallback: load from tools table (for tools not managed via public_pages)
-  const { data: tool, isLoading: toolLoading } = useQuery({
-    queryKey: ['public-tool', slug],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('tools')
-        .select('*')
-        .eq('slug', slug)
-        .eq('enabled_for_public', true)
-        .eq('status', 'active')
-        .maybeSingle();
+  const IconComponent = iconMap['wrench'] || Wrench;
 
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!slug && !publicPage,
-  });
-
-  const isLoading = pageLoading || (toolLoading && !publicPage);
-  const hasContent = publicPage || tool;
-
-  // Determine icon
-  const iconKey = tool?.icon || 'wrench';
-  const IconComponent = iconMap[iconKey] || Wrench;
-  const isPlanned = tool?.status === 'planned';
-
-  // If not loading and no content found → 404
-  if (!isLoading && !hasContent) {
+  // If not loading and no page found → 404
+  if (!isLoading && !publicPage) {
     return <NotFound />;
   }
 
@@ -97,10 +71,17 @@ export default function PublicToolDetail() {
             </div>
           )}
 
-          {/* Render based on public_page or tool */}
+          {error && (
+            <Card className="border-destructive">
+              <CardContent className="py-12 text-center text-destructive">
+                {t('app.loadError')}
+              </CardContent>
+            </Card>
+          )}
+
           {publicPage && (
             <>
-              {/* Header from public_page */}
+              {/* Header */}
               <div className="flex items-start gap-4 mb-8">
                 <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                   <IconComponent className="h-8 w-8 text-primary" />
@@ -144,80 +125,6 @@ export default function PublicToolDetail() {
                 title={t('public.tools.ctaTitle')}
                 description={t('public.tools.ctaDescription')}
                 showMessage
-                compact
-              />
-            </>
-          )}
-
-          {/* Fallback: Render from tools table */}
-          {!publicPage && tool && (
-            <>
-              <div className="flex items-start gap-4 mb-8">
-                <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                  <IconComponent className="h-8 w-8 text-primary" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <h1 className="text-3xl font-bold text-foreground">
-                      {t(tool.name_key)}
-                    </h1>
-                    {isPlanned && (
-                      <Badge variant="secondary">
-                        <Clock className="h-3 w-3 mr-1" />
-                        {t('public.tools.comingSoon')}
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-lg text-muted-foreground">
-                    {t(tool.description_key)}
-                  </p>
-                </div>
-              </div>
-
-              {isPlanned ? (
-                <Card className="mb-8">
-                  <CardHeader>
-                    <CardTitle>{t('public.tools.inDevelopmentTitle')}</CardTitle>
-                    <CardDescription>{t('public.tools.inDevelopmentDesc')}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="bg-muted/50 rounded-lg p-6 text-center">
-                      <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground">
-                        {t('public.tools.notifyMeHint')}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ) : tool.slug === 'finanzcheck' ? (
-                <div className="mb-8">
-                  <FinanzcheckTool mode="public" />
-                </div>
-              ) : (
-                <Card className="mb-8">
-                  <CardHeader>
-                    <CardTitle>{t(tool.name_key)}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">
-                      <div>
-                        <IconComponent className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                        <p className="text-muted-foreground">
-                          {t('public.tools.toolPlaceholder')}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              <LeadCaptureForm
-                source="tool_cta"
-                toolKey={tool.key}
-                title={isPlanned ? t('public.tools.notifyMeTitle') : t('public.tools.ctaTitle')}
-                description={isPlanned ? t('public.tools.notifyMeDesc') : t('public.tools.ctaDescription')}
-                showMessage={!isPlanned}
-                ctaText={isPlanned ? t('public.tools.notifyMe') : undefined}
                 compact
               />
             </>
