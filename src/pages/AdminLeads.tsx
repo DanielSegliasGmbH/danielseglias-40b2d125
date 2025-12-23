@@ -90,7 +90,7 @@ export default function AdminLeads() {
 
   return (
     <AppLayout>
-      <div className="max-w-6xl mx-auto">
+      <div className="space-y-6">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
             <Users className="h-6 w-6 text-primary" />
