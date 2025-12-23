@@ -240,34 +240,17 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Upsert rate limit bucket (increment counter)
+    // Record rate limit using atomic increment
     if (!rateLimitDegraded) {
-      const { error: upsertError } = await supabase
-        .from('lead_rate_limits')
-        .upsert(
-          {
-            ip_address: clientIP,
-            window_start: bucketWindowStart,
-            request_count: 1
-          },
-          {
-            onConflict: 'ip_address,window_start',
-            ignoreDuplicates: false
-          }
-        )
-
-      if (upsertError) {
-        // If upsert failed, try incrementing existing row
-        const { error: updateError } = await supabase
-          .rpc('increment_rate_limit', { 
-            p_ip: clientIP, 
-            p_window: bucketWindowStart 
-          })
-        
-        if (updateError) {
-          console.warn('Failed to record rate limit:', updateError)
-          rateLimitDegraded = true
-        }
+      const { error: rpcError } = await supabase
+        .rpc('increment_rate_limit', { 
+          p_ip: clientIP, 
+          p_window: bucketWindowStart 
+        })
+      
+      if (rpcError) {
+        console.warn('Failed to record rate limit:', rpcError)
+        rateLimitDegraded = true
       }
     }
 
