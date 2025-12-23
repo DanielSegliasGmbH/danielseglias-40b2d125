@@ -43,7 +43,6 @@ export function AppSidebar() {
   const mainNavItems = [
     { title: t('dashboard.title'), url: '/app', icon: LayoutDashboard },
     { title: t('customer.listTitle', 'Kunden'), url: '/app/customers', icon: Users },
-    { title: t('client.list'), url: '/app/clients', icon: Users },
     { title: t('case.list'), url: '/app/cases', icon: Briefcase },
     { title: t('task.list'), url: '/app/tasks', icon: ClipboardList },
   ];
@@ -55,7 +54,6 @@ export function AppSidebar() {
     { title: t('adminLeads.title', 'Leads'), url: '/app/leads', icon: UserPlus },
     { title: t('adminPages.title', 'Öffentliche Seiten'), url: '/app/public-pages', icon: Globe },
     { title: t('trash.title'), url: '/app/trash', icon: Trash2 },
-    { title: t('customer.trash', 'Kunden-Papierkorb'), url: '/app/customers/trash', icon: Trash2 },
     { title: t('clientPortal.preview'), url: '/app/client-portal', icon: Eye },
   ];
 

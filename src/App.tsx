@@ -14,7 +14,7 @@ import ClientList from "./pages/ClientList";
 import ClientDetail from "./pages/ClientDetail";
 import CustomersList from "./pages/CustomersList";
 import CustomerDetail from "./pages/CustomerDetail";
-import CustomersTrash from "./pages/CustomersTrash";
+
 import CaseList from "./pages/CaseList";
 import CaseDetail from "./pages/CaseDetail";
 import TaskList from "./pages/TaskList";
@@ -166,15 +166,6 @@ function App() {
                 }
               />
 
-              {/* Protected: Customer Trash (admin only) */}
-              <Route
-                path="/app/customers/trash"
-                element={
-                  <RouteGuard allowedRoles={['admin']}>
-                    <CustomersTrash />
-                  </RouteGuard>
-                }
-              />
 
               {/* Protected: Customer Detail (new structure) */}
               <Route
