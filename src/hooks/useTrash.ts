@@ -21,11 +21,10 @@ export interface DeletedEdge {
   deleted_by: string | null;
 }
 
-export interface DeletedClient {
+export interface DeletedCustomer {
   id: string;
   first_name: string;
   last_name: string;
-  email: string | null;
   deleted_at: string;
   deleted_by: string | null;
 }
@@ -33,7 +32,7 @@ export interface DeletedClient {
 export interface DeletedCase {
   id: string;
   title: string;
-  client_id: string;
+  customer_id: string | null;
   status: string;
   deleted_at: string;
   deleted_by: string | null;
@@ -82,19 +81,19 @@ export function useDeletedEdges() {
   });
 }
 
-// Clients
-export function useDeletedClients() {
+// Customers (formerly Clients)
+export function useDeletedCustomers() {
   return useQuery({
-    queryKey: ['trash', 'clients'],
+    queryKey: ['trash', 'customers'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('clients')
-        .select('id, first_name, last_name, email, deleted_at, deleted_by')
+        .from('customers')
+        .select('id, first_name, last_name, deleted_at, deleted_by')
         .not('deleted_at', 'is', null)
         .order('deleted_at', { ascending: false });
 
       if (error) throw error;
-      return data as DeletedClient[];
+      return data as DeletedCustomer[];
     },
   });
 }
@@ -106,7 +105,7 @@ export function useDeletedCases() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('cases')
-        .select('id, title, client_id, status, deleted_at, deleted_by')
+        .select('id, title, customer_id, status, deleted_at, deleted_by')
         .not('deleted_at', 'is', null)
         .order('deleted_at', { ascending: false });
 
@@ -182,22 +181,22 @@ export function useRestoreEdge() {
   });
 }
 
-export function useRestoreClient() {
+export function useRestoreCustomer() {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
   return useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from('clients')
+        .from('customers')
         .update({ deleted_at: null, deleted_by: null })
         .eq('id', id);
 
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['trash', 'clients'] });
-      queryClient.invalidateQueries({ queryKey: ['clients'] });
+      queryClient.invalidateQueries({ queryKey: ['trash', 'customers'] });
+      queryClient.invalidateQueries({ queryKey: ['customers'] });
       toast.success(t('trash.restored'));
     },
     onError: () => {
@@ -301,21 +300,21 @@ export function usePermanentDeleteEdge() {
   });
 }
 
-export function usePermanentDeleteClient() {
+export function usePermanentDeleteCustomer() {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
   return useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from('clients')
+        .from('customers')
         .delete()
         .eq('id', id);
 
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['trash', 'clients'] });
+      queryClient.invalidateQueries({ queryKey: ['trash', 'customers'] });
       toast.success(t('trash.permanentlyDeleted'));
     },
     onError: () => {
