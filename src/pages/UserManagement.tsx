@@ -30,7 +30,7 @@ import {
 import { Users, Copy } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { CreateUserDialog } from '@/components/admin/CreateUserDialog';
-import { LinkClientDialog } from '@/components/admin/LinkClientDialog';
+import { LinkCustomerDialog } from '@/components/admin/LinkCustomerDialog';
 import { AppLayout } from '@/components/AppLayout';
 import { toast } from 'sonner';
 import type { Database } from '@/integrations/supabase/types';
@@ -173,7 +173,7 @@ export default function UserManagement() {
                         </TableCell>
                         <TableCell>
                           {u.role === 'client' && (
-                            <LinkClientDialog userId={u.id} currentCustomerId={u.customer_id} />
+                            <LinkCustomerDialog userId={u.id} currentCustomerId={u.customer_id} />
                           )}
                         </TableCell>
                       </TableRow>

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useClientPortalSettingsForClient, useUpdateClientPortalSettings } from '@/hooks/useClientPortal';
+import { useCustomerPortalSettingsForCustomer, useUpdateCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -15,8 +15,8 @@ import {
   Settings,
 } from 'lucide-react';
 
-interface ClientPortalSettingsCardProps {
-  clientId: string;
+interface CustomerPortalSettingsCardProps {
+  customerId: string;
 }
 
 const sections = [
@@ -28,15 +28,15 @@ const sections = [
   { key: 'show_tools', icon: Wrench, labelKey: 'clientPortal.tools', color: 'text-slate-500' },
 ] as const;
 
-export function ClientPortalSettingsCard({ clientId }: ClientPortalSettingsCardProps) {
+export function CustomerPortalSettingsCard({ customerId }: CustomerPortalSettingsCardProps) {
   const { t } = useTranslation();
-  const { data: settings, isLoading } = useClientPortalSettingsForClient(clientId);
-  const updateSettings = useUpdateClientPortalSettings();
+  const { data: settings, isLoading } = useCustomerPortalSettingsForCustomer(customerId);
+  const updateSettings = useUpdateCustomerPortalSettings();
 
   const handleToggle = async (key: string, value: boolean) => {
     try {
       await updateSettings.mutateAsync({
-        clientId,
+        customerId,
         settings: { [key]: value },
       });
       toast.success(t('clientPortal.settingsUpdated'));
