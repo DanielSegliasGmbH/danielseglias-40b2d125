@@ -564,6 +564,30 @@ export type Database = {
           },
         ]
       }
+      lead_rate_limits: {
+        Row: {
+          created_at: string
+          id: string
+          ip_address: string
+          request_count: number
+          window_start: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip_address: string
+          request_count?: number
+          window_start?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip_address?: string
+          request_count?: number
+          window_start?: string
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           created_at: string
@@ -1049,6 +1073,7 @@ export type Database = {
     }
     Functions: {
       cleanup_deleted_items: { Args: never; Returns: number }
+      cleanup_rate_limits: { Args: never; Returns: number }
       get_client_id_for_user: { Args: { _user_id: string }; Returns: string }
       get_customer_id_for_user: { Args: { _user_id: string }; Returns: string }
       has_any_role: { Args: { _user_id: string }; Returns: boolean }

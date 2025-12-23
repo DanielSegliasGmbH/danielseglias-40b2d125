@@ -19,6 +19,7 @@ const leadSchema = z.object({
   email: z.string().trim().email('Ungültige E-Mail-Adresse').max(255),
   phone: z.string().trim().max(30).optional(),
   message: z.string().trim().max(2000).optional(),
+  honeypot: z.string().optional(), // Hidden honeypot field
 });
 
 type LeadFormData = z.infer<typeof leadSchema>;
@@ -52,6 +53,7 @@ export function LeadCaptureForm({
   const utmParams = useUtmParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isRateLimited, setIsRateLimited] = useState(false);
 
   const form = useForm<LeadFormData>({
     resolver: zodResolver(leadSchema),
@@ -60,29 +62,52 @@ export function LeadCaptureForm({
       email: '',
       phone: '',
       message: '',
+      honeypot: '',
     },
   });
 
   const onSubmit = async (data: LeadFormData) => {
     setIsSubmitting(true);
+    setIsRateLimited(false);
+    
     try {
-      const { error } = await supabase.from('leads').insert([{
-        name: data.name,
-        email: data.email,
-        phone: data.phone || null,
-        message: data.message || null,
-        source,
-        page_slug: pageSlug || null,
-        tool_key: toolKey || null,
-        utm_source: utmParams.utm_source,
-        utm_medium: utmParams.utm_medium,
-        utm_campaign: utmParams.utm_campaign,
-        utm_content: utmParams.utm_content,
-        utm_term: utmParams.utm_term,
-        metadata: metadata || null,
-      }]);
+      const response = await supabase.functions.invoke('submit-lead', {
+        body: {
+          name: data.name,
+          email: data.email,
+          phone: data.phone || null,
+          message: data.message || null,
+          source,
+          page_slug: pageSlug || null,
+          tool_key: toolKey || null,
+          utm_source: utmParams.utm_source,
+          utm_medium: utmParams.utm_medium,
+          utm_campaign: utmParams.utm_campaign,
+          utm_content: utmParams.utm_content,
+          utm_term: utmParams.utm_term,
+          metadata: metadata || null,
+          honeypot: data.honeypot || '',
+        },
+      });
 
-      if (error) throw error;
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+
+      const result = response.data as { success: boolean; code?: string; message?: string };
+
+      if (!result.success) {
+        if (result.code === 'RATE_LIMIT') {
+          setIsRateLimited(true);
+          toast.error(t('public.lead.rateLimited'));
+          return;
+        }
+        if (result.code === 'VALIDATION') {
+          toast.error(result.message || t('public.lead.validationError'));
+          return;
+        }
+        throw new Error(result.code || 'Unknown error');
+      }
 
       setIsSuccess(true);
       toast.success(t('public.lead.success'));
@@ -124,6 +149,20 @@ export function LeadCaptureForm({
       <CardContent className={!title && !description ? 'pt-6' : ''}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className={compact ? 'space-y-3' : 'space-y-4'}>
+            {/* Honeypot field - hidden from users, catches bots */}
+            <div className="hidden" aria-hidden="true">
+              <Input
+                {...form.register('honeypot')}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
+            
+            {isRateLimited && (
+              <div className="p-3 rounded-md bg-destructive/10 text-destructive text-sm">
+                {t('public.lead.rateLimitedMessage')}
+              </div>
+            )}
             <div className={compact ? 'grid sm:grid-cols-2 gap-3' : 'space-y-4'}>
               <FormField
                 control={form.control}
