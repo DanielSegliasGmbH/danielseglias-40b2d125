@@ -25,7 +25,7 @@ interface LinkCustomerDialogProps {
   currentCustomerId: string | null;
 }
 
-export function LinkClientDialog({ userId, currentCustomerId }: LinkCustomerDialogProps) {
+export function LinkCustomerDialog({ userId, currentCustomerId }: LinkCustomerDialogProps) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
