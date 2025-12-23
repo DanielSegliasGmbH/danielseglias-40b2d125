@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RouteGuard } from "@/components/RouteGuard";
 import Login from "./pages/Login";
@@ -11,6 +11,12 @@ import AppDashboard from "./pages/AppDashboard";
 import UserManagement from "./pages/UserManagement";
 import CustomersList from "./pages/CustomersList";
 import CustomerDetail from "./pages/CustomerDetail";
+
+// Helper component to redirect /app/clients/:id to /app/customers/:id
+function ClientToCustomerRedirect() {
+  const { id } = useParams<{ id: string }>();
+  return <Navigate to={`/app/customers/${id || ''}`} replace />;
+}
 
 import CaseList from "./pages/CaseList";
 import CaseDetail from "./pages/CaseDetail";
@@ -137,14 +143,14 @@ function App() {
                 }
               />
 
-              {/* Legacy: Redirect old client routes to customers */}
+              {/* Legacy: Redirect old client routes to customers - preserve ID */}
               <Route
                 path="/app/clients"
                 element={<Navigate to="/app/customers" replace />}
               />
               <Route
                 path="/app/clients/:id"
-                element={<Navigate to="/app/customers" replace />}
+                element={<ClientToCustomerRedirect />}
               />
 
               {/* Protected: Customers List (new structure) */}

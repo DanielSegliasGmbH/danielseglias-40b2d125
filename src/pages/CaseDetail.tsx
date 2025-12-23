@@ -271,7 +271,7 @@ export default function CaseDetail() {
     try {
       await deleteCase.mutateAsync(caseId!);
       toast.success(t('trash.deletedSuccess'));
-      navigate(caseData?.client ? `/app/clients/${caseData.client.id}` : '/app/cases');
+      navigate(caseData?.customer ? `/app/customers/${caseData.customer.id}` : '/app/cases');
     } catch {
       toast.error(t('app.error'));
     }
@@ -300,7 +300,7 @@ export default function CaseDetail() {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <p className="text-muted-foreground mb-4">{t('case.notFound')}</p>
-          <Link to="/app/clients">
+          <Link to="/app/customers">
             <Button variant="outline">{t('app.back')}</Button>
           </Link>
         </div>
@@ -311,7 +311,7 @@ export default function CaseDetail() {
   const now = new Date();
   const upcomingMeetings = meetings?.filter(m => new Date(m.scheduled_at) >= now) || [];
   const pastMeetings = meetings?.filter(m => new Date(m.scheduled_at) < now).slice(0, 5) || [];
-  const backLink = caseData.client ? `/app/clients/${caseData.client.id}` : '/app/clients';
+  const backLink = caseData.customer ? `/app/customers/${caseData.customer.id}` : '/app/customers';
 
   return (
     <AppLayout>
@@ -348,10 +348,10 @@ export default function CaseDetail() {
                   <p className="text-muted-foreground mb-3">{caseData.description}</p>
                 )}
                 <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                  {caseData.client && (
-                    <Link to={`/app/clients/${caseData.client.id}`} className="flex items-center gap-1 hover:text-foreground transition-colors">
+                  {caseData.customer && (
+                    <Link to={`/app/customers/${caseData.customer.id}`} className="flex items-center gap-1 hover:text-foreground transition-colors">
                       <User className="h-4 w-4" />
-                      {caseData.client.first_name} {caseData.client.last_name}
+                      {caseData.customer.first_name} {caseData.customer.last_name}
                     </Link>
                   )}
                   <span className="flex items-center gap-1">

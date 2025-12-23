@@ -45,21 +45,21 @@ const portalSections = [
   { key: 'tools', path: '/app/client-portal/tools', icon: Wrench, labelKey: 'clientPortal.tools' },
 ] as const;
 
-// Hook to get client name for preview
-function usePreviewClientName(clientId: string | null) {
+// Hook to get customer name for preview (Phase 2: using customers table)
+function usePreviewCustomerName(customerId: string | null) {
   return useQuery({
-    queryKey: ['preview-client-name', clientId],
+    queryKey: ['preview-customer-name', customerId],
     queryFn: async () => {
-      if (!clientId) return null;
+      if (!customerId) return null;
       const { data, error } = await supabase
-        .from('clients')
+        .from('customers')
         .select('first_name, last_name')
-        .eq('id', clientId)
+        .eq('id', customerId)
         .maybeSingle();
       if (error) return null;
       return data ? `${data.first_name} ${data.last_name}` : null;
     },
-    enabled: !!clientId,
+    enabled: !!customerId,
   });
 }
 
@@ -71,14 +71,14 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { data: settings } = useClientPortalSettings();
   
-  const previewClientId = usePreviewClientId();
-  const isAdminPreview = role === 'admin' && !!previewClientId;
-  const { data: previewClientName } = usePreviewClientName(previewClientId);
+  const previewCustomerId = usePreviewClientId();
+  const isAdminPreview = role === 'admin' && !!previewCustomerId;
+  const { data: previewCustomerName } = usePreviewCustomerName(previewCustomerId);
 
   // Build paths with preview param preserved
   const buildPath = (basePath: string) => {
-    if (previewClientId) {
-      return `${basePath}?previewClientId=${previewClientId}`;
+    if (previewCustomerId) {
+      return `${basePath}?previewClientId=${previewCustomerId}`;
     }
     return basePath;
   };
@@ -132,7 +132,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
         {isAdminPreview && (
           <div className="fixed top-0 left-0 right-0 z-[60] bg-warning/90 text-warning-foreground px-4 py-2 flex items-center justify-center gap-2 text-sm font-medium">
             <Eye className="h-4 w-4" />
-            {t('clientPortal.adminPreview')}: {previewClientName || previewClientId?.slice(0, 8) + '…'}
+            {t('clientPortal.adminPreview')}: {previewCustomerName || previewCustomerId?.slice(0, 8) + '…'}
             <Link to="/app" className="ml-4 inline-flex items-center gap-1 bg-background/20 hover:bg-background/30 px-3 py-1 rounded-md transition-colors">
               <ChevronLeft className="h-3 w-3" />
               {t('clientPortal.backToDashboard')}

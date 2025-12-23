@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { useClients } from '@/hooks/useDashboardData';
+import { useCustomers } from '@/hooks/useCustomerData';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,11 +30,11 @@ export function CreateCaseDialog() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
-  const { data: clients } = useClients();
+  const { data: customers } = useCustomers();
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
-    client_id: '',
+    customer_id: '',
     title: '',
     description: '',
     due_date: '',
@@ -42,14 +42,16 @@ export function CreateCaseDialog() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.client_id || !formData.title) {
+    if (!formData.customer_id || !formData.title) {
       toast.error(t('case.requiredFields'));
       return;
     }
 
     setLoading(true);
+    // Phase 2: Set customer_id as source of truth, client_id stays for backward compat (will be removed in Phase 3)
     const { error } = await supabase.from('cases').insert({
-      client_id: formData.client_id,
+      customer_id: formData.customer_id,
+      client_id: formData.customer_id, // Temporarily set both during transition
       title: formData.title,
       description: formData.description || null,
       due_date: formData.due_date || null,
@@ -66,7 +68,7 @@ export function CreateCaseDialog() {
     toast.success(t('case.createdSuccess'));
     queryClient.invalidateQueries({ queryKey: ['cases'] });
     setOpen(false);
-    setFormData({ client_id: '', title: '', description: '', due_date: '' });
+    setFormData({ customer_id: '', title: '', description: '', due_date: '' });
   };
 
   return (
@@ -83,18 +85,18 @@ export function CreateCaseDialog() {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="client_id">{t('table.client')} *</Label>
+            <Label htmlFor="customer_id">{t('customer.title', 'Kunde')} *</Label>
             <Select
-              value={formData.client_id}
-              onValueChange={(value) => setFormData({ ...formData, client_id: value })}
+              value={formData.customer_id}
+              onValueChange={(value) => setFormData({ ...formData, customer_id: value })}
             >
               <SelectTrigger>
-                <SelectValue placeholder={t('case.selectClient')} />
+                <SelectValue placeholder={t('case.selectCustomer', 'Kunde auswählen')} />
               </SelectTrigger>
               <SelectContent>
-                {clients?.map((client) => (
-                  <SelectItem key={client.id} value={client.id}>
-                    {client.first_name} {client.last_name}
+                {customers?.map((customer) => (
+                  <SelectItem key={customer.id} value={customer.id}>
+                    {customer.first_name} {customer.last_name}
                   </SelectItem>
                 ))}
               </SelectContent>
