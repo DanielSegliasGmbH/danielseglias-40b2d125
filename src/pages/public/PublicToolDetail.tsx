@@ -26,7 +26,7 @@ export default function PublicToolDetail() {
 
   // Load ONLY from public_pages (published tools only)
   const { data: publicPage, isLoading, error } = useQuery({
-    queryKey: ['public-page-tool', slug],
+    queryKey: ['public-pages', 'tool', slug],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('public_pages')
@@ -40,6 +40,8 @@ export default function PublicToolDetail() {
       return data;
     },
     enabled: !!slug,
+    staleTime: 60 * 1000, // 60 seconds
+    refetchOnWindowFocus: false,
   });
 
   const IconComponent = iconMap['wrench'] || Wrench;
@@ -73,8 +75,12 @@ export default function PublicToolDetail() {
 
           {error && (
             <Card className="border-destructive">
-              <CardContent className="py-12 text-center text-destructive">
-                {t('app.loadError')}
+              <CardContent className="py-12 text-center">
+                <Wrench className="h-10 w-10 text-destructive mx-auto mb-4" />
+                <h3 className="font-medium text-destructive mb-2">{t('app.loadError')}</h3>
+                <p className="text-muted-foreground text-sm">
+                  {t('public.tools.tryAgainLater', 'Bitte versuchen Sie es später erneut.')}
+                </p>
               </CardContent>
             </Card>
           )}
