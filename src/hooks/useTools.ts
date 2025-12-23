@@ -11,6 +11,8 @@ export interface Tool {
   enabled_for_clients: boolean;
   enabled_for_public: boolean;
   sort_order: number;
+  slug: string | null;
+  cta_mode: 'contact' | 'download' | 'booking' | null;
   created_at: string;
   updated_at: string;
 }
