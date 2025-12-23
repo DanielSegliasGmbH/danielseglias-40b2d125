@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { LeadCaptureForm } from '@/components/public/LeadCaptureForm';
 import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, ClipboardCheck, LucideIcon } from 'lucide-react';
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
+import VorsorgecheckTool from '@/components/tools/vorsorgecheck/VorsorgecheckTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -104,10 +105,14 @@ export default function PublicToolDetail() {
                 </div>
               </div>
 
-              {/* Tool Content - Check if it's finanzcheck */}
+              {/* Tool Content - Render appropriate tool component */}
               {slug === 'finanzcheck' ? (
                 <div className="mb-8">
                   <FinanzcheckTool mode="public" />
+                </div>
+              ) : slug === 'vorsorgecheck-3a' ? (
+                <div className="mb-8">
+                  <VorsorgecheckTool />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">

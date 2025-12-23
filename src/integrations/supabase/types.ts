@@ -532,6 +532,51 @@ export type Database = {
         }
         Relationships: []
       }
+      leadmagnet_3a_checks: {
+        Row: {
+          contact_email: string | null
+          created_at: string
+          id: string
+          q1_provider: string
+          q2_year: string
+          q3_payment: string
+          q4_fees: string
+          q5_flexibility: string
+          q6_investment: string
+          q7_feeling: string
+          result_level: string
+          score_total: number
+        }
+        Insert: {
+          contact_email?: string | null
+          created_at?: string
+          id?: string
+          q1_provider: string
+          q2_year: string
+          q3_payment: string
+          q4_fees: string
+          q5_flexibility: string
+          q6_investment: string
+          q7_feeling: string
+          result_level: string
+          score_total: number
+        }
+        Update: {
+          contact_email?: string | null
+          created_at?: string
+          id?: string
+          q1_provider?: string
+          q2_year?: string
+          q3_payment?: string
+          q4_fees?: string
+          q5_flexibility?: string
+          q6_investment?: string
+          q7_feeling?: string
+          result_level?: string
+          score_total?: number
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           created_at: string
