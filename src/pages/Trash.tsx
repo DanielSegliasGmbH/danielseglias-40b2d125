@@ -29,23 +29,19 @@ import { de, enUS } from 'date-fns/locale';
 import {
   useDeletedNodes,
   useDeletedEdges,
-  useDeletedClients,
   useDeletedCases,
   useDeletedTasks,
   useRestoreNode,
   useRestoreEdge,
-  useRestoreClient,
   useRestoreCase,
   useRestoreTask,
   usePermanentDeleteNode,
   usePermanentDeleteEdge,
-  usePermanentDeleteClient,
   usePermanentDeleteCase,
   usePermanentDeleteTask,
   useCleanupTrash,
   DeletedNode,
   DeletedEdge,
-  DeletedClient,
   DeletedCase,
   DeletedTask,
 } from '@/hooks/useTrash';
@@ -62,7 +58,6 @@ interface DeletedCustomer {
 type DeleteItem = 
   | { type: 'node'; item: DeletedNode }
   | { type: 'edge'; item: DeletedEdge }
-  | { type: 'client'; item: DeletedClient }
   | { type: 'case'; item: DeletedCase }
   | { type: 'task'; item: DeletedTask }
   | { type: 'customer'; item: DeletedCustomer };
@@ -73,20 +68,17 @@ export default function Trash() {
 
   const { data: deletedNodes, isLoading: nodesLoading } = useDeletedNodes();
   const { data: deletedEdges, isLoading: edgesLoading } = useDeletedEdges();
-  const { data: deletedClients, isLoading: clientsLoading } = useDeletedClients();
   const { data: deletedCases, isLoading: casesLoading } = useDeletedCases();
   const { data: deletedTasks, isLoading: tasksLoading } = useDeletedTasks();
   const { data: deletedCustomers, isLoading: customersLoading } = useDeletedCustomers();
 
   const restoreNode = useRestoreNode();
   const restoreEdge = useRestoreEdge();
-  const restoreClient = useRestoreClient();
   const restoreCase = useRestoreCase();
   const restoreTask = useRestoreTask();
   const restoreCustomer = useRestoreCustomer();
   const permanentDeleteNode = usePermanentDeleteNode();
   const permanentDeleteEdge = usePermanentDeleteEdge();
-  const permanentDeleteClient = usePermanentDeleteClient();
   const permanentDeleteCase = usePermanentDeleteCase();
   const permanentDeleteTask = usePermanentDeleteTask();
   const hardDeleteCustomer = useHardDeleteCustomer();
@@ -102,9 +94,6 @@ export default function Trash() {
         break;
       case 'edge':
         permanentDeleteEdge.mutate(confirmDelete.item.id);
-        break;
-      case 'client':
-        permanentDeleteClient.mutate(confirmDelete.item.id);
         break;
       case 'case':
         permanentDeleteCase.mutate(confirmDelete.item.id);
@@ -122,7 +111,6 @@ export default function Trash() {
   const totalItems = 
     (deletedNodes?.length || 0) + 
     (deletedEdges?.length || 0) + 
-    (deletedClients?.length || 0) + 
     (deletedCases?.length || 0) + 
     (deletedTasks?.length || 0) +
     (deletedCustomers?.length || 0);
@@ -163,10 +151,6 @@ export default function Trash() {
             <TabsTrigger value="customers" className="flex items-center gap-2">
               <UserCheck className="h-4 w-4" />
               {t('customer.listTitle', 'Kunden')} ({deletedCustomers?.length || 0})
-            </TabsTrigger>
-            <TabsTrigger value="clients" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              {t('trash.clients')} ({deletedClients?.length || 0})
             </TabsTrigger>
             <TabsTrigger value="cases" className="flex items-center gap-2">
               <Briefcase className="h-4 w-4" />
@@ -233,67 +217,6 @@ export default function Trash() {
                               size="sm"
                               className="text-destructive hover:text-destructive"
                               onClick={() => setConfirmDelete({ type: 'customer', item: customer as DeletedCustomer })}
-                            >
-                              <Trash2 className="h-4 w-4 mr-1" />
-                              {t('trash.deletePermanently')}
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Clients Tab */}
-          <TabsContent value="clients" className="mt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('trash.deletedClients')}</CardTitle>
-                <CardDescription>{t('trash.retentionInfo')}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {clientsLoading ? (
-                  <div className="flex items-center justify-center py-8">
-                    <Loader2 className="h-6 w-6 animate-spin" />
-                  </div>
-                ) : !deletedClients?.length ? (
-                  <p className="text-muted-foreground text-center py-8">{t('trash.noDeletedClients')}</p>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{t('trash.name')}</TableHead>
-                        <TableHead>{t('trash.email')}</TableHead>
-                        <TableHead>{t('trash.deletedAt')}</TableHead>
-                        <TableHead className="text-right">{t('table.actions')}</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {deletedClients.map((client) => (
-                        <TableRow key={client.id}>
-                          <TableCell className="font-medium">{client.first_name} {client.last_name}</TableCell>
-                          <TableCell>{client.email || '–'}</TableCell>
-                          <TableCell title={formatDeletedAtTitle(client.deleted_at)}>
-                            {formatDeletedAt(client.deleted_at)}
-                          </TableCell>
-                          <TableCell className="text-right space-x-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => restoreClient.mutate(client.id)}
-                              disabled={restoreClient.isPending}
-                            >
-                              <RotateCcw className="h-4 w-4 mr-1" />
-                              {t('trash.restore')}
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-destructive hover:text-destructive"
-                              onClick={() => setConfirmDelete({ type: 'client', item: client })}
                             >
                               <Trash2 className="h-4 w-4 mr-1" />
                               {t('trash.deletePermanently')}
