@@ -3,6 +3,7 @@
     "title": "Mandantenverwaltung",
     "loading": "Laden...",
     "error": "Fehler",
+    "loadError": "Fehler beim Laden der Daten",
     "save": "Speichern",
     "cancel": "Abbrechen",
     "delete": "Löschen",
@@ -479,6 +480,7 @@
     "libraryDesc": "Hilfreiche Artikel und Dokumente",
     "tools": "Werkzeuge",
     "toolsDesc": "Praktische Rechner und Tools",
+    "startTool": "Starten",
     "comingSoon": "In Entwicklung",
     "inDevelopment": "Dieser Bereich wird derzeit entwickelt und ist bald verfügbar.",
     "plannedFeatures": "Was Sie hier später finden werden:",
@@ -738,17 +740,32 @@
     "subtitle": "Zentrale Verwaltung aller Kundenbereich-Tools",
     "overviewTitle": "Werkzeug-Verwaltung",
     "overviewDesc": "Hier verwalten Sie alle Werkzeuge, die im Kundenbereich verfügbar gemacht werden können.",
-    "budgetCalculator": "Budget-Rechner",
-    "budgetCalculatorDesc": "Hilft Kunden bei der Erstellung und Analyse ihres monatlichen Budgets.",
-    "retirementPlanner": "Vorsorge-Planer",
-    "retirementPlannerDesc": "Berechnung und Visualisierung der Altersvorsorge-Situation.",
-    "investmentSimulator": "Anlage-Simulator",
-    "investmentSimulatorDesc": "Simulation verschiedener Anlagestrategien und deren Renditen.",
-    "documentGenerator": "Dokument-Generator",
-    "documentGeneratorDesc": "Automatische Erstellung von Vorlagen und Dokumenten.",
     "planned": "Geplant",
     "enableForClients": "Für Kunden aktivieren",
-    "moreToolsPlanned": "Weitere Werkzeuge sind in Planung. Sprechen Sie uns an, wenn Sie Ideen haben!"
+    "enableForPublic": "Für Public aktivieren",
+    "clients": "Kunden",
+    "public": "Public",
+    "moreToolsPlanned": "Weitere Werkzeuge sind in Planung. Sprechen Sie uns an, wenn Sie Ideen haben!",
+    "updateSuccess": "Tool-Einstellung aktualisiert",
+    "updateError": "Fehler beim Aktualisieren"
+  },
+  "tools": {
+    "budgetCalculator": {
+      "name": "Budget-Rechner",
+      "description": "Hilft bei der Erstellung und Analyse des monatlichen Budgets."
+    },
+    "retirementPlanner": {
+      "name": "Vorsorge-Planer",
+      "description": "Berechnung und Visualisierung der Altersvorsorge-Situation."
+    },
+    "investmentSimulator": {
+      "name": "Anlage-Simulator",
+      "description": "Simulation verschiedener Anlagestrategien und deren Renditen."
+    },
+    "documentGenerator": {
+      "name": "Dokument-Generator",
+      "description": "Automatische Erstellung von Vorlagen und Dokumenten."
+    }
   },
   "adminLeads": {
     "title": "Leads",
@@ -799,6 +816,6 @@
     "footer": { "description": "Ihre unabhängige Finanzberatung.", "links": "Navigation", "contact": "Kontakt", "rights": "Alle Rechte vorbehalten." },
     "contact": { "title": "Kontaktformular", "subtitle": "Wir melden uns innerhalb von 24 Stunden.", "name": "Name", "namePlaceholder": "Ihr Name", "email": "E-Mail", "emailPlaceholder": "ihre@email.ch", "phone": "Telefon", "phonePlaceholder": "+41 79 000 00 00", "message": "Nachricht", "messagePlaceholder": "Wie können wir Ihnen helfen?", "submit": "Absenden", "successTitle": "Nachricht gesendet", "successMessage": "Wir melden uns bald bei Ihnen.", "errorMessage": "Fehler beim Senden. Bitte versuchen Sie es erneut.", "thankYouTitle": "Vielen Dank!", "thankYouMessage": "Wir haben Ihre Nachricht erhalten und melden uns schnellstmöglich.", "backToHome": "Zurück zur Startseite", "infoTitle": "So erreichen Sie uns", "infoDescription": "Wir freuen uns auf Ihre Anfrage.", "phoneLabel": "Telefon", "emailLabel": "E-Mail", "addressLabel": "Adresse" },
     "blog": { "title": "Blog", "subtitle": "Wissen und Tipps rund um Finanzen", "readMore": "Weiterlesen", "noArticles": "Noch keine Artikel", "noArticlesDesc": "Bald finden Sie hier interessante Beiträge." },
-    "tools": { "title": "Werkzeuge", "subtitle": "Praktische Rechner für Ihre Finanzplanung", "comingSoon": "Demnächst", "startTool": "Starten", "ctaTitle": "Persönliche Beratung gewünscht?", "ctaDescription": "Unsere Experten helfen Ihnen gerne weiter.", "ctaButton": "Beratung anfragen", "budgetCalculator": { "title": "Budget-Rechner", "description": "Analysieren Sie Ihre monatlichen Ausgaben" }, "retirementPlanner": { "title": "Vorsorge-Planer", "description": "Berechnen Sie Ihre Altersvorsorge" }, "investmentSimulator": { "title": "Anlage-Simulator", "description": "Simulieren Sie verschiedene Anlagestrategien" } }
+    "tools": { "title": "Werkzeuge", "subtitle": "Praktische Rechner für Ihre Finanzplanung", "comingSoon": "Demnächst", "startTool": "Starten", "noToolsAvailable": "Derzeit keine Werkzeuge verfügbar.", "ctaTitle": "Persönliche Beratung gewünscht?", "ctaDescription": "Unsere Experten helfen Ihnen gerne weiter.", "ctaButton": "Beratung anfragen", "budgetCalculator": { "title": "Budget-Rechner", "description": "Analysieren Sie Ihre monatlichen Ausgaben" }, "retirementPlanner": { "title": "Vorsorge-Planer", "description": "Berechnen Sie Ihre Altersvorsorge" }, "investmentSimulator": { "title": "Anlage-Simulator", "description": "Simulieren Sie verschiedene Anlagestrategien" } }
   }
 }

@@ -2,37 +2,25 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { ArrowLeft, Calculator, PieChart, TrendingUp, Clock } from 'lucide-react';
+import { ArrowLeft, Calculator, PieChart, TrendingUp, FileText, Clock, Wrench, LucideIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { usePublicTools } from '@/hooks/useTools';
+
+// Icon mapping from DB icon string to Lucide component
+const iconMap: Record<string, LucideIcon> = {
+  'calculator': Calculator,
+  'pie-chart': PieChart,
+  'trending-up': TrendingUp,
+  'file-text': FileText,
+  'wrench': Wrench,
+};
 
 export default function PublicTools() {
   const { t } = useTranslation();
-
-  const tools = [
-    {
-      id: 'budget-calculator',
-      icon: Calculator,
-      title: t('public.tools.budgetCalculator.title'),
-      description: t('public.tools.budgetCalculator.description'),
-      status: 'coming_soon' as const,
-    },
-    {
-      id: 'retirement-planner',
-      icon: PieChart,
-      title: t('public.tools.retirementPlanner.title'),
-      description: t('public.tools.retirementPlanner.description'),
-      status: 'coming_soon' as const,
-    },
-    {
-      id: 'investment-simulator',
-      icon: TrendingUp,
-      title: t('public.tools.investmentSimulator.title'),
-      description: t('public.tools.investmentSimulator.description'),
-      status: 'coming_soon' as const,
-    },
-  ];
+  const { data: tools, isLoading, error } = usePublicTools();
 
   return (
     <div className="min-h-screen bg-background">
@@ -82,32 +70,72 @@ export default function PublicTools() {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {tools.map((tool) => (
-              <Card key={tool.id} className="transition-shadow hover:shadow-lg">
-                <CardHeader>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <tool.icon className="h-5 w-5 text-primary" />
-                    </div>
-                    {tool.status === 'coming_soon' && (
-                      <Badge variant="secondary" className="text-xs">
-                        <Clock className="h-3 w-3 mr-1" />
-                        {t('public.tools.comingSoon')}
-                      </Badge>
-                    )}
-                  </div>
-                  <CardTitle className="text-lg">{tool.title}</CardTitle>
-                  <CardDescription>{tool.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button variant="outline" className="w-full" disabled={tool.status === 'coming_soon'}>
-                    {t('public.tools.startTool')}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          {isLoading && (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <Card key={i}>
+                  <CardHeader>
+                    <Skeleton className="w-10 h-10 rounded-lg mb-2" />
+                    <Skeleton className="h-5 w-32" />
+                    <Skeleton className="h-4 w-48" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-10 w-full" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {error && (
+            <Card className="border-destructive">
+              <CardContent className="p-6 text-destructive">
+                {t('app.loadError')}
+              </CardContent>
+            </Card>
+          )}
+
+          {tools && tools.length > 0 && (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {tools.map((tool) => {
+                const IconComponent = iconMap[tool.icon] || Wrench;
+                const isPlanned = tool.status === 'planned';
+
+                return (
+                  <Card key={tool.id} className="transition-shadow hover:shadow-lg">
+                    <CardHeader>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <IconComponent className="h-5 w-5 text-primary" />
+                        </div>
+                        {isPlanned && (
+                          <Badge variant="secondary" className="text-xs">
+                            <Clock className="h-3 w-3 mr-1" />
+                            {t('public.tools.comingSoon')}
+                          </Badge>
+                        )}
+                      </div>
+                      <CardTitle className="text-lg">{t(tool.name_key)}</CardTitle>
+                      <CardDescription>{t(tool.description_key)}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button variant="outline" className="w-full" disabled={isPlanned}>
+                        {t('public.tools.startTool')}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+
+          {tools && tools.length === 0 && (
+            <Card>
+              <CardContent className="p-6 text-center text-muted-foreground">
+                {t('public.tools.noToolsAvailable')}
+              </CardContent>
+            </Card>
+          )}
 
           {/* CTA Section */}
           <Card className="mt-12 bg-primary/5 border-primary/20">
