@@ -15,7 +15,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { FileText, Plus, Edit, Trash2, Eye, EyeOff, ExternalLink } from 'lucide-react';
+import { FileText, Plus, Edit, Trash2, Eye, EyeOff, ExternalLink, Wrench } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 
@@ -207,10 +208,18 @@ export default function AdminPublicPages() {
               <p className="text-muted-foreground">{t('adminPages.subtitle')}</p>
             </div>
           </div>
-          <Button onClick={openNewDialog}>
-            <Plus className="mr-2 h-4 w-4" />
-            {t('adminPages.newPage')}
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" asChild>
+              <Link to="/app/tools">
+                <Wrench className="mr-2 h-4 w-4" />
+                {t('adminPages.manageTools')}
+              </Link>
+            </Button>
+            <Button onClick={openNewDialog}>
+              <Plus className="mr-2 h-4 w-4" />
+              {t('adminPages.newPage')}
+            </Button>
+          </div>
         </div>
 
         {/* Pages List */}
