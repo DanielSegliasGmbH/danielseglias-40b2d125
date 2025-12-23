@@ -39,6 +39,7 @@ import ClientPortalTasks from "./pages/client-portal/ClientPortalTasks";
 import ClientPortalStrategies from "./pages/client-portal/ClientPortalStrategies";
 import ClientPortalLibrary from "./pages/client-portal/ClientPortalLibrary";
 import ClientPortalTools from "./pages/client-portal/ClientPortalTools";
+import ClientPortalToolDetail from "./pages/client-portal/ClientPortalToolDetail";
 
 // Public Pages (no auth required)
 import PublicLanding from "./pages/public/PublicLanding";
@@ -267,6 +268,14 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['client', 'admin']}>
                     <ClientPortalTools />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/tools/:slug"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalToolDetail />
                   </RouteGuard>
                 }
               />

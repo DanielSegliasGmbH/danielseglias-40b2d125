@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,9 +18,16 @@ const iconMap: Record<string, LucideIcon> = {
 
 export default function ClientPortalTools() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { data: tools, isLoading, error } = useClientTools();
 
   const hasTools = tools && tools.length > 0;
+
+  const handleStartTool = (slug: string | null) => {
+    if (slug) {
+      navigate(`/app/client-portal/tools/${slug}`);
+    }
+  };
 
   return (
     <ClientPortalLayout>
@@ -97,7 +105,12 @@ export default function ClientPortalTools() {
                     <CardDescription>{t(tool.description_key)}</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <Button variant="outline" className="w-full">
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => handleStartTool(tool.slug)}
+                      disabled={!tool.slug}
+                    >
                       {t('clientPortal.startTool')}
                     </Button>
                   </CardContent>

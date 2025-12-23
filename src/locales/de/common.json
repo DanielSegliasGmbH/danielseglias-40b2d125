@@ -1,4 +1,7 @@
 {
+  "adminPages": {
+    "manageTools": "Tools verwalten"
+  },
   "app": {
     "title": "Mandantenverwaltung",
     "loading": "Laden...",
