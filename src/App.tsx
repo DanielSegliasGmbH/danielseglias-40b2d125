@@ -8,10 +8,7 @@ import { RouteGuard } from "@/components/RouteGuard";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AppDashboard from "./pages/AppDashboard";
-import ClientDashboard from "./pages/ClientDashboard";
 import UserManagement from "./pages/UserManagement";
-import ClientList from "./pages/ClientList";
-import ClientDetail from "./pages/ClientDetail";
 import CustomersList from "./pages/CustomersList";
 import CustomerDetail from "./pages/CustomerDetail";
 
@@ -140,24 +137,14 @@ function App() {
                 }
               />
 
-              {/* Protected: Client List */}
+              {/* Legacy: Redirect old client routes to customers */}
               <Route
                 path="/app/clients"
-                element={
-                  <RouteGuard allowedRoles={['admin', 'staff']}>
-                    <ClientList />
-                  </RouteGuard>
-                }
+                element={<Navigate to="/app/customers" replace />}
               />
-
-              {/* Protected: Client Detail (legacy) */}
               <Route
                 path="/app/clients/:id"
-                element={
-                  <RouteGuard allowedRoles={['admin', 'staff']}>
-                    <ClientDetail />
-                  </RouteGuard>
-                }
+                element={<Navigate to="/app/customers" replace />}
               />
 
               {/* Protected: Customers List (new structure) */}
