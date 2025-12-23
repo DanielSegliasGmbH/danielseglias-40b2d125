@@ -1,25 +1,41 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { PublicLayout } from '@/layouts/PublicLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Calculator, PieChart, TrendingUp, FileText, Clock, Wrench, LucideIcon, ArrowRight } from 'lucide-react';
-import { usePublicTools } from '@/hooks/useTools';
+import { Calculator, Wrench, ArrowRight, AlertCircle } from 'lucide-react';
 
-// Icon mapping from DB icon string to Lucide component
-const iconMap: Record<string, LucideIcon> = {
-  'calculator': Calculator,
-  'pie-chart': PieChart,
-  'trending-up': TrendingUp,
-  'file-text': FileText,
-  'wrench': Wrench,
-};
+interface PublicPage {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string | null;
+  page_type: string;
+  is_published: boolean;
+  updated_at: string;
+}
 
 export default function PublicTools() {
   const { t } = useTranslation();
-  const { data: tools, isLoading, error } = usePublicTools();
+
+  // Load from public_pages - only published tools
+  const { data: tools, isLoading, error } = useQuery({
+    queryKey: ['public-pages-tools'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('public_pages')
+        .select('*')
+        .eq('page_type', 'tool')
+        .eq('is_published', true)
+        .order('updated_at', { ascending: false });
+
+      if (error) throw error;
+      return data as PublicPage[];
+    },
+  });
 
   return (
     <PublicLayout title={t('public.tools.title')} description={t('public.tools.subtitle')}>
@@ -54,46 +70,36 @@ export default function PublicTools() {
 
           {error && (
             <Card className="border-destructive">
-              <CardContent className="p-6 text-destructive">
-                {t('app.loadError')}
+              <CardContent className="p-6 flex items-center gap-3 text-destructive">
+                <AlertCircle className="h-5 w-5" />
+                <span>{t('app.loadError')}</span>
               </CardContent>
             </Card>
           )}
 
           {tools && tools.length > 0 && (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {tools.map((tool) => {
-                const IconComponent = iconMap[tool.icon] || Wrench;
-                const isPlanned = tool.status === 'planned';
-
-                return (
+              {tools.map((tool) => (
                 <Card key={tool.id} className="transition-shadow hover:shadow-lg">
-                    <CardHeader>
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                          <IconComponent className="h-5 w-5 text-primary" />
-                        </div>
-                        {isPlanned && (
-                          <Badge variant="secondary" className="text-xs">
-                            <Clock className="h-3 w-3 mr-1" />
-                            {t('public.tools.comingSoon')}
-                          </Badge>
-                        )}
-                      </div>
-                      <CardTitle className="text-lg">{t(tool.name_key)}</CardTitle>
-                      <CardDescription>{t(tool.description_key)}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Link to={`/tools/${tool.slug}`}>
-                        <Button variant="outline" className="w-full">
-                          {isPlanned ? t('public.tools.learnMore') : t('public.tools.startTool')}
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
-                      </Link>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                  <CardHeader>
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
+                      <Wrench className="h-5 w-5 text-primary" />
+                    </div>
+                    <CardTitle className="text-lg">{tool.title}</CardTitle>
+                    {tool.excerpt && (
+                      <CardDescription>{tool.excerpt}</CardDescription>
+                    )}
+                  </CardHeader>
+                  <CardContent>
+                    <Link to={`/tools/${tool.slug}`}>
+                      <Button variant="outline" className="w-full">
+                        {t('public.tools.startTool')}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           )}
 
