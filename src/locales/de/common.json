@@ -26,7 +26,8 @@
   },
   "nav": {
     "main": "Navigation",
-    "admin": "Administration"
+    "admin": "Administration",
+    "tools": "Werkzeuge"
   },
   "theme": {
     "light": "Hell",
@@ -491,6 +492,7 @@
     "unlinkUser": "Verknüpfung entfernen",
     "previewPortal": "Portal Vorschau",
     "adminPreview": "Admin Vorschau",
+    "backToDashboard": "Zurück zum Dashboard",
     "userLinked": "Benutzer erfolgreich verknüpft",
     "userUnlinked": "Verknüpfung entfernt",
     "userAlreadyLinked": "Dieser Benutzer ist bereits mit einem anderen Kunden verknüpft",
@@ -730,5 +732,22 @@
     "fr": "Französisch",
     "it": "Italienisch",
     "en": "Englisch"
+  },
+  "adminTools": {
+    "title": "Werkzeuge",
+    "subtitle": "Zentrale Verwaltung aller Kundenbereich-Tools",
+    "overviewTitle": "Werkzeug-Verwaltung",
+    "overviewDesc": "Hier verwalten Sie alle Werkzeuge, die im Kundenbereich verfügbar gemacht werden können.",
+    "budgetCalculator": "Budget-Rechner",
+    "budgetCalculatorDesc": "Hilft Kunden bei der Erstellung und Analyse ihres monatlichen Budgets.",
+    "retirementPlanner": "Vorsorge-Planer",
+    "retirementPlannerDesc": "Berechnung und Visualisierung der Altersvorsorge-Situation.",
+    "investmentSimulator": "Anlage-Simulator",
+    "investmentSimulatorDesc": "Simulation verschiedener Anlagestrategien und deren Renditen.",
+    "documentGenerator": "Dokument-Generator",
+    "documentGeneratorDesc": "Automatische Erstellung von Vorlagen und Dokumenten.",
+    "planned": "Geplant",
+    "enableForClients": "Für Kunden aktivieren",
+    "moreToolsPlanned": "Weitere Werkzeuge sind in Planung. Sprechen Sie uns an, wenn Sie Ideen haben!"
   }
 }

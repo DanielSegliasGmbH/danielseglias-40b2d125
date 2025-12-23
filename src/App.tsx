@@ -20,6 +20,7 @@ import CaseDetail from "./pages/CaseDetail";
 import TaskList from "./pages/TaskList";
 import SystemMap from "./pages/SystemMap";
 import Trash from "./pages/Trash";
+import AdminTools from "./pages/AdminTools";
 import NotFound from "./pages/NotFound";
 
 // Client Portal Pages
@@ -89,6 +90,16 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['admin']}>
                     <Trash />
+                  </RouteGuard>
+                }
+              />
+
+              {/* Protected: Admin only - Tools */}
+              <Route
+                path="/app/tools"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminTools />
                   </RouteGuard>
                 }
               />
