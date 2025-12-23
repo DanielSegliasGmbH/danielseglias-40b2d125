@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { useAllUsers, useUpdateUserRole } from '@/hooks/useUserManagement';
-import { useClients } from '@/hooks/useDashboardData';
+import { useCustomers } from '@/hooks/useCustomerData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -41,7 +41,7 @@ export default function UserManagement() {
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
   const { data: users, isLoading } = useAllUsers();
-  const { data: clients } = useClients();
+  const { data: customers } = useCustomers();
   const updateRole = useUpdateUserRole();
 
   const handleRoleChange = async (userId: string, newRole: string) => {
@@ -54,10 +54,10 @@ export default function UserManagement() {
     }
   };
 
-  const getClientName = (clientId: string | null) => {
-    if (!clientId || !clients) return null;
-    const client = clients.find((c) => c.id === clientId);
-    return client ? `${client.first_name} ${client.last_name}` : null;
+  const getCustomerName = (customerId: string | null) => {
+    if (!customerId || !customers) return null;
+    const customer = customers.find((c) => c.id === customerId);
+    return customer ? `${customer.first_name} ${customer.last_name}` : null;
   };
 
   const copyToClipboard = async (text: string) => {
@@ -116,7 +116,7 @@ export default function UserManagement() {
                       <TableHead>{t('auth.lastName')}</TableHead>
                       <TableHead>{t('auth.phone')}</TableHead>
                       <TableHead>{t('table.role')}</TableHead>
-                      <TableHead>{t('table.client')}</TableHead>
+                      <TableHead>{t('customer.singular', 'Kunde')}</TableHead>
                       <TableHead>{t('table.actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -165,15 +165,15 @@ export default function UserManagement() {
                           </Select>
                         </TableCell>
                         <TableCell>
-                          {u.client_id ? (
-                            <Badge variant="outline">{getClientName(u.client_id)}</Badge>
+                          {u.customer_id ? (
+                            <Badge variant="outline">{getCustomerName(u.customer_id)}</Badge>
                           ) : (
                             <span className="text-muted-foreground">–</span>
                           )}
                         </TableCell>
                         <TableCell>
                           {u.role === 'client' && (
-                            <LinkClientDialog userId={u.id} currentClientId={u.client_id} />
+                            <LinkClientDialog userId={u.id} currentCustomerId={u.customer_id} />
                           )}
                         </TableCell>
                       </TableRow>

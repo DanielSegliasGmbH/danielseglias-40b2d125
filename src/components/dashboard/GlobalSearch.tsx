@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 
 interface SearchResult {
   id: string;
-  type: 'client' | 'case' | 'task';
+  type: 'customer' | 'case' | 'task';
   title: string;
   subtitle?: string;
   link: string;
@@ -32,39 +32,41 @@ export function GlobalSearch() {
       const searchTerm = `%${query}%`;
       const allResults: SearchResult[] = [];
 
-      // Search clients
-      const { data: clients } = await supabase
-        .from('clients')
-        .select('id, first_name, last_name, email')
-        .or(`first_name.ilike.${searchTerm},last_name.ilike.${searchTerm},email.ilike.${searchTerm}`)
+      // Search customers (Phase 2: use customers instead of clients)
+      const { data: customers } = await supabase
+        .from('customers')
+        .select('id, first_name, last_name')
+        .is('deleted_at', null)
+        .or(`first_name.ilike.${searchTerm},last_name.ilike.${searchTerm}`)
         .limit(5);
 
-      if (clients) {
-        clients.forEach((c) => {
+      if (customers) {
+        customers.forEach((c) => {
           allResults.push({
             id: c.id,
-            type: 'client',
+            type: 'customer',
             title: `${c.first_name} ${c.last_name}`,
-            subtitle: c.email || undefined,
-            link: `/app/clients/${c.id}`,
+            subtitle: undefined,
+            link: `/app/customers/${c.id}`,
           });
         });
       }
 
-      // Search cases
+      // Search cases (now joined with customers via customer_id)
       const { data: cases } = await supabase
         .from('cases')
-        .select('id, title, client:clients(first_name, last_name)')
+        .select('id, title, customer:customers!cases_customer_id_fkey(first_name, last_name)')
+        .is('deleted_at', null)
         .ilike('title', searchTerm)
         .limit(5);
 
       if (cases) {
-        cases.forEach((c) => {
+        cases.forEach((c: any) => {
           allResults.push({
             id: c.id,
             type: 'case',
             title: c.title,
-            subtitle: c.client ? `${c.client.first_name} ${c.client.last_name}` : undefined,
+            subtitle: c.customer ? `${c.customer.first_name} ${c.customer.last_name}` : undefined,
             link: `/app/cases/${c.id}`,
           });
         });
@@ -73,12 +75,13 @@ export function GlobalSearch() {
       // Search tasks
       const { data: tasks } = await supabase
         .from('tasks')
-        .select('id, title, case_id, case:cases(title)')
+        .select('id, title, case_id, case:cases!fk_tasks_case_id(title)')
+        .is('deleted_at', null)
         .ilike('title', searchTerm)
         .limit(5);
 
       if (tasks) {
-        tasks.forEach((t) => {
+        tasks.forEach((t: any) => {
           allResults.push({
             id: t.id,
             type: 'task',
@@ -145,7 +148,7 @@ export function GlobalSearch() {
 
   const getIcon = (type: SearchResult['type']) => {
     switch (type) {
-      case 'client':
+      case 'customer':
         return <Users className="h-4 w-4 text-muted-foreground" />;
       case 'case':
         return <Briefcase className="h-4 w-4 text-muted-foreground" />;
@@ -156,8 +159,8 @@ export function GlobalSearch() {
 
   const getTypeLabel = (type: SearchResult['type']) => {
     switch (type) {
-      case 'client':
-        return t('client.singular');
+      case 'customer':
+        return t('customer.singular', 'Kunde');
       case 'case':
         return t('case.singular');
       case 'task':

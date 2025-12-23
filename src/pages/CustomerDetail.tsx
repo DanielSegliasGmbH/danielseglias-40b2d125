@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, User, Phone, Briefcase, Settings, Trash2 } from 'lucide-react';
+import { ArrowLeft, User, Phone, Briefcase, Settings, Trash2, LayoutDashboard } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   AlertDialog,
@@ -29,13 +29,12 @@ import {
   CustomerProfile,
   CustomerEconomics,
   CustomerControl,
-  CustomerStatus,
-  CustomerPriority,
 } from '@/hooks/useCustomerData';
 import { CustomerCoreTab } from '@/components/customers/CustomerCoreTab';
 import { CustomerProfileTab } from '@/components/customers/CustomerProfileTab';
 import { CustomerEconomicsTab } from '@/components/customers/CustomerEconomicsTab';
 import { CustomerControlTab } from '@/components/customers/CustomerControlTab';
+import { CustomerDashboardTab } from '@/components/customers/CustomerDashboardTab';
 
 export default function CustomerDetail() {
   const { id } = useParams<{ id: string }>();
@@ -49,7 +48,7 @@ export default function CustomerDetail() {
   const updateControl = useUpsertCustomerControl();
   const deleteCustomer = useDeleteCustomer();
   
-  const [activeTab, setActiveTab] = useState('core');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   
   // Form states
@@ -275,7 +274,11 @@ export default function CustomerDetail() {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
+            <TabsTrigger value="dashboard" className="flex items-center gap-2">
+              <LayoutDashboard className="h-4 w-4" />
+              <span className="hidden sm:inline">{t('customer.tabs.dashboard', 'Dashboard')}</span>
+            </TabsTrigger>
             <TabsTrigger value="core" className="flex items-center gap-2">
               <User className="h-4 w-4" />
               <span className="hidden sm:inline">{t('customer.tabs.core', 'Stammdaten')}</span>
@@ -293,6 +296,10 @@ export default function CustomerDetail() {
               <span className="hidden sm:inline">{t('customer.tabs.control', 'Steuerung')}</span>
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="dashboard" className="mt-6">
+            <CustomerDashboardTab customerId={id!} customerName={`${customer.first_name} ${customer.last_name}`} />
+          </TabsContent>
 
           <TabsContent value="core" className="mt-6">
             <CustomerCoreTab

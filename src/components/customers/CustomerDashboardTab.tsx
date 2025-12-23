@@ -83,6 +83,7 @@ const TASK_PRIORITIES: TaskPriority[] = ['niedrig', 'mittel', 'hoch', 'dringend'
 
 interface CustomerDashboardTabProps {
   customerId: string;
+  customerName?: string;
 }
 
 export function CustomerDashboardTab({ customerId }: CustomerDashboardTabProps) {

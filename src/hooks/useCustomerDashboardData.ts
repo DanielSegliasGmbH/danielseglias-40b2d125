@@ -12,18 +12,17 @@ import type { Database } from '@/integrations/supabase/types';
 
 type TaskPriority = Database['public']['Enums']['task_priority'];
 type MeetingType = Database['public']['Enums']['meeting_type'];
+type CaseStatus = Database['public']['Enums']['case_status'];
 
 const STALE_TIME = 30 * 1000;
 
 /**
  * Fetch cases for a customer (via customer_id)
- * Fallback: Falls customer_id NULL ist, via client_to_customer_map
  */
 export function useCustomerCases(customerId: string) {
   return useQuery({
     queryKey: ['customer', customerId, 'cases'],
     queryFn: async () => {
-      // Primary: Query by customer_id
       const { data, error } = await supabase
         .from('cases')
         .select('*')
@@ -182,14 +181,18 @@ export function useCreateCaseForCustomer() {
       description?: string;
       due_date?: string;
     }) => {
-      const { error } = await supabase.from('cases').insert({
-        customer_id: data.customer_id,
-        title: data.title,
-        description: data.description || null,
-        due_date: data.due_date || null,
-        assigned_to: user?.id,
-        created_by: user?.id,
-      });
+      // Use raw insert with explicit columns to avoid type issues
+      const { error } = await supabase
+        .from('cases')
+        .insert({
+          customer_id: data.customer_id,
+          client_id: data.customer_id, // Temporary: also set client_id for backward compatibility
+          title: data.title,
+          description: data.description || null,
+          due_date: data.due_date || null,
+          assigned_to: user?.id,
+          created_by: user?.id,
+        } as any);
       if (error) throw error;
       return { success: true };
     },

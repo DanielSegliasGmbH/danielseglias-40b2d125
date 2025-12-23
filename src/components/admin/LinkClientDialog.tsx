@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLinkClientToUser } from '@/hooks/useUserManagement';
-import { useClients } from '@/hooks/useDashboardData';
+import { useLinkCustomerToUser } from '@/hooks/useUserManagement';
+import { useCustomers } from '@/hooks/useCustomerData';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -20,25 +20,25 @@ import {
 import { Link } from 'lucide-react';
 import { toast } from 'sonner';
 
-interface LinkClientDialogProps {
+interface LinkCustomerDialogProps {
   userId: string;
-  currentClientId: string | null;
+  currentCustomerId: string | null;
 }
 
-export function LinkClientDialog({ userId, currentClientId }: LinkClientDialogProps) {
+export function LinkClientDialog({ userId, currentCustomerId }: LinkCustomerDialogProps) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [selectedClientId, setSelectedClientId] = useState(currentClientId || '');
-  const { data: clients } = useClients();
-  const linkClient = useLinkClientToUser();
+  const [selectedCustomerId, setSelectedCustomerId] = useState(currentCustomerId || '');
+  const { data: customers } = useCustomers();
+  const linkCustomer = useLinkCustomerToUser();
 
   const handleSubmit = async () => {
-    if (!selectedClientId) return;
+    if (!selectedCustomerId) return;
 
     setLoading(true);
     try {
-      await linkClient.mutateAsync({ userId, clientId: selectedClientId });
+      await linkCustomer.mutateAsync({ userId, customerId: selectedCustomerId });
       toast.success(t('userManagement.clientLinked'));
       setOpen(false);
     } catch (error: any) {
@@ -58,17 +58,17 @@ export function LinkClientDialog({ userId, currentClientId }: LinkClientDialogPr
       </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>{t('userManagement.linkClient')}</DialogTitle>
+          <DialogTitle>{t('userManagement.linkCustomer', 'Kunde zuordnen')}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          <Select value={selectedClientId} onValueChange={setSelectedClientId}>
+          <Select value={selectedCustomerId} onValueChange={setSelectedCustomerId}>
             <SelectTrigger>
-              <SelectValue placeholder={t('userManagement.selectClient')} />
+              <SelectValue placeholder={t('userManagement.selectCustomer', 'Kunde auswählen')} />
             </SelectTrigger>
             <SelectContent>
-              {clients?.map((client) => (
-                <SelectItem key={client.id} value={client.id}>
-                  {client.first_name} {client.last_name}
+              {customers?.map((customer) => (
+                <SelectItem key={customer.id} value={customer.id}>
+                  {customer.first_name} {customer.last_name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -77,7 +77,7 @@ export function LinkClientDialog({ userId, currentClientId }: LinkClientDialogPr
             <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
               {t('app.cancel')}
             </Button>
-            <Button onClick={handleSubmit} disabled={loading || !selectedClientId}>
+            <Button onClick={handleSubmit} disabled={loading || !selectedCustomerId}>
               {loading ? t('app.loading') : t('app.save')}
             </Button>
           </div>
