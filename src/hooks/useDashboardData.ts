@@ -10,127 +10,22 @@
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Tables } from '@/integrations/supabase/types';
-import { useAuth } from './useAuth';
-import { toast } from 'sonner';
 
 // Performance: 30s staleTime um häufige Refetches zu vermeiden
 const STALE_TIME = 30 * 1000;
 
-// DEPRECATED: Use useCustomers() from useCustomerData.ts instead
-// Kept for backward compatibility during Phase 2
-export function useClients() {
-  return useQuery({
-    queryKey: ['customers-compat'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('customers')
-        .select('*, customer_profiles(email, phone)')
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false });
-      if (error) {
-        toast.error(`Fehler beim Laden der Kunden: ${error.message}`);
-        throw error;
-      }
-      // Map to client-like structure for compatibility
-      return data?.map(c => ({
-        id: c.id,
-        first_name: c.first_name,
-        last_name: c.last_name,
-        email: c.customer_profiles?.email || null,
-        phone: c.customer_profiles?.phone || null,
-        status: c.customer_status === 'active' ? 'aktiv' : c.customer_status,
-        created_at: c.created_at,
-      })) ?? [];
-    },
-    staleTime: STALE_TIME,
-    refetchOnWindowFocus: false,
-  });
-}
+const CASES_PAGE_SIZE = 25;
 
-const CLIENTS_PAGE_SIZE = 25;
+type CaseSortMode = 'created_desc' | 'created_asc' | 'due_asc' | 'title_asc' | 'status_asc';
 
-type ClientWithData = Tables<'clients'>;
+export type CaseWithCustomer = Tables<'cases'> & {
+  customer: { id: string; first_name: string; last_name: string } | null;
+};
 
-interface InfiniteClientsPage {
-  items: ClientWithData[];
+interface InfiniteCasesPage {
+  items: CaseWithCustomer[];
   totalCount: number;
   pageParam: number;
-}
-
-// Escape special characters for Supabase ilike filter
-function escapeSearchTerm(term: string): string {
-  return term
-    .trim()
-    .replace(/%/g, '\\%')
-    .replace(/,/g, '\\,')
-    .replace(/_/g, '\\_');
-}
-
-export function useInfiniteClients(searchTerm?: string) {
-  const cleanedTerm = searchTerm?.trim() || '';
-  
-  return useInfiniteQuery<InfiniteClientsPage, Error>({
-    queryKey: ['clients', 'infinite', cleanedTerm],
-    queryFn: async ({ pageParam = 0 }) => {
-      const from = (pageParam as number) * CLIENTS_PAGE_SIZE;
-      const to = from + CLIENTS_PAGE_SIZE - 1;
-
-      let query = supabase
-        .from('clients')
-        .select('*', { count: 'exact' })
-        .is('deleted_at', null);
-
-      // Apply search filter if term is provided
-      if (cleanedTerm.length >= 1) {
-        const escaped = escapeSearchTerm(cleanedTerm);
-        query = query.or(
-          `first_name.ilike.%${escaped}%,last_name.ilike.%${escaped}%,email.ilike.%${escaped}%,phone.ilike.%${escaped}%`
-        );
-      }
-
-      const { data, error, count } = await query
-        .order('created_at', { ascending: false })
-        .range(from, to);
-
-      if (error) {
-        toast.error(`Fehler beim Laden der Clients: ${error.message}`);
-        throw error;
-      }
-
-      return {
-        items: (data ?? []) as ClientWithData[],
-        totalCount: count ?? 0,
-        pageParam: pageParam as number,
-      };
-    },
-    initialPageParam: 0,
-    getNextPageParam: (lastPage, allPages) => {
-      const loadedCount = allPages.reduce((sum, page) => sum + page.items.length, 0);
-      if (loadedCount < lastPage.totalCount) {
-        return lastPage.pageParam + 1;
-      }
-      return undefined;
-    },
-    staleTime: STALE_TIME,
-    refetchOnWindowFocus: false,
-  });
-}
-
-export function useActiveClientsCount() {
-  return useQuery({
-    queryKey: ['clients', 'active-count'],
-    queryFn: async () => {
-      const { count, error } = await supabase
-        .from('clients')
-        .select('*', { count: 'exact', head: true })
-        .is('deleted_at', null)
-        .eq('status', 'aktiv');
-      if (error) throw error;
-      return count ?? 0;
-    },
-    staleTime: STALE_TIME,
-    refetchOnWindowFocus: false,
-  });
 }
 
 export function useCases() {
@@ -146,32 +41,13 @@ export function useCases() {
         .is('deleted_at', null)
         .order('created_at', { ascending: false });
       if (error) {
-        toast.error(`Fehler beim Laden der Cases: ${error.message}`);
         throw error;
       }
-      // Map customer to client for backward compatibility
-      return data?.map(c => ({
-        ...c,
-        client: c.customer,
-      })) ?? [];
+      return (data ?? []) as CaseWithCustomer[];
     },
     staleTime: STALE_TIME,
     refetchOnWindowFocus: false,
   });
-}
-
-const CASES_PAGE_SIZE = 25;
-
-type CaseSortMode = 'created_desc' | 'created_asc' | 'due_asc' | 'title_asc' | 'status_asc';
-
-type CaseWithClient = Tables<'cases'> & {
-  client: { id: string; first_name: string; last_name: string } | null;
-};
-
-interface InfiniteCasesPage {
-  items: CaseWithClient[];
-  totalCount: number;
-  pageParam: number;
 }
 
 export function useInfiniteCases(sortMode?: CaseSortMode) {
@@ -192,18 +68,11 @@ export function useInfiniteCases(sortMode?: CaseSortMode) {
         .range(from, to);
 
       if (error) {
-        toast.error(`Fehler beim Laden der Cases: ${error.message}`);
         throw error;
       }
 
-      // Map customer to client for backward compatibility
-      const mappedData = (data ?? []).map(c => ({
-        ...c,
-        client: c.customer,
-      }));
-
       return {
-        items: mappedData as CaseWithClient[],
+        items: (data ?? []) as CaseWithCustomer[],
         totalCount: count ?? 0,
         pageParam: pageParam as number,
       };
@@ -235,14 +104,9 @@ export function useActiveCases() {
         .neq('status', 'abgeschlossen')
         .order('created_at', { ascending: false });
       if (error) {
-        toast.error(`Fehler beim Laden der aktiven Cases: ${error.message}`);
         throw error;
       }
-      // Map customer to client for backward compatibility
-      return data?.map(c => ({
-        ...c,
-        client: c.customer,
-      })) ?? [];
+      return (data ?? []) as CaseWithCustomer[];
     },
     staleTime: STALE_TIME,
     refetchOnWindowFocus: false,
@@ -266,6 +130,12 @@ export function useActiveCasesCount() {
   });
 }
 
+export type TaskWithCaseAndCustomer = Tables<'tasks'> & {
+  case: (Tables<'cases'> & {
+    customer: { id: string; first_name: string; last_name: string; deleted_at: string | null } | null;
+  }) | null;
+};
+
 export function useOpenTasks() {
   return useQuery({
     queryKey: ['tasks', 'open'],
@@ -281,19 +151,12 @@ export function useOpenTasks() {
         .order('due_date', { ascending: true, nullsFirst: false })
         .order('priority', { ascending: false });
       if (error) {
-        toast.error(`Fehler beim Laden der Tasks: ${error.message}`);
         throw error;
       }
-      // Filter out tasks whose case or customer is deleted, map customer to client for compat
+      // Filter out tasks whose case or customer is deleted
       return (data ?? []).filter(task => 
         !task.case?.deleted_at && !task.case?.customer?.deleted_at
-      ).map(task => ({
-        ...task,
-        case: task.case ? {
-          ...task.case,
-          client: task.case.customer,
-        } : null,
-      }));
+      ) as TaskWithCaseAndCustomer[];
     },
     staleTime: STALE_TIME,
     refetchOnWindowFocus: false,
@@ -325,7 +188,6 @@ export function useProfiles() {
         .from('profiles')
         .select('*');
       if (error) {
-        toast.error(`Fehler beim Laden der Profile: ${error.message}`);
         throw error;
       }
       return data;

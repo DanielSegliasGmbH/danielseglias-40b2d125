@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { useCases } from '@/hooks/useDashboardData';
+import { useCases, type CaseWithCustomer } from '@/hooks/useDashboardData';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -99,9 +99,9 @@ export function CreateTaskDialog() {
                 <SelectValue placeholder={t('task.selectCase')} />
               </SelectTrigger>
               <SelectContent>
-                {cases?.map((c) => (
+                {cases?.map((c: CaseWithCustomer) => (
                   <SelectItem key={c.id} value={c.id}>
-                    {c.title} ({c.client?.first_name} {c.client?.last_name})
+                    {c.title} ({c.customer?.first_name} {c.customer?.last_name})
                   </SelectItem>
                 ))}
               </SelectContent>
