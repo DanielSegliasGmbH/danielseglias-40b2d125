@@ -7,35 +7,35 @@ export interface DeleteCheckResult {
 }
 
 /**
- * Check if a client can be deleted (no cases, no client_users)
+ * Check if a customer can be deleted (no cases, no customer_users)
  */
-export async function checkCanDeleteClient(clientId: string): Promise<DeleteCheckResult> {
-  const counts: Record<string, number> = { cases: 0, clientUsers: 0 };
+export async function checkCanDeleteCustomer(customerId: string): Promise<DeleteCheckResult> {
+  const counts: Record<string, number> = { cases: 0, customerUsers: 0 };
   const reasons: string[] = [];
 
   // Count cases
   const { count: casesCount, error: casesError } = await supabase
     .from('cases')
     .select('id', { count: 'exact', head: true })
-    .eq('client_id', clientId);
+    .eq('customer_id', customerId);
   
   if (casesError) throw casesError;
   counts.cases = casesCount ?? 0;
 
-  // Count client_users
-  const { count: clientUsersCount, error: clientUsersError } = await supabase
-    .from('client_users')
+  // Count customer_users
+  const { count: customerUsersCount, error: customerUsersError } = await supabase
+    .from('customer_users')
     .select('id', { count: 'exact', head: true })
-    .eq('client_id', clientId);
+    .eq('customer_id', customerId);
   
-  if (clientUsersError) throw clientUsersError;
-  counts.clientUsers = clientUsersCount ?? 0;
+  if (customerUsersError) throw customerUsersError;
+  counts.customerUsers = customerUsersCount ?? 0;
 
   if (counts.cases > 0) {
     reasons.push('cases');
   }
-  if (counts.clientUsers > 0) {
-    reasons.push('clientUsers');
+  if (counts.customerUsers > 0) {
+    reasons.push('customerUsers');
   }
 
   return {

@@ -1,13 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import {
-  useActiveClientsCount,
   useActiveCasesCount,
   useOpenTasksCount,
   useActiveCases,
   useOpenTasks,
   useProfiles,
 } from '@/hooks/useDashboardData';
+import { useCustomers } from '@/hooks/useCustomerData';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -43,7 +43,8 @@ const DATE_LOCALES: Record<string, Locale> = {
 export default function AppDashboard() {
   const { t, i18n } = useTranslation();
   const { user, role, signOut } = useAuth();
-  const { data: activeClientsCount, isLoading: loadingClients } = useActiveClientsCount();
+  const { data: customers, isLoading: loadingCustomers } = useCustomers({ status: 'active' });
+  const activeCustomersCount = customers?.length ?? 0;
   const { data: activeCasesCount, isLoading: loadingCasesCount } = useActiveCasesCount();
   const { data: openTasksCount, isLoading: loadingTasksCount } = useOpenTasksCount();
   const { data: activeCases, isLoading: loadingCases } = useActiveCases();
@@ -117,10 +118,10 @@ export default function AppDashboard() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              {loadingClients ? (
+              {loadingCustomers ? (
                 <Skeleton className="h-8 w-16" />
               ) : (
-                <div className="text-3xl font-bold">{activeClientsCount}</div>
+                <div className="text-3xl font-bold">{activeCustomersCount}</div>
               )}
               <p className="text-xs text-muted-foreground mt-1">{t('dashboard.statusActive')}</p>
             </CardContent>
@@ -203,7 +204,7 @@ export default function AppDashboard() {
                       <TableCell>
                         {task.case?.title}
                         <span className="text-muted-foreground ml-2">
-                          ({task.case?.client?.first_name} {task.case?.client?.last_name})
+                          ({task.case?.customer?.first_name} {task.case?.customer?.last_name})
                         </span>
                       </TableCell>
                       <TableCell>
@@ -260,7 +261,7 @@ export default function AppDashboard() {
                     >
                       <TableCell className="font-medium">{c.title}</TableCell>
                       <TableCell>
-                        {c.client?.first_name} {c.client?.last_name}
+                        {c.customer?.first_name} {c.customer?.last_name}
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline">{getStatusLabel(c.status, 'case')}</Badge>

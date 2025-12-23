@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useInfiniteCases, useProfiles } from '@/hooks/useDashboardData';
+import { useInfiniteCases, useProfiles, type CaseWithCustomer } from '@/hooks/useDashboardData';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -74,12 +74,12 @@ export default function CaseList() {
     const term = searchTerm.trim().toLowerCase();
     let filtered = allCases;
     if (term) {
-      filtered = allCases.filter((c) => {
+      filtered = allCases.filter((c: CaseWithCustomer) => {
         const searchString = [
           c.title,
           c.description,
-          c.client?.first_name,
-          c.client?.last_name,
+          c.customer?.first_name,
+          c.customer?.last_name,
         ]
           .filter(Boolean)
           .join(' ')
@@ -218,17 +218,17 @@ export default function CaseList() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {sortedCases.map((caseItem) => (
+                    {sortedCases.map((caseItem: CaseWithCustomer) => (
                       <TableRow key={caseItem.id} className="cursor-pointer hover:bg-muted/50">
                         <TableCell className="font-medium">{caseItem.title}</TableCell>
                         <TableCell>
-                          {caseItem.client ? (
+                          {caseItem.customer ? (
                             <Link 
-                              to={`/app/customers/${caseItem.client.id}`}
+                              to={`/app/customers/${caseItem.customer.id}`}
                               className="text-primary hover:underline"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              {caseItem.client.first_name} {caseItem.client.last_name}
+                              {caseItem.customer.first_name} {caseItem.customer.last_name}
                             </Link>
                           ) : '–'}
                         </TableCell>

@@ -50,7 +50,7 @@ export default function TaskList() {
           case:cases!fk_tasks_case_id(
             id,
             title,
-            client:clients!fk_cases_client_id(id, first_name, last_name)
+            customer:customers!cases_customer_id_fkey(id, first_name, last_name)
           )
         `)
         .order('due_date', { ascending: true, nullsFirst: false })
@@ -65,7 +65,7 @@ export default function TaskList() {
     const matchesSearch =
       task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       task.case?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      `${task.case?.client?.first_name} ${task.case?.client?.last_name}`
+      `${task.case?.customer?.first_name} ${task.case?.customer?.last_name}`
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
 
@@ -156,7 +156,7 @@ export default function TaskList() {
                         <TableCell>
                           {task.case?.title}
                           <span className="text-muted-foreground ml-2">
-                            ({task.case?.client?.first_name} {task.case?.client?.last_name})
+                            ({task.case?.customer?.first_name} {task.case?.customer?.last_name})
                           </span>
                         </TableCell>
                         <TableCell>
