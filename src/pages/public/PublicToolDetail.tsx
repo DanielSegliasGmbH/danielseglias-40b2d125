@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LeadCaptureForm } from '@/components/public/LeadCaptureForm';
-import { ArrowLeft, Clock, Wrench, Calculator, PieChart, TrendingUp, FileText, LucideIcon } from 'lucide-react';
+import { ArrowLeft, Clock, Wrench, Calculator, PieChart, TrendingUp, FileText, ClipboardCheck, LucideIcon } from 'lucide-react';
+import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
 
 // Icon mapping
 const iconMap: Record<string, LucideIcon> = {
@@ -17,6 +18,7 @@ const iconMap: Record<string, LucideIcon> = {
   'trending-up': TrendingUp,
   'file-text': FileText,
   'wrench': Wrench,
+  'ClipboardCheck': ClipboardCheck,
 };
 
 export default function PublicToolDetail() {
@@ -133,13 +135,18 @@ export default function PublicToolDetail() {
                     </div>
                   </CardContent>
                 </Card>
+              ) : tool.slug === 'finanzcheck' ? (
+                /* Finanzcheck Tool */
+                <div className="mb-8">
+                  <FinanzcheckTool mode="public" />
+                </div>
               ) : (
                 <Card className="mb-8">
                   <CardHeader>
                     <CardTitle>{t(tool.name_key)}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {/* Placeholder for actual tool implementation */}
+                    {/* Placeholder for other tools */}
                     <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">
                       <div>
                         <IconComponent className="h-16 w-16 text-muted-foreground mx-auto mb-4" />

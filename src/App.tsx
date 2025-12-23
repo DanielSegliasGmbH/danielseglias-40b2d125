@@ -24,6 +24,7 @@ import TaskList from "./pages/TaskList";
 import SystemMap from "./pages/SystemMap";
 import Trash from "./pages/Trash";
 import AdminTools from "./pages/AdminTools";
+import AdminToolDetail from "./pages/AdminToolDetail";
 import AdminLeads from "./pages/AdminLeads";
 import AdminPublicPages from "./pages/AdminPublicPages";
 import NotFound from "./pages/NotFound";
@@ -119,6 +120,14 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['admin']}>
                     <AdminTools />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/tools/:slug"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminToolDetail />
                   </RouteGuard>
                 }
               />

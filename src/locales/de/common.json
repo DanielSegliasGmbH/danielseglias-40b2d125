@@ -750,6 +750,10 @@
     "updateError": "Fehler beim Aktualisieren"
   },
   "tools": {
+    "finanzcheck": {
+      "name": "Finanzcheck",
+      "description": "Kostenlose Selbsteinschätzung Ihrer Finanzsituation in wenigen Minuten."
+    },
     "budgetCalculator": {
       "name": "Budget-Rechner",
       "description": "Hilft bei der Erstellung und Analyse des monatlichen Budgets."
