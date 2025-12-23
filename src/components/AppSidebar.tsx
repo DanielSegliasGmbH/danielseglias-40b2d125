@@ -27,6 +27,9 @@ import {
   Trash2,
   Eye,
   Wrench,
+  UserPlus,
+  FileText,
+  Globe,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -49,6 +52,8 @@ export function AppSidebar() {
     { title: t('userManagement.title'), url: '/app/users', icon: Settings },
     { title: t('systemMap.title'), url: '/app/system-map', icon: Network },
     { title: t('nav.tools'), url: '/app/tools', icon: Wrench },
+    { title: t('adminLeads.title', 'Leads'), url: '/app/leads', icon: UserPlus },
+    { title: t('adminPages.title', 'Öffentliche Seiten'), url: '/app/public-pages', icon: Globe },
     { title: t('trash.title'), url: '/app/trash', icon: Trash2 },
     { title: t('customer.trash', 'Kunden-Papierkorb'), url: '/app/customers/trash', icon: Trash2 },
     { title: t('clientPortal.preview'), url: '/app/client-portal', icon: Eye },

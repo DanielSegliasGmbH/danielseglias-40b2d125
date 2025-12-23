@@ -21,6 +21,8 @@ import TaskList from "./pages/TaskList";
 import SystemMap from "./pages/SystemMap";
 import Trash from "./pages/Trash";
 import AdminTools from "./pages/AdminTools";
+import AdminLeads from "./pages/AdminLeads";
+import AdminPublicPages from "./pages/AdminPublicPages";
 import NotFound from "./pages/NotFound";
 
 // Client Portal Pages
@@ -31,6 +33,12 @@ import ClientPortalTasks from "./pages/client-portal/ClientPortalTasks";
 import ClientPortalStrategies from "./pages/client-portal/ClientPortalStrategies";
 import ClientPortalLibrary from "./pages/client-portal/ClientPortalLibrary";
 import ClientPortalTools from "./pages/client-portal/ClientPortalTools";
+
+// Public Pages (no auth required)
+import PublicLanding from "./pages/public/PublicLanding";
+import PublicContact from "./pages/public/PublicContact";
+import PublicBlog from "./pages/public/PublicBlog";
+import PublicTools from "./pages/public/PublicTools";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,7 +58,11 @@ function App() {
         <BrowserRouter>
           <AuthProvider>
             <Routes>
-              {/* Public routes */}
+              {/* Public routes (no auth) */}
+              <Route path="/" element={<PublicLanding />} />
+              <Route path="/contact" element={<PublicContact />} />
+              <Route path="/blog" element={<PublicBlog />} />
+              <Route path="/tools" element={<PublicTools />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               
@@ -100,6 +112,26 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['admin']}>
                     <AdminTools />
+                  </RouteGuard>
+                }
+              />
+
+              {/* Protected: Admin only - Leads */}
+              <Route
+                path="/app/leads"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminLeads />
+                  </RouteGuard>
+                }
+              />
+
+              {/* Protected: Admin only - Public Pages */}
+              <Route
+                path="/app/public-pages"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminPublicPages />
                   </RouteGuard>
                 }
               />

@@ -564,6 +564,42 @@ export type Database = {
           },
         ]
       }
+      leads: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string | null
+          name: string
+          phone: string | null
+          source: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message?: string | null
+          name: string
+          phone?: string | null
+          source?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string | null
+          name?: string
+          phone?: string | null
+          source?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       meetings: {
         Row: {
           case_id: string
@@ -693,6 +729,48 @@ export type Database = {
           id?: string
           last_name?: string
           phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      public_pages: {
+        Row: {
+          content: string | null
+          created_at: string
+          created_by: string | null
+          excerpt: string | null
+          id: string
+          is_published: boolean | null
+          page_type: string
+          published_at: string | null
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          created_by?: string | null
+          excerpt?: string | null
+          id?: string
+          is_published?: boolean | null
+          page_type: string
+          published_at?: string | null
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          created_by?: string | null
+          excerpt?: string | null
+          id?: string
+          is_published?: boolean | null
+          page_type?: string
+          published_at?: string | null
+          slug?: string
+          title?: string
           updated_at?: string
         }
         Relationships: []
