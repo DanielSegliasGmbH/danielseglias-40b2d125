@@ -17,7 +17,6 @@ export type Database = {
       cases: {
         Row: {
           assigned_to: string | null
-          client_id: string
           created_at: string
           created_by: string | null
           customer_id: string | null
@@ -32,7 +31,6 @@ export type Database = {
         }
         Insert: {
           assigned_to?: string | null
-          client_id: string
           created_at?: string
           created_by?: string | null
           customer_id?: string | null
@@ -47,7 +45,6 @@ export type Database = {
         }
         Update: {
           assigned_to?: string | null
-          client_id?: string
           created_at?: string
           created_by?: string | null
           customer_id?: string | null
@@ -76,199 +73,7 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "fk_cases_client_id"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "fk_cases_created_by"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      client_portal_settings: {
-        Row: {
-          client_id: string
-          created_at: string
-          id: string
-          show_goals: boolean
-          show_insurances: boolean
-          show_library: boolean
-          show_strategies: boolean
-          show_tasks: boolean
-          show_tools: boolean
-          updated_at: string
-        }
-        Insert: {
-          client_id: string
-          created_at?: string
-          id?: string
-          show_goals?: boolean
-          show_insurances?: boolean
-          show_library?: boolean
-          show_strategies?: boolean
-          show_tasks?: boolean
-          show_tools?: boolean
-          updated_at?: string
-        }
-        Update: {
-          client_id?: string
-          created_at?: string
-          id?: string
-          show_goals?: boolean
-          show_insurances?: boolean
-          show_library?: boolean
-          show_strategies?: boolean
-          show_tasks?: boolean
-          show_tools?: boolean
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "client_portal_settings_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: true
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      client_to_customer_map: {
-        Row: {
-          client_id: string
-          created_at: string
-          customer_id: string
-          notes: string | null
-        }
-        Insert: {
-          client_id: string
-          created_at?: string
-          customer_id: string
-          notes?: string | null
-        }
-        Update: {
-          client_id?: string
-          created_at?: string
-          customer_id?: string
-          notes?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "client_to_customer_map_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: true
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "client_to_customer_map_customer_id_fkey"
-            columns: ["customer_id"]
-            isOneToOne: false
-            referencedRelation: "customers"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      client_users: {
-        Row: {
-          client_id: string
-          created_at: string
-          created_by: string | null
-          id: string
-          user_id: string
-        }
-        Insert: {
-          client_id: string
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          user_id: string
-        }
-        Update: {
-          client_id?: string
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "fk_client_users_client_id"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "fk_client_users_created_by"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "fk_client_users_user_id"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      clients: {
-        Row: {
-          address: string | null
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          email: string | null
-          first_name: string
-          id: string
-          last_name: string
-          notes: string | null
-          phone: string | null
-          status: Database["public"]["Enums"]["client_status"]
-          updated_at: string
-        }
-        Insert: {
-          address?: string | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          email?: string | null
-          first_name: string
-          id?: string
-          last_name: string
-          notes?: string | null
-          phone?: string | null
-          status?: Database["public"]["Enums"]["client_status"]
-          updated_at?: string
-        }
-        Update: {
-          address?: string | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          email?: string | null
-          first_name?: string
-          id?: string
-          last_name?: string
-          notes?: string | null
-          phone?: string | null
-          status?: Database["public"]["Enums"]["client_status"]
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "fk_clients_created_by"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -1213,7 +1018,6 @@ export type Database = {
     Functions: {
       cleanup_deleted_items: { Args: never; Returns: number }
       cleanup_rate_limits: { Args: never; Returns: number }
-      get_client_id_for_user: { Args: { _user_id: string }; Returns: string }
       get_customer_id_for_user: { Args: { _user_id: string }; Returns: string }
       has_any_role: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
@@ -1232,10 +1036,6 @@ export type Database = {
       is_staff_or_admin: { Args: { _user_id: string }; Returns: boolean }
       staff_has_case_access: {
         Args: { _case_id: string; _user_id: string }
-        Returns: boolean
-      }
-      staff_has_client_access: {
-        Args: { _client_id: string; _user_id: string }
         Returns: boolean
       }
       staff_has_customer_access: {
@@ -1258,7 +1058,6 @@ export type Database = {
         | "divorced"
         | "widowed"
         | "partnership"
-      client_status: "aktiv" | "pausiert" | "archiviert"
       communication_preference: "whatsapp" | "email" | "phone"
       customer_priority: "A" | "B" | "C"
       customer_status: "lead" | "active" | "passive" | "former"
@@ -1428,7 +1227,6 @@ export const Constants = {
         "pausiert",
       ],
       civil_status: ["single", "married", "divorced", "widowed", "partnership"],
-      client_status: ["aktiv", "pausiert", "archiviert"],
       communication_preference: ["whatsapp", "email", "phone"],
       customer_priority: ["A", "B", "C"],
       customer_status: ["lead", "active", "passive", "former"],
