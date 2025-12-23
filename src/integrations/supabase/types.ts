@@ -20,6 +20,7 @@ export type Database = {
           client_id: string
           created_at: string
           created_by: string | null
+          customer_id: string | null
           deleted_at: string | null
           deleted_by: string | null
           description: string | null
@@ -34,6 +35,7 @@ export type Database = {
           client_id: string
           created_at?: string
           created_by?: string | null
+          customer_id?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           description?: string | null
@@ -48,6 +50,7 @@ export type Database = {
           client_id?: string
           created_at?: string
           created_by?: string | null
+          customer_id?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           description?: string | null
@@ -58,6 +61,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "cases_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "fk_cases_assigned_to"
             columns: ["assigned_to"]
@@ -124,6 +134,42 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: true
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_to_customer_map: {
+        Row: {
+          client_id: string
+          created_at: string
+          customer_id: string
+          notes: string | null
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          customer_id: string
+          notes?: string | null
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          customer_id?: string
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_to_customer_map_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: true
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_to_customer_map_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
             referencedColumns: ["id"]
           },
         ]
@@ -400,6 +446,53 @@ export type Database = {
           },
         ]
       }
+      customer_portal_settings: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          show_goals: boolean
+          show_insurances: boolean
+          show_library: boolean
+          show_strategies: boolean
+          show_tasks: boolean
+          show_tools: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          show_goals?: boolean
+          show_insurances?: boolean
+          show_library?: boolean
+          show_strategies?: boolean
+          show_tasks?: boolean
+          show_tools?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          show_goals?: boolean
+          show_insurances?: boolean
+          show_library?: boolean
+          show_strategies?: boolean
+          show_tasks?: boolean
+          show_tools?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_portal_settings_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: true
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_profiles: {
         Row: {
           canton: string | null
@@ -470,6 +563,52 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: true
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_users: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          customer_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          customer_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_users_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_users_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_users_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
