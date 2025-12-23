@@ -271,8 +271,7 @@ function App() {
                 element={<Navigate to="/app/client-portal" replace />}
               />
               
-              {/* Root redirect */}
-              <Route path="/" element={<Navigate to="/login" replace />} />
+              {/* Removed duplicate "/" route - Landing is at line 62 */}
               
               {/* Catch-all */}
               <Route path="*" element={<NotFound />} />
