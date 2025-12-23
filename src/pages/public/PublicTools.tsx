@@ -1,12 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { PublicLayout } from '@/layouts/PublicLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ThemeSwitcher } from '@/components/ThemeSwitcher';
-import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { ArrowLeft, Calculator, PieChart, TrendingUp, FileText, Clock, Wrench, LucideIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Calculator, PieChart, TrendingUp, FileText, Clock, Wrench, LucideIcon, ArrowRight } from 'lucide-react';
 import { usePublicTools } from '@/hooks/useTools';
 
 // Icon mapping from DB icon string to Lucide component
@@ -23,42 +22,8 @@ export default function PublicTools() {
   const { data: tools, isLoading, error } = usePublicTools();
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="text-xl font-bold text-primary">
-            {t('public.brand')}
-          </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
-              {t('public.nav.home')}
-            </Link>
-            <Link to="/blog" className="text-muted-foreground hover:text-foreground transition-colors">
-              {t('public.nav.blog')}
-            </Link>
-            <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
-              {t('public.nav.contact')}
-            </Link>
-          </nav>
-          <div className="flex items-center gap-2">
-            <ThemeSwitcher />
-            <LanguageSwitcher />
-            <Link to="/login">
-              <Button variant="outline" size="sm">
-                {t('auth.login')}
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-12">
-        <Link to="/" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-8">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          {t('app.back')}
-        </Link>
-
+    <PublicLayout title={t('public.tools.title')} description={t('public.tools.subtitle')}>
+      <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -119,9 +84,12 @@ export default function PublicTools() {
                       <CardDescription>{t(tool.description_key)}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Button variant="outline" className="w-full" disabled={isPlanned}>
-                        {t('public.tools.startTool')}
-                      </Button>
+                      <Link to={`/tools/${tool.slug || tool.key}`}>
+                        <Button variant="outline" className="w-full">
+                          {isPlanned ? t('public.tools.learnMore') : t('public.tools.startTool')}
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </Link>
                     </CardContent>
                   </Card>
                 );
@@ -154,7 +122,7 @@ export default function PublicTools() {
             </CardContent>
           </Card>
         </div>
-      </main>
-    </div>
+      </div>
+    </PublicLayout>
   );
 }

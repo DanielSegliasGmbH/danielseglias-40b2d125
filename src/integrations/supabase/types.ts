@@ -570,33 +570,57 @@ export type Database = {
           email: string
           id: string
           message: string | null
+          metadata: Json | null
           name: string
+          page_slug: string | null
           phone: string | null
           source: string | null
           status: string | null
+          tool_key: string | null
           updated_at: string
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
         }
         Insert: {
           created_at?: string
           email: string
           id?: string
           message?: string | null
+          metadata?: Json | null
           name: string
+          page_slug?: string | null
           phone?: string | null
           source?: string | null
           status?: string | null
+          tool_key?: string | null
           updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Update: {
           created_at?: string
           email?: string
           id?: string
           message?: string | null
+          metadata?: Json | null
           name?: string
+          page_slug?: string | null
           phone?: string | null
           source?: string | null
           status?: string | null
+          tool_key?: string | null
           updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Relationships: []
       }
@@ -953,6 +977,7 @@ export type Database = {
       tools: {
         Row: {
           created_at: string
+          cta_mode: string | null
           description_key: string
           enabled_for_clients: boolean
           enabled_for_public: boolean
@@ -960,12 +985,14 @@ export type Database = {
           id: string
           key: string
           name_key: string
+          slug: string | null
           sort_order: number
           status: string
           updated_at: string
         }
         Insert: {
           created_at?: string
+          cta_mode?: string | null
           description_key: string
           enabled_for_clients?: boolean
           enabled_for_public?: boolean
@@ -973,12 +1000,14 @@ export type Database = {
           id?: string
           key: string
           name_key: string
+          slug?: string | null
           sort_order?: number
           status?: string
           updated_at?: string
         }
         Update: {
           created_at?: string
+          cta_mode?: string | null
           description_key?: string
           enabled_for_clients?: boolean
           enabled_for_public?: boolean
@@ -986,6 +1015,7 @@ export type Database = {
           id?: string
           key?: string
           name_key?: string
+          slug?: string | null
           sort_order?: number
           status?: string
           updated_at?: string

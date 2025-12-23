@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { PublicLayout } from '@/layouts/PublicLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
@@ -9,12 +10,8 @@ import {
   Calculator, 
   Users, 
   ArrowRight,
-  CheckCircle2,
-  Phone,
-  Mail
+  CheckCircle2
 } from 'lucide-react';
-import { ThemeSwitcher } from '@/components/ThemeSwitcher';
-import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 export default function PublicLanding() {
   const { t } = useTranslation();
@@ -50,36 +47,7 @@ export default function PublicLanding() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="text-xl font-bold text-primary">
-            {t('public.brand')}
-          </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link to="/blog" className="text-muted-foreground hover:text-foreground transition-colors">
-              {t('public.nav.blog')}
-            </Link>
-            <Link to="/tools" className="text-muted-foreground hover:text-foreground transition-colors">
-              {t('public.nav.tools')}
-            </Link>
-            <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
-              {t('public.nav.contact')}
-            </Link>
-          </nav>
-          <div className="flex items-center gap-2">
-            <ThemeSwitcher />
-            <LanguageSwitcher />
-            <Link to="/login">
-              <Button variant="outline" size="sm">
-                {t('auth.login')}
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
+    <PublicLayout>
       {/* Hero Section */}
       <section className="py-20 lg:py-32 bg-gradient-to-b from-primary/5 to-background">
         <div className="container mx-auto px-4 text-center">
@@ -187,56 +155,6 @@ export default function PublicLanding() {
           </Link>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="py-12 bg-muted/50 border-t">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div>
-              <h3 className="font-bold text-foreground mb-4">{t('public.brand')}</h3>
-              <p className="text-muted-foreground text-sm">
-                {t('public.footer.description')}
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">{t('public.footer.links')}</h4>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <Link to="/blog" className="text-muted-foreground hover:text-foreground">
-                    {t('public.nav.blog')}
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/tools" className="text-muted-foreground hover:text-foreground">
-                    {t('public.nav.tools')}
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/contact" className="text-muted-foreground hover:text-foreground">
-                    {t('public.nav.contact')}
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">{t('public.footer.contact')}</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-center gap-2">
-                  <Phone className="h-4 w-4" />
-                  +41 44 000 00 00
-                </li>
-                <li className="flex items-center gap-2">
-                  <Mail className="h-4 w-4" />
-                  info@example.com
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-            © {new Date().getFullYear()} {t('public.brand')}. {t('public.footer.rights')}
-          </div>
-        </div>
-      </footer>
-    </div>
+    </PublicLayout>
   );
 }

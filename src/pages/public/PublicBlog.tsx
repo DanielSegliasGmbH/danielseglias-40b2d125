@@ -2,12 +2,11 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
+import { PublicLayout } from '@/layouts/PublicLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ThemeSwitcher } from '@/components/ThemeSwitcher';
-import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { ArrowLeft, ArrowRight, BookOpen, Clock } from 'lucide-react';
+import { ArrowRight, BookOpen, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 
@@ -30,42 +29,8 @@ export default function PublicBlog() {
   });
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="text-xl font-bold text-primary">
-            {t('public.brand')}
-          </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
-              {t('public.nav.home')}
-            </Link>
-            <Link to="/tools" className="text-muted-foreground hover:text-foreground transition-colors">
-              {t('public.nav.tools')}
-            </Link>
-            <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
-              {t('public.nav.contact')}
-            </Link>
-          </nav>
-          <div className="flex items-center gap-2">
-            <ThemeSwitcher />
-            <LanguageSwitcher />
-            <Link to="/login">
-              <Button variant="outline" size="sm">
-                {t('auth.login')}
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-12">
-        <Link to="/" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-8">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          {t('app.back')}
-        </Link>
-
+    <PublicLayout title={t('public.blog.title')} description={t('public.blog.subtitle')}>
+      <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -135,7 +100,7 @@ export default function PublicBlog() {
             </Card>
           )}
         </div>
-      </main>
-    </div>
+      </div>
+    </PublicLayout>
   );
 }

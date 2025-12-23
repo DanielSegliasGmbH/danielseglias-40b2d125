@@ -24,6 +24,8 @@ import AdminTools from "./pages/AdminTools";
 import AdminLeads from "./pages/AdminLeads";
 import AdminPublicPages from "./pages/AdminPublicPages";
 import NotFound from "./pages/NotFound";
+import PublicBlogDetail from "./pages/public/PublicBlogDetail";
+import PublicToolDetail from "./pages/public/PublicToolDetail";
 
 // Client Portal Pages
 import ClientPortalHome from "./pages/client-portal/ClientPortalHome";
@@ -62,7 +64,9 @@ function App() {
               <Route path="/" element={<PublicLanding />} />
               <Route path="/contact" element={<PublicContact />} />
               <Route path="/blog" element={<PublicBlog />} />
+              <Route path="/blog/:slug" element={<PublicBlogDetail />} />
               <Route path="/tools" element={<PublicTools />} />
+              <Route path="/tools/:toolKey" element={<PublicToolDetail />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               
