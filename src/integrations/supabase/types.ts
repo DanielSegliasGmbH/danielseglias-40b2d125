@@ -1084,6 +1084,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_rate_limit: {
+        Args: { p_ip: string; p_window: string }
+        Returns: undefined
+      }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_client: { Args: { _user_id: string }; Returns: boolean }
       is_staff_or_admin: { Args: { _user_id: string }; Returns: boolean }
