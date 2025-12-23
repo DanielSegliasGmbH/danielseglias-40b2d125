@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -50,6 +51,7 @@ export default function AppDashboard() {
   const { data: activeCases, isLoading: loadingCases } = useActiveCases();
   const { data: openTasks, isLoading: loadingTasks } = useOpenTasks();
   const { data: profiles } = useProfiles();
+  const [createCustomerOpen, setCreateCustomerOpen] = useState(false);
 
   const roleLabel = role === 'admin' ? t('roles.admin') : t('roles.staff');
   const roleVariant = role === 'admin' ? 'default' : 'secondary';
@@ -160,7 +162,10 @@ export default function AppDashboard() {
 
         {/* Quick Actions */}
         <div className="flex flex-wrap gap-3 mb-8">
-          <CreateClientDialog />
+          <Button onClick={() => setCreateCustomerOpen(true)}>
+            {t('customer.createTitle', 'Neuen Kunden anlegen')}
+          </Button>
+          <CreateCustomerDialog open={createCustomerOpen} onOpenChange={setCreateCustomerOpen} />
           <CreateCaseDialog />
           <CreateTaskDialog />
         </div>
