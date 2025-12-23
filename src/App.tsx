@@ -66,7 +66,7 @@ function App() {
               <Route path="/blog" element={<PublicBlog />} />
               <Route path="/blog/:slug" element={<PublicBlogDetail />} />
               <Route path="/tools" element={<PublicTools />} />
-              <Route path="/tools/:toolKey" element={<PublicToolDetail />} />
+              <Route path="/tools/:slug" element={<PublicToolDetail />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               

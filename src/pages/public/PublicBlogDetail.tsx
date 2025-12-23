@@ -16,12 +16,13 @@ export default function PublicBlogDetail() {
   const { slug } = useParams<{ slug: string }>();
 
   const { data: article, isLoading, error } = useQuery({
-    queryKey: ['public-page', slug],
+    queryKey: ['public-page', 'blog', slug],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('public_pages')
         .select('*')
         .eq('slug', slug)
+        .eq('page_type', 'blog')
         .eq('is_published', true)
         .maybeSingle();
 

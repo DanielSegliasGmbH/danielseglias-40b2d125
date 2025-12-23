@@ -67,7 +67,7 @@ export default function PublicTools() {
                 const isPlanned = tool.status === 'planned';
 
                 return (
-                  <Card key={tool.id} className="transition-shadow hover:shadow-lg">
+                <Card key={tool.id} className="transition-shadow hover:shadow-lg">
                     <CardHeader>
                       <div className="flex items-center justify-between mb-2">
                         <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -84,7 +84,7 @@ export default function PublicTools() {
                       <CardDescription>{t(tool.description_key)}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Link to={`/tools/${tool.slug || tool.key}`}>
+                      <Link to={`/tools/${tool.slug}`}>
                         <Button variant="outline" className="w-full">
                           {isPlanned ? t('public.tools.learnMore') : t('public.tools.startTool')}
                           <ArrowRight className="ml-2 h-4 w-4" />
