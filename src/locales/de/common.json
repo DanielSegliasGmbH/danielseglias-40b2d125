@@ -825,5 +825,18 @@
     "blog": { "title": "Blog", "subtitle": "Wissen und Tipps rund um Finanzen", "readMore": "Weiterlesen", "noArticles": "Noch keine Artikel", "noArticlesDesc": "Bald finden Sie hier interessante Beiträge.", "backToList": "Zurück zum Blog", "notFound": "Artikel nicht gefunden", "notFoundDesc": "Dieser Artikel existiert nicht oder wurde entfernt.", "noContent": "Kein Inhalt vorhanden.", "ctaTitle": "Hat Ihnen dieser Artikel gefallen?", "ctaDescription": "Kontaktieren Sie uns für eine persönliche Beratung." },
     "tools": { "title": "Werkzeuge", "subtitle": "Praktische Rechner für Ihre Finanzplanung", "comingSoon": "Demnächst", "startTool": "Starten", "learnMore": "Mehr erfahren", "noToolsAvailable": "Derzeit keine Werkzeuge verfügbar.", "ctaTitle": "Persönliche Beratung gewünscht?", "ctaDescription": "Unsere Experten helfen Ihnen gerne weiter.", "ctaButton": "Beratung anfragen", "backToList": "Zurück zu Tools", "notFound": "Tool nicht gefunden", "notFoundDesc": "Dieses Tool existiert nicht oder ist nicht verfügbar.", "inDevelopmentTitle": "In Entwicklung", "inDevelopmentDesc": "Dieses Tool wird derzeit entwickelt.", "notifyMeTitle": "Interessiert?", "notifyMeDesc": "Hinterlassen Sie Ihre Daten und wir informieren Sie, sobald das Tool verfügbar ist.", "notifyMe": "Benachrichtigen", "notifyMeHint": "Tragen Sie sich ein, um benachrichtigt zu werden.", "toolPlaceholder": "Tool-Inhalt wird hier angezeigt." },
     "lead": { "success": "Erfolgreich gesendet!", "error": "Fehler beim Senden.", "rateLimited": "Zu viele Anfragen", "rateLimitedMessage": "Bitte warten Sie einige Minuten und versuchen Sie es dann erneut.", "validationError": "Bitte überprüfen Sie Ihre Eingaben.", "thankYouTitle": "Vielen Dank!", "thankYouMessage": "Wir melden uns bald bei Ihnen." }
+  },
+  "insuranceConsulting": {
+    "title": "Versicherungsberatung",
+    "topics": "Gesprächsthemen",
+    "introduction": "Meine Vorstellung",
+    "company": "Firma und unsere Services",
+    "advisorInfo": "Beraterinformationen",
+    "customerInfo": "Kundeninformationen",
+    "consultation": "Unser Beratungsgespräch",
+    "summary": "Zusammenfassung"
+  },
+  "common": {
+    "contentFollows": "Inhalt folgt"
   }
 }
