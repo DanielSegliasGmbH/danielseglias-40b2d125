@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -15,6 +17,11 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import {
   LayoutDashboard,
   Users,
   Briefcase,
@@ -23,22 +30,29 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Network,
   Trash2,
   Eye,
   Wrench,
   UserPlus,
-  FileText,
   Globe,
+  Shield,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { insuranceConsultingSections } from '@/config/insuranceConsultingConfig';
 
 export function AppSidebar() {
   const { t } = useTranslation();
   const { role, signOut } = useAuth();
   const { state, toggleSidebar } = useSidebar();
+  const location = useLocation();
   const isCollapsed = state === 'collapsed';
+
+  // Check if currently in insurance consulting section
+  const isInInsuranceConsulting = location.pathname.startsWith('/app/insurance-consulting');
+  const [isInsuranceOpen, setIsInsuranceOpen] = useState(isInInsuranceConsulting);
 
   const mainNavItems = [
     { title: t('dashboard.title'), url: '/app', icon: LayoutDashboard },
@@ -105,6 +119,44 @@ export function AppSidebar() {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Insurance Consulting Section with Collapsible Sub-Navigation */}
+        <SidebarGroup>
+          <Collapsible open={isInsuranceOpen} onOpenChange={setIsInsuranceOpen}>
+            <CollapsibleTrigger asChild>
+              <SidebarMenuButton
+                tooltip={isCollapsed ? t('insuranceConsulting.title', 'Versicherungsberatung') : undefined}
+                className="flex items-center justify-between w-full px-3 py-2.5 rounded-lg transition-colors text-sidebar-foreground hover:bg-sidebar-accent"
+              >
+                <div className="flex items-center gap-3">
+                  <Shield className="h-5 w-5 shrink-0" />
+                  {!isCollapsed && <span>{t('insuranceConsulting.title', 'Versicherungsberatung')}</span>}
+                </div>
+                {!isCollapsed && (
+                  <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${isInsuranceOpen ? 'rotate-180' : ''}`} />
+                )}
+              </SidebarMenuButton>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <SidebarMenu className={!isCollapsed ? 'pl-4 mt-1' : ''}>
+                {insuranceConsultingSections.map((section) => (
+                  <SidebarMenuItem key={section.key}>
+                    <SidebarMenuButton asChild tooltip={isCollapsed ? t(section.titleKey, section.key) : undefined}>
+                      <NavLink
+                        to={section.path}
+                        className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sidebar-foreground hover:bg-sidebar-accent text-sm"
+                        activeClassName="bg-primary text-primary-foreground font-medium"
+                      >
+                        <section.icon className="h-4 w-4 shrink-0" />
+                        {!isCollapsed && <span>{t(section.titleKey, section.key)}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </CollapsibleContent>
+          </Collapsible>
         </SidebarGroup>
 
         {role === 'admin' && (

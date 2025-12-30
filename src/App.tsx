@@ -41,6 +41,15 @@ import ClientPortalLibrary from "./pages/client-portal/ClientPortalLibrary";
 import ClientPortalTools from "./pages/client-portal/ClientPortalTools";
 import ClientPortalToolDetail from "./pages/client-portal/ClientPortalToolDetail";
 
+// Insurance Consulting Pages
+import InsuranceConsultingTopics from "./pages/insurance-consulting/InsuranceConsultingTopics";
+import InsuranceConsultingIntroduction from "./pages/insurance-consulting/InsuranceConsultingIntroduction";
+import InsuranceConsultingCompany from "./pages/insurance-consulting/InsuranceConsultingCompany";
+import InsuranceConsultingAdvisorInfo from "./pages/insurance-consulting/InsuranceConsultingAdvisorInfo";
+import InsuranceConsultingCustomerInfo from "./pages/insurance-consulting/InsuranceConsultingCustomerInfo";
+import InsuranceConsultingConsultation from "./pages/insurance-consulting/InsuranceConsultingConsultation";
+import InsuranceConsultingSummary from "./pages/insurance-consulting/InsuranceConsultingSummary";
+
 // Public Pages (no auth required)
 import PublicLanding from "./pages/public/PublicLanding";
 import PublicContact from "./pages/public/PublicContact";
@@ -276,6 +285,68 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['client', 'admin']}>
                     <ClientPortalToolDetail />
+                  </RouteGuard>
+                }
+              />
+
+              {/* Insurance Consulting Routes */}
+              <Route
+                path="/app/insurance-consulting"
+                element={<Navigate to="/app/insurance-consulting/topics" replace />}
+              />
+              <Route
+                path="/app/insurance-consulting/topics"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <InsuranceConsultingTopics />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/insurance-consulting/introduction"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <InsuranceConsultingIntroduction />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/insurance-consulting/company"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <InsuranceConsultingCompany />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/insurance-consulting/advisor-info"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <InsuranceConsultingAdvisorInfo />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/insurance-consulting/customer-info"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <InsuranceConsultingCustomerInfo />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/insurance-consulting/consultation"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <InsuranceConsultingConsultation />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/insurance-consulting/summary"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <InsuranceConsultingSummary />
                   </RouteGuard>
                 }
               />
