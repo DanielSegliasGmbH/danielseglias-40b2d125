@@ -1,29 +1,27 @@
-import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 import { AppLayout } from '@/components/AppLayout';
-import { PyramidGrid } from '@/components/insurance-consultation/PyramidGrid';
-import { DetailPanelOverlay } from '@/components/insurance-consultation/DetailPanelOverlay';
-import { useInsurancePyramid } from '@/hooks/useInsurancePyramid';
-import { useState, useEffect } from 'react';
-import { PyramidItem } from '@/config/insurancePyramidConfig';
+import { TrianglePyramid } from '@/components/insurance-consultation/TrianglePyramid';
+import { TopicDetailOverlay } from '@/components/insurance-consultation/TopicDetailOverlay';
+import { usePyramidState } from '@/hooks/usePyramidState';
+import { PyramidTopic } from '@/config/pyramidTopicsConfig';
 
 export default function InsuranceConsultingConsultation() {
-  const { t } = useTranslation();
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   const {
-    levels,
-    selectedItemId,
-    selectedItem,
-    selectItem,
-    togglePrioritized,
+    topicStates,
+    selectedTopicId,
+    selectedTopic,
+    selectTopic,
     toggleDiscussed,
+    togglePrioritized,
     toggleWaiver,
-    toggleTopicDiscussed,
-  } = useInsurancePyramid();
+    toggleRelatedTopicDiscussed,
+  } = usePyramidState();
 
-  // Handle item selection - open panel
-  const handleSelectItem = (item: PyramidItem) => {
-    selectItem(item);
+  // Handle topic selection - open panel
+  const handleSelectTopic = (topic: PyramidTopic) => {
+    selectTopic(topic);
     setIsPanelOpen(true);
   };
 
@@ -45,23 +43,26 @@ export default function InsuranceConsultingConsultation() {
           </div>
         </div>
 
-        {/* Main Content - Pyramid centered, full width */}
-        <div className="py-8">
-          <PyramidGrid
-            selectedItemId={selectedItemId}
-            onSelectItem={handleSelectItem}
+        {/* Main Content - Triangle Pyramid centered */}
+        <div className="py-8 px-4">
+          <TrianglePyramid
+            selectedTopicId={selectedTopicId}
+            topicStates={topicStates}
+            onSelectTopic={handleSelectTopic}
+            onToggleDiscussed={toggleDiscussed}
           />
         </div>
 
         {/* Overlay Detail Panel */}
-        <DetailPanelOverlay
-          item={selectedItem}
+        <TopicDetailOverlay
+          topic={selectedTopic}
+          topicState={selectedTopic ? topicStates[selectedTopic.id] : null}
           isOpen={isPanelOpen}
           onClose={handleClosePanel}
           onTogglePrioritized={togglePrioritized}
           onToggleDiscussed={toggleDiscussed}
-          onAddWaiver={toggleWaiver}
-          onToggleTopicDiscussed={toggleTopicDiscussed}
+          onToggleWaiver={toggleWaiver}
+          onToggleRelatedTopicDiscussed={toggleRelatedTopicDiscussed}
         />
       </div>
     </AppLayout>
