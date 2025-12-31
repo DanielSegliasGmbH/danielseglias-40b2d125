@@ -9,9 +9,10 @@ interface PyramidBlockProps {
   item: PyramidItem;
   isSelected: boolean;
   onSelect: (item: PyramidItem) => void;
+  fullWidth?: boolean;
 }
 
-export function PyramidBlock({ item, isSelected, onSelect }: PyramidBlockProps) {
+export function PyramidBlock({ item, isSelected, onSelect, fullWidth = false }: PyramidBlockProps) {
   // Dynamically get icon component
   const IconComponent = (Icons[item.icon as keyof typeof Icons] as LucideIcon) || Icons.Circle;
 
@@ -33,7 +34,8 @@ export function PyramidBlock({ item, isSelected, onSelect }: PyramidBlockProps) 
         'relative cursor-pointer transition-all duration-200',
         'hover:shadow-lg hover:scale-[1.02] hover:border-primary/50',
         'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
-        'p-4 min-w-[140px] max-w-[180px] flex flex-col items-center gap-2 text-center',
+        'p-4 flex flex-col items-center gap-2 text-center min-h-[120px]',
+        fullWidth ? 'w-full' : 'min-w-[140px] max-w-[180px]',
         isSelected && 'border-primary shadow-lg ring-2 ring-primary/20 bg-primary/5',
         !isSelected && 'border-border bg-card'
       )}
