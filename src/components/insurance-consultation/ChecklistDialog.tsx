@@ -158,17 +158,14 @@ export function ChecklistDialog({
 
             {/* Documents Section */}
             <div>
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
-                Dokumente
-              </h3>
-              
-              <button className="w-full py-3 text-left text-primary hover:underline font-medium">
+              <a 
+                href="https://drive.google.com/drive/folders/1zJX3qJN739R3ixPel25u_0fV9WRkVMc8?usp=sharing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-3 text-left text-primary hover:underline font-medium block"
+              >
                 Dokument hinzufügen
-              </button>
-              
-              <p className="text-xs text-muted-foreground">
-                Du kannst Dokumente auch per Drag & Drop hinzufügen.
-              </p>
+              </a>
             </div>
           </div>
         </ScrollArea>
