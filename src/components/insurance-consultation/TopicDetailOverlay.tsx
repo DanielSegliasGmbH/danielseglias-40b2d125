@@ -1,11 +1,10 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { PyramidTopic } from '@/config/pyramidTopicsConfig';
 import { TopicState } from '@/hooks/usePyramidState';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Sheet,
@@ -13,7 +12,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { X, Star, MessageSquare, FileX, Check } from 'lucide-react';
+import { X, Star, MessageSquare, FileX } from 'lucide-react';
+import { RelatedTopicDialog } from './RelatedTopicDialog';
 
 interface TopicDetailOverlayProps {
   topic: PyramidTopic | null;
@@ -37,6 +37,11 @@ export function TopicDetailOverlay({
   onToggleRelatedTopicDiscussed,
 }: TopicDetailOverlayProps) {
   const isMobile = useIsMobile();
+  const [selectedRelatedTopic, setSelectedRelatedTopic] = useState<{
+    id: string;
+    title: string;
+    imageUrl?: string;
+  } | null>(null);
 
   // Handle ESC key
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -62,65 +67,97 @@ export function TopicDetailOverlay({
 
   if (!topic || !topicState) return null;
 
+  // Check if isImportant from topicState (user-toggled) or fallback to topic.isImportant
+  const isImportant = topicState.important;
+
   const panelContent = (
     <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-start justify-between p-6 border-b">
-        <div className="flex-1 pr-4">
-          <div className="flex items-center gap-2 mb-1">
-            <h2 id="detail-panel-title" className="text-xl font-semibold">
-              {topic.title}
-            </h2>
-            {topic.isImportant && (
-              <Badge variant="destructive" className="text-xs">
-                Wichtig
-              </Badge>
-            )}
-          </div>
-        </div>
+      {/* Hero Section with Image */}
+      <div className="relative h-48 shrink-0">
+        {topic.imageUrl ? (
+          <img
+            src={topic.imageUrl}
+            alt={topic.title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-blue-600 to-blue-800" />
+        )}
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-blue-900/90 via-blue-800/50 to-transparent" />
+
+        {/* Close Button */}
         <button
           onClick={onClose}
-          className="p-1 rounded-md hover:bg-muted transition-colors"
+          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/30 hover:bg-black/50 flex items-center justify-center text-white transition-colors z-10"
           aria-label="Schliessen"
         >
           <X className="w-5 h-5" />
         </button>
-      </div>
 
-      {/* Scrollable Content */}
-      <ScrollArea className="flex-1">
-        <div className="p-6 space-y-6">
-          {/* Action Buttons */}
-          <div className="flex flex-wrap gap-2">
-            <Button
-              variant={topicState.prioritized ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => onTogglePrioritized(topic.id)}
-              className="gap-2"
+        {/* Title & Important Badge */}
+        <div className="absolute bottom-0 left-0 right-0 p-4">
+          <div className="flex items-center gap-3 mb-3">
+            <h2 id="detail-panel-title" className="text-xl font-semibold text-white">
+              {topic.title}
+            </h2>
+            <Badge 
+              className={cn(
+                "text-xs",
+                isImportant 
+                  ? "bg-red-600 text-white hover:bg-red-700" 
+                  : "bg-white/20 text-white hover:bg-white/30"
+              )}
             >
-              <Star className={cn('w-4 h-4', topicState.prioritized && 'fill-current')} />
-              {topicState.prioritized ? 'Priorisiert' : 'Priorisieren'}
-            </Button>
-            <Button
-              variant={topicState.discussed ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => onToggleDiscussed(topic.id)}
-              className="gap-2"
-            >
-              <MessageSquare className="w-4 h-4" />
-              {topicState.discussed ? 'Besprochen' : 'Als besprochen markieren'}
-            </Button>
-            <Button
-              variant={topicState.waiver ? 'destructive' : 'outline'}
-              size="sm"
-              onClick={() => onToggleWaiver(topic.id)}
-              className="gap-2"
-            >
-              <FileX className="w-4 h-4" />
-              {topicState.waiver ? 'Verzicht eingetragen' : 'Beratungsverzicht'}
-            </Button>
+              {isImportant ? '! Wichtige Themen' : 'Wichtig'}
+            </Badge>
           </div>
 
+          {/* Action Buttons in Hero */}
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onTogglePrioritized(topic.id)}
+              className={cn(
+                "gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 hover:text-white",
+                topicState.prioritized && "bg-white/30"
+              )}
+            >
+              <Star className={cn('w-4 h-4', topicState.prioritized && 'fill-current')} />
+              <span className="text-xs">{topicState.prioritized ? 'Priorisiert' : 'Bedürfnis priorisieren'}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onToggleDiscussed(topic.id)}
+              className={cn(
+                "gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 hover:text-white",
+                topicState.discussed && "bg-white/30"
+              )}
+            >
+              <MessageSquare className="w-4 h-4" />
+              <span className="text-xs">{topicState.discussed ? 'Besprochen' : 'Als besprochen markieren'}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onToggleWaiver(topic.id)}
+              className={cn(
+                "gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 hover:text-white",
+                topicState.waiver && "bg-red-600/80"
+              )}
+            >
+              <FileX className="w-4 h-4" />
+              <span className="text-xs">{topicState.waiver ? 'Verzicht eingetragen' : 'Beratungsverzicht hinzufügen'}</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* White Content Section */}
+      <ScrollArea className="flex-1 bg-white">
+        <div className="p-6 space-y-6">
           {/* Why Section */}
           <div>
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
@@ -133,51 +170,69 @@ export function TopicDetailOverlay({
 
           {/* Related Topics */}
           <div>
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+            <h3 className="text-lg font-semibold text-foreground mb-4">
               Relevante Themen
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {topic.relatedTopics.map((relatedTopic) => {
                 const isDiscussed = topicState.relatedTopicsDiscussed[relatedTopic.id] ?? false;
                 return (
-                  <Card
+                  <div
                     key={relatedTopic.id}
                     role="button"
                     tabIndex={0}
-                    onClick={() => onToggleRelatedTopicDiscussed(topic.id, relatedTopic.id)}
+                    onClick={() => setSelectedRelatedTopic(relatedTopic)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        onToggleRelatedTopicDiscussed(topic.id, relatedTopic.id);
+                        setSelectedRelatedTopic(relatedTopic);
                       }
                     }}
                     className={cn(
-                      'p-3 cursor-pointer transition-all',
-                      'hover:shadow-md hover:border-primary/50',
-                      'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
-                      isDiscussed && 'bg-primary/5 border-primary/30'
+                      'relative aspect-[4/3] rounded-xl overflow-hidden cursor-pointer transition-all',
+                      'hover:scale-[1.02] hover:shadow-lg',
+                      'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
                     )}
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{relatedTopic.title}</span>
-                      <div
-                        className={cn(
-                          'w-5 h-5 rounded-full flex items-center justify-center transition-colors',
-                          isDiscussed
-                            ? 'bg-primary text-primary-foreground'
-                            : 'border-2 border-muted-foreground/30'
-                        )}
-                      >
-                        {isDiscussed && <Check className="w-3 h-3" />}
-                      </div>
-                    </div>
-                  </Card>
+                    {/* Placeholder Image or Gradient */}
+                    {relatedTopic.imageUrl ? (
+                      <img
+                        src={relatedTopic.imageUrl}
+                        alt={relatedTopic.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-amber-200 via-orange-300 to-amber-400" />
+                    )}
+                    
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    
+                    {/* Discussed Badge */}
+                    {isDiscussed && (
+                      <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground text-[10px] px-2">
+                        Angesprochen
+                      </Badge>
+                    )}
+                    
+                    {/* Title */}
+                    <span className="absolute bottom-2 left-2 right-2 text-white text-sm font-medium">
+                      {relatedTopic.title}
+                    </span>
+                  </div>
                 );
               })}
             </div>
           </div>
         </div>
       </ScrollArea>
+
+      {/* Related Topic Dialog */}
+      <RelatedTopicDialog
+        topic={selectedRelatedTopic}
+        isOpen={!!selectedRelatedTopic}
+        onClose={() => setSelectedRelatedTopic(null)}
+      />
     </div>
   );
 
