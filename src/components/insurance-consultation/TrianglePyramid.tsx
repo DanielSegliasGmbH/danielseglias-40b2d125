@@ -22,16 +22,6 @@ const rowPositions: Record<number, number> = {
   4: 74,  // 4 Kacheln (Basis)
 };
 
-// Pyramid background configuration - freely adjustable
-const pyramidConfig = {
-  // Size as percentage of container width
-  width: 92, // %
-  // Vertical position offset from top
-  top: 10, // %
-  // Horizontal position (50 = centered)
-  left: 50, // %
-};
-
 export function TrianglePyramid({
   selectedTopicId,
   topicStates,
@@ -46,6 +36,13 @@ export function TrianglePyramid({
     4: getTopicsByLevel(4),
   }), []);
 
+  /*
+   * Pyramid Geometry Calculation:
+   * - Padding top/bottom = 0.5 × tile height
+   * - Pyramid spans from row 1 (26%) to row 4 (74%) + half tile height on each end
+   * - Width based on bottom row: 4 tiles + 3 gaps
+   */
+
   return (
     <div 
       className="relative w-full max-w-[1100px] mx-auto"
@@ -54,6 +51,10 @@ export function TrianglePyramid({
         '--tile-w': 'clamp(140px, 18vw, 200px)',
         '--tile-h': 'clamp(90px, 12vw, 120px)',
         '--tile-gap': 'clamp(8px, 1.5vw, 16px)',
+        // Derived: bottom row width (4 tiles + 3 gaps) + small padding
+        '--pyramid-base-width': 'calc(4 * var(--tile-w) + 3 * var(--tile-gap) + var(--tile-gap))',
+        // Derived: vertical padding = 0.5 × tile height
+        '--pyramid-v-padding': 'calc(var(--tile-h) * 0.5)',
       } as React.CSSProperties}
     >
       {/* Container with aspect ratio */}
@@ -61,15 +62,23 @@ export function TrianglePyramid({
         className="relative w-full"
         style={{ aspectRatio: '1 / 0.866' }}
       >
-        {/* Pyramid Background - uses scale-2 */}
+        {/* 
+          Pyramid Background - dynamically positioned based on tile geometry
+          - Top: row 1 position (26%) minus half tile height minus padding
+          - Bottom: row 4 position (74%) plus half tile height plus padding
+          - Width: based on bottom row (4 tiles + 3 gaps + small margin)
+        */}
         <div 
-          className="absolute bg-scale-2"
+          className="absolute bg-scale-2 left-1/2 -translate-x-1/2"
           style={{
-            width: `${pyramidConfig.width}%`,
-            left: `${pyramidConfig.left}%`,
-            top: `${pyramidConfig.top}%`,
-            bottom: 0,
-            transform: 'translateX(-50%)',
+            // Top position: first row (26%) - half tile - padding
+            top: 'calc(26% - var(--tile-h) * 0.5 - var(--pyramid-v-padding))',
+            // Bottom position: 100% - (last row position + half tile + padding)
+            bottom: 'calc(100% - 74% - var(--tile-h) * 0.5 - var(--pyramid-v-padding))',
+            // Width based on bottom row geometry
+            width: 'var(--pyramid-base-width)',
+            // Max width to prevent overflow
+            maxWidth: '95%',
             clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
           }}
         />
