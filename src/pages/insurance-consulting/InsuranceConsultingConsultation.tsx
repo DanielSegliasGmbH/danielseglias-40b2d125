@@ -15,6 +15,7 @@ export default function InsuranceConsultingConsultation() {
     selectTopic,
     toggleDiscussed,
     togglePrioritized,
+    toggleImportant,
     toggleWaiver,
     toggleRelatedTopicDiscussed,
   } = usePyramidState();
@@ -49,7 +50,7 @@ export default function InsuranceConsultingConsultation() {
             selectedTopicId={selectedTopicId}
             topicStates={topicStates}
             onSelectTopic={handleSelectTopic}
-            onToggleDiscussed={toggleDiscussed}
+            onToggleImportant={toggleImportant}
           />
         </div>
 

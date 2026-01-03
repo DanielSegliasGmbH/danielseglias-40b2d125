@@ -5,13 +5,14 @@ import { cn } from '@/lib/utils';
 
 interface TopicState {
   discussed: boolean;
+  important: boolean;
 }
 
 interface TrianglePyramidProps {
   selectedTopicId: string | null;
   topicStates: Record<string, TopicState>;
   onSelectTopic: (topic: PyramidTopic) => void;
-  onToggleDiscussed: (topicId: string) => void;
+  onToggleImportant: (topicId: string) => void;
 }
 
 // Row configuration: level -> percentage from top (equal spacing of 16%)
@@ -26,7 +27,7 @@ export function TrianglePyramid({
   selectedTopicId,
   topicStates,
   onSelectTopic,
-  onToggleDiscussed,
+  onToggleImportant,
 }: TrianglePyramidProps) {
   // Get topics organized by level
   const levels = useMemo(() => ({
@@ -92,7 +93,7 @@ export function TrianglePyramid({
             selectedTopicId={selectedTopicId}
             topicStates={topicStates}
             onSelectTopic={onSelectTopic}
-            onToggleDiscussed={onToggleDiscussed}
+            onToggleImportant={onToggleImportant}
           />
         ))}
       </div>
@@ -106,7 +107,7 @@ interface PyramidRowProps {
   selectedTopicId: string | null;
   topicStates: Record<string, TopicState>;
   onSelectTopic: (topic: PyramidTopic) => void;
-  onToggleDiscussed: (topicId: string) => void;
+  onToggleImportant: (topicId: string) => void;
 }
 
 function PyramidRow({
@@ -115,7 +116,7 @@ function PyramidRow({
   selectedTopicId,
   topicStates,
   onSelectTopic,
-  onToggleDiscussed,
+  onToggleImportant,
 }: PyramidRowProps) {
   return (
     <div
@@ -134,13 +135,12 @@ function PyramidRow({
           id={topic.id}
           title={topic.title}
           imageUrl={topic.imageUrl}
-          isImportant={topic.isImportant}
-          isDiscussed={topicStates[topic.id]?.discussed ?? false}
+          isImportant={topicStates[topic.id]?.important ?? false}
           isSelected={selectedTopicId === topic.id}
           onSelect={() => onSelectTopic(topic)}
-          onToggleDiscussed={(e) => {
+          onToggleImportant={(e) => {
             e.stopPropagation();
-            onToggleDiscussed(topic.id);
+            onToggleImportant(topic.id);
           }}
         />
       ))}
