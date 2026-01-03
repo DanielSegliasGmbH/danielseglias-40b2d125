@@ -43,7 +43,7 @@ export default function InsuranceConsultingAdvisorInfo() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="aspect-[3/4] md:aspect-[4/3] lg:aspect-video w-full bg-muted rounded-lg overflow-hidden">
+              <div className="aspect-[210/297] max-w-2xl mx-auto bg-muted rounded-lg overflow-hidden">
                 <iframe
                   src={googleDrivePreviewUrl}
                   className="w-full h-full border-0"
