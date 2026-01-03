@@ -7,20 +7,18 @@ interface PyramidTileProps {
   title: string;
   imageUrl?: string;
   isImportant: boolean;
-  isDiscussed: boolean;
   isSelected: boolean;
   onSelect: () => void;
-  onToggleDiscussed: (e: React.MouseEvent) => void;
+  onToggleImportant: (e: React.MouseEvent) => void;
 }
 
 export function PyramidTile({
   title,
   imageUrl,
   isImportant,
-  isDiscussed,
   isSelected,
   onSelect,
-  onToggleDiscussed,
+  onToggleImportant,
 }: PyramidTileProps) {
   return (
     <div
@@ -59,34 +57,35 @@ export function PyramidTile({
       {/* Gradient Overlay for readability */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
 
-      {/* Important Badge - top left, always visible, red when marked as important */}
+      {/* Important Badge - top left, always visible */}
+      {/* scale-1 when not important, red when important */}
       <Badge 
         variant={isImportant ? "destructive" : "secondary"}
         className={cn(
           "absolute top-2 left-2 text-[10px] px-1.5 py-0.5 z-10 transition-colors duration-200",
           isImportant 
             ? "bg-red-600 text-white hover:bg-red-700" 
-            : "bg-scale-3 text-scale-11 hover:bg-scale-4"
+            : "bg-scale-1 text-scale-11 hover:bg-scale-2"
         )}
       >
         Wichtig
       </Badge>
 
-      {/* Discussed Circle - top right */}
+      {/* Toggle Important Button - top right */}
       <button
-        onClick={onToggleDiscussed}
-        aria-label={isDiscussed ? 'Als nicht besprochen markieren' : 'Als besprochen markieren'}
+        onClick={onToggleImportant}
+        aria-label={isImportant ? 'Als nicht wichtig markieren' : 'Als wichtig markieren'}
         className={cn(
           'absolute top-2 right-2 w-6 h-6 rounded-full z-10',
           'flex items-center justify-center',
           'transition-all duration-200',
           'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1',
-          isDiscussed
-            ? 'bg-primary text-primary-foreground'
+          isImportant
+            ? 'bg-red-600 text-white'
             : 'bg-white/90 border-2 border-white/50 hover:bg-white'
         )}
       >
-        {isDiscussed && <Check className="w-4 h-4" />}
+        {isImportant && <Check className="w-4 h-4" />}
       </button>
 
       {/* Title - bottom left */}
