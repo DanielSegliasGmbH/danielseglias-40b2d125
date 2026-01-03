@@ -74,7 +74,7 @@ export function ChecklistDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="w-[500px] h-[500px] max-w-[90vw] max-h-[90vh] p-0 gap-0 overflow-hidden rounded-2xl flex flex-col">
+      <DialogContent className="w-[750px] h-[750px] max-w-[90vw] max-h-[90vh] p-0 gap-0 overflow-hidden rounded-2xl flex flex-col">
         <DialogHeader className="sr-only">
           <DialogTitle>Checkliste und Kundendokumente</DialogTitle>
         </DialogHeader>
