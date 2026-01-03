@@ -46,18 +46,11 @@ export function TrianglePyramid({
         '--tile-gap': 'clamp(8px, 1.5vw, 16px)',
       } as React.CSSProperties}
     >
-      {/* Triangle Background */}
+      {/* Rows Container */}
       <div 
-        className="w-full"
-        style={{
-          aspectRatio: '1 / 0.866', // Equilateral triangle ratio
-          clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
-          backgroundColor: '#9a9a8a', // Lighter version of #7a7a67
-        }}
-      />
-
-      {/* Rows Container - positioned over the triangle */}
-      <div className="absolute inset-0">
+        className="relative w-full"
+        style={{ aspectRatio: '1 / 0.866' }}
+      >
         {([1, 2, 3, 4] as const).map((level) => (
           <PyramidRow
             key={level}
