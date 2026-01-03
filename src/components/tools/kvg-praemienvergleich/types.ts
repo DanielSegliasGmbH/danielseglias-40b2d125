@@ -1,5 +1,15 @@
 // Types for KVG Premium Calculator
 
+export interface CalculationResult {
+  insurer: string;
+  insurerUrl: string;
+  model: string;
+  premium: number;
+  subsidy: number;
+  total: number;
+  isCurrentModel?: boolean;
+}
+
 export interface Person {
   id: string;
   birthYear: string;
@@ -20,14 +30,6 @@ export interface FormData {
   };
 }
 
-export interface CalculationResult {
-  insurer: string;
-  insurerUrl?: string;
-  model: string;
-  premium: number;
-  subsidy: number;
-  total: number;
-}
 
 export interface PersonSummary {
   id: number;

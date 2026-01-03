@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,8 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ExternalLink, Info, Mail, Trash2, Loader2 } from 'lucide-react';
+import { ExternalLink, Info, Mail, Trash2, Loader2, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { usePremiumData } from '@/hooks/usePremiumData';
 import { 
   FormData, 
@@ -21,6 +22,9 @@ import {
   INSURERS, 
   INSURANCE_MODELS 
 } from './types';
+
+type SortDirection = 'asc' | 'desc' | null;
+type SortColumn = 'insurer' | 'model' | 'savings' | 'premium' | 'subsidy' | 'total';
 
 // Generate unique ID
 const generateId = () => Math.random().toString(36).substr(2, 9);
@@ -54,6 +58,9 @@ const initialFormData: FormData = {
 };
 
 // Mock results for demonstration (to be replaced with real API data)
+// Current model reference price for calculating savings
+const CURRENT_MODEL_PREMIUM = 340.00;
+
 const generateMockResults = (): CalculationResult[] => [
   { insurer: 'Atupri', insurerUrl: 'https://www.atupri.ch', model: 'HMO', premium: 329.90, subsidy: 5.15, total: 324.75 },
   { insurer: 'KPT', insurerUrl: 'https://www.kpt.ch', model: 'KPTwin.smart', premium: 330.20, subsidy: 5.15, total: 325.05 },
@@ -61,7 +68,7 @@ const generateMockResults = (): CalculationResult[] => [
   { insurer: 'Sanitas', insurerUrl: 'https://www.sanitas.com', model: 'TelMed (Compact One)', premium: 335.30, subsidy: 5.15, total: 330.15 },
   { insurer: 'KPT', insurerUrl: 'https://www.kpt.ch', model: 'KPTwin.win', premium: 338.30, subsidy: 5.15, total: 333.15 },
   { insurer: 'Agrisano', insurerUrl: 'https://www.agrisano.ch', model: 'AGRIsmart', premium: 339.70, subsidy: 5.15, total: 334.55 },
-  { insurer: 'Helsana', insurerUrl: 'https://www.helsana.ch', model: 'BeneFit PLUS Flexmed R1', premium: 340.00, subsidy: 5.15, total: 334.85 },
+  { insurer: 'Helsana', insurerUrl: 'https://www.helsana.ch', model: 'BeneFit PLUS Flexmed R1', premium: 340.00, subsidy: 5.15, total: 334.85, isCurrentModel: true },
   { insurer: 'Helsana', insurerUrl: 'https://www.helsana.ch', model: 'BeneFit PLUS Hausarzt R1', premium: 340.00, subsidy: 5.15, total: 334.85 },
   { insurer: 'Sanitas', insurerUrl: 'https://www.sanitas.com', model: 'Hausarztmodell 1', premium: 340.45, subsidy: 5.15, total: 335.30 },
   { insurer: 'ÖKK', insurerUrl: 'https://www.oekk.ch', model: 'Gesundheitszentrum', premium: 342.70, subsidy: 5.15, total: 337.55 },
@@ -70,6 +77,7 @@ const generateMockResults = (): CalculationResult[] => [
   { insurer: 'Concordia', insurerUrl: 'https://www.concordia.ch', model: 'HMO', premium: 344.00, subsidy: 5.15, total: 338.85 },
   { insurer: 'SLKK', insurerUrl: 'https://www.slkk.ch', model: 'SLKK-SmartMed', premium: 344.40, subsidy: 5.15, total: 339.25 },
   { insurer: 'Assura', insurerUrl: 'https://www.assura.ch', model: 'Qualimed', premium: 344.70, subsidy: 5.15, total: 339.55 },
+  { insurer: 'Helsana', insurerUrl: 'https://www.helsana.ch', model: 'BeneFit PLUS Telmed', premium: 345.50, subsidy: 5.15, total: 340.35 },
 ];
 
 export default function KvgPraemienvergleichTool() {
@@ -79,6 +87,8 @@ export default function KvgPraemienvergleichTool() {
   const [personSummaries, setPersonSummaries] = useState<PersonSummary[]>([]);
   const [displayMode, setDisplayMode] = useState<'month' | 'year'>('month');
   const [activeTab, setActiveTab] = useState('sparen');
+  const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
   
   // Load premium data from Excel
   const premiumData = usePremiumData();
@@ -194,6 +204,95 @@ export default function KvgPraemienvergleichTool() {
     return displayValue.toLocaleString('de-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
+  // Calculate savings (difference from current model)
+  const calculateSavings = (premium: number): number => {
+    return premium - CURRENT_MODEL_PREMIUM;
+  };
+
+  // Format savings with sign
+  const formatSavings = (savings: number) => {
+    const displayValue = displayMode === 'year' ? savings * 12 : savings;
+    const formatted = Math.abs(displayValue).toLocaleString('de-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (displayValue < 0) return `-${formatted}`;
+    if (displayValue > 0) return `+${formatted}`;
+    return '0.00';
+  };
+
+  // Sort handler
+  const handleSort = (column: SortColumn) => {
+    if (sortColumn === column) {
+      if (sortDirection === 'asc') {
+        setSortDirection('desc');
+      } else if (sortDirection === 'desc') {
+        setSortColumn(null);
+        setSortDirection(null);
+      }
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
+  };
+
+  // Get sort icon
+  const getSortIcon = (column: SortColumn) => {
+    if (sortColumn !== column) {
+      return <ChevronsUpDown className="h-3 w-3 ml-1" />;
+    }
+    if (sortDirection === 'asc') {
+      return <ChevronUp className="h-3 w-3 ml-1" />;
+    }
+    return <ChevronDown className="h-3 w-3 ml-1" />;
+  };
+
+  // Sorted results
+  const sortedResults = useMemo(() => {
+    if (!sortColumn || !sortDirection) return results;
+    
+    return [...results].sort((a, b) => {
+      let aValue: string | number;
+      let bValue: string | number;
+      
+      switch (sortColumn) {
+        case 'insurer':
+          aValue = a.insurer.toLowerCase();
+          bValue = b.insurer.toLowerCase();
+          break;
+        case 'model':
+          aValue = a.model.toLowerCase();
+          bValue = b.model.toLowerCase();
+          break;
+        case 'savings':
+          aValue = calculateSavings(a.premium);
+          bValue = calculateSavings(b.premium);
+          break;
+        case 'premium':
+          aValue = a.premium;
+          bValue = b.premium;
+          break;
+        case 'subsidy':
+          aValue = a.subsidy;
+          bValue = b.subsidy;
+          break;
+        case 'total':
+          aValue = a.total;
+          bValue = b.total;
+          break;
+        default:
+          return 0;
+      }
+      
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return sortDirection === 'asc' 
+          ? aValue.localeCompare(bValue) 
+          : bValue.localeCompare(aValue);
+      }
+      
+      return sortDirection === 'asc' 
+        ? (aValue as number) - (bValue as number) 
+        : (bValue as number) - (aValue as number);
+    });
+  }, [results, sortColumn, sortDirection]);
+
   if (showResults) {
     return (
       <div className="space-y-6">
@@ -231,10 +330,10 @@ export default function KvgPraemienvergleichTool() {
           </Table>
           
           <div className="flex items-center justify-between flex-wrap gap-4">
-            <Button variant="default" onClick={handleEdit} className="bg-[#4a7c8a] hover:bg-[#3d6672] text-white">
+            <Button variant="default" onClick={handleEdit} className="bg-[#7a7a67] hover:bg-[#6E6E5E] text-white">
               Ändern
             </Button>
-            <Button variant="link" className="text-[#0066b3]">
+            <Button variant="link" className="text-[#7a7a67]">
               <Mail className="h-4 w-4 mr-2" />
               Link per E-Mail verschicken
             </Button>
@@ -244,14 +343,11 @@ export default function KvgPraemienvergleichTool() {
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="bg-muted">
-            <TabsTrigger value="sparen" className="data-[state=active]:bg-[#0066b3] data-[state=active]:text-white">
+            <TabsTrigger value="sparen" className="data-[state=active]:bg-[#7a7a67] data-[state=active]:text-white">
               Möglichkeit zum Sparen
             </TabsTrigger>
-            <TabsTrigger value="franchisen">
+            <TabsTrigger value="franchisen" className="data-[state=active]:bg-[#7a7a67] data-[state=active]:text-white">
               Vergleich der Franchisen
-            </TabsTrigger>
-            <TabsTrigger value="veraenderung">
-              Veränderung der Prämien
             </TabsTrigger>
           </TabsList>
 
@@ -283,9 +379,9 @@ export default function KvgPraemienvergleichTool() {
 
             {/* Info Alert */}
             {!formData.currentInsurer && (
-              <Alert className="mb-4 border-[#0066b3] bg-[#0066b3]/10">
-                <Info className="h-4 w-4 text-[#0066b3]" />
-                <AlertDescription className="text-[#0066b3]">
+              <Alert className="mb-4 border-[#7a7a67] bg-[#7a7a67]/10">
+                <Info className="h-4 w-4 text-[#7a7a67]" />
+                <AlertDescription className="text-[#7a7a67]">
                   Geben Sie Ihre aktuelle Krankenkasse an. Dann sehen Sie hier, wie viel Sie sparen können.
                 </AlertDescription>
               </Alert>
@@ -293,38 +389,99 @@ export default function KvgPraemienvergleichTool() {
 
             {/* Results Table */}
             <div className="border rounded-lg overflow-hidden">
-              <Table>
-                <TableHeader className="bg-[#0066b3] text-white">
-                  <TableRow className="hover:bg-[#0066b3]">
-                    <TableHead className="text-white">Krankenkasse</TableHead>
-                    <TableHead className="text-white">Modell</TableHead>
-                    <TableHead className="text-white text-right">Prämie</TableHead>
-                    <TableHead className="text-white text-right">Vergütung</TableHead>
-                    <TableHead className="text-white text-right">Total</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {results.map((result, idx) => (
-                    <TableRow key={idx} className={idx % 2 === 0 ? 'bg-background' : 'bg-muted/30'}>
-                      <TableCell>
-                        <a 
-                          href={result.insurerUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-[#0066b3] hover:underline inline-flex items-center gap-1"
-                        >
-                          {result.insurer}
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      </TableCell>
-                      <TableCell>{result.model}</TableCell>
-                      <TableCell className="text-right">{formatPrice(result.premium)}</TableCell>
-                      <TableCell className="text-right">{formatPrice(result.subsidy)}</TableCell>
-                      <TableCell className="text-right font-medium">{formatPrice(result.total)}</TableCell>
+              <ScrollArea className="h-[500px]">
+                <Table>
+                  <TableHeader className="bg-[#7a7a67] text-white sticky top-0 z-10">
+                    <TableRow className="hover:bg-[#7a7a67]">
+                      <TableHead 
+                        className="text-white cursor-pointer select-none"
+                        onClick={() => handleSort('insurer')}
+                      >
+                        <span className="inline-flex items-center">
+                          Krankenkasse {getSortIcon('insurer')}
+                        </span>
+                      </TableHead>
+                      <TableHead 
+                        className="text-white cursor-pointer select-none"
+                        onClick={() => handleSort('model')}
+                      >
+                        <span className="inline-flex items-center">
+                          Modell {getSortIcon('model')}
+                        </span>
+                      </TableHead>
+                      <TableHead 
+                        className="text-white cursor-pointer select-none text-right"
+                        onClick={() => handleSort('savings')}
+                      >
+                        <span className="inline-flex items-center justify-end w-full">
+                          <span className="text-green-300">(-)</span>&nbsp;Sparmöglichkeit / <span className="text-red-300">(+)</span>&nbsp;Mehrkosten {getSortIcon('savings')}
+                        </span>
+                      </TableHead>
+                      <TableHead 
+                        className="text-white cursor-pointer select-none text-right"
+                        onClick={() => handleSort('premium')}
+                      >
+                        <span className="inline-flex items-center justify-end w-full">
+                          Prämie {getSortIcon('premium')}
+                        </span>
+                      </TableHead>
+                      <TableHead 
+                        className="text-white cursor-pointer select-none text-right"
+                        onClick={() => handleSort('subsidy')}
+                      >
+                        <span className="inline-flex items-center justify-end w-full">
+                          Vergütung {getSortIcon('subsidy')}
+                        </span>
+                      </TableHead>
+                      <TableHead 
+                        className="text-white cursor-pointer select-none text-right"
+                        onClick={() => handleSort('total')}
+                      >
+                        <span className="inline-flex items-center justify-end w-full">
+                          Total {getSortIcon('total')}
+                        </span>
+                      </TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {sortedResults.map((result, idx) => {
+                      const savings = calculateSavings(result.premium);
+                      const isCurrentModel = result.isCurrentModel;
+                      
+                      return (
+                        <TableRow 
+                          key={idx} 
+                          className={`${idx % 2 === 0 ? 'bg-background' : 'bg-muted/30'} ${isCurrentModel ? 'bg-amber-50 dark:bg-amber-950/20' : ''}`}
+                        >
+                          <TableCell>
+                            <a 
+                              href={result.insurerUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-[#7a7a67] hover:underline inline-flex items-center gap-1"
+                            >
+                              {result.insurer}
+                              <ExternalLink className="h-3 w-3" />
+                            </a>
+                          </TableCell>
+                          <TableCell>
+                            {result.model}
+                            {isCurrentModel && <span className="text-muted-foreground ml-1">(Ihr aktuelles Modell)</span>}
+                          </TableCell>
+                          <TableCell className={`text-right font-medium ${
+                            savings < 0 ? 'text-green-600' : savings > 0 ? 'text-red-600' : ''
+                          }`}>
+                            {formatSavings(savings)}
+                          </TableCell>
+                          <TableCell className="text-right">{formatPrice(result.premium)}</TableCell>
+                          <TableCell className="text-right">{formatPrice(result.subsidy)}</TableCell>
+                          <TableCell className="text-right font-medium">{formatPrice(result.total)}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </ScrollArea>
             </div>
 
             <p className="text-xs text-muted-foreground mt-4">
@@ -340,13 +497,6 @@ export default function KvgPraemienvergleichTool() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="veraenderung" className="mt-6">
-            <Card>
-              <CardContent className="py-12 text-center">
-                <p className="text-muted-foreground">Prämienveränderung wird nach Integration der Priminfo API angezeigt.</p>
-              </CardContent>
-            </Card>
-          </TabsContent>
         </Tabs>
       </div>
     );
@@ -493,7 +643,7 @@ export default function KvgPraemienvergleichTool() {
           <Button 
             variant="default" 
             onClick={addPerson}
-            className="bg-[#5a6268] hover:bg-[#4a5258] text-white"
+            className="bg-[#7a7a67] hover:bg-[#6E6E5E] text-white"
           >
             Weitere Person hinzufügen
           </Button>
@@ -517,7 +667,7 @@ export default function KvgPraemienvergleichTool() {
               value={formData.currentInsurer} 
               onValueChange={handleInsurerChange}
             >
-              <SelectTrigger className="mt-2 bg-[#4a7c8a] text-white border-[#4a7c8a]">
+              <SelectTrigger className="mt-2 bg-[#7a7a67] text-white border-[#7a7a67]">
                 <SelectValue placeholder="Krankenkasse wählen" />
               </SelectTrigger>
               <SelectContent>
@@ -540,7 +690,7 @@ export default function KvgPraemienvergleichTool() {
               onValueChange={handleModelChange}
               disabled={!formData.currentInsurer}
             >
-              <SelectTrigger className="mt-2 bg-[#4a7c8a] text-white border-[#4a7c8a]">
+              <SelectTrigger className="mt-2 bg-[#7a7a67] text-white border-[#7a7a67]">
                 <SelectValue placeholder="Versicherungsmodell wählen" />
               </SelectTrigger>
               <SelectContent>
@@ -610,7 +760,7 @@ export default function KvgPraemienvergleichTool() {
         <div className="flex flex-wrap gap-4">
           <Button 
             onClick={handleCalculate}
-            className="bg-[#0066b3] hover:bg-[#004d8a] text-white px-12 py-3"
+            className="bg-[#7a7a67] hover:bg-[#6E6E5E] text-white px-12 py-3"
             size="lg"
           >
             Berechnen
