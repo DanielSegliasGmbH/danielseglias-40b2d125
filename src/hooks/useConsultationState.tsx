@@ -11,6 +11,8 @@ export interface TopicState {
   waiver: boolean;
   important: boolean;
   relatedTopicsDiscussed: Record<string, boolean>;
+  // Notes for related topics (b-ebene3)
+  relatedTopicNotes: Record<string, string>;
   // Extensible: add numeric values, selections, etc.
   numericValues?: Record<string, number>;
   selections?: Record<string, string>;
@@ -59,6 +61,7 @@ const generateDefaultTopicStates = (): Record<string, TopicState> => {
         acc[rt.id] = false; // Always false on reset/new consultation
         return acc;
       }, {} as Record<string, boolean>),
+      relatedTopicNotes: {}, // Empty notes on reset
       numericValues: {},
       selections: {},
     };
@@ -100,6 +103,7 @@ interface ConsultationContextValue {
   toggleImportant: (topicId: string) => void;
   toggleWaiver: (topicId: string) => void;
   toggleRelatedTopicDiscussed: (topicId: string, relatedTopicId: string) => void;
+  setRelatedTopicNotes: (topicId: string, relatedTopicId: string, notes: string) => void;
   
   // Consultation management
   resetConsultation: () => void;
@@ -217,7 +221,22 @@ export function ConsultationProvider({ children }: { children: ReactNode }) {
     }));
   }, [updateData]);
 
-  // Reset consultation to default state
+  // Set related topic notes
+  const setRelatedTopicNotes = useCallback((topicId: string, relatedTopicId: string, notes: string) => {
+    updateData((prev) => ({
+      ...prev,
+      topicStates: {
+        ...prev.topicStates,
+        [topicId]: {
+          ...prev.topicStates[topicId],
+          relatedTopicNotes: {
+            ...prev.topicStates[topicId]?.relatedTopicNotes,
+            [relatedTopicId]: notes,
+          },
+        },
+      },
+    }));
+  }, [updateData]);
   const resetConsultation = useCallback(() => {
     setConsultationData(generateDefaultConsultationData());
     setCurrentConsultationId(null);
@@ -380,6 +399,7 @@ export function ConsultationProvider({ children }: { children: ReactNode }) {
     toggleImportant,
     toggleWaiver,
     toggleRelatedTopicDiscussed,
+    setRelatedTopicNotes,
     resetConsultation,
     startNewConsultation,
     loadConsultation,

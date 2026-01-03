@@ -230,6 +230,7 @@ export function TopicDetailOverlay({
       {/* Related Topic Dialog */}
       <RelatedTopicDialog
         topic={selectedRelatedTopic}
+        parentTopicId={topic?.id || ''}
         isOpen={!!selectedRelatedTopic}
         onClose={() => setSelectedRelatedTopic(null)}
       />
