@@ -59,15 +59,18 @@ export function PyramidTile({
       {/* Gradient Overlay for readability */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
 
-      {/* Important Badge - top left */}
-      {isImportant && (
-        <Badge 
-          variant="destructive" 
-          className="absolute top-2 left-2 text-[10px] px-1.5 py-0.5 z-10"
-        >
-          Wichtig
-        </Badge>
-      )}
+      {/* Important Badge - top left, always visible, red when marked as important */}
+      <Badge 
+        variant={isImportant ? "destructive" : "secondary"}
+        className={cn(
+          "absolute top-2 left-2 text-[10px] px-1.5 py-0.5 z-10 transition-colors duration-200",
+          isImportant 
+            ? "bg-red-600 text-white hover:bg-red-700" 
+            : "bg-scale-3 text-scale-11 hover:bg-scale-4"
+        )}
+      >
+        Wichtig
+      </Badge>
 
       {/* Discussed Circle - top right */}
       <button
