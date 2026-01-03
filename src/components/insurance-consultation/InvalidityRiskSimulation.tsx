@@ -136,23 +136,23 @@ export function InvalidityRiskSimulation() {
               </div>
             )}
 
-            {/* Phase 3: 80% Taggeld + Anspruch prüfen - Block 5-6 */}
+            {/* Phase 3: 80% Taggeld + Anspruch prüfen - Block 5-6, total 8 rows */}
             {currentPhase >= 3 && (
               <>
-                {/* 80% Taggeld - 8 rows high */}
+                {/* 80% Taggeld - 6 rows high (rows 1-6) */}
                 <div
                   className={cn('absolute transition-all duration-300', colorClasses.blue)}
-                  style={getBlockStyle(5, 2, 1, 8)}
+                  style={getBlockStyle(5, 2, 1, 6)}
                 >
                   <div className="p-2 flex flex-col justify-center h-full">
                     <span className="text-white text-lg font-bold">80%</span>
                     <span className="text-white text-[10px] leading-tight">Taggeld</span>
                   </div>
                 </div>
-                {/* Anspruch auf Invalidenrente prüfen - rows 9-10 (above Taggeld) */}
+                {/* Anspruch auf Invalidenrente prüfen - rows 7-8 (above Taggeld) */}
                 <div
                   className={cn('absolute transition-all duration-300', colorClasses.blue)}
-                  style={getBlockStyle(5, 2, 9, 2)}
+                  style={getBlockStyle(5, 2, 7, 2)}
                 >
                   <div className="p-1 flex items-center justify-center h-full">
                     <span className="text-white text-[9px] text-center leading-tight">
@@ -217,10 +217,10 @@ export function InvalidityRiskSimulation() {
                     </div>
                     {/* UVG Rente - rows 4-9 (overlapping with PK, but only for Krankheit we show this differently) */}
                     {/* Actually for Krankheit: UVG doesn't apply, so we show Risk instead */}
-                    {/* Risk - 3. Säule - rows 6-9 */}
+                    {/* Risk - 3. Säule - rows 7-9 (same top edge as UVG Rente) */}
                     <div
                       className={cn('absolute transition-all duration-300', colorClasses.red)}
-                      style={getBlockStyle(7, 7, 7, 4)}
+                      style={getBlockStyle(7, 7, 7, 3)}
                     >
                       <div className="p-2 flex flex-col justify-center h-full relative">
                         <span className="text-white text-sm font-medium">Risk</span>
