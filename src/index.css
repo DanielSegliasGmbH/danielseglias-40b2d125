@@ -23,129 +23,144 @@
 
 @layer base {
   :root {
-    /* Brand Colors */
-    --brand-olive: 60 9% 44%;
-    --brand-olive-light: 60 9% 54%;
-    --brand-olive-dark: 60 9% 34%;
+    /* 
+      GLOBAL COLOR SCALE - Verbindliche Farbpalette
+      Von hell (1) nach dunkel (11), Grundfarbe = Stufe 6
+      KEINE weiteren Farben erlaubt außer Weiß (#ffffff)
+    */
     
-    /* Backgrounds */
-    --background: 0 0% 98%;
-    --background-soft: 38 38% 96%;
-    --foreground: 221 39% 11%;
-
-    /* Card & Surfaces */
-    --card: 0 0% 100%;
-    --card-foreground: 221 39% 11%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 221 39% 11%;
-
-    /* Primary = Brand Olive */
-    --primary: 60 9% 44%;
-    --primary-foreground: 0 0% 100%;
-
-    /* Secondary = Neutral/Soft */
-    --secondary: 220 13% 95%;
-    --secondary-foreground: 221 39% 11%;
-
-    /* Muted */
-    --muted: 220 13% 95%;
-    --muted-foreground: 220 9% 46%;
-
-    /* Accent = Subtle olive tint */
-    --accent: 60 5% 94%;
-    --accent-foreground: 221 39% 11%;
-
-    /* Status Colors - gedämpft, nicht aggressiv */
-    --destructive: 0 50% 45%;
+    /* Scale Colors (HSL format) */
+    --scale-1: 60 9% 66%;   /* #B1B1A0 - hellste */
+    --scale-2: 60 10% 61%;  /* #A6A694 */
+    --scale-3: 60 10% 57%;  /* #9B9B88 */
+    --scale-4: 60 10% 53%;  /* #90907D */
+    --scale-5: 60 10% 48%;  /* #858572 */
+    --scale-6: 60 10% 44%;  /* #7a7a67 - GRUNDFARBE (ZENTRAL) */
+    --scale-7: 60 9% 40%;   /* #6E6E5E */
+    --scale-8: 60 9% 36%;   /* #636353 */
+    --scale-9: 60 9% 31%;   /* #585849 */
+    --scale-10: 60 10% 27%; /* #4D4D3F */
+    --scale-11: 60 10% 24%; /* #424236 - dunkelste */
+    
+    /* Semantic Mappings - Light Mode */
+    /* Hintergründe: Weiß + helle Stufen (1-5) */
+    --background: 0 0% 100%;           /* Reines Weiß */
+    --background-soft: 60 9% 66%;      /* Scale 1 */
+    --foreground: 60 10% 24%;          /* Scale 11 - dunkelste für Text */
+    
+    /* Card & Surfaces: helle Stufen */
+    --card: 0 0% 100%;                 /* Weiß */
+    --card-foreground: 60 10% 24%;     /* Scale 11 */
+    
+    --popover: 0 0% 100%;              /* Weiß */
+    --popover-foreground: 60 10% 24%;  /* Scale 11 */
+    
+    /* Primary = Grundfarbe (Scale 6) */
+    --primary: 60 10% 44%;             /* Scale 6 - GRUNDFARBE */
+    --primary-foreground: 0 0% 100%;   /* Weiß */
+    
+    /* Secondary: helle Stufen für zurückhaltende Elemente */
+    --secondary: 60 9% 66%;            /* Scale 1 */
+    --secondary-foreground: 60 10% 27%; /* Scale 10 */
+    
+    /* Muted: helle Stufen */
+    --muted: 60 10% 61%;               /* Scale 2 */
+    --muted-foreground: 60 9% 40%;     /* Scale 7 */
+    
+    /* Accent: leicht heller als Grundfarbe */
+    --accent: 60 10% 57%;              /* Scale 3 */
+    --accent-foreground: 60 10% 24%;   /* Scale 11 */
+    
+    /* Status Colors - basierend auf Skala */
+    --destructive: 60 10% 44%;         /* Scale 6 (keine rote Farbe) */
     --destructive-foreground: 0 0% 100%;
     
-    --success: 142 30% 40%;
+    --success: 60 10% 44%;             /* Scale 6 */
     --success-foreground: 0 0% 100%;
     
-    --warning: 38 60% 50%;
-    --warning-foreground: 221 39% 11%;
-
-    /* Borders & Input */
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 60 9% 44%;
-
-    /* Radius - large for cards */
+    --warning: 60 10% 48%;             /* Scale 5 */
+    --warning-foreground: 60 10% 24%;  /* Scale 11 */
+    
+    /* Borders & Input: mittlere Stufen */
+    --border: 60 10% 61%;              /* Scale 2 */
+    --input: 60 10% 61%;               /* Scale 2 */
+    --ring: 60 10% 44%;                /* Scale 6 - Grundfarbe */
+    
+    /* Radius */
     --radius: 0.75rem;
     --radius-lg: 1.5rem;
-
+    
     /* Sidebar */
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 221 39% 11%;
-    --sidebar-primary: 60 9% 44%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 60 5% 96%;
-    --sidebar-accent-foreground: 221 39% 11%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 60 9% 44%;
-    --sidebar-muted-foreground: 220 9% 46%;
+    --sidebar-background: 0 0% 100%;           /* Weiß */
+    --sidebar-foreground: 60 10% 24%;          /* Scale 11 */
+    --sidebar-primary: 60 10% 44%;             /* Scale 6 */
+    --sidebar-primary-foreground: 0 0% 100%;   /* Weiß */
+    --sidebar-accent: 60 9% 66%;               /* Scale 1 */
+    --sidebar-accent-foreground: 60 10% 24%;   /* Scale 11 */
+    --sidebar-border: 60 10% 61%;              /* Scale 2 */
+    --sidebar-ring: 60 10% 44%;                /* Scale 6 */
+    --sidebar-muted-foreground: 60 9% 40%;     /* Scale 7 */
   }
 
   .dark {
-    /* Brand Colors - leicht aufgehellt für Dark Mode */
-    --brand-olive: 60 9% 54%;
-    --brand-olive-light: 60 9% 64%;
-    --brand-olive-dark: 60 9% 44%;
+    /* 
+      DARK MODE - Invertierte Nutzung der Skala
+      Dunkle Stufen für Hintergründe, helle für Text
+    */
     
-    /* Backgrounds */
-    --background: 220 15% 8%;
-    --background-soft: 220 15% 12%;
-    --foreground: 220 13% 95%;
-
+    /* Hintergründe: dunkle Stufen (9-11) */
+    --background: 60 10% 24%;          /* Scale 11 */
+    --background-soft: 60 10% 27%;     /* Scale 10 */
+    --foreground: 60 9% 66%;           /* Scale 1 - helle für Text */
+    
     /* Card & Surfaces */
-    --card: 220 15% 10%;
-    --card-foreground: 220 13% 95%;
-
-    --popover: 220 15% 10%;
-    --popover-foreground: 220 13% 95%;
-
-    /* Primary = Brand Olive */
-    --primary: 60 9% 54%;
-    --primary-foreground: 220 15% 8%;
-
+    --card: 60 9% 31%;                 /* Scale 9 */
+    --card-foreground: 60 9% 66%;      /* Scale 1 */
+    
+    --popover: 60 9% 31%;              /* Scale 9 */
+    --popover-foreground: 60 9% 66%;   /* Scale 1 */
+    
+    /* Primary = Grundfarbe (etwas heller im Dark Mode) */
+    --primary: 60 10% 48%;             /* Scale 5 */
+    --primary-foreground: 60 10% 24%;  /* Scale 11 */
+    
     /* Secondary */
-    --secondary: 220 13% 18%;
-    --secondary-foreground: 220 13% 95%;
-
+    --secondary: 60 10% 27%;           /* Scale 10 */
+    --secondary-foreground: 60 9% 66%; /* Scale 1 */
+    
     /* Muted */
-    --muted: 220 13% 18%;
-    --muted-foreground: 220 9% 60%;
-
+    --muted: 60 9% 31%;                /* Scale 9 */
+    --muted-foreground: 60 10% 53%;    /* Scale 4 */
+    
     /* Accent */
-    --accent: 220 13% 18%;
-    --accent-foreground: 220 13% 95%;
-
+    --accent: 60 9% 36%;               /* Scale 8 */
+    --accent-foreground: 60 9% 66%;    /* Scale 1 */
+    
     /* Status Colors */
-    --destructive: 0 50% 40%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 60 10% 48%;         /* Scale 5 */
+    --destructive-foreground: 60 10% 24%;
     
-    --success: 142 30% 45%;
-    --success-foreground: 0 0% 100%;
+    --success: 60 10% 48%;             /* Scale 5 */
+    --success-foreground: 60 10% 24%;
     
-    --warning: 38 60% 55%;
-    --warning-foreground: 220 15% 8%;
-
+    --warning: 60 10% 53%;             /* Scale 4 */
+    --warning-foreground: 60 10% 24%;
+    
     /* Borders & Input */
-    --border: 220 13% 20%;
-    --input: 220 13% 20%;
-    --ring: 60 9% 54%;
-
+    --border: 60 9% 36%;               /* Scale 8 */
+    --input: 60 9% 36%;                /* Scale 8 */
+    --ring: 60 10% 48%;                /* Scale 5 */
+    
     /* Sidebar */
-    --sidebar-background: 220 15% 10%;
-    --sidebar-foreground: 220 13% 95%;
-    --sidebar-primary: 60 9% 54%;
-    --sidebar-primary-foreground: 220 15% 8%;
-    --sidebar-accent: 220 13% 15%;
-    --sidebar-accent-foreground: 220 13% 95%;
-    --sidebar-border: 220 13% 20%;
-    --sidebar-ring: 60 9% 54%;
-    --sidebar-muted-foreground: 220 9% 60%;
+    --sidebar-background: 60 10% 24%;          /* Scale 11 */
+    --sidebar-foreground: 60 9% 66%;           /* Scale 1 */
+    --sidebar-primary: 60 10% 48%;             /* Scale 5 */
+    --sidebar-primary-foreground: 60 10% 24%;  /* Scale 11 */
+    --sidebar-accent: 60 9% 31%;               /* Scale 9 */
+    --sidebar-accent-foreground: 60 9% 66%;    /* Scale 1 */
+    --sidebar-border: 60 9% 36%;               /* Scale 8 */
+    --sidebar-ring: 60 10% 48%;                /* Scale 5 */
+    --sidebar-muted-foreground: 60 10% 53%;    /* Scale 4 */
   }
 }
 

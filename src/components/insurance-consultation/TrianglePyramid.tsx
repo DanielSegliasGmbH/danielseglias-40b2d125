@@ -30,8 +30,6 @@ const pyramidConfig = {
   top: 10, // %
   // Horizontal position (50 = centered)
   left: 50, // %
-  // Color
-  color: '#8c8c7c',
 };
 
 export function TrianglePyramid({
@@ -63,9 +61,9 @@ export function TrianglePyramid({
         className="relative w-full"
         style={{ aspectRatio: '1 / 0.866' }}
       >
-        {/* Pyramid Background - configurable size and position */}
+        {/* Pyramid Background - uses scale-6 (Grundfarbe) */}
         <div 
-          className="absolute"
+          className="absolute bg-scale-6"
           style={{
             width: `${pyramidConfig.width}%`,
             left: `${pyramidConfig.left}%`,
@@ -73,7 +71,6 @@ export function TrianglePyramid({
             bottom: 0,
             transform: 'translateX(-50%)',
             clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
-            backgroundColor: pyramidConfig.color,
           }}
         />
 
