@@ -1,14 +1,15 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { X, ChevronRight, BarChart3, PenTool, FileCheck, FileX, FileText } from 'lucide-react';
+import { X, ChevronRight, BarChart3, PenTool, FileCheck, FileX, FileText, ArrowLeft } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { InvalidityRiskSimulation } from './InvalidityRiskSimulation';
 
 interface RelatedTopicDialogProps {
   topic: {
@@ -20,17 +21,25 @@ interface RelatedTopicDialogProps {
   onClose: () => void;
 }
 
+type ViewMode = 'main' | 'risikosimulation';
+
 export function RelatedTopicDialog({
   topic,
   isOpen,
   onClose,
 }: RelatedTopicDialogProps) {
+  const [viewMode, setViewMode] = useState<ViewMode>('main');
+
   // Handle ESC key
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') {
-      onClose();
+      if (viewMode !== 'main') {
+        setViewMode('main');
+      } else {
+        onClose();
+      }
     }
-  }, [onClose]);
+  }, [onClose, viewMode]);
 
   useEffect(() => {
     if (isOpen) {
@@ -41,8 +50,56 @@ export function RelatedTopicDialog({
     };
   }, [isOpen, handleKeyDown]);
 
+  // Reset view mode when dialog closes
+  useEffect(() => {
+    if (!isOpen) {
+      setViewMode('main');
+    }
+  }, [isOpen]);
+
   if (!topic) return null;
 
+  // Check if this is the disability topic
+  const isDisabilityTopic = topic.id === 'disability';
+
+  // Risikosimulation View
+  if (viewMode === 'risikosimulation' && isDisabilityTopic) {
+    return (
+      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <DialogContent className="w-[min(90vw,750px)] h-[min(90vw,750px)] max-w-none p-0 gap-0 overflow-hidden rounded-2xl flex flex-col bg-background">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Invalidität Risikosimulation</DialogTitle>
+          </DialogHeader>
+
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b">
+            <button
+              onClick={() => setViewMode('main')}
+              className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="text-sm font-medium">Invalidität</span>
+            </button>
+            <h2 className="text-lg font-semibold text-foreground">
+              Invalidität Risikosimulation
+            </h2>
+            <button className="text-sm text-primary hover:underline font-medium">
+              Alter anzeigen
+            </button>
+          </div>
+
+          {/* Content */}
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="p-6">
+              <InvalidityRiskSimulation />
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // Main View
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="w-[min(90vw,750px)] h-[min(90vw,750px)] max-w-none p-0 gap-0 overflow-hidden rounded-2xl flex flex-col">
@@ -106,7 +163,10 @@ export function RelatedTopicDialog({
                 Risikoübersicht
               </h3>
               <div className="space-y-0 divide-y">
-                <button className="w-full flex items-center justify-between py-3 hover:bg-gray-50 transition-colors text-left">
+                <button 
+                  onClick={() => isDisabilityTopic && setViewMode('risikosimulation')}
+                  className="w-full flex items-center justify-between py-3 hover:bg-gray-50 transition-colors text-left"
+                >
                   <div className="flex items-center gap-3">
                     <BarChart3 className="w-5 h-5 text-muted-foreground" />
                     <span className="text-sm">Risikosimulation</span>
