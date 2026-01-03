@@ -104,63 +104,63 @@
 
   .dark {
     /* 
-      DARK MODE - Invertierte Nutzung der Skala
+      DARK MODE - Neutrale Grautöne
       Dunkle Stufen für Hintergründe, helle für Text
     */
     
-    /* Hintergründe: dunkle Stufen (9-11) */
-    --background: 60 10% 24%;          /* Scale 11 */
-    --background-soft: 60 10% 27%;     /* Scale 10 */
-    --foreground: 60 9% 66%;           /* Scale 1 - helle für Text */
+    /* Hintergründe: dunkle Grautöne */
+    --background: 0 0% 12%;            /* Dunkles Grau */
+    --background-soft: 0 0% 15%;       /* Etwas heller */
+    --foreground: 0 0% 90%;            /* Helles Grau für Text */
     
     /* Card & Surfaces */
-    --card: 60 9% 31%;                 /* Scale 9 */
-    --card-foreground: 60 9% 66%;      /* Scale 1 */
+    --card: 0 0% 16%;                  /* Kartenfarbe */
+    --card-foreground: 0 0% 90%;       /* Heller Text */
     
-    --popover: 60 9% 31%;              /* Scale 9 */
-    --popover-foreground: 60 9% 66%;   /* Scale 1 */
+    --popover: 0 0% 16%;               /* Popover */
+    --popover-foreground: 0 0% 90%;    /* Heller Text */
     
-    /* Primary = Grundfarbe (etwas heller im Dark Mode) */
-    --primary: 60 10% 48%;             /* Scale 5 */
-    --primary-foreground: 60 10% 24%;  /* Scale 11 */
+    /* Primary = Grundfarbe (leicht aufgehellt im Dark Mode) */
+    --primary: 60 10% 55%;             /* Scale aufgehellt */
+    --primary-foreground: 0 0% 12%;    /* Dunkler Text */
     
     /* Secondary */
-    --secondary: 60 10% 27%;           /* Scale 10 */
-    --secondary-foreground: 60 9% 66%; /* Scale 1 */
+    --secondary: 0 0% 18%;             /* Sekundär */
+    --secondary-foreground: 0 0% 90%;  /* Heller Text */
     
     /* Muted */
-    --muted: 60 9% 31%;                /* Scale 9 */
-    --muted-foreground: 60 10% 53%;    /* Scale 4 */
+    --muted: 0 0% 20%;                 /* Gedämpft */
+    --muted-foreground: 0 0% 60%;      /* Mittlerer Text */
     
     /* Accent */
-    --accent: 60 9% 36%;               /* Scale 8 */
-    --accent-foreground: 60 9% 66%;    /* Scale 1 */
+    --accent: 0 0% 22%;                /* Akzent */
+    --accent-foreground: 0 0% 90%;     /* Heller Text */
     
     /* Status Colors */
-    --destructive: 60 10% 48%;         /* Scale 5 */
-    --destructive-foreground: 60 10% 24%;
+    --destructive: 0 60% 50%;          /* Rot für Fehler */
+    --destructive-foreground: 0 0% 100%;
     
-    --success: 60 10% 48%;             /* Scale 5 */
-    --success-foreground: 60 10% 24%;
+    --success: 120 40% 45%;            /* Grün für Erfolg */
+    --success-foreground: 0 0% 100%;
     
-    --warning: 60 10% 53%;             /* Scale 4 */
-    --warning-foreground: 60 10% 24%;
+    --warning: 40 80% 50%;             /* Orange für Warnung */
+    --warning-foreground: 0 0% 12%;
     
     /* Borders & Input */
-    --border: 60 9% 36%;               /* Scale 8 */
-    --input: 60 9% 36%;                /* Scale 8 */
-    --ring: 60 10% 48%;                /* Scale 5 */
+    --border: 0 0% 25%;                /* Rahmen */
+    --input: 0 0% 25%;                 /* Input */
+    --ring: 60 10% 55%;                /* Focus Ring */
     
     /* Sidebar */
-    --sidebar-background: 60 10% 24%;          /* Scale 11 */
-    --sidebar-foreground: 60 9% 66%;           /* Scale 1 */
-    --sidebar-primary: 60 10% 48%;             /* Scale 5 */
-    --sidebar-primary-foreground: 60 10% 24%;  /* Scale 11 */
-    --sidebar-accent: 60 9% 31%;               /* Scale 9 */
-    --sidebar-accent-foreground: 60 9% 66%;    /* Scale 1 */
-    --sidebar-border: 60 9% 36%;               /* Scale 8 */
-    --sidebar-ring: 60 10% 48%;                /* Scale 5 */
-    --sidebar-muted-foreground: 60 10% 53%;    /* Scale 4 */
+    --sidebar-background: 0 0% 10%;            /* Dunkel */
+    --sidebar-foreground: 0 0% 90%;            /* Hell */
+    --sidebar-primary: 60 10% 55%;             /* Grundfarbe */
+    --sidebar-primary-foreground: 0 0% 12%;    /* Dunkel */
+    --sidebar-accent: 0 0% 18%;                /* Akzent */
+    --sidebar-accent-foreground: 0 0% 90%;     /* Hell */
+    --sidebar-border: 0 0% 22%;                /* Rahmen */
+    --sidebar-ring: 60 10% 55%;                /* Ring */
+    --sidebar-muted-foreground: 0 0% 55%;      /* Gedämpfter Text */
   }
 }
 
