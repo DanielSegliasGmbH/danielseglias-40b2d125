@@ -93,12 +93,13 @@ export function InvalidityRiskSimulation() {
                 className={cn('absolute transition-all duration-300', colorClasses.green)}
                 style={getBlockStyle(1, 1, 1, 10)}
               >
-                <div className="h-full flex items-center justify-center">
+                <div className="absolute bottom-2 left-1 flex items-end gap-1">
+                  <span className="text-white text-lg font-bold">100%</span>
                   <span 
                     className="text-white text-[10px] font-medium whitespace-nowrap"
                     style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
                   >
-                    100% normaler Lohn
+                    normaler Lohn
                   </span>
                 </div>
               </div>
@@ -110,12 +111,13 @@ export function InvalidityRiskSimulation() {
                 className={cn('absolute transition-all duration-300', colorClasses.teal)}
                 style={getBlockStyle(2, 1, 1, 10)}
               >
-                <div className="h-full flex items-center justify-center">
+                <div className="absolute bottom-2 left-1 flex items-end gap-1">
+                  <span className="text-white text-lg font-bold">100%</span>
                   <span 
                     className="text-white text-[10px] font-medium whitespace-nowrap"
                     style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
                   >
-                    100% Lohnfortzahlung
+                    Lohnfortzahlung
                   </span>
                 </div>
               </div>
