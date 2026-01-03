@@ -94,7 +94,12 @@ export function InvalidityRiskSimulation() {
                 style={getBlockStyle(1, 1, 1, 10)}
               >
                 <div className="absolute bottom-2 left-1 flex items-end gap-1">
-                  <span className="text-white text-lg font-bold">100%</span>
+                  <span 
+                    className="text-white text-lg font-bold"
+                    style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+                  >
+                    100%
+                  </span>
                   <span 
                     className="text-white text-[10px] font-medium whitespace-nowrap"
                     style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
@@ -112,7 +117,12 @@ export function InvalidityRiskSimulation() {
                 style={getBlockStyle(2, 1, 1, 10)}
               >
                 <div className="absolute bottom-2 left-1 flex items-end gap-1">
-                  <span className="text-white text-lg font-bold">100%</span>
+                  <span 
+                    className="text-white text-lg font-bold"
+                    style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+                  >
+                    100%
+                  </span>
                   <span 
                     className="text-white text-[10px] font-medium whitespace-nowrap"
                     style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
