@@ -2,157 +2,351 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { PublicLayout } from '@/layouts/PublicLayout';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { 
-  Shield, 
-  Target, 
-  TrendingUp, 
-  Calculator, 
-  Users, 
-  ArrowRight,
-  CheckCircle2
+  Heart, 
+  Brain, 
+  Compass,
+  Copy,
+  MessageCircle,
+  ArrowDown,
+  Check
 } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 export default function PublicLanding() {
   const { t } = useTranslation();
+  const [copied, setCopied] = useState(false);
 
-  const services = [
-    {
-      icon: Shield,
-      title: t('public.services.insurance.title'),
-      description: t('public.services.insurance.description'),
-    },
-    {
-      icon: Target,
-      title: t('public.services.goals.title'),
-      description: t('public.services.goals.description'),
-    },
-    {
-      icon: TrendingUp,
-      title: t('public.services.investment.title'),
-      description: t('public.services.investment.description'),
-    },
-    {
-      icon: Calculator,
-      title: t('public.services.planning.title'),
-      description: t('public.services.planning.description'),
-    },
-  ];
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
-  const benefits = [
-    t('public.benefits.item1'),
-    t('public.benefits.item2'),
-    t('public.benefits.item3'),
-    t('public.benefits.item4'),
-  ];
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      toast.success('Link kopiert');
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      toast.error('Link konnte nicht kopiert werden');
+    }
+  };
+
+  const handleWhatsAppShare = () => {
+    const text = encodeURIComponent('Schau dir mal diese Seite an – vielleicht hilft sie dir beim Thema Krankenkasse: ' + window.location.href);
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+  };
 
   return (
     <PublicLayout>
-      {/* Hero Section */}
-      <section className="py-20 lg:py-32 bg-gradient-to-b from-primary/5 to-background">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6 max-w-4xl mx-auto">
-            {t('public.hero.title')}
-          </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            {t('public.hero.subtitle')}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/contact">
-              <Button size="lg" className="w-full sm:w-auto">
-                {t('public.hero.cta')}
-                <ArrowRight className="ml-2 h-4 w-4" />
+      {/* SECTION 1 – HERO (Emotionale Identifikation) */}
+      <section className="min-h-[90vh] flex items-center py-16 lg:py-24">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Text Content */}
+            <div className="max-w-xl">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-foreground leading-tight mb-6">
+                Niemand liebt seine Krankenkasse.
+                <br />
+                <span className="text-muted-foreground">Aber fast alle zahlen zu viel dafür.</span>
+              </h1>
+              
+              <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
+                Prämien steigen. Leistungen sind unübersichtlich.
+                <br />
+                Und trotzdem schieben die meisten dieses Thema jahrelang vor sich her.
+              </p>
+              
+              <p className="text-sm text-muted-foreground/80 mb-8 italic">
+                Diese Seite ist kein Verkauf.
+                <br />
+                Sie ist eine Übersetzung dessen, was eine Optimierung wirklich verändert.
+              </p>
+              
+              <Button 
+                size="lg" 
+                onClick={() => scrollToSection('wirkung')}
+                className="group"
+              >
+                Was würde sich für mich ändern?
+                <ArrowDown className="ml-2 h-4 w-4 transition-transform group-hover:translate-y-1" />
               </Button>
-            </Link>
-            <Link to="/tools">
-              <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                {t('public.hero.secondary')}
-              </Button>
-            </Link>
+            </div>
+            
+            {/* Abstract Illustration */}
+            <div className="hidden lg:flex items-center justify-center">
+              <div className="relative w-80 h-80">
+                {/* Abstract calm shapes */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full bg-scale-1/40" />
+                <div className="absolute top-16 left-8 w-24 h-24 rounded-full bg-scale-2/30" />
+                <div className="absolute top-20 right-8 w-20 h-20 rounded-full bg-scale-3/35" />
+                <div className="absolute bottom-16 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full bg-scale-1/25" />
+                <div className="absolute bottom-8 left-16 w-16 h-16 rounded-full bg-scale-4/30" />
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Services Section */}
-      <section className="py-20 bg-muted/30">
+      {/* SECTION 2 – REALITÄTSANKER / STUDIENBEZUG */}
+      <section className="py-20 lg:py-28 bg-scale-1/20">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-foreground mb-4">
-            {t('public.services.title')}
-          </h2>
-          <p className="text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
-            {t('public.services.subtitle')}
-          </p>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {services.map((service, index) => (
-              <Card key={index} className="transition-shadow hover:shadow-lg">
-                <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                    <service.icon className="h-6 w-6 text-primary" />
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-6">
+              Wovor sich Menschen in der Schweiz wirklich sorgen
+            </h2>
+            
+            {/* Simple visual element */}
+            <div className="flex justify-center mb-8">
+              <div className="flex items-end gap-2 h-20">
+                <div className="w-8 bg-scale-3/50 rounded-t" style={{ height: '40%' }} />
+                <div className="w-8 bg-scale-4/60 rounded-t" style={{ height: '55%' }} />
+                <div className="w-8 bg-scale-5/70 rounded-t" style={{ height: '70%' }} />
+                <div className="w-8 bg-primary rounded-t" style={{ height: '100%' }} />
+                <div className="w-8 bg-scale-5/70 rounded-t" style={{ height: '65%' }} />
+              </div>
+            </div>
+            
+            <p className="text-lg text-muted-foreground leading-relaxed mb-4">
+              Öffentliche Studien zeigen: Die steigenden Krankenkassenprämien
+              gehören zu den grössten finanziellen Sorgen der Schweizer Bevölkerung –
+              noch vor vielen anderen Alltagskosten.
+            </p>
+            
+            <p className="text-sm text-muted-foreground/70">
+              Basierend auf öffentlich zugänglichen Studien (z. B. moneyland.ch)
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 3 – KERNBEREICH: WIRKUNG STATT SYSTEM */}
+      <section id="wirkung" className="py-20 lg:py-28">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+              {/* CARD 1 – Finanzielle Entlastung */}
+              <Card className="border-scale-2/50 shadow-card">
+                <CardContent className="p-6 lg:p-8">
+                  <div className="w-12 h-12 rounded-xl bg-scale-1/50 flex items-center justify-center mb-5">
+                    <Heart className="h-6 w-6 text-primary" />
                   </div>
-                  <CardTitle className="text-lg">{service.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription>{service.description}</CardDescription>
+                  
+                  <h3 className="text-lg font-semibold text-foreground mb-4">
+                    Finanzielle Entlastung
+                  </h3>
+                  
+                  <div className="mb-4">
+                    <div className="text-2xl font-semibold text-primary">
+                      CHF X.– pro Jahr
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      ≈ X freie Abende / Wochenenden
+                    </div>
+                  </div>
+                  
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    Dieses Geld ist kein Bonus.
+                    Es ist Zeit und Freiheit, die vorher still jeden Monat verschwunden ist.
+                  </p>
                 </CardContent>
               </Card>
-            ))}
+
+              {/* CARD 2 – Mentale Entlastung */}
+              <Card className="border-scale-2/50 shadow-card">
+                <CardContent className="p-6 lg:p-8">
+                  <div className="w-12 h-12 rounded-xl bg-scale-1/50 flex items-center justify-center mb-5">
+                    <Brain className="h-6 w-6 text-primary" />
+                  </div>
+                  
+                  <h3 className="text-lg font-semibold text-foreground mb-4">
+                    Mentale Ruhe
+                  </h3>
+                  
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center gap-2 text-sm text-foreground">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span>Deckung geklärt</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-foreground">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span>Keine Überversicherung</span>
+                    </div>
+                  </div>
+                  
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    Wenn du weisst, dass deine Lösung passt,
+                    hörst du auf, bei jeder Prämienmeldung ein ungutes Gefühl zu haben.
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* CARD 3 – Entscheidungsfreiheit */}
+              <Card className="border-scale-2/50 shadow-card">
+                <CardContent className="p-6 lg:p-8">
+                  <div className="w-12 h-12 rounded-xl bg-scale-1/50 flex items-center justify-center mb-5">
+                    <Compass className="h-6 w-6 text-primary" />
+                  </div>
+                  
+                  <h3 className="text-lg font-semibold text-foreground mb-4">
+                    Klar entscheiden – ohne Druck
+                  </h3>
+                  
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    Wenn Beratung nicht vom Produkt abhängt,
+                    geht es nicht mehr darum, was verkauft wird,
+                    sondern was zu deinem Leben passt.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <div className="text-center mt-10">
+              <Button 
+                size="lg"
+                onClick={() => scrollToSection('datenerfassung')}
+              >
+                Meine Situation einordnen
+              </Button>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Benefits Section */}
-      <section className="py-20">
+      {/* SECTION 4 – EMOTIONALE ZUSAMMENFASSUNG (SIGNATURE) */}
+      <section className="py-20 lg:py-32 bg-scale-1/10">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl font-bold text-foreground mb-6">
-                {t('public.benefits.title')}
-              </h2>
-              <ul className="space-y-4">
-                {benefits.map((benefit, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <CheckCircle2 className="h-6 w-6 text-primary shrink-0 mt-0.5" />
-                    <span className="text-muted-foreground">{benefit}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link to="/contact" className="inline-block mt-8">
-                <Button>
-                  {t('public.benefits.cta')}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
-            <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl p-8 lg:p-12">
-              <div className="flex items-center gap-4 mb-6">
-                <Users className="h-12 w-12 text-primary" />
-                <div>
-                  <div className="text-4xl font-bold text-foreground">500+</div>
-                  <div className="text-muted-foreground">{t('public.stats.clients')}</div>
-                </div>
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-8">
+              Was diese Optimierung für dein Leben bedeutet
+            </h2>
+            
+            <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
+              <p>
+                Es geht nicht um eine günstigere Police.
+              </p>
+              <p>
+                Es geht darum, ein Thema abzuschliessen,
+                <br className="hidden sm:block" />
+                das viele jahrelang mit sich herumschleppen.
+              </p>
+              <div className="pt-4 space-y-2">
+                <p className="text-foreground font-medium">Weniger Kopfstress.</p>
+                <p className="text-foreground font-medium">Mehr Klarheit.</p>
+                <p className="text-foreground font-medium">Das gute Gefühl, es richtig geregelt zu haben.</p>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 5 – DATENERFASSUNG */}
+      <section id="datenerfassung" className="py-20 lg:py-28">
+        <div className="container mx-auto px-4">
+          <div className="max-w-xl mx-auto">
+            <div className="text-center mb-10">
+              <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-4">
+                Deine Situation verstehen
+              </h2>
               <p className="text-muted-foreground">
-                {t('public.stats.description')}
+                Damit wir deine Situation korrekt einordnen können,
+                benötigen wir einige grundlegende Angaben.
+                Keine Sorge – das dauert nur wenige Minuten.
               </p>
             </div>
+            
+            <Card className="border-scale-2/50 shadow-card">
+              <CardContent className="p-6 lg:p-8">
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground mb-6">
+                    Starte jetzt mit der Erfassung deiner Daten,
+                    um eine personalisierte Auswertung zu erhalten.
+                  </p>
+                  <Link to="/tools/kvg-praemienvergleich">
+                    <Button size="lg">
+                      Zur Datenerfassung
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">
-            {t('public.cta.title')}
-          </h2>
-          <p className="text-primary-foreground/80 mb-8 max-w-2xl mx-auto">
-            {t('public.cta.subtitle')}
-          </p>
-          <Link to="/contact">
-            <Button variant="secondary" size="lg">
-              {t('public.cta.button')}
-            </Button>
-          </Link>
+      {/* SECTION 6 – SHARE-MECHANIK */}
+      <section className="py-16 lg:py-20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-lg mx-auto">
+            <Card className="border-scale-2/50 shadow-card bg-scale-1/10">
+              <CardContent className="p-6 lg:p-8 text-center">
+                <p className="text-lg text-foreground mb-6 leading-relaxed">
+                  Kennst du jemanden,
+                  <br />
+                  der dieses Thema seit Jahren aufschiebt?
+                  <br />
+                  <span className="text-muted-foreground">Vielleicht hilft diese Seite weiter.</span>
+                </p>
+                
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button 
+                    variant="outline" 
+                    onClick={handleCopyLink}
+                    className="gap-2"
+                  >
+                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                    {copied ? 'Kopiert!' : 'Link kopieren'}
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={handleWhatsAppShare}
+                    className="gap-2"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    Per WhatsApp teilen
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 7 – FINALER CTA (FREIWILLIGER KONTAKT) */}
+      <section className="py-20 lg:py-28 bg-primary/5">
+        <div className="container mx-auto px-4">
+          <div className="max-w-xl mx-auto text-center">
+            <p className="text-lg text-foreground leading-relaxed mb-8">
+              Wenn du willst, schauen wir gemeinsam drauf.
+              <br />
+              <span className="text-muted-foreground">Ohne Verkaufsdruck.</span>
+              <br />
+              <span className="text-muted-foreground">Ohne Produktinteresse.</span>
+              <br />
+              <span className="text-muted-foreground">Einfach, um Klarheit zu schaffen.</span>
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/contact">
+                <Button size="lg">
+                  Unverbindlich anschauen lassen
+                </Button>
+              </Link>
+              <Button 
+                variant="ghost" 
+                size="lg"
+                onClick={() => scrollToSection('wirkung')}
+                className="text-muted-foreground"
+              >
+                Erst später entscheiden
+              </Button>
+            </div>
+          </div>
         </div>
       </section>
     </PublicLayout>
