@@ -95,7 +95,7 @@ export function InvalidityRiskSimulation() {
               >
                 <div className="h-full flex items-center justify-center">
                   <span 
-                    className="text-white text-xs font-medium whitespace-nowrap"
+                    className="text-white text-[10px] font-medium whitespace-nowrap"
                     style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
                   >
                     100% normaler Lohn
@@ -112,7 +112,7 @@ export function InvalidityRiskSimulation() {
               >
                 <div className="h-full flex items-center justify-center">
                   <span 
-                    className="text-white text-xs font-medium whitespace-nowrap"
+                    className="text-white text-[10px] font-medium whitespace-nowrap"
                     style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
                   >
                     100% Lohnfortzahlung
@@ -127,10 +127,10 @@ export function InvalidityRiskSimulation() {
                 className={cn('absolute transition-all duration-300', colorClasses.blue)}
                 style={getBlockStyle(3, 2, 1, 8)}
               >
-                <div className="p-2 flex flex-col justify-center h-full">
+                <div className="absolute top-2 left-2 flex flex-col">
                   <span className="text-white text-lg font-bold">80%</span>
                   <span className="text-white text-[10px] leading-tight">
-                    {simulationType === 'unfall' ? 'Taggeld' : 'Taggeld'}
+                    {simulationType === 'unfall' ? 'Unfall-Taggeld' : 'Kranken-Taggeld (Freiwillige Versicherung durch Arbeitgeber)'}
                   </span>
                 </div>
               </div>
@@ -139,23 +139,25 @@ export function InvalidityRiskSimulation() {
             {/* Phase 3: 80% Taggeld + Anspruch prüfen - Block 5-6, total 8 rows */}
             {currentPhase >= 3 && (
               <>
-                {/* 80% Taggeld - 6 rows high (rows 1-6) */}
+                {/* 80% Taggeld - rows 5-8 (4 rows, top aligns with phase 2) */}
                 <div
                   className={cn('absolute transition-all duration-300', colorClasses.blue)}
-                  style={getBlockStyle(5, 2, 1, 6)}
+                  style={getBlockStyle(5, 2, 5, 4)}
                 >
-                  <div className="p-2 flex flex-col justify-center h-full">
+                  <div className="absolute top-2 left-2 flex flex-col">
                     <span className="text-white text-lg font-bold">80%</span>
-                    <span className="text-white text-[10px] leading-tight">Taggeld</span>
+                    <span className="text-white text-[10px] leading-tight">
+                      {simulationType === 'unfall' ? 'Unfall-Taggeld' : 'Kranken-Taggeld (Freiwillige Versicherung durch Arbeitgeber)'}
+                    </span>
                   </div>
                 </div>
-                {/* Anspruch auf Invalidenrente prüfen - rows 7-8 (above Taggeld) */}
+                {/* Anspruch auf Invalidenrente prüfen - rows 1-4 (below Taggeld) */}
                 <div
                   className={cn('absolute transition-all duration-300', colorClasses.blue)}
-                  style={getBlockStyle(5, 2, 7, 2)}
+                  style={getBlockStyle(5, 2, 1, 4)}
                 >
-                  <div className="p-1 flex items-center justify-center h-full">
-                    <span className="text-white text-[9px] text-center leading-tight">
+                  <div className="absolute top-2 left-2">
+                    <span className="text-white text-[9px] leading-tight">
                       Anspruch auf Invalidenrente prüfen
                     </span>
                   </div>
@@ -217,13 +219,13 @@ export function InvalidityRiskSimulation() {
                     </div>
                     {/* UVG Rente - rows 4-9 (overlapping with PK, but only for Krankheit we show this differently) */}
                     {/* Actually for Krankheit: UVG doesn't apply, so we show Risk instead */}
-                    {/* Risk - 3. Säule - rows 7-9 (same top edge as UVG Rente) */}
+                    {/* Risiko/Lücke - 3. Säule - rows 7-9 (same top edge as UVG Rente) */}
                     <div
                       className={cn('absolute transition-all duration-300', colorClasses.red)}
                       style={getBlockStyle(7, 7, 7, 3)}
                     >
                       <div className="p-2 flex flex-col justify-center h-full relative">
-                        <span className="text-white text-sm font-medium">Risk</span>
+                        <span className="text-white text-sm font-medium">Risiko/Lücke</span>
                         <span className="absolute top-1 right-2 text-white/70 text-[9px]">3. Säule</span>
                       </div>
                     </div>
