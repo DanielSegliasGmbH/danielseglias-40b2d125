@@ -42,8 +42,8 @@ export default function InsuranceConsultingAdvisorInfo() {
                 PDF Dokument
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="aspect-[210/297] max-w-2xl mx-auto bg-muted rounded-lg overflow-hidden">
+            <CardContent className="bg-primary p-6">
+              <div className="aspect-[210/297] max-w-2xl mx-auto bg-muted rounded-lg overflow-hidden border-2 border-foreground">
                 <iframe
                   src={googleDrivePreviewUrl}
                   className="w-full h-full border-0"
