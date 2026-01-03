@@ -46,7 +46,7 @@ export interface SavedConsultation {
   created_by: string | null;
 }
 
-// Generate default topic states from config
+// Generate default topic states - ALL values set to false for reset
 const generateDefaultTopicStates = (): Record<string, TopicState> => {
   const states: Record<string, TopicState> = {};
   pyramidTopics.forEach((topic) => {
@@ -54,9 +54,9 @@ const generateDefaultTopicStates = (): Record<string, TopicState> => {
       discussed: false,
       prioritized: false,
       waiver: false,
-      important: topic.isImportant,
+      important: false, // Always false on reset/new consultation
       relatedTopicsDiscussed: topic.relatedTopics.reduce((acc, rt) => {
-        acc[rt.id] = rt.discussed;
+        acc[rt.id] = false; // Always false on reset/new consultation
         return acc;
       }, {} as Record<string, boolean>),
       numericValues: {},
