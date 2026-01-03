@@ -17,7 +17,7 @@ const checklistConfigs: Record<string, {
   default: {
     items: [
       { id: 'pensionskasse', label: 'Pensionskassenausweis' },
-      { id: 'ahv', label: 'Individueller AHV-Kontoauszug (oder Angabe des durchschnittlichen AHV-Einkommens)', link: { label: 'Kontoauszug bestellen', url: 'https://www.ahv-iv.ch/de/Merkblätter-Formulare/Bestellung-Kontoauszug' } },
+      { id: 'ahv', label: 'Individueller AHV-Kontoauszug (oder Angabe des durchschnittlichen AHV-Einkommens)', link: { label: 'Kontoauszug bestellen', url: 'https://www.ahv-iv.ch/de/Formulare/Bestellung-Kontoauszug/Schweiz' } },
       { id: 'vorsorge', label: 'Bestehende Vorsorgepolicen' },
       { id: 'krankenkasse', label: 'Bestehende Krankenkassen-Policen' },
       { id: 'gesundheit', label: 'Gesundheitsinformationen (allgemeiner Gesundheitszustand, Tabakkonsum)' },
@@ -30,7 +30,7 @@ const checklistConfigs: Record<string, {
   disability: {
     items: [
       { id: 'pensionskasse', label: 'Pensionskassenausweis' },
-      { id: 'ahv', label: 'Individueller AHV-Kontoauszug (oder Angabe des durchschnittlichen AHV-Einkommens)', link: { label: 'Kontoauszug bestellen', url: 'https://www.ahv-iv.ch/de/Merkblätter-Formulare/Bestellung-Kontoauszug' } },
+      { id: 'ahv', label: 'Individueller AHV-Kontoauszug (oder Angabe des durchschnittlichen AHV-Einkommens)', link: { label: 'Kontoauszug bestellen', url: 'https://www.ahv-iv.ch/de/Formulare/Bestellung-Kontoauszug/Schweiz' } },
       { id: 'vorsorge', label: 'Bestehende Vorsorgepolicen' },
       { id: 'krankenkasse', label: 'Bestehende Krankenkassen-Policen' },
       { id: 'gesundheit', label: 'Gesundheitsinformationen (allgemeiner Gesundheitszustand, Tabakkonsum)' },
@@ -42,7 +42,7 @@ const checklistConfigs: Record<string, {
   death: {
     items: [
       { id: 'pensionskasse', label: 'Pensionskassenausweis' },
-      { id: 'ahv', label: 'Individueller AHV-Kontoauszug (oder Angabe des durchschnittlichen AHV-Einkommens)', link: { label: 'Kontoauszug bestellen', url: 'https://www.ahv-iv.ch/de/Merkblätter-Formulare/Bestellung-Kontoauszug' } },
+      { id: 'ahv', label: 'Individueller AHV-Kontoauszug (oder Angabe des durchschnittlichen AHV-Einkommens)', link: { label: 'Kontoauszug bestellen', url: 'https://www.ahv-iv.ch/de/Formulare/Bestellung-Kontoauszug/Schweiz' } },
       { id: 'vorsorge', label: 'Bestehende Vorsorgepolicen' },
       { id: 'lebensversicherung', label: 'Bestehende Lebensversicherungen' },
       { id: 'testament', label: 'Testament / Erbvertrag' },
@@ -159,7 +159,7 @@ export function ChecklistDialog({
             {/* Documents Section */}
             <div>
               <a 
-                href="https://drive.google.com/drive/folders/1zJX3qJN739R3ixPel25u_0fV9WRkVMc8?usp=sharing"
+                href="https://drive.google.com/file/d/1RC_oG8SHt18qCHIA9aVWT8P6MbacTxz5/view?usp=sharing"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-3 text-left text-primary hover:underline font-medium block"
