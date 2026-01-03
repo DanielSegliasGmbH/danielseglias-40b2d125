@@ -9,6 +9,7 @@ import { LeadCaptureForm } from '@/components/public/LeadCaptureForm';
 import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, ClipboardCheck, LucideIcon } from 'lucide-react';
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
 import VorsorgecheckTool from '@/components/tools/vorsorgecheck/VorsorgecheckTool';
+import KvgPraemienvergleichTool from '@/components/tools/kvg-praemienvergleich/KvgPraemienvergleichTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -109,6 +110,10 @@ export default function PublicToolDetail() {
               {slug === 'finanzcheck' ? (
                 <div className="mb-8">
                   <FinanzcheckTool mode="public" />
+                </div>
+              ) : slug === 'kvg-praemienvergleich' ? (
+                <div className="mb-8">
+                  <KvgPraemienvergleichTool />
                 </div>
               ) : slug === 'vorsorgecheck-3a' ? (
                 <div className="mb-8">
