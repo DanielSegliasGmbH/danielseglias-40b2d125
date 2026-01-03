@@ -45,13 +45,13 @@ export function RelatedTopicDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-lg p-0 gap-0 overflow-hidden rounded-2xl">
+      <DialogContent className="w-[min(90vw,500px)] h-[min(90vw,500px)] max-w-none p-0 gap-0 overflow-hidden rounded-2xl flex flex-col">
         <DialogHeader className="sr-only">
           <DialogTitle>{topic.title}</DialogTitle>
         </DialogHeader>
 
         {/* Hero Image Section */}
-        <div className="relative h-56">
+        <div className="relative h-[40%] flex-shrink-0">
           {topic.imageUrl ? (
             <img
               src={topic.imageUrl}
@@ -85,7 +85,7 @@ export function RelatedTopicDialog({
         </div>
 
         {/* Content Section */}
-        <ScrollArea className="max-h-[50vh]">
+        <ScrollArea className="flex-1 min-h-0">
           <div className="bg-white p-6 space-y-6">
             {/* Info Text */}
             <div className="p-4 bg-gray-50 rounded-lg space-y-2">
