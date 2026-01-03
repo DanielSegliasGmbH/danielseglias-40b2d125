@@ -828,6 +828,7 @@
   },
   "insuranceConsulting": {
     "title": "Versicherungsberatung",
+    "start": "Gespräch starten",
     "topics": "Gesprächsthemen",
     "introduction": "Meine Vorstellung",
     "company": "Firma und unsere Services",

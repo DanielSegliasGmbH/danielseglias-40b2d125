@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { TrianglePyramid } from '@/components/insurance-consultation/TrianglePyramid';
 import { TopicDetailOverlay } from '@/components/insurance-consultation/TopicDetailOverlay';
-import { usePyramidState } from '@/hooks/usePyramidState';
+import { useConsultationState } from '@/hooks/useConsultationState';
 import { PyramidTopic } from '@/config/pyramidTopicsConfig';
 
 export default function InsuranceConsultingConsultation() {
@@ -18,7 +18,7 @@ export default function InsuranceConsultingConsultation() {
     toggleImportant,
     toggleWaiver,
     toggleRelatedTopicDiscussed,
-  } = usePyramidState();
+  } = useConsultationState();
 
   // Handle topic selection - open panel
   const handleSelectTopic = (topic: PyramidTopic) => {
