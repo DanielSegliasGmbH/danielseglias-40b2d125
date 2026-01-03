@@ -13,6 +13,7 @@ import { ExternalLink, Info, Mail, Trash2, Loader2, ChevronUp, ChevronDown, Chev
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { usePremiumData } from '@/hooks/usePremiumData';
+import KvgLandingIntro from './KvgLandingIntro';
 import { 
   FormData, 
   Person, 
@@ -161,8 +162,8 @@ const generateMockResults = (): CalculationResult[] => [
 ];
 
 export default function KvgPraemienvergleichTool() {
+  const [currentView, setCurrentView] = useState<'intro' | 'form' | 'results'>('intro');
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState<CalculationResult[]>([]);
   const [franchiseResults, setFranchiseResults] = useState<FranchiseResult[]>([]);
   const [personSummaries, setPersonSummaries] = useState<PersonSummary[]>([]);
@@ -266,13 +267,13 @@ export default function KvgPraemienvergleichTool() {
     setPersonSummaries(summaries);
     setResults(generateMockResults());
     setFranchiseResults(generateMockFranchiseResults());
-    setShowResults(true);
+    setCurrentView('results');
   };
 
   // Reset form
   const handleReset = () => {
     setFormData(initialFormData);
-    setShowResults(false);
+    setCurrentView('form');
     setResults([]);
     setFranchiseResults([]);
     setPersonSummaries([]);
@@ -280,7 +281,7 @@ export default function KvgPraemienvergleichTool() {
 
   // Go back to edit
   const handleEdit = () => {
-    setShowResults(false);
+    setCurrentView('form');
   };
 
   // Format price
@@ -461,7 +462,13 @@ export default function KvgPraemienvergleichTool() {
     });
   }, [franchiseResults, franchiseSortColumn, franchiseSortDirection]);
 
-  if (showResults) {
+  // Show intro landing page
+  if (currentView === 'intro') {
+    return <KvgLandingIntro onStartDataEntry={() => setCurrentView('form')} />;
+  }
+
+  // Show results
+  if (currentView === 'results') {
     return (
       <div className="space-y-6">
         {/* Header */}
