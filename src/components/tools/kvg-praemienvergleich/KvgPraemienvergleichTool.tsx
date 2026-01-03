@@ -462,9 +462,53 @@ export default function KvgPraemienvergleichTool() {
     });
   }, [franchiseResults, franchiseSortColumn, franchiseSortDirection]);
 
+  // Handle calculation from intro form
+  const handleIntroCalculate = (introFormData: {
+    currentInsurer: string;
+    currentModel: string;
+    birthYear: string;
+    franchise: string;
+    hasEmployerAccident: boolean | null;
+    location: string;
+  }) => {
+    // Update form data with intro values
+    setFormData({
+      location: introFormData.location,
+      persons: [{
+        id: generateId(),
+        birthYear: introFormData.birthYear,
+        franchise: introFormData.franchise,
+        needsAccidentCoverage: introFormData.hasEmployerAccident === null ? null : !introFormData.hasEmployerAccident,
+      }],
+      currentInsurer: introFormData.currentInsurer,
+      currentModel: introFormData.currentModel,
+      compareModels: {
+        standard: true,
+        hausarzt: true,
+        hmo: true,
+        weitere: true,
+      },
+    });
+    
+    // Generate summaries and results
+    const category = getCategory(introFormData.birthYear);
+    const summaries: PersonSummary[] = [{
+      id: 1,
+      category,
+      birthYear: introFormData.birthYear,
+      franchise: introFormData.franchise ? `${parseInt(introFormData.franchise).toLocaleString('de-CH')}'` : '',
+      accidentCoverage: introFormData.hasEmployerAccident === true ? 'Nein' : introFormData.hasEmployerAccident === false ? 'Ja' : '',
+    }];
+    
+    setPersonSummaries(summaries);
+    setResults(generateMockResults());
+    setFranchiseResults(generateMockFranchiseResults());
+    setCurrentView('results');
+  };
+
   // Show intro landing page
   if (currentView === 'intro') {
-    return <KvgLandingIntro onStartDataEntry={() => setCurrentView('form')} />;
+    return <KvgLandingIntro onCalculate={handleIntroCalculate} />;
   }
 
   // Show results
