@@ -17,6 +17,25 @@ export default {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
       colors: {
+        /* 
+          GLOBAL COLOR SCALE - Verbindliche Farbpalette
+          Direkte Skalenfarben für präzise Kontrolle
+        */
+        scale: {
+          1: "hsl(var(--scale-1))",   /* #B1B1A0 - hellste */
+          2: "hsl(var(--scale-2))",   /* #A6A694 */
+          3: "hsl(var(--scale-3))",   /* #9B9B88 */
+          4: "hsl(var(--scale-4))",   /* #90907D */
+          5: "hsl(var(--scale-5))",   /* #858572 */
+          6: "hsl(var(--scale-6))",   /* #7a7a67 - GRUNDFARBE */
+          7: "hsl(var(--scale-7))",   /* #6E6E5E */
+          8: "hsl(var(--scale-8))",   /* #636353 */
+          9: "hsl(var(--scale-9))",   /* #585849 */
+          10: "hsl(var(--scale-10))", /* #4D4D3F */
+          11: "hsl(var(--scale-11))", /* #424236 - dunkelste */
+        },
+        
+        /* Semantic Tokens - gemappt auf Skala */
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -58,11 +77,6 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
-        },
-        brand: {
-          olive: "hsl(var(--brand-olive))",
-          "olive-light": "hsl(var(--brand-olive-light))",
-          "olive-dark": "hsl(var(--brand-olive-dark))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
