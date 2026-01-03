@@ -14,12 +14,12 @@ interface TrianglePyramidProps {
   onToggleDiscussed: (topicId: string) => void;
 }
 
-// Row configuration: level -> percentage from top
+// Row configuration: level -> percentage from top (reduced spacing by 4/5)
 const rowPositions: Record<number, number> = {
   1: 8,   // Spitze
-  2: 30,  // 2 Kacheln
-  3: 55,  // 3 Kacheln
-  4: 82,  // 4 Kacheln (Basis)
+  2: 12,  // 2 Kacheln
+  3: 17,  // 3 Kacheln
+  4: 22,  // 4 Kacheln (Basis)
 };
 
 export function TrianglePyramid({
