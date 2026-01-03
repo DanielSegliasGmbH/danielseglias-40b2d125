@@ -48,10 +48,11 @@ export function TrianglePyramid({
     >
       {/* Triangle Background */}
       <div 
-        className="w-full bg-muted/30"
+        className="w-full"
         style={{
           aspectRatio: '1 / 0.866', // Equilateral triangle ratio
           clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
+          backgroundColor: '#9a9a8a', // Lighter version of #7a7a67
         }}
       />
 
