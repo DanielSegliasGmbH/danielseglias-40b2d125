@@ -1,99 +1,14 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
 
 type SimulationType = 'unfall' | 'krankheit';
 
-interface RiskPhase {
-  label: string;
-  blocks: {
-    id: string;
-    percentage: string;
-    title: string;
-    subtitle?: string;
-    pillar?: string;
-    color: 'green' | 'teal' | 'blue' | 'red';
-    row: number;
-    colStart: number;
-    colEnd: number;
-  }[];
-}
+// Grid: 13 columns x 10 rows
+const COLS = 13;
+const ROWS = 10;
 
-// Configuration for Unfall (Accident)
-const unfallPhases: RiskPhase[] = [
-  {
-    label: 'Heute',
-    blocks: [
-      { id: 'u-lohn', percentage: '100%', title: 'normaler Lohn', color: 'green', row: 1, colStart: 1, colEnd: 2 },
-    ],
-  },
-  {
-    label: 'Tag X',
-    blocks: [
-      { id: 'u-lohnfortzahlung', percentage: '100%', title: 'Lohnfortzahlung', color: 'teal', row: 1, colStart: 2, colEnd: 3 },
-    ],
-  },
-  {
-    label: 'Dritter Tag',
-    blocks: [
-      { id: 'u-uvg-taggeld-1', percentage: '80%', title: 'UVG Taggeld', color: 'blue', row: 1, colStart: 3, colEnd: 4 },
-    ],
-  },
-  {
-    label: '1. Jahr',
-    blocks: [
-      { id: 'u-uvg-taggeld-2', percentage: '80%', title: 'UVG Taggeld', color: 'blue', row: 1, colStart: 4, colEnd: 5 },
-      { id: 'u-iv-pruefen', percentage: '', title: 'Anspruch auf Invalidenrente prüfen', color: 'blue', row: 2, colStart: 4, colEnd: 5 },
-    ],
-  },
-  {
-    label: '2. Jahr',
-    blocks: [
-      { id: 'u-uvg-rente', percentage: '60%', title: 'UVG Rente', pillar: '2. Säule', color: 'blue', row: 1, colStart: 5, colEnd: 7 },
-      { id: 'u-iv-rente', percentage: '30%', title: 'IV-Rente (AHV/IV)', pillar: '1. Säule', color: 'green', row: 2, colStart: 5, colEnd: 7 },
-    ],
-  },
-];
-
-// Configuration for Krankheit (Illness)
-const krankheitPhases: RiskPhase[] = [
-  {
-    label: 'Heute',
-    blocks: [
-      { id: 'k-lohn', percentage: '100%', title: 'normaler Lohn', color: 'green', row: 1, colStart: 1, colEnd: 2 },
-    ],
-  },
-  {
-    label: 'Tag X',
-    blocks: [
-      { id: 'k-lohnfortzahlung', percentage: '100%', title: 'Lohnfortzahlung', color: 'teal', row: 1, colStart: 2, colEnd: 3 },
-    ],
-  },
-  {
-    label: 'In der Regel 30 Tage',
-    blocks: [
-      { id: 'k-ktg-1', percentage: '80%', title: 'Krankentaggeld (Freiwillige Versicherung Arbeitgeber)', color: 'blue', row: 1, colStart: 3, colEnd: 4 },
-    ],
-  },
-  {
-    label: '1. Jahr',
-    blocks: [
-      { id: 'k-ktg-2', percentage: '80%', title: 'Krankentaggeld (Freiwillige Versicherung Arbeitgeber)', color: 'blue', row: 1, colStart: 4, colEnd: 5 },
-      { id: 'k-iv-pruefen', percentage: '', title: 'Anspruch auf Invalidenrente prüfen', color: 'blue', row: 2, colStart: 4, colEnd: 5 },
-    ],
-  },
-  {
-    label: '2. Jahr',
-    blocks: [
-      { id: 'k-risk', percentage: '', title: 'Risk', pillar: '3. Säule', color: 'red', row: 0, colStart: 5, colEnd: 7 },
-      { id: 'k-pk-rente', percentage: '30%', title: 'Pensionskasse IV-Rente (BVG)', pillar: '2. Säule', color: 'blue', row: 1, colStart: 5, colEnd: 7 },
-      { id: 'k-iv-rente', percentage: '30%', title: 'IV-Rente (AHV/IV)', pillar: '1. Säule', color: 'green', row: 2, colStart: 5, colEnd: 7 },
-    ],
-  },
-];
-
-const phaseLabels = ['Heute', 'Tag X', '', '1. Jahr', '2. Jahr', 'Pensionierung'];
-
+// Colors using design system
 const colorClasses = {
   green: 'bg-emerald-500',
   teal: 'bg-teal-500',
@@ -101,28 +16,10 @@ const colorClasses = {
   red: 'bg-red-500',
 };
 
-const colorClassesMuted = {
-  green: 'bg-emerald-200',
-  teal: 'bg-teal-200',
-  blue: 'bg-blue-200',
-  red: 'bg-red-200',
-};
-
 export function InvalidityRiskSimulation() {
   const [simulationType, setSimulationType] = useState<SimulationType>('unfall');
   const [sliderValue, setSliderValue] = useState([4]); // 0-4 for 5 phases
-
-  const phases = simulationType === 'unfall' ? unfallPhases : krankheitPhases;
   const currentPhase = sliderValue[0];
-
-  // Get all visible blocks based on current phase
-  const visibleBlocks = useMemo(() => {
-    const blocks: typeof phases[0]['blocks'] = [];
-    for (let i = 0; i <= currentPhase; i++) {
-      blocks.push(...phases[i].blocks);
-    }
-    return blocks;
-  }, [phases, currentPhase]);
 
   // Get the label for phase 2 based on simulation type
   const phase2Label = simulationType === 'unfall' ? 'Dritter Tag' : 'In der Regel\n30 Tage';
@@ -131,6 +28,14 @@ export function InvalidityRiskSimulation() {
   const incomeText = simulationType === 'unfall' 
     ? 'Die Grafik zeigt das durchschnittliche Risikoszenario eines Unfalls bei einem Jahreseinkommen von max. CHF 148\'200.'
     : 'Die Grafik zeigt das durchschnittliche Risikoszenario einer Krankheit bei einem Jahreseinkommen von max. CHF 90\'270.';
+
+  // Helper to calculate position/size based on grid
+  const getBlockStyle = (colStart: number, colSpan: number, rowStart: number, rowSpan: number) => ({
+    left: `${((colStart - 1) / COLS) * 100}%`,
+    width: `${(colSpan / COLS) * 100}%`,
+    bottom: `${((rowStart - 1) / ROWS) * 100}%`,
+    height: `${(rowSpan / ROWS) * 100}%`,
+  });
 
   return (
     <div className="w-full space-y-6">
@@ -165,230 +70,165 @@ export function InvalidityRiskSimulation() {
       {/* Risk Phase Visualization */}
       <div className="relative border border-border rounded-lg bg-background p-4">
         {/* Grid Container */}
-        <div className="relative h-[280px]">
-          {/* Phase columns with vertical lines */}
+        <div className="relative h-[320px]">
+          {/* Phase column dividers */}
           <div className="absolute inset-0 flex">
-            {[0, 1, 2, 3, 4, 5].map((i) => (
-              <div 
-                key={i} 
-                className={cn(
-                  "flex-1 border-r border-dashed border-border/50",
-                  i === 5 && "border-r-0"
-                )}
-              />
-            ))}
+            {/* Heute: col 1 */}
+            <div className="border-r border-dashed border-border/50" style={{ width: `${(1/COLS)*100}%` }} />
+            {/* Tag X: col 2 */}
+            <div className="border-r border-dashed border-border/50" style={{ width: `${(1/COLS)*100}%` }} />
+            {/* Dritter Tag: col 3-4 */}
+            <div className="border-r border-dashed border-border/50" style={{ width: `${(2/COLS)*100}%` }} />
+            {/* 1. Jahr: col 5-6 */}
+            <div className="border-r border-dashed border-border/50" style={{ width: `${(2/COLS)*100}%` }} />
+            {/* 2. Jahr: col 7-13 */}
+            <div style={{ width: `${(7/COLS)*100}%` }} />
           </div>
 
           {/* Blocks */}
           <div className="absolute inset-0">
-            {/* Phase 0: Normaler Lohn - vertical text */}
-            <div
-              className={cn(
-                'absolute transition-all duration-500',
-                currentPhase >= 0 ? colorClasses.green : colorClassesMuted.green
-              )}
-              style={{
-                left: '0%',
-                width: '16.66%',
-                top: '20%',
-                height: '80%',
-              }}
-            >
-              <div className="h-full flex items-center justify-center">
-                <span 
-                  className="text-white text-xs font-medium whitespace-nowrap"
-                  style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
-                >
-                  100% normaler Lohn
-                </span>
+            {/* Phase 0: 100% normaler Lohn - Block 1, 10 rows high */}
+            {currentPhase >= 0 && (
+              <div
+                className={cn('absolute transition-all duration-300', colorClasses.green)}
+                style={getBlockStyle(1, 1, 1, 10)}
+              >
+                <div className="h-full flex items-center justify-center">
+                  <span 
+                    className="text-white text-xs font-medium whitespace-nowrap"
+                    style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+                  >
+                    100% normaler Lohn
+                  </span>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Phase 1: Lohnfortzahlung - vertical text */}
-            <div
-              className={cn(
-                'absolute transition-all duration-500',
-                currentPhase >= 1 ? colorClasses.teal : colorClassesMuted.teal
-              )}
-              style={{
-                left: '16.66%',
-                width: '16.66%',
-                top: '20%',
-                height: '80%',
-              }}
-            >
-              <div className="h-full flex items-center justify-center">
-                <span 
-                  className="text-white text-xs font-medium whitespace-nowrap"
-                  style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
-                >
-                  100% Lohnfortzahlung
-                </span>
+            {/* Phase 1: 100% Lohnfortzahlung - Block 2, 10 rows high */}
+            {currentPhase >= 1 && (
+              <div
+                className={cn('absolute transition-all duration-300', colorClasses.teal)}
+                style={getBlockStyle(2, 1, 1, 10)}
+              >
+                <div className="h-full flex items-center justify-center">
+                  <span 
+                    className="text-white text-xs font-medium whitespace-nowrap"
+                    style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+                  >
+                    100% Lohnfortzahlung
+                  </span>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Phase 2: Taggeld */}
-            <div
-              className={cn(
-                'absolute transition-all duration-500',
-                currentPhase >= 2 ? colorClasses.blue : colorClassesMuted.blue
-              )}
-              style={{
-                left: '33.33%',
-                width: '16.66%',
-                top: '0%',
-                height: '40%',
-              }}
-            >
-              <div className="p-2 flex flex-col justify-center h-full">
-                <span className="text-white text-lg font-bold">80%</span>
-                <span className="text-white text-[10px] leading-tight">
-                  {simulationType === 'unfall' ? 'UVG Taggeld' : 'Krankentaggeld (Freiwillige Versicherung Arbeitgeber)'}
-                </span>
+            {/* Phase 2: 80% Taggeld - Block 3-4, 8 rows high */}
+            {currentPhase >= 2 && (
+              <div
+                className={cn('absolute transition-all duration-300', colorClasses.blue)}
+                style={getBlockStyle(3, 2, 1, 8)}
+              >
+                <div className="p-2 flex flex-col justify-center h-full">
+                  <span className="text-white text-lg font-bold">80%</span>
+                  <span className="text-white text-[10px] leading-tight">
+                    {simulationType === 'unfall' ? 'Taggeld' : 'Taggeld'}
+                  </span>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Phase 3: Taggeld + IV prüfen */}
-            <div
-              className={cn(
-                'absolute transition-all duration-500',
-                currentPhase >= 3 ? colorClasses.blue : colorClassesMuted.blue
-              )}
-              style={{
-                left: '50%',
-                width: '16.66%',
-                top: '0%',
-                height: '40%',
-              }}
-            >
-              <div className="p-2 flex flex-col justify-center h-full">
-                <span className="text-white text-lg font-bold">80%</span>
-                <span className="text-white text-[10px] leading-tight">
-                  {simulationType === 'unfall' ? 'UVG Taggeld' : 'Krankentaggeld (Freiwillige Versicherung Arbeitgeber)'}
-                </span>
-              </div>
-            </div>
-
-            {/* Phase 3: Anspruch prüfen */}
-            <div
-              className={cn(
-                'absolute transition-all duration-500',
-                currentPhase >= 3 ? colorClasses.blue : colorClassesMuted.blue
-              )}
-              style={{
-                left: '50%',
-                width: '16.66%',
-                top: '40%',
-                height: '30%',
-              }}
-            >
-              <div className="p-2 flex items-center justify-center h-full">
-                <span className="text-white text-[10px] text-center leading-tight">
-                  Anspruch auf Invalidenrente prüfen
-                </span>
-              </div>
-            </div>
-
-            {/* Phase 4: Renten (different layout for Unfall vs Krankheit) */}
-            {simulationType === 'unfall' ? (
+            {/* Phase 3: 80% Taggeld + Anspruch prüfen - Block 5-6 */}
+            {currentPhase >= 3 && (
               <>
-                {/* UVG Rente - 2. Säule */}
+                {/* 80% Taggeld - 8 rows high */}
                 <div
-                  className={cn(
-                    'absolute transition-all duration-500',
-                    currentPhase >= 4 ? colorClasses.blue : colorClassesMuted.blue
-                  )}
-                  style={{
-                    left: '66.66%',
-                    width: '33.33%',
-                    top: '0%',
-                    height: '40%',
-                  }}
+                  className={cn('absolute transition-all duration-300', colorClasses.blue)}
+                  style={getBlockStyle(5, 2, 1, 8)}
                 >
-                  <div className="p-2 flex flex-col justify-center h-full relative">
-                    <span className="text-white text-lg font-bold">60%</span>
-                    <span className="text-white text-[10px]">UVG Rente</span>
-                    <span className="absolute top-2 right-2 text-white/70 text-[10px]">2. Säule</span>
+                  <div className="p-2 flex flex-col justify-center h-full">
+                    <span className="text-white text-lg font-bold">80%</span>
+                    <span className="text-white text-[10px] leading-tight">Taggeld</span>
                   </div>
                 </div>
-                {/* IV-Rente - 1. Säule */}
+                {/* Anspruch auf Invalidenrente prüfen - rows 9-10 (above Taggeld) */}
                 <div
-                  className={cn(
-                    'absolute transition-all duration-500',
-                    currentPhase >= 4 ? colorClasses.green : colorClassesMuted.green
-                  )}
-                  style={{
-                    left: '66.66%',
-                    width: '33.33%',
-                    top: '40%',
-                    height: '30%',
-                  }}
+                  className={cn('absolute transition-all duration-300', colorClasses.blue)}
+                  style={getBlockStyle(5, 2, 9, 2)}
                 >
-                  <div className="p-2 flex flex-col justify-center h-full relative">
-                    <span className="text-white text-lg font-bold">30%</span>
-                    <span className="text-white text-[10px]">IV-Rente (AHV/IV)</span>
-                    <span className="absolute top-2 right-2 text-white/70 text-[10px]">1. Säule</span>
+                  <div className="p-1 flex items-center justify-center h-full">
+                    <span className="text-white text-[9px] text-center leading-tight">
+                      Anspruch auf Invalidenrente prüfen
+                    </span>
                   </div>
                 </div>
               </>
-            ) : (
+            )}
+
+            {/* Phase 4: Renten - Block 7-13 (different for Unfall vs Krankheit) */}
+            {currentPhase >= 4 && (
               <>
-                {/* Risk - 3. Säule */}
-                <div
-                  className={cn(
-                    'absolute transition-all duration-500',
-                    currentPhase >= 4 ? colorClasses.red : colorClassesMuted.red
-                  )}
-                  style={{
-                    left: '66.66%',
-                    width: '33.33%',
-                    top: '0%',
-                    height: '20%',
-                  }}
-                >
-                  <div className="p-2 flex items-center h-full relative">
-                    <span className="text-white text-sm font-medium">Risk</span>
-                    <span className="absolute top-2 right-2 text-white/70 text-[10px]">3. Säule</span>
-                  </div>
-                </div>
-                {/* Pensionskasse IV-Rente - 2. Säule */}
-                <div
-                  className={cn(
-                    'absolute transition-all duration-500',
-                    currentPhase >= 4 ? colorClasses.blue : colorClassesMuted.blue
-                  )}
-                  style={{
-                    left: '66.66%',
-                    width: '33.33%',
-                    top: '20%',
-                    height: '25%',
-                  }}
-                >
-                  <div className="p-2 flex flex-col justify-center h-full relative">
-                    <span className="text-white text-lg font-bold">30%</span>
-                    <span className="text-white text-[10px]">Pensionskasse IV-Rente (BVG)</span>
-                    <span className="absolute top-2 right-2 text-white/70 text-[10px]">2. Säule</span>
-                  </div>
-                </div>
-                {/* IV-Rente - 1. Säule */}
-                <div
-                  className={cn(
-                    'absolute transition-all duration-500',
-                    currentPhase >= 4 ? colorClasses.green : colorClassesMuted.green
-                  )}
-                  style={{
-                    left: '66.66%',
-                    width: '33.33%',
-                    top: '45%',
-                    height: '25%',
-                  }}
-                >
-                  <div className="p-2 flex flex-col justify-center h-full relative">
-                    <span className="text-white text-lg font-bold">30%</span>
-                    <span className="text-white text-[10px]">IV-Rente (AHV/IV)</span>
-                    <span className="absolute top-2 right-2 text-white/70 text-[10px]">1. Säule</span>
-                  </div>
-                </div>
+                {simulationType === 'unfall' ? (
+                  <>
+                    {/* IV-Rente (AHV / IV) - 1. Säule - rows 1-3 */}
+                    <div
+                      className={cn('absolute transition-all duration-300', colorClasses.green)}
+                      style={getBlockStyle(7, 7, 1, 3)}
+                    >
+                      <div className="p-2 flex flex-col justify-center h-full relative">
+                        <span className="text-white text-lg font-bold">30%</span>
+                        <span className="text-white text-[10px]">IV-Rente (AHV / IV)</span>
+                        <span className="absolute top-1 right-2 text-white/70 text-[9px]">1. Säule</span>
+                      </div>
+                    </div>
+                    {/* UVG Rente - rows 4-9 */}
+                    <div
+                      className={cn('absolute transition-all duration-300', colorClasses.blue)}
+                      style={getBlockStyle(7, 7, 4, 6)}
+                    >
+                      <div className="p-2 flex flex-col justify-center h-full relative">
+                        <span className="text-white text-lg font-bold">60%</span>
+                        <span className="text-white text-[10px]">UVG Rente</span>
+                        <span className="absolute top-1 right-2 text-white/70 text-[9px]">2. Säule</span>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* IV-Rente (AHV / IV) - 1. Säule - rows 1-3 */}
+                    <div
+                      className={cn('absolute transition-all duration-300', colorClasses.green)}
+                      style={getBlockStyle(7, 7, 1, 3)}
+                    >
+                      <div className="p-2 flex flex-col justify-center h-full relative">
+                        <span className="text-white text-lg font-bold">30%</span>
+                        <span className="text-white text-[10px]">IV-Rente (AHV / IV)</span>
+                        <span className="absolute top-1 right-2 text-white/70 text-[9px]">1. Säule</span>
+                      </div>
+                    </div>
+                    {/* Pensionskasse IV-Rente - 2. Säule - rows 4-6 */}
+                    <div
+                      className={cn('absolute transition-all duration-300', colorClasses.blue)}
+                      style={getBlockStyle(7, 7, 4, 3)}
+                    >
+                      <div className="p-2 flex flex-col justify-center h-full relative">
+                        <span className="text-white text-lg font-bold">30%</span>
+                        <span className="text-white text-[10px]">Pensionskasse IV-Rente</span>
+                        <span className="absolute top-1 right-2 text-white/70 text-[9px]">2. Säule</span>
+                      </div>
+                    </div>
+                    {/* UVG Rente - rows 4-9 (overlapping with PK, but only for Krankheit we show this differently) */}
+                    {/* Actually for Krankheit: UVG doesn't apply, so we show Risk instead */}
+                    {/* Risk - 3. Säule - rows 6-9 */}
+                    <div
+                      className={cn('absolute transition-all duration-300', colorClasses.red)}
+                      style={getBlockStyle(7, 7, 7, 4)}
+                    >
+                      <div className="p-2 flex flex-col justify-center h-full relative">
+                        <span className="text-white text-sm font-medium">Risk</span>
+                        <span className="absolute top-1 right-2 text-white/70 text-[9px]">3. Säule</span>
+                      </div>
+                    </div>
+                  </>
+                )}
               </>
             )}
           </div>
@@ -396,11 +236,11 @@ export function InvalidityRiskSimulation() {
 
         {/* X-Axis Labels */}
         <div className="flex mt-2 text-[10px] text-muted-foreground">
-          <div className="flex-1 text-center">Heute</div>
-          <div className="flex-1 text-center whitespace-pre-line">{phase2Label}</div>
-          <div className="flex-1 text-center">1. Jahr</div>
-          <div className="flex-1 text-center">2. Jahr</div>
-          <div className="flex-1 text-center">Pensionierung</div>
+          <div style={{ width: `${(1/COLS)*100}%` }} className="text-center">Heute</div>
+          <div style={{ width: `${(1/COLS)*100}%` }} className="text-center">Tag X</div>
+          <div style={{ width: `${(2/COLS)*100}%` }} className="text-center whitespace-pre-line">{phase2Label}</div>
+          <div style={{ width: `${(2/COLS)*100}%` }} className="text-center">1. Jahr</div>
+          <div style={{ width: `${(7/COLS)*100}%` }} className="text-center">2. Jahr</div>
         </div>
       </div>
 
