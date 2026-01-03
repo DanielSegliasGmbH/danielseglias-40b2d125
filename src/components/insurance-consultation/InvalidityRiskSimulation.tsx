@@ -8,12 +8,17 @@ type SimulationType = 'unfall' | 'krankheit';
 const COLS = 13;
 const ROWS = 10;
 
-// Colors using design system
-const colorClasses = {
-  green: 'bg-emerald-500',
-  teal: 'bg-teal-500',
-  blue: 'bg-blue-500',
-  red: 'bg-red-500',
+// Custom colors for the visualization
+const customColors = {
+  normalerLohn: '#B1B1A0',
+  lohnfortzahlung: '#A6A694',
+  taggeld: '#9B9B88',
+  invalidenrentePruefen: '#90907D',
+  ivRente: '#6E6E5E',
+  pkRenteUvg: '#636353',
+  risk: '#EF4444', // Keep red for risk
+  sliderStart: '#B1B1A0',
+  sliderEnd: '#4D4D3F',
 };
 
 export function InvalidityRiskSimulation() {
@@ -90,8 +95,8 @@ export function InvalidityRiskSimulation() {
             {/* Phase 0: 100% normaler Lohn - Block 1, 10 rows high */}
             {currentPhase >= 0 && (
               <div
-                className={cn('absolute transition-all duration-300', colorClasses.green)}
-                style={getBlockStyle(1, 1, 1, 10)}
+                className="absolute transition-all duration-300"
+                style={{ ...getBlockStyle(1, 1, 1, 10), backgroundColor: customColors.normalerLohn }}
               >
                 <div className="absolute bottom-2 left-1 flex items-end gap-1">
                   <span 
@@ -113,8 +118,8 @@ export function InvalidityRiskSimulation() {
             {/* Phase 1: 100% Lohnfortzahlung - Block 2, 10 rows high */}
             {currentPhase >= 1 && (
               <div
-                className={cn('absolute transition-all duration-300', colorClasses.teal)}
-                style={getBlockStyle(2, 1, 1, 10)}
+                className="absolute transition-all duration-300"
+                style={{ ...getBlockStyle(2, 1, 1, 10), backgroundColor: customColors.lohnfortzahlung }}
               >
                 <div className="absolute bottom-2 left-1 flex items-end gap-1">
                   <span 
@@ -136,8 +141,8 @@ export function InvalidityRiskSimulation() {
             {/* Phase 2: 80% Taggeld - Block 3-4, 8 rows high */}
             {currentPhase >= 2 && (
               <div
-                className={cn('absolute transition-all duration-300', colorClasses.blue)}
-                style={getBlockStyle(3, 2, 1, 8)}
+                className="absolute transition-all duration-300"
+                style={{ ...getBlockStyle(3, 2, 1, 8), backgroundColor: customColors.taggeld }}
               >
                 <div className="absolute top-2 left-2 flex flex-col">
                   <span className="text-white text-lg font-bold">80%</span>
@@ -153,8 +158,8 @@ export function InvalidityRiskSimulation() {
               <>
                 {/* 80% Taggeld - rows 5-8 (4 rows, top aligns with phase 2) */}
                 <div
-                  className={cn('absolute transition-all duration-300', colorClasses.blue)}
-                  style={getBlockStyle(5, 2, 5, 4)}
+                  className="absolute transition-all duration-300"
+                  style={{ ...getBlockStyle(5, 2, 5, 4), backgroundColor: customColors.taggeld }}
                 >
                   <div className="absolute top-2 left-2 flex flex-col">
                     <span className="text-white text-lg font-bold">80%</span>
@@ -165,8 +170,8 @@ export function InvalidityRiskSimulation() {
                 </div>
                 {/* Anspruch auf Invalidenrente prüfen - rows 1-4 (below Taggeld) */}
                 <div
-                  className={cn('absolute transition-all duration-300', colorClasses.blue)}
-                  style={getBlockStyle(5, 2, 1, 4)}
+                  className="absolute transition-all duration-300"
+                  style={{ ...getBlockStyle(5, 2, 1, 4), backgroundColor: customColors.invalidenrentePruefen }}
                 >
                   <div className="absolute top-2 left-2">
                     <span className="text-white text-[9px] leading-tight">
@@ -184,8 +189,8 @@ export function InvalidityRiskSimulation() {
                   <>
                     {/* IV-Rente (AHV / IV) - 1. Säule - rows 1-3 */}
                     <div
-                      className={cn('absolute transition-all duration-300', colorClasses.green)}
-                      style={getBlockStyle(7, 7, 1, 3)}
+                      className="absolute transition-all duration-300"
+                      style={{ ...getBlockStyle(7, 7, 1, 3), backgroundColor: customColors.ivRente }}
                     >
                       <div className="p-2 flex flex-col justify-center h-full relative">
                         <span className="text-white text-lg font-bold">30%</span>
@@ -195,8 +200,8 @@ export function InvalidityRiskSimulation() {
                     </div>
                     {/* UVG Rente - rows 4-9 */}
                     <div
-                      className={cn('absolute transition-all duration-300', colorClasses.blue)}
-                      style={getBlockStyle(7, 7, 4, 6)}
+                      className="absolute transition-all duration-300"
+                      style={{ ...getBlockStyle(7, 7, 4, 6), backgroundColor: customColors.pkRenteUvg }}
                     >
                       <div className="p-2 flex flex-col justify-center h-full relative">
                         <span className="text-white text-lg font-bold">60%</span>
@@ -209,8 +214,8 @@ export function InvalidityRiskSimulation() {
                   <>
                     {/* IV-Rente (AHV / IV) - 1. Säule - rows 1-3 */}
                     <div
-                      className={cn('absolute transition-all duration-300', colorClasses.green)}
-                      style={getBlockStyle(7, 7, 1, 3)}
+                      className="absolute transition-all duration-300"
+                      style={{ ...getBlockStyle(7, 7, 1, 3), backgroundColor: customColors.ivRente }}
                     >
                       <div className="p-2 flex flex-col justify-center h-full relative">
                         <span className="text-white text-lg font-bold">30%</span>
@@ -220,8 +225,8 @@ export function InvalidityRiskSimulation() {
                     </div>
                     {/* Pensionskasse IV-Rente - 2. Säule - rows 4-6 */}
                     <div
-                      className={cn('absolute transition-all duration-300', colorClasses.blue)}
-                      style={getBlockStyle(7, 7, 4, 3)}
+                      className="absolute transition-all duration-300"
+                      style={{ ...getBlockStyle(7, 7, 4, 3), backgroundColor: customColors.pkRenteUvg }}
                     >
                       <div className="p-2 flex flex-col justify-center h-full relative">
                         <span className="text-white text-lg font-bold">30%</span>
@@ -229,12 +234,10 @@ export function InvalidityRiskSimulation() {
                         <span className="absolute top-1 right-2 text-white/70 text-[9px]">2. Säule</span>
                       </div>
                     </div>
-                    {/* UVG Rente - rows 4-9 (overlapping with PK, but only for Krankheit we show this differently) */}
-                    {/* Actually for Krankheit: UVG doesn't apply, so we show Risk instead */}
-                    {/* Risiko/Lücke - 3. Säule - rows 7-9 (same top edge as UVG Rente) */}
+                    {/* Risiko/Lücke - 3. Säule - rows 7-9 */}
                     <div
-                      className={cn('absolute transition-all duration-300', colorClasses.red)}
-                      style={getBlockStyle(7, 7, 7, 3)}
+                      className="absolute transition-all duration-300"
+                      style={{ ...getBlockStyle(7, 7, 7, 3), backgroundColor: customColors.risk }}
                     >
                       <div className="p-2 flex flex-col justify-center h-full relative">
                         <span className="text-white text-sm font-medium">Risiko/Lücke</span>
@@ -287,13 +290,23 @@ export function InvalidityRiskSimulation() {
           RISIKOPHASEN
         </p>
         <div className="px-2">
-          <Slider
-            value={sliderValue}
-            onValueChange={setSliderValue}
-            max={4}
-            step={1}
-            className="w-full"
-          />
+          <div className="relative">
+            {/* Custom gradient track */}
+            <div 
+              className="h-2 w-full rounded-full"
+              style={{ background: `linear-gradient(to right, ${customColors.sliderStart}, ${customColors.sliderEnd})` }}
+            />
+            {/* Slider overlay */}
+            <div className="absolute inset-0">
+              <Slider
+                value={sliderValue}
+                onValueChange={setSliderValue}
+                max={4}
+                step={1}
+                className="w-full [&_[data-radix-slider-track]]:bg-transparent [&_[data-radix-slider-range]]:bg-transparent [&_[data-radix-slider-thumb]]:border-[#4D4D3F]"
+              />
+            </div>
+          </div>
         </div>
         <p className="text-[10px] text-muted-foreground">
           {incomeText}
