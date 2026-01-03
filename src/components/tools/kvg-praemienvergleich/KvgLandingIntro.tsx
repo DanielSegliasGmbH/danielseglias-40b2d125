@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Heart, 
   Brain, 
@@ -11,13 +15,29 @@ import {
   Check
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { FRANCHISES, INSURERS, INSURANCE_MODELS } from './types';
 
 interface KvgLandingIntroProps {
-  onStartDataEntry: () => void;
+  onCalculate: (formData: {
+    currentInsurer: string;
+    currentModel: string;
+    birthYear: string;
+    franchise: string;
+    hasEmployerAccident: boolean | null;
+    location: string;
+  }) => void;
 }
 
-export default function KvgLandingIntro({ onStartDataEntry }: KvgLandingIntroProps) {
+export default function KvgLandingIntro({ onCalculate }: KvgLandingIntroProps) {
   const [copied, setCopied] = useState(false);
+  
+  // Form state
+  const [currentInsurer, setCurrentInsurer] = useState('');
+  const [currentModel, setCurrentModel] = useState('');
+  const [birthYear, setBirthYear] = useState('');
+  const [franchise, setFranchise] = useState('');
+  const [hasEmployerAccident, setHasEmployerAccident] = useState<boolean | null>(null);
+  const [location, setLocation] = useState('');
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -40,6 +60,41 @@ export default function KvgLandingIntro({ onStartDataEntry }: KvgLandingIntroPro
   const handleWhatsAppShare = () => {
     const text = encodeURIComponent('Schau dir mal diese Seite an – vielleicht hilft sie dir beim Thema Krankenkasse: ' + window.location.href);
     window.open(`https://wa.me/?text=${text}`, '_blank');
+  };
+
+  // Get available models for selected insurer
+  const getAvailableModels = () => {
+    const insurerModels = INSURANCE_MODELS[currentInsurer] || INSURANCE_MODELS['default'];
+    return [
+      ...insurerModels.standard.map(m => ({ group: 'Standard', model: m })),
+      ...insurerModels.hausarzt.map(m => ({ group: 'Hausarzt', model: m })),
+      ...insurerModels.weitere.map(m => ({ group: 'Weitere Modelle', model: m })),
+    ];
+  };
+
+  const handleInsurerChange = (value: string) => {
+    setCurrentInsurer(value);
+    setCurrentModel('');
+  };
+
+  const handleCalculate = () => {
+    onCalculate({
+      currentInsurer,
+      currentModel,
+      birthYear,
+      franchise,
+      hasEmployerAccident,
+      location,
+    });
+  };
+
+  const handleReset = () => {
+    setCurrentInsurer('');
+    setCurrentModel('');
+    setBirthYear('');
+    setFranchise('');
+    setHasEmployerAccident(null);
+    setLocation('');
   };
 
   return (
@@ -239,7 +294,7 @@ export default function KvgLandingIntro({ onStartDataEntry }: KvgLandingIntroPro
         </div>
       </section>
 
-      {/* SECTION 5 – DATENERFASSUNG */}
+      {/* SECTION 5 – DATENERFASSUNG (INLINE FORM) */}
       <section id="datenerfassung" className="py-16 lg:py-24">
         <div className="max-w-xl mx-auto">
           <div className="text-center mb-10">
@@ -249,19 +304,122 @@ export default function KvgLandingIntro({ onStartDataEntry }: KvgLandingIntroPro
             <p className="text-muted-foreground">
               Damit wir deine Situation korrekt einordnen können,
               benötigen wir einige grundlegende Angaben.
-              Keine Sorge – das dauert nur wenige Minuten.
             </p>
           </div>
           
           <Card className="border-scale-2/50 shadow-card">
-            <CardContent className="p-6 lg:p-8">
-              <div className="text-center py-8">
-                <p className="text-muted-foreground mb-6">
-                  Starte jetzt mit der Erfassung deiner Daten,
-                  um eine personalisierte Auswertung zu erhalten.
-                </p>
-                <Button size="lg" onClick={onStartDataEntry}>
-                  Zur Datenerfassung
+            <CardContent className="p-6 lg:p-8 space-y-6">
+              {/* Krankenkasse wählen */}
+              <div>
+                <Label className="text-sm font-medium">Krankenkasse wählen</Label>
+                <Select value={currentInsurer} onValueChange={handleInsurerChange}>
+                  <SelectTrigger className="mt-2">
+                    <SelectValue placeholder="Krankenkasse wählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {INSURERS.map(insurer => (
+                      <SelectItem key={insurer} value={insurer}>{insurer}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Versicherungsmodell wählen */}
+              <div>
+                <Label className="text-sm font-medium">Versicherungsmodell wählen</Label>
+                <Select 
+                  value={currentModel} 
+                  onValueChange={setCurrentModel}
+                  disabled={!currentInsurer}
+                >
+                  <SelectTrigger className="mt-2">
+                    <SelectValue placeholder="Versicherungsmodell wählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getAvailableModels().map((item, idx) => (
+                      <SelectItem key={idx} value={item.model}>
+                        {item.model}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Geburtsjahr */}
+              <div>
+                <Label htmlFor="birthYear" className="text-sm font-medium">Geburtsjahr</Label>
+                <Input
+                  id="birthYear"
+                  value={birthYear}
+                  onChange={(e) => setBirthYear(e.target.value)}
+                  placeholder="z.B. 1984"
+                  maxLength={4}
+                  className="mt-2"
+                />
+                <p className="text-xs text-muted-foreground mt-1">Format: JJJJ</p>
+              </div>
+
+              {/* Aktuelle Franchise */}
+              <div>
+                <Label className="text-sm font-medium">Aktuelle Franchise</Label>
+                <Select value={franchise} onValueChange={setFranchise}>
+                  <SelectTrigger className="mt-2">
+                    <SelectValue placeholder="Franchise wählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FRANCHISES.map(f => (
+                      <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Unfallversicherung über Arbeitgeber */}
+              <div>
+                <Label className="text-sm font-medium">Unfallversicherung über Arbeitgeber vorhanden?</Label>
+                <RadioGroup 
+                  value={hasEmployerAccident === null ? '' : hasEmployerAccident ? 'yes' : 'no'}
+                  onValueChange={(v) => setHasEmployerAccident(v === 'yes')}
+                  className="mt-2 flex gap-6"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="yes" id="accident-yes" />
+                    <Label htmlFor="accident-yes">Ja</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="no" id="accident-no" />
+                    <Label htmlFor="accident-no">Nein</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              {/* Wohnort oder PLZ */}
+              <div>
+                <Label htmlFor="location" className="text-sm font-medium">Wohnort oder PLZ</Label>
+                <Input
+                  id="location"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="z.B. Zürich oder 8001"
+                  className="mt-2"
+                />
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-4 pt-4">
+                <Button 
+                  onClick={handleCalculate}
+                  className="flex-1"
+                  size="lg"
+                >
+                  Berechnen
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={handleReset}
+                  size="lg"
+                >
+                  Zurücksetzen
                 </Button>
               </div>
             </CardContent>
@@ -319,7 +477,7 @@ export default function KvgLandingIntro({ onStartDataEntry }: KvgLandingIntroPro
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" onClick={onStartDataEntry}>
+            <Button size="lg" onClick={() => scrollToSection('datenerfassung')}>
               Unverbindlich anschauen lassen
             </Button>
             <Button 
