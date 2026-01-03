@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { InvalidityRiskSimulation } from './InvalidityRiskSimulation';
 import { FreehandNotesDialog } from './FreehandNotesDialog';
+import { ChecklistDialog } from './ChecklistDialog';
 import { useConsultationState } from '@/hooks/useConsultationState';
 
 interface RelatedTopicDialogProps {
@@ -25,7 +26,7 @@ interface RelatedTopicDialogProps {
   onClose: () => void;
 }
 
-type ViewMode = 'main' | 'risikosimulation' | 'notes';
+type ViewMode = 'main' | 'risikosimulation' | 'notes' | 'checklist';
 
 export function RelatedTopicDialog({
   topic,
@@ -34,7 +35,7 @@ export function RelatedTopicDialog({
   onClose,
 }: RelatedTopicDialogProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('main');
-  const { topicStates, setRelatedTopicNotes } = useConsultationState();
+  const { topicStates, setRelatedTopicNotes, toggleChecklistItem, getCheckedItems } = useConsultationState();
 
   // Handle ESC key
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -67,6 +68,9 @@ export function RelatedTopicDialog({
 
   // Get current notes for this related topic
   const currentNotes = topicStates[parentTopicId]?.relatedTopicNotes?.[topic.id] || '';
+  
+  // Get checked items for this related topic
+  const checkedItems = getCheckedItems(parentTopicId, topic.id);
 
   // Check if this is the disability topic
   const isDisabilityTopic = topic.id === 'disability';
@@ -122,7 +126,20 @@ export function RelatedTopicDialog({
     );
   }
 
-  // Main View
+  // Checklist View
+  if (viewMode === 'checklist') {
+    return (
+      <ChecklistDialog
+        isOpen={isOpen}
+        onClose={() => setViewMode('main')}
+        topicId={topic.id}
+        topicTitle={topic.title}
+        checkedItems={checkedItems}
+        onToggleItem={(itemId) => toggleChecklistItem(parentTopicId, topic.id, itemId)}
+      />
+    );
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="w-[min(90vw,750px)] h-[min(90vw,750px)] max-w-none p-0 gap-0 overflow-hidden rounded-2xl flex flex-col">
@@ -209,10 +226,16 @@ export function RelatedTopicDialog({
                   </div>
                   <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 </button>
-                <button className="w-full flex items-center justify-between py-3 hover:bg-gray-50 transition-colors text-left">
+                <button 
+                  onClick={() => setViewMode('checklist')}
+                  className="w-full flex items-center justify-between py-3 hover:bg-gray-50 transition-colors text-left"
+                >
                   <div className="flex items-center gap-3">
                     <FileCheck className="w-5 h-5 text-muted-foreground" />
                     <span className="text-sm">Checkliste und Kundendokumente</span>
+                    {checkedItems.length > 0 && (
+                      <Badge variant="secondary" className="text-xs">{checkedItems.length} ausgewählt</Badge>
+                    )}
                   </div>
                   <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 </button>

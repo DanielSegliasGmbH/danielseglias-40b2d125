@@ -13,6 +13,8 @@ export interface TopicState {
   relatedTopicsDiscussed: Record<string, boolean>;
   // Notes for related topics (b-ebene3)
   relatedTopicNotes: Record<string, string>;
+  // Checklist items for related topics (b-ebene3)
+  relatedTopicChecklist: Record<string, string[]>; // checked item IDs
   // Extensible: add numeric values, selections, etc.
   numericValues?: Record<string, number>;
   selections?: Record<string, string>;
@@ -62,6 +64,7 @@ const generateDefaultTopicStates = (): Record<string, TopicState> => {
         return acc;
       }, {} as Record<string, boolean>),
       relatedTopicNotes: {}, // Empty notes on reset
+      relatedTopicChecklist: {}, // Empty checklist on reset
       numericValues: {},
       selections: {},
     };
@@ -104,6 +107,8 @@ interface ConsultationContextValue {
   toggleWaiver: (topicId: string) => void;
   toggleRelatedTopicDiscussed: (topicId: string, relatedTopicId: string) => void;
   setRelatedTopicNotes: (topicId: string, relatedTopicId: string, notes: string) => void;
+  toggleChecklistItem: (topicId: string, relatedTopicId: string, itemId: string) => void;
+  getCheckedItems: (topicId: string, relatedTopicId: string) => string[];
   
   // Consultation management
   resetConsultation: () => void;
@@ -237,6 +242,37 @@ export function ConsultationProvider({ children }: { children: ReactNode }) {
       },
     }));
   }, [updateData]);
+
+  // Toggle checklist item
+  const toggleChecklistItem = useCallback((topicId: string, relatedTopicId: string, itemId: string) => {
+    updateData((prev) => {
+      const currentChecked = prev.topicStates[topicId]?.relatedTopicChecklist?.[relatedTopicId] || [];
+      const isChecked = currentChecked.includes(itemId);
+      const newChecked = isChecked 
+        ? currentChecked.filter(id => id !== itemId)
+        : [...currentChecked, itemId];
+      
+      return {
+        ...prev,
+        topicStates: {
+          ...prev.topicStates,
+          [topicId]: {
+            ...prev.topicStates[topicId],
+            relatedTopicChecklist: {
+              ...prev.topicStates[topicId]?.relatedTopicChecklist,
+              [relatedTopicId]: newChecked,
+            },
+          },
+        },
+      };
+    });
+  }, [updateData]);
+
+  // Get checked items for a related topic
+  const getCheckedItems = useCallback((topicId: string, relatedTopicId: string): string[] => {
+    return consultationData.topicStates[topicId]?.relatedTopicChecklist?.[relatedTopicId] || [];
+  }, [consultationData.topicStates]);
+
   const resetConsultation = useCallback(() => {
     setConsultationData(generateDefaultConsultationData());
     setCurrentConsultationId(null);
@@ -400,6 +436,8 @@ export function ConsultationProvider({ children }: { children: ReactNode }) {
     toggleWaiver,
     toggleRelatedTopicDiscussed,
     setRelatedTopicNotes,
+    toggleChecklistItem,
+    getCheckedItems,
     resetConsultation,
     startNewConsultation,
     loadConsultation,
