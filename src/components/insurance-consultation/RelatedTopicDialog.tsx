@@ -45,7 +45,7 @@ export function RelatedTopicDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="w-[min(90vw,500px)] h-[min(90vw,500px)] max-w-none p-0 gap-0 overflow-hidden rounded-2xl flex flex-col">
+      <DialogContent className="w-[min(90vw,1000px)] h-[min(90vw,1000px)] max-w-none p-0 gap-0 overflow-hidden rounded-2xl flex flex-col">
         <DialogHeader className="sr-only">
           <DialogTitle>{topic.title}</DialogTitle>
         </DialogHeader>
