@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { X, ChevronRight, BarChart3, PenTool, FileCheck, FileX, FileText, ArrowLeft } from 'lucide-react';
 import {
@@ -10,6 +11,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { InvalidityRiskSimulation } from './InvalidityRiskSimulation';
+import { FreehandNotesDialog } from './FreehandNotesDialog';
+import { useConsultationState } from '@/hooks/useConsultationState';
 
 interface RelatedTopicDialogProps {
   topic: {
@@ -17,18 +20,21 @@ interface RelatedTopicDialogProps {
     title: string;
     imageUrl?: string;
   } | null;
+  parentTopicId: string;
   isOpen: boolean;
   onClose: () => void;
 }
 
-type ViewMode = 'main' | 'risikosimulation';
+type ViewMode = 'main' | 'risikosimulation' | 'notes';
 
 export function RelatedTopicDialog({
   topic,
+  parentTopicId,
   isOpen,
   onClose,
 }: RelatedTopicDialogProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('main');
+  const { topicStates, setRelatedTopicNotes } = useConsultationState();
 
   // Handle ESC key
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -58,6 +64,9 @@ export function RelatedTopicDialog({
   }, [isOpen]);
 
   if (!topic) return null;
+
+  // Get current notes for this related topic
+  const currentNotes = topicStates[parentTopicId]?.relatedTopicNotes?.[topic.id] || '';
 
   // Check if this is the disability topic
   const isDisabilityTopic = topic.id === 'disability';
@@ -96,6 +105,20 @@ export function RelatedTopicDialog({
           </ScrollArea>
         </DialogContent>
       </Dialog>
+    );
+  }
+
+  // Notes View
+  if (viewMode === 'notes') {
+    return (
+      <FreehandNotesDialog
+        isOpen={isOpen}
+        onClose={() => setViewMode('main')}
+        topicId={topic.id}
+        topicTitle={topic.title}
+        notes={currentNotes}
+        onSaveNotes={(notes) => setRelatedTopicNotes(parentTopicId, topic.id, notes)}
+      />
     );
   }
 
@@ -173,10 +196,16 @@ export function RelatedTopicDialog({
                   </div>
                   <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 </button>
-                <button className="w-full flex items-center justify-between py-3 hover:bg-gray-50 transition-colors text-left">
+                <button 
+                  onClick={() => setViewMode('notes')}
+                  className="w-full flex items-center justify-between py-3 hover:bg-gray-50 transition-colors text-left"
+                >
                   <div className="flex items-center gap-3">
                     <PenTool className="w-5 h-5 text-muted-foreground" />
                     <span className="text-sm">Freihandnotizen</span>
+                    {currentNotes && (
+                      <Badge variant="secondary" className="text-xs">Notiz vorhanden</Badge>
+                    )}
                   </div>
                   <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 </button>

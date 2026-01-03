@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Save, FileText, Mail, Download, CheckCircle2, XCircle, AlertTriangle, Loader2 } from 'lucide-react';
+import { Save, FileText, Mail, Download, CheckCircle2, XCircle, AlertTriangle, Loader2, PenTool } from 'lucide-react';
 import { useConsultationState } from '@/hooks/useConsultationState';
 import { pyramidTopics } from '@/config/pyramidTopicsConfig';
 
@@ -38,6 +38,24 @@ export default function InsuranceConsultingSummary() {
     !topicStates[t.id]?.waiver && 
     topicStates[t.id]?.important
   );
+
+  // Collect all notes from related topics for "Daten für Berater"
+  const allNotes: { topicTitle: string; relatedTopicTitle: string; notes: string }[] = [];
+  pyramidTopics.forEach((topic) => {
+    const topicState = topicStates[topic.id];
+    if (topicState?.relatedTopicNotes) {
+      Object.entries(topicState.relatedTopicNotes).forEach(([relatedTopicId, notes]) => {
+        if (notes && notes.trim()) {
+          const relatedTopic = topic.relatedTopics.find(rt => rt.id === relatedTopicId);
+          allNotes.push({
+            topicTitle: topic.title,
+            relatedTopicTitle: relatedTopic?.title || relatedTopicId,
+            notes: notes.trim(),
+          });
+        }
+      });
+    }
+  });
 
   // Handle save
   const handleSave = async () => {
@@ -253,6 +271,33 @@ export default function InsuranceConsultingSummary() {
                 {pendingTopics.map((topic) => (
                   <li key={topic.id} className="text-sm">
                     {topic.title}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Daten für Berater - Notes Section */}
+        {allNotes.length > 0 && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <PenTool className="w-4 h-4 text-primary" />
+                Daten für Berater
+              </CardTitle>
+              <CardDescription>
+                Freihandnotizen aus der Beratung ({allNotes.length} Einträge)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-4">
+                {allNotes.map((note, index) => (
+                  <li key={index} className="border-l-2 border-primary/30 pl-4">
+                    <div className="text-xs text-muted-foreground mb-1">
+                      {note.topicTitle} → {note.relatedTopicTitle}
+                    </div>
+                    <p className="text-sm whitespace-pre-wrap">{note.notes}</p>
                   </li>
                 ))}
               </ul>
