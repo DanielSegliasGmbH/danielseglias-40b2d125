@@ -1,0 +1,185 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { AppLayout } from '@/components/AppLayout';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { PlusCircle, FolderOpen, Clock, User, FileText, Loader2 } from 'lucide-react';
+import { useConsultationState, SavedConsultation } from '@/hooks/useConsultationState';
+import { format } from 'date-fns';
+import { de } from 'date-fns/locale';
+import heroImage from '@/assets/insurance-consulting-hero.jpg';
+
+export default function InsuranceConsultingStart() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { startNewConsultation, loadConsultation, fetchSavedConsultations, isLoading } = useConsultationState();
+  
+  const [savedConsultations, setSavedConsultations] = useState<SavedConsultation[]>([]);
+  const [isLoadingList, setIsLoadingList] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // Fetch saved consultations when dialog opens
+  const handleOpenDialog = async () => {
+    setIsDialogOpen(true);
+    setIsLoadingList(true);
+    const consultations = await fetchSavedConsultations();
+    setSavedConsultations(consultations);
+    setIsLoadingList(false);
+  };
+
+  // Start new consultation
+  const handleStartNew = () => {
+    startNewConsultation();
+    navigate('/app/insurance-consulting/topics');
+  };
+
+  // Load saved consultation
+  const handleLoadConsultation = async (consultation: SavedConsultation) => {
+    await loadConsultation(consultation.id);
+    setIsDialogOpen(false);
+    navigate('/app/insurance-consulting/consultation');
+  };
+
+  return (
+    <AppLayout>
+      <div className="flex flex-col min-h-screen">
+        {/* Hero Image */}
+        <div className="w-full h-[40vh] min-h-[250px] max-h-[400px] relative">
+          <img
+            src={heroImage}
+            alt="Versicherungsberatung"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/80" />
+        </div>
+
+        {/* Content Section */}
+        <div className="flex-1 bg-background p-8 md:p-12 -mt-20 relative z-10">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+              Versicherungsberatung
+            </h1>
+            <p className="text-lg text-muted-foreground mb-8">
+              Starten Sie ein neues Beratungsgespräch oder setzen Sie eine gespeicherte Beratung fort.
+            </p>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* New Consultation Card */}
+              <Card className="border-2 hover:border-primary/50 transition-colors cursor-pointer group" onClick={handleStartNew}>
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                    <PlusCircle className="w-6 h-6 text-primary" />
+                  </div>
+                  <CardTitle className="text-xl">Neues Gespräch starten</CardTitle>
+                  <CardDescription>
+                    Beginnen Sie eine neue Versicherungsberatung mit einem frischen Ausgangszustand.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full" size="lg">
+                    <PlusCircle className="w-4 h-4 mr-2" />
+                    Jetzt starten
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Load Consultation Card */}
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Card 
+                    className="border-2 hover:border-primary/50 transition-colors cursor-pointer group"
+                    onClick={handleOpenDialog}
+                  >
+                    <CardHeader>
+                      <div className="w-12 h-12 rounded-full bg-secondary/50 flex items-center justify-center mb-4 group-hover:bg-secondary transition-colors">
+                        <FolderOpen className="w-6 h-6 text-foreground" />
+                      </div>
+                      <CardTitle className="text-xl">Gespeicherte Beratung fortführen</CardTitle>
+                      <CardDescription>
+                        Laden Sie eine bereits begonnene Beratung und setzen Sie diese fort.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button variant="secondary" className="w-full" size="lg">
+                        <FolderOpen className="w-4 h-4 mr-2" />
+                        Beratung laden
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </DialogTrigger>
+
+                <DialogContent className="max-w-2xl max-h-[80vh]">
+                  <DialogHeader>
+                    <DialogTitle>Gespeicherte Beratungen</DialogTitle>
+                    <DialogDescription>
+                      Wählen Sie eine Beratung aus, um sie fortzusetzen.
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  {isLoadingList ? (
+                    <div className="flex items-center justify-center py-12">
+                      <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : savedConsultations.length === 0 ? (
+                    <div className="text-center py-12">
+                      <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                      <p className="text-muted-foreground">
+                        Keine gespeicherten Beratungen vorhanden.
+                      </p>
+                      <Button 
+                        variant="link" 
+                        onClick={() => {
+                          setIsDialogOpen(false);
+                          handleStartNew();
+                        }}
+                      >
+                        Neue Beratung starten
+                      </Button>
+                    </div>
+                  ) : (
+                    <ScrollArea className="max-h-[50vh]">
+                      <div className="space-y-2">
+                        {savedConsultations.map((consultation) => (
+                          <div
+                            key={consultation.id}
+                            className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
+                            onClick={() => handleLoadConsultation(consultation)}
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="font-medium">
+                                  {consultation.label || 'Unbenannte Beratung'}
+                                </div>
+                                <div className="text-sm text-muted-foreground flex items-center gap-4 mt-1">
+                                  <span className="flex items-center gap-1">
+                                    <Clock className="w-3 h-3" />
+                                    {format(new Date(consultation.created_at), 'dd.MM.yyyy HH:mm', { locale: de })}
+                                  </span>
+                                  <span className="text-xs font-mono bg-muted px-2 py-0.5 rounded">
+                                    {consultation.version_key}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="text-xs px-2 py-1 rounded-full bg-muted">
+                                {consultation.status === 'completed' ? 'Abgeschlossen' : 
+                                 consultation.status === 'archived' ? 'Archiviert' : 'Entwurf'}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  )}
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
+        </div>
+      </div>
+    </AppLayout>
+  );
+}

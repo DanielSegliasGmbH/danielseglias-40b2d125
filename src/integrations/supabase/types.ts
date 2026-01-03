@@ -508,6 +508,57 @@ export type Database = {
           },
         ]
       }
+      insurance_consultations: {
+        Row: {
+          consultation_data: Json
+          created_at: string
+          created_by: string | null
+          customer_id: string | null
+          id: string
+          label: string | null
+          status: string
+          updated_at: string
+          version_key: string
+        }
+        Insert: {
+          consultation_data?: Json
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          id?: string
+          label?: string | null
+          status?: string
+          updated_at?: string
+          version_key: string
+        }
+        Update: {
+          consultation_data?: Json
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          id?: string
+          label?: string | null
+          status?: string
+          updated_at?: string
+          version_key?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insurance_consultations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "insurance_consultations_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_rate_limits: {
         Row: {
           created_at: string

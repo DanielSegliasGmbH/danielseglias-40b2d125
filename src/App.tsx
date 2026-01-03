@@ -42,6 +42,7 @@ import ClientPortalTools from "./pages/client-portal/ClientPortalTools";
 import ClientPortalToolDetail from "./pages/client-portal/ClientPortalToolDetail";
 
 // Insurance Consulting Pages
+import InsuranceConsultingStart from "./pages/insurance-consulting/InsuranceConsultingStart";
 import InsuranceConsultingTopics from "./pages/insurance-consulting/InsuranceConsultingTopics";
 import InsuranceConsultingIntroduction from "./pages/insurance-consulting/InsuranceConsultingIntroduction";
 import InsuranceConsultingCompany from "./pages/insurance-consulting/InsuranceConsultingCompany";
@@ -49,6 +50,7 @@ import InsuranceConsultingAdvisorInfo from "./pages/insurance-consulting/Insuran
 import InsuranceConsultingCustomerInfo from "./pages/insurance-consulting/InsuranceConsultingCustomerInfo";
 import InsuranceConsultingConsultation from "./pages/insurance-consulting/InsuranceConsultingConsultation";
 import InsuranceConsultingSummary from "./pages/insurance-consulting/InsuranceConsultingSummary";
+import { ConsultationProvider } from "./hooks/useConsultationState";
 
 // Public Pages (no auth required)
 import PublicLanding from "./pages/public/PublicLanding";
@@ -289,16 +291,28 @@ function App() {
                 }
               />
 
-              {/* Insurance Consulting Routes */}
+              {/* Insurance Consulting Routes - wrapped in ConsultationProvider */}
               <Route
                 path="/app/insurance-consulting"
-                element={<Navigate to="/app/insurance-consulting/topics" replace />}
+                element={<Navigate to="/app/insurance-consulting/start" replace />}
+              />
+              <Route
+                path="/app/insurance-consulting/start"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <ConsultationProvider>
+                      <InsuranceConsultingStart />
+                    </ConsultationProvider>
+                  </RouteGuard>
+                }
               />
               <Route
                 path="/app/insurance-consulting/topics"
                 element={
                   <RouteGuard allowedRoles={['admin', 'staff']}>
-                    <InsuranceConsultingTopics />
+                    <ConsultationProvider>
+                      <InsuranceConsultingTopics />
+                    </ConsultationProvider>
                   </RouteGuard>
                 }
               />
@@ -306,7 +320,9 @@ function App() {
                 path="/app/insurance-consulting/introduction"
                 element={
                   <RouteGuard allowedRoles={['admin', 'staff']}>
-                    <InsuranceConsultingIntroduction />
+                    <ConsultationProvider>
+                      <InsuranceConsultingIntroduction />
+                    </ConsultationProvider>
                   </RouteGuard>
                 }
               />
@@ -314,7 +330,9 @@ function App() {
                 path="/app/insurance-consulting/company"
                 element={
                   <RouteGuard allowedRoles={['admin', 'staff']}>
-                    <InsuranceConsultingCompany />
+                    <ConsultationProvider>
+                      <InsuranceConsultingCompany />
+                    </ConsultationProvider>
                   </RouteGuard>
                 }
               />
@@ -322,7 +340,9 @@ function App() {
                 path="/app/insurance-consulting/advisor-info"
                 element={
                   <RouteGuard allowedRoles={['admin', 'staff']}>
-                    <InsuranceConsultingAdvisorInfo />
+                    <ConsultationProvider>
+                      <InsuranceConsultingAdvisorInfo />
+                    </ConsultationProvider>
                   </RouteGuard>
                 }
               />
@@ -330,7 +350,9 @@ function App() {
                 path="/app/insurance-consulting/customer-info"
                 element={
                   <RouteGuard allowedRoles={['admin', 'staff']}>
-                    <InsuranceConsultingCustomerInfo />
+                    <ConsultationProvider>
+                      <InsuranceConsultingCustomerInfo />
+                    </ConsultationProvider>
                   </RouteGuard>
                 }
               />
@@ -338,7 +360,9 @@ function App() {
                 path="/app/insurance-consulting/consultation"
                 element={
                   <RouteGuard allowedRoles={['admin', 'staff']}>
-                    <InsuranceConsultingConsultation />
+                    <ConsultationProvider>
+                      <InsuranceConsultingConsultation />
+                    </ConsultationProvider>
                   </RouteGuard>
                 }
               />
@@ -346,7 +370,9 @@ function App() {
                 path="/app/insurance-consulting/summary"
                 element={
                   <RouteGuard allowedRoles={['admin', 'staff']}>
-                    <InsuranceConsultingSummary />
+                    <ConsultationProvider>
+                      <InsuranceConsultingSummary />
+                    </ConsultationProvider>
                   </RouteGuard>
                 }
               />

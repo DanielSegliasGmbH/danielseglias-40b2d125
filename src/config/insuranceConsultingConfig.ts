@@ -1,4 +1,4 @@
-import { MessageSquare, User, Building2, UserCircle, Users, Handshake, FileCheck } from 'lucide-react';
+import { MessageSquare, User, Building2, UserCircle, Users, Handshake, FileCheck, PlayCircle } from 'lucide-react';
 
 /**
  * Zentrale Konfiguration für den Bereich "Versicherungsberatung"
@@ -11,6 +11,12 @@ import { MessageSquare, User, Building2, UserCircle, Users, Handshake, FileCheck
  * - icon: Lucide-Icon-Komponente
  */
 export const insuranceConsultingSections = [
+  {
+    key: 'start',
+    path: '/app/insurance-consulting/start',
+    titleKey: 'insuranceConsulting.start',
+    icon: PlayCircle,
+  },
   {
     key: 'topics',
     path: '/app/insurance-consulting/topics',
