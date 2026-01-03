@@ -22,6 +22,18 @@ const rowPositions: Record<number, number> = {
   4: 74,  // 4 Kacheln (Basis)
 };
 
+// Pyramid background configuration - freely adjustable
+const pyramidConfig = {
+  // Size as percentage of container width
+  width: 92, // %
+  // Vertical position offset from top
+  top: 10, // %
+  // Horizontal position (50 = centered)
+  left: 50, // %
+  // Color
+  color: '#8c8c7c',
+};
+
 export function TrianglePyramid({
   selectedTopicId,
   topicStates,
@@ -46,11 +58,26 @@ export function TrianglePyramid({
         '--tile-gap': 'clamp(8px, 1.5vw, 16px)',
       } as React.CSSProperties}
     >
-      {/* Rows Container */}
+      {/* Container with aspect ratio */}
       <div 
         className="relative w-full"
         style={{ aspectRatio: '1 / 0.866' }}
       >
+        {/* Pyramid Background - configurable size and position */}
+        <div 
+          className="absolute"
+          style={{
+            width: `${pyramidConfig.width}%`,
+            left: `${pyramidConfig.left}%`,
+            top: `${pyramidConfig.top}%`,
+            bottom: 0,
+            transform: 'translateX(-50%)',
+            clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
+            backgroundColor: pyramidConfig.color,
+          }}
+        />
+
+        {/* Rows Container */}
         {([1, 2, 3, 4] as const).map((level) => (
           <PyramidRow
             key={level}
