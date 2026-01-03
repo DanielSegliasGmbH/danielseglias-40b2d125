@@ -234,13 +234,36 @@ export function InvalidityRiskSimulation() {
           </div>
         </div>
 
-        {/* X-Axis Labels */}
-        <div className="flex mt-2 text-[10px] text-muted-foreground">
-          <div style={{ width: `${(1/COLS)*100}%` }} className="text-center">Heute</div>
-          <div style={{ width: `${(1/COLS)*100}%` }} className="text-center">Tag X</div>
-          <div style={{ width: `${(2/COLS)*100}%` }} className="text-center whitespace-pre-line">{phase2Label}</div>
-          <div style={{ width: `${(2/COLS)*100}%` }} className="text-center">1. Jahr</div>
-          <div style={{ width: `${(7/COLS)*100}%` }} className="text-center">2. Jahr</div>
+        {/* X-Axis Labels - positioned at phase transition lines */}
+        <div className="relative mt-2 h-6 text-[10px] text-muted-foreground">
+          {/* Tag X - after Block 1 */}
+          <div 
+            className="absolute transform -translate-x-1/2 text-center"
+            style={{ left: `${(1/COLS)*100}%` }}
+          >
+            Tag X
+          </div>
+          {/* Dritter Tag / In der Regel 30 Tage - after Block 2 */}
+          <div 
+            className="absolute transform -translate-x-1/2 text-center whitespace-pre-line"
+            style={{ left: `${(2/COLS)*100}%` }}
+          >
+            {phase2Label}
+          </div>
+          {/* 1. Jahr - after Block 4 */}
+          <div 
+            className="absolute transform -translate-x-1/2 text-center"
+            style={{ left: `${(4/COLS)*100}%` }}
+          >
+            1. Jahr
+          </div>
+          {/* 2. Jahr - after Block 6 */}
+          <div 
+            className="absolute transform -translate-x-1/2 text-center"
+            style={{ left: `${(6/COLS)*100}%` }}
+          >
+            2. Jahr
+          </div>
         </div>
       </div>
 
