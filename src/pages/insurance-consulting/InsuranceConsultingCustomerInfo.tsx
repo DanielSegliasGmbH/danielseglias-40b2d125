@@ -1,24 +1,26 @@
 import { useTranslation } from 'react-i18next';
 import { AppLayout } from '@/components/AppLayout';
-import { Button } from '@/components/ui/button';
-import { ExternalLink } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function InsuranceConsultingCustomerInfo() {
   const { t } = useTranslation();
 
   return (
     <AppLayout>
-      <div className="container py-6 flex items-center justify-center min-h-[60vh]">
-        <Button asChild size="lg">
-          <a 
-            href="https://danielseglias.monday.com/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-          >
-            <ExternalLink className="mr-2 h-5 w-5" />
-            In Monday anzeigen
-          </a>
-        </Button>
+      <div className="container py-6 space-y-6">
+        <h1 className="text-2xl font-semibold">
+          {t('insuranceConsulting.customerInfo', 'Kundeninformationen')}
+        </h1>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('insuranceConsulting.customerInfo', 'Kundeninformationen')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              {t('common.contentFollows', 'Inhalt folgt')}
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </AppLayout>
   );
