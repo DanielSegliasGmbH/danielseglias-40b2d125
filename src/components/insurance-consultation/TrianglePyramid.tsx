@@ -50,7 +50,7 @@ export function TrianglePyramid({
       <div 
         className="w-full"
         style={{
-          aspectRatio: '1 / 0.6495', // Reduced height (3/4 of equilateral)
+          aspectRatio: '1 / 0.866', // Equilateral triangle ratio
           clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
           backgroundColor: '#9a9a8a', // Lighter version of #7a7a67
         }}
