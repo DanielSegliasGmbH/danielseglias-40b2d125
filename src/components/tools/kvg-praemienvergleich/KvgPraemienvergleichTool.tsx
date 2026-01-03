@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,8 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ExternalLink, Info, Mail, Trash2 } from 'lucide-react';
+import { ExternalLink, Info, Mail, Trash2, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { usePremiumData } from '@/hooks/usePremiumData';
 import { 
   FormData, 
   Person, 
@@ -78,6 +79,22 @@ export default function KvgPraemienvergleichTool() {
   const [personSummaries, setPersonSummaries] = useState<PersonSummary[]>([]);
   const [displayMode, setDisplayMode] = useState<'month' | 'year'>('month');
   const [activeTab, setActiveTab] = useState('sparen');
+  
+  // Load premium data from Excel
+  const premiumData = usePremiumData();
+  
+  // Debug: Log the data structure when loaded
+  useEffect(() => {
+    if (!premiumData.isLoading && !premiumData.error) {
+      console.log('Premium Data Loaded:', {
+        sheets: premiumData.sheets,
+        headers: premiumData.headers,
+        sampleData: Object.fromEntries(
+          Object.entries(premiumData.data).map(([sheet, rows]) => [sheet, rows.slice(0, 5)])
+        ),
+      });
+    }
+  }, [premiumData]);
 
   // Update location
   const handleLocationChange = (value: string) => {
