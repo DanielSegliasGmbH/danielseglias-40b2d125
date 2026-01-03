@@ -5,18 +5,6 @@
  * order: Position innerhalb der Reihe (0-indexed)
  */
 
-// Import images
-import selbstverwirklichungImg from '@/assets/pyramid/selbstverwirklichung.png';
-import traeumeVerwirklichenImg from '@/assets/pyramid/traeume-verwirklichen.png';
-import vermoegenAufbauenImg from '@/assets/pyramid/vermoegen-aufbauen.png';
-import wohnenImg from '@/assets/pyramid/wohnen.png';
-import mobilitaetImg from '@/assets/pyramid/mobilitaet.png';
-import freizeitReisenImg from '@/assets/pyramid/freizeit-reisen.png';
-import familiePartnerschaftImg from '@/assets/pyramid/familie-partnerschaft.png';
-import einkommenLebenstandardImg from '@/assets/pyramid/einkommen-lebensstandard.png';
-import finanzielleRechtlicheSicherheitImg from '@/assets/pyramid/finanzielle-rechtliche-sicherheit.png';
-import gesundheitImg from '@/assets/pyramid/gesundheit.png';
-
 export interface PyramidTopic {
   id: string;
   title: string;
@@ -33,6 +21,9 @@ export interface PyramidTopic {
   }[];
 }
 
+// Placeholder images - replace with actual images later
+const placeholderImage = '/placeholder.svg';
+
 export const pyramidTopics: PyramidTopic[] = [
   // Level 4 (Basis - 4 Kacheln)
   {
@@ -40,7 +31,7 @@ export const pyramidTopics: PyramidTopic[] = [
     title: 'Familie & Partnerschaft',
     level: 4,
     order: 0,
-    imageUrl: familiePartnerschaftImg,
+    imageUrl: placeholderImage,
     isImportant: true,
     whyText: 'Ihre Familie ist das Wichtigste. Sorgen Sie dafür, dass Ihre Liebsten auch in schwierigen Zeiten finanziell abgesichert sind.',
     relatedTopics: [
@@ -54,7 +45,7 @@ export const pyramidTopics: PyramidTopic[] = [
     title: 'Einkommen & Lebensstandard',
     level: 4,
     order: 1,
-    imageUrl: einkommenLebenstandardImg,
+    imageUrl: placeholderImage,
     isImportant: true,
     whyText: 'Ihr Einkommen ist die Basis Ihres Lebensstandards. Schützen Sie sich vor den finanziellen Folgen von Erwerbsunfähigkeit.',
     relatedTopics: [
@@ -65,10 +56,10 @@ export const pyramidTopics: PyramidTopic[] = [
   },
   {
     id: 'loved_security',
-    title: 'Finanzielle & rechtliche Sicherheit',
+    title: 'Finanzielle Sicherheit',
     level: 4,
     order: 2,
-    imageUrl: finanzielleRechtlicheSicherheitImg,
+    imageUrl: placeholderImage,
     isImportant: false,
     whyText: 'Rechtliche Streitigkeiten können teuer werden. Mit der richtigen Absicherung sind Sie auf der sicheren Seite.',
     relatedTopics: [
@@ -82,7 +73,7 @@ export const pyramidTopics: PyramidTopic[] = [
     title: 'Gesundheit',
     level: 4,
     order: 3,
-    imageUrl: gesundheitImg,
+    imageUrl: placeholderImage,
     isImportant: true,
     whyText: 'Gesundheit ist unser höchstes Gut. Mit einer optimalen Krankenversicherung sind Sie bestens versorgt.',
     relatedTopics: [
@@ -98,7 +89,7 @@ export const pyramidTopics: PyramidTopic[] = [
     title: 'Wohnen',
     level: 3,
     order: 0,
-    imageUrl: wohnenImg,
+    imageUrl: placeholderImage,
     isImportant: false,
     whyText: 'Ihr Zuhause ist mehr als nur vier Wände – es ist Ihr Rückzugsort. Schützen Sie Ihr Eigenheim und Ihre Einrichtung.',
     relatedTopics: [
@@ -112,7 +103,7 @@ export const pyramidTopics: PyramidTopic[] = [
     title: 'Mobilität',
     level: 3,
     order: 1,
-    imageUrl: mobilitaetImg,
+    imageUrl: placeholderImage,
     isImportant: false,
     whyText: 'Mobilität bedeutet Freiheit und Flexibilität. Ob Auto, Motorrad oder E-Bike – sorgen Sie für den richtigen Schutz.',
     relatedTopics: [
@@ -126,7 +117,7 @@ export const pyramidTopics: PyramidTopic[] = [
     title: 'Freizeit & Reisen',
     level: 3,
     order: 2,
-    imageUrl: freizeitReisenImg,
+    imageUrl: placeholderImage,
     isImportant: false,
     whyText: 'Ihre Freizeit ist kostbar. Geniessen Sie Ihre Hobbys und Reisen mit der Gewissheit, gut abgesichert zu sein.',
     relatedTopics: [
@@ -142,7 +133,7 @@ export const pyramidTopics: PyramidTopic[] = [
     title: 'Träume verwirklichen',
     level: 2,
     order: 0,
-    imageUrl: traeumeVerwirklichenImg,
+    imageUrl: placeholderImage,
     isImportant: false,
     whyText: 'Ob Eigenheim, Weltreise oder Frühpensionierung – Ihre Träume verdienen einen konkreten Plan.',
     relatedTopics: [
@@ -156,7 +147,7 @@ export const pyramidTopics: PyramidTopic[] = [
     title: 'Vermögen aufbauen',
     level: 2,
     order: 1,
-    imageUrl: vermoegenAufbauenImg,
+    imageUrl: placeholderImage,
     isImportant: false,
     whyText: 'Systematischer Vermögensaufbau ist der Schlüssel zu langfristiger finanzieller Sicherheit.',
     relatedTopics: [
@@ -169,12 +160,12 @@ export const pyramidTopics: PyramidTopic[] = [
   // Level 1 (Spitze - 1 Kachel)
   {
     id: 'freedom_wealth',
-    title: 'Selbstverwirklichung',
+    title: 'Finanzielle Freiheit',
     level: 1,
     order: 0,
-    imageUrl: selbstverwirklichungImg,
+    imageUrl: placeholderImage,
     isImportant: true,
-    whyText: 'Selbstverwirklichung bedeutet, dass Sie Ihr Leben nach Ihren Vorstellungen gestalten können.',
+    whyText: 'Finanzielle Freiheit bedeutet, dass Sie Ihr Leben nach Ihren Vorstellungen gestalten können.',
     relatedTopics: [
       { id: 'investment', title: 'Anlagestrategie', discussed: false },
       { id: 'wealth_management', title: 'Vermögensverwaltung', discussed: false },
