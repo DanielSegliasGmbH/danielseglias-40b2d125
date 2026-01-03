@@ -61,9 +61,9 @@ export function TrianglePyramid({
         className="relative w-full"
         style={{ aspectRatio: '1 / 0.866' }}
       >
-        {/* Pyramid Background - uses scale-6 (Grundfarbe) */}
+        {/* Pyramid Background - uses scale-2 */}
         <div 
-          className="absolute bg-scale-6"
+          className="absolute bg-scale-2"
           style={{
             width: `${pyramidConfig.width}%`,
             left: `${pyramidConfig.left}%`,
