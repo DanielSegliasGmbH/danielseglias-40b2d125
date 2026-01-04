@@ -10,6 +10,7 @@ import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, Clipboar
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
 import VorsorgecheckTool from '@/components/tools/vorsorgecheck/VorsorgecheckTool';
 import KvgPraemienvergleichTool from '@/components/tools/kvg-praemienvergleich/KvgPraemienvergleichTool';
+import VvgLeistungsvergleichTool from '@/components/tools/vvg-leistungsvergleich/VvgLeistungsvergleichTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -114,6 +115,10 @@ export default function PublicToolDetail() {
               ) : slug === 'kvg-praemienvergleich' ? (
                 <div className="mb-8">
                   <KvgPraemienvergleichTool />
+                </div>
+              ) : slug === 'vvg-leistungsvergleich' ? (
+                <div className="mb-8">
+                  <VvgLeistungsvergleichTool />
                 </div>
               ) : slug === 'vorsorgecheck-3a' ? (
                 <div className="mb-8">
