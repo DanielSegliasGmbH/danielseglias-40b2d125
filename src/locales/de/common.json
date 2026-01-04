@@ -772,6 +772,10 @@
     "documentGenerator": {
       "name": "Dokument-Generator",
       "description": "Automatische Erstellung von Vorlagen und Dokumenten."
+    },
+    "vvgLeistungsvergleich": {
+      "name": "VVG-Leistungsvergleich",
+      "description": "Vergleichen Sie die Leistungen verschiedener VVG-Zusatzversicherungen."
     }
   },
   "adminLeads": {
