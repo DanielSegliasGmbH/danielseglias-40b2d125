@@ -6,9 +6,10 @@ import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Calculator, PieChart, TrendingUp, FileText, Wrench, LucideIcon } from 'lucide-react';
+import { ArrowLeft, Calculator, PieChart, TrendingUp, FileText, Wrench, Scale, LucideIcon } from 'lucide-react';
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
 import VorsorgecheckTool from '@/components/tools/vorsorgecheck/VorsorgecheckTool';
+import VvgLeistungsvergleichTool from '@/components/tools/vvg-leistungsvergleich/VvgLeistungsvergleichTool';
 
 const iconMap: Record<string, LucideIcon> = {
   'calculator': Calculator,
@@ -16,6 +17,7 @@ const iconMap: Record<string, LucideIcon> = {
   'trending-up': TrendingUp,
   'file-text': FileText,
   'wrench': Wrench,
+  'Scale': Scale,
 };
 
 export default function ClientPortalToolDetail() {
@@ -50,6 +52,8 @@ export default function ClientPortalToolDetail() {
         return <FinanzcheckTool mode="internal" />;
       case 'vorsorgecheck-3a':
         return <VorsorgecheckTool />;
+      case 'vvg-leistungsvergleich':
+        return <VvgLeistungsvergleichTool />;
       default:
         return (
           <Card>
