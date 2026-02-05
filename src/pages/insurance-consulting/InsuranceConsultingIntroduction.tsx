@@ -7,24 +7,25 @@ import advisorProfile from '@/assets/advisor-profile.jpg';
 // Editable advisor data - can be moved to config or database later
 const advisorData = {
   name: 'Risto Rikic',
-  title: 'Kundenberater',
+  title: 'Abteilungsleiter Versicherungen und Aussendienst',
   career: [
-    'Lehre in der Gemeinde.',
-    'Privatkundenberater beim Broker 5 Jahre.',
-    'Seit Mai 2024 bei Zurich.',
+    'Lehre in der Gemeinde',
+    'In der Versicherungsbranche seit 2017',
+    'Bei Daniel Seglias GmbH seit Februar 2026',
   ],
   quote: 'Ihr starker Partner für Versicherung und Vorsorge: Gemeinsam gestalten wir Ihre Zukunft.',
   facts: ['Verantwortungsbewusst', 'Lösungsorientiert', 'Wohnhaft in Oetwil a.d.L'],
   hobbies: ['Lesen', 'Reisen', 'Meditieren', 'Wandern'],
   dreams: ['Weltreise', 'Eigenheim', 'Weiterbildung IAF'],
   company: {
-    name: 'Generalagentur Okan Pelenk',
-    street: 'Zürichstrasse 25',
-    city: '8340 Hinwil',
+    name: 'Daniel Seglias GmbH',
+    location: 'Standort Limmattal',
+    street: 'Lerzenstrasse 19a',
+    city: '8953 Dietikon',
     country: 'Schweiz',
   },
-  phone: '+41 44 938 30 62',
-  email: 'risto.rikic@zurich.ch',
+  phone: '+41 79 772 83 97',
+  email: 'risto@danielseglias.ch',
 };
 
 export default function InsuranceConsultingIntroduction() {
@@ -124,10 +125,11 @@ export default function InsuranceConsultingIntroduction() {
               {/* Company Info */}
               <div className="text-sm text-muted-foreground">
                 <p className="font-medium text-foreground">{advisorData.company.name}</p>
+                <p>{advisorData.company.location}</p>
                 <p>{advisorData.company.street}</p>
                 <p>{advisorData.company.city}</p>
                 <p>{advisorData.company.country}</p>
-                <p className="mt-3">Tel. Geschäft {advisorData.phone}</p>
+                <p className="mt-3">Tel. {advisorData.phone}</p>
               </div>
 
               {/* Email */}
