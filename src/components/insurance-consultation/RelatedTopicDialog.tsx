@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { X, ChevronRight, BarChart3, PenTool, FileCheck, FileX, FileText, ArrowLeft } from 'lucide-react';
+import { X, ChevronRight, BarChart3, PenTool, FileCheck, FileX, FileText, ArrowLeft, Layers } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -13,6 +13,7 @@ import {
 import { InvalidityRiskSimulation } from './InvalidityRiskSimulation';
 import { FreehandNotesDialog } from './FreehandNotesDialog';
 import { ChecklistDialog } from './ChecklistDialog';
+import { SavingsPlan3aComparison } from './SavingsPlan3aComparison';
 import { useConsultationState } from '@/hooks/useConsultationState';
 
 interface RelatedTopicDialogProps {
@@ -26,7 +27,7 @@ interface RelatedTopicDialogProps {
   onClose: () => void;
 }
 
-type ViewMode = 'main' | 'risikosimulation' | 'notes' | 'checklist';
+type ViewMode = 'main' | 'risikosimulation' | 'notes' | 'checklist' | 'comparison';
 
 export function RelatedTopicDialog({
   topic,
@@ -74,6 +75,44 @@ export function RelatedTopicDialog({
 
   // Check if this is the disability topic
   const isDisabilityTopic = topic.id === 'disability';
+  
+  // Check if this is the savings plan topic
+  const isSavingsPlanTopic = topic.id === 'savings_plan';
+
+  // 3a Comparison View
+  if (viewMode === 'comparison' && isSavingsPlanTopic) {
+    return (
+      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <DialogContent className="w-[min(90vw,750px)] h-[min(90vh,750px)] max-w-none p-0 gap-0 overflow-hidden rounded-2xl flex flex-col bg-background">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Bank-3a vs. Versicherungs-3a Vergleich</DialogTitle>
+          </DialogHeader>
+
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b">
+            <button
+              onClick={() => setViewMode('main')}
+              className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="text-sm font-medium">Sparplan</span>
+            </button>
+            <h2 className="text-lg font-semibold text-foreground">
+              Bank-3a vs. Versicherungs-3a
+            </h2>
+            <div className="w-16" /> {/* Spacer for centering */}
+          </div>
+
+          {/* Content */}
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="p-6">
+              <SavingsPlan3aComparison />
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   // Risikosimulation View
   if (viewMode === 'risikosimulation' && isDisabilityTopic) {
@@ -156,7 +195,7 @@ export function RelatedTopicDialog({
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-blue-600 to-blue-800" />
+            <div className="w-full h-full bg-gradient-to-br from-primary to-primary/70" />
           )}
           {/* Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
@@ -183,9 +222,9 @@ export function RelatedTopicDialog({
 
         {/* Content Section */}
         <ScrollArea className="flex-1 min-h-0">
-          <div className="bg-white p-6 space-y-6">
+          <div className="bg-card p-6 space-y-6">
             {/* Info Text */}
-            <div className="p-4 bg-gray-50 rounded-lg space-y-2">
+            <div className="p-4 bg-muted/50 rounded-lg space-y-2">
               <p className="text-sm font-medium text-foreground">
                 Würde Ihnen eine Invalidenrente von CHF 2'332 pro Monat ausreichen?
               </p>
@@ -197,6 +236,27 @@ export function RelatedTopicDialog({
               </button>
             </div>
 
+            {/* 3a Comparison (only for savings_plan) */}
+            {isSavingsPlanTopic && (
+              <div>
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+                  Produktvergleich
+                </h3>
+                <div className="space-y-0 divide-y">
+                  <button 
+                    onClick={() => setViewMode('comparison')}
+                    className="w-full flex items-center justify-between py-3 hover:bg-muted/50 transition-colors text-left"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Layers className="w-5 h-5 text-muted-foreground" />
+                      <span className="text-sm">Bank-3a vs. Versicherungs-3a</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Risikoübersicht Section */}
             <div>
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
@@ -205,7 +265,7 @@ export function RelatedTopicDialog({
               <div className="space-y-0 divide-y">
                 <button 
                   onClick={() => isDisabilityTopic && setViewMode('risikosimulation')}
-                  className="w-full flex items-center justify-between py-3 hover:bg-gray-50 transition-colors text-left"
+                  className="w-full flex items-center justify-between py-3 hover:bg-muted/50 transition-colors text-left"
                 >
                   <div className="flex items-center gap-3">
                     <BarChart3 className="w-5 h-5 text-muted-foreground" />
@@ -215,7 +275,7 @@ export function RelatedTopicDialog({
                 </button>
                 <button 
                   onClick={() => setViewMode('notes')}
-                  className="w-full flex items-center justify-between py-3 hover:bg-gray-50 transition-colors text-left"
+                  className="w-full flex items-center justify-between py-3 hover:bg-muted/50 transition-colors text-left"
                 >
                   <div className="flex items-center gap-3">
                     <PenTool className="w-5 h-5 text-muted-foreground" />
@@ -228,7 +288,7 @@ export function RelatedTopicDialog({
                 </button>
                 <button 
                   onClick={() => setViewMode('checklist')}
-                  className="w-full flex items-center justify-between py-3 hover:bg-gray-50 transition-colors text-left"
+                  className="w-full flex items-center justify-between py-3 hover:bg-muted/50 transition-colors text-left"
                 >
                   <div className="flex items-center gap-3">
                     <FileCheck className="w-5 h-5 text-muted-foreground" />
@@ -251,7 +311,7 @@ export function RelatedTopicDialog({
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
                 Relevante Dokumente
               </h3>
-              <button className="w-full flex items-center justify-between py-3 hover:bg-gray-50 transition-colors text-left border-t">
+              <button className="w-full flex items-center justify-between py-3 hover:bg-muted/50 transition-colors text-left border-t">
                 <div className="flex items-center gap-3">
                   <FileText className="w-5 h-5 text-muted-foreground" />
                   <span className="text-sm">Relevante Dokumente</span>
