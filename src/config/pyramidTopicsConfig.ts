@@ -32,6 +32,10 @@ import familiePartnerschaftImg from '@/assets/pyramid/familie-partnerschaft.png'
 import einkommenLebensstandardImg from '@/assets/pyramid/einkommen-lebensstandard.png';
 import finanzielleSicherheitImg from '@/assets/pyramid/finanzielle-sicherheit.png';
 import gesundheitImg from '@/assets/pyramid/gesundheit.png';
+// Related topic images for "Vermögen aufbauen"
+import saeule3aImg from '@/assets/pyramid/saeule-3a.png';
+import sparplanImg from '@/assets/pyramid/sparplan.png';
+import etfSparplanImg from '@/assets/pyramid/etf-sparplan.png';
 
 export const pyramidTopics: PyramidTopic[] = [
   // Level 4 (Basis - 4 Kacheln)
@@ -160,9 +164,9 @@ export const pyramidTopics: PyramidTopic[] = [
     isImportant: false,
     whyText: 'Systematischer Vermögensaufbau ist der Schlüssel zu langfristiger finanzieller Sicherheit.',
     relatedTopics: [
-      { id: 'pillar_3a', title: 'Säule 3a', discussed: false },
-      { id: 'savings_plan', title: 'Sparplan', discussed: false },
-      { id: 'etf_investing', title: 'ETF-Sparen', discussed: false },
+      { id: 'pillar_3a', title: 'Säule 3a', imageUrl: saeule3aImg, discussed: false },
+      { id: 'savings_plan', title: 'Sparplan', imageUrl: sparplanImg, discussed: false },
+      { id: 'etf_investing', title: 'ETF-Sparen', imageUrl: etfSparplanImg, discussed: false },
     ],
   },
 
