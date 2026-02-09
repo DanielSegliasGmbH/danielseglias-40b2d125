@@ -455,7 +455,9 @@ export function ConsultationProvider({ children }: { children: ReactNode }) {
 export function useConsultationState() {
   const context = useContext(ConsultationContext);
   if (!context) {
-    throw new Error('useConsultationState must be used within a ConsultationProvider');
+    throw new Error(
+      'useConsultationState must be used within a ConsultationProvider'
+    );
   }
   return context;
 }
