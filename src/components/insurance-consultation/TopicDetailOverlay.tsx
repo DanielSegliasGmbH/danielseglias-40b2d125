@@ -81,10 +81,10 @@ export function TopicDetailOverlay({
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-blue-600 to-blue-800" />
+          <div className="w-full h-full bg-gradient-to-br from-scale-3 to-scale-6" />
         )}
         {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-blue-900/90 via-blue-800/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-scale-11/90 via-scale-8/50 to-transparent" />
 
         {/* Close Button */}
         <button
@@ -202,11 +202,11 @@ export function TopicDetailOverlay({
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-amber-200 via-orange-300 to-amber-400" />
+                      <div className="w-full h-full bg-gradient-to-br from-scale-1 via-scale-3 to-scale-5" />
                     )}
                     
                     {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-scale-11/60 via-scale-8/20 to-transparent" />
                     
                     {/* Discussed Badge */}
                     {isDiscussed && (
