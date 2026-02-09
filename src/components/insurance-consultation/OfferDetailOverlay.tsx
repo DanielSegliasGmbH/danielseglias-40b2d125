@@ -11,6 +11,9 @@ import {
 } from '@/components/ui/sheet';
 import { X, HandCoins, Receipt, Blend } from 'lucide-react';
 import offerImg from '@/assets/pyramid/unser-angebot.png';
+import paketLightImg from '@/assets/pyramid/paket-light.png';
+import paketBasicImg from '@/assets/pyramid/paket-basic.png';
+import paketPremiumImg from '@/assets/pyramid/paket-premium.png';
 import { OfferPackageDialog } from './OfferPackageDialog';
 
 interface OfferDetailOverlayProps {
@@ -39,6 +42,7 @@ const compensationModels = [
 export interface OfferPackage {
   name: string;
   price: string;
+  imageUrl: string;
   highlight?: boolean;
   features: string[];
 }
@@ -47,6 +51,7 @@ export const packages: OfferPackage[] = [
   {
     name: 'Light',
     price: 'CHF 400.–',
+    imageUrl: paketLightImg,
     features: [
       'Basis-Analyse',
       'Bedarfsermittlung',
@@ -55,8 +60,9 @@ export const packages: OfferPackage[] = [
     ],
   },
   {
-    name: 'Mittel',
+    name: 'Basic',
     price: 'CHF 900.–',
+    imageUrl: paketBasicImg,
     highlight: true,
     features: [
       'Erweiterte Analyse',
@@ -69,6 +75,7 @@ export const packages: OfferPackage[] = [
   {
     name: 'Premium',
     price: 'CHF 2\'500.–',
+    imageUrl: paketPremiumImg,
     features: [
       'Ganzheitliche Finanz- & Risikoanalyse',
       'Massgeschneidertes Gesamtkonzept',
@@ -103,11 +110,11 @@ export function OfferDetailOverlay({ isOpen, onClose }: OfferDetailOverlayProps)
   }, [isOpen, handleKeyDown]);
 
   const panelContent = (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full overflow-hidden">
       {/* Hero Section */}
       <div className="relative h-48 shrink-0">
         <img src={offerImg} alt="Unser Angebot" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-blue-900/90 via-blue-800/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-scale-11/90 via-scale-8/50 to-transparent" />
 
         <button
           onClick={onClose}
@@ -129,7 +136,7 @@ export function OfferDetailOverlay({ isOpen, onClose }: OfferDetailOverlayProps)
       </div>
 
       {/* Content */}
-      <ScrollArea className="flex-1 bg-white">
+      <ScrollArea className="flex-1">
         <div className="p-6 space-y-6">
           {/* Intro */}
           <p className="text-sm text-foreground leading-relaxed">
@@ -156,7 +163,7 @@ export function OfferDetailOverlay({ isOpen, onClose }: OfferDetailOverlayProps)
             </div>
           </div>
 
-          {/* Beratungspakete as clickable tiles */}
+          {/* Beratungspakete as clickable tiles with images */}
           <div>
             <h3 className="text-lg font-semibold text-foreground mb-4">
               Beratungspakete
@@ -180,11 +187,15 @@ export function OfferDetailOverlay({ isOpen, onClose }: OfferDetailOverlayProps)
                     'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
                   )}
                 >
-                  {/* Gradient background */}
-                  <div className="w-full h-full bg-gradient-to-br from-amber-200 via-orange-300 to-amber-400" />
+                  {/* Package image */}
+                  <img
+                    src={pkg.imageUrl}
+                    alt={pkg.name}
+                    className="w-full h-full object-cover"
+                  />
 
                   {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-scale-11/60 via-scale-8/20 to-transparent" />
 
                   {/* Price badge */}
                   <Badge className="absolute top-2 left-2 bg-white/20 text-white text-[10px] px-2 hover:bg-white/30">

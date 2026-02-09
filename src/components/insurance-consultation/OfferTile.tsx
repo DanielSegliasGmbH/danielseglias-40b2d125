@@ -24,7 +24,7 @@ export function OfferTile({ onSelect }: OfferTileProps) {
         'transition-all duration-200 ease-out',
         'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
         'hover:scale-[1.03] hover:shadow-xl',
-        'shadow-md ring-1 ring-primary/20'
+        'shadow-md ring-1 ring-scale-4/30'
       )}
     >
       {/* Background Image */}
@@ -33,13 +33,13 @@ export function OfferTile({ onSelect }: OfferTileProps) {
         style={{ backgroundImage: `url(${offerImg})` }}
       />
 
-      {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+      {/* Gradient Overlay - beige/olive instead of black */}
+      <div className="absolute inset-0 bg-gradient-to-t from-scale-11/70 via-scale-8/30 to-transparent" />
 
       {/* Badge top-left */}
       <Badge
         variant="secondary"
-        className="absolute top-2 left-2 text-[9px] px-1.5 py-0.5 z-10 bg-scale-1 text-scale-11"
+        className="absolute top-2 left-2 text-[9px] px-1.5 py-0.5 z-10 bg-scale-1/80 text-scale-10"
       >
         Zusatz
       </Badge>
