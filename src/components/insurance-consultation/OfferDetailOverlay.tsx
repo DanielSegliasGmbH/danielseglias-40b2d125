@@ -94,7 +94,7 @@ export function OfferDetailOverlay({ isOpen, onClose }: OfferDetailOverlayProps)
   }, [isOpen, handleKeyDown]);
 
   const panelContent = (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full overflow-hidden">
       {/* Hero */}
       <div className="relative h-48 shrink-0">
         <img src={offerImg} alt="Unser Angebot" className="w-full h-full object-cover" />
