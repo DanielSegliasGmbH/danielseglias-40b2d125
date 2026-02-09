@@ -19,7 +19,8 @@ export function OfferTile({ onSelect }: OfferTileProps) {
         }
       }}
       className={cn(
-        'relative w-[var(--tile-w)] h-[var(--tile-h)] rounded-lg overflow-hidden cursor-pointer',
+        'relative rounded-lg overflow-hidden cursor-pointer',
+        'w-[clamp(140px,18vw,200px)] h-[clamp(90px,12vw,120px)]',
         'transition-all duration-200 ease-out',
         'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
         'hover:scale-[1.03] hover:shadow-xl',
