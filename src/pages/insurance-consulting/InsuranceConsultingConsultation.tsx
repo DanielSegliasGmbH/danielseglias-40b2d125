@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { TrianglePyramid } from '@/components/insurance-consultation/TrianglePyramid';
 import { TopicDetailOverlay } from '@/components/insurance-consultation/TopicDetailOverlay';
+import { OfferTile } from '@/components/insurance-consultation/OfferTile';
+import { OfferDetailOverlay } from '@/components/insurance-consultation/OfferDetailOverlay';
 import { useConsultationState } from '@/hooks/useConsultationState';
 import { PyramidTopic } from '@/config/pyramidTopicsConfig';
 
 export default function InsuranceConsultingConsultation() {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
-
+  const [isOfferOpen, setIsOfferOpen] = useState(false);
   const {
     topicStates,
     selectedTopicId,
@@ -44,8 +46,13 @@ export default function InsuranceConsultingConsultation() {
           </div>
         </div>
 
-        {/* Main Content - Triangle Pyramid centered */}
-        <div className="py-8 px-4">
+        {/* Main Content - Pyramid + Offer Tile */}
+        <div className="py-8 px-4 relative">
+          {/* Offer Tile - positioned top-right on desktop, above pyramid on mobile */}
+          <div className="flex justify-center mb-6 lg:mb-0 lg:block lg:absolute lg:top-8 lg:right-8 xl:right-12 z-10">
+            <OfferTile onSelect={() => setIsOfferOpen(true)} />
+          </div>
+
           <TrianglePyramid
             selectedTopicId={selectedTopicId}
             topicStates={topicStates}
@@ -64,6 +71,12 @@ export default function InsuranceConsultingConsultation() {
           onToggleDiscussed={toggleDiscussed}
           onToggleWaiver={toggleWaiver}
           onToggleRelatedTopicDiscussed={toggleRelatedTopicDiscussed}
+        />
+
+        {/* Offer Detail Overlay */}
+        <OfferDetailOverlay
+          isOpen={isOfferOpen}
+          onClose={() => setIsOfferOpen(false)}
         />
       </div>
     </AppLayout>
