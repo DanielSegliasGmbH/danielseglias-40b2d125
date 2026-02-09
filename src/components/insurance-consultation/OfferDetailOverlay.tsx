@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '@/components/ui/badge';
@@ -9,15 +9,41 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { X, HandCoins, Receipt, Blend, Check } from 'lucide-react';
+import { X, HandCoins, Receipt, Blend } from 'lucide-react';
 import offerImg from '@/assets/pyramid/unser-angebot.png';
+import { OfferPackageDialog } from './OfferPackageDialog';
 
 interface OfferDetailOverlayProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const packages = [
+const compensationModels = [
+  {
+    icon: HandCoins,
+    title: 'Honorarberatung',
+    text: 'Transparentes Fixhonorar gemäss gewähltem Paket',
+  },
+  {
+    icon: Receipt,
+    title: 'Provisionsberatung',
+    text: 'Vergütung über die jeweilige Versicherungsgesellschaft – keine direkten Beratungskosten',
+  },
+  {
+    icon: Blend,
+    title: 'Kombinationsmodell',
+    text: 'Individuell vereinbar',
+  },
+];
+
+export interface OfferPackage {
+  name: string;
+  price: string;
+  highlight?: boolean;
+  features: string[];
+}
+
+export const packages: OfferPackage[] = [
   {
     name: 'Light',
     price: 'CHF 400.–',
@@ -55,26 +81,9 @@ const packages = [
   },
 ];
 
-const compensationModels = [
-  {
-    icon: HandCoins,
-    title: 'Honorarberatung',
-    text: 'Transparentes Fixhonorar gemäss gewähltem Paket',
-  },
-  {
-    icon: Receipt,
-    title: 'Provisionsberatung',
-    text: 'Vergütung über die jeweilige Versicherungsgesellschaft – keine direkten Beratungskosten',
-  },
-  {
-    icon: Blend,
-    title: 'Kombinationsmodell',
-    text: 'Individuell vereinbar',
-  },
-];
-
 export function OfferDetailOverlay({ isOpen, onClose }: OfferDetailOverlayProps) {
   const isMobile = useIsMobile();
+  const [selectedPackage, setSelectedPackage] = useState<OfferPackage | null>(null);
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') onClose();
@@ -94,11 +103,11 @@ export function OfferDetailOverlay({ isOpen, onClose }: OfferDetailOverlayProps)
   }, [isOpen, handleKeyDown]);
 
   const panelContent = (
-    <div className="flex flex-col h-full overflow-hidden">
-      {/* Hero */}
+    <div className="flex flex-col h-full">
+      {/* Hero Section */}
       <div className="relative h-48 shrink-0">
         <img src={offerImg} alt="Unser Angebot" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-blue-900/90 via-blue-800/50 to-transparent" />
 
         <button
           onClick={onClose}
@@ -120,8 +129,8 @@ export function OfferDetailOverlay({ isOpen, onClose }: OfferDetailOverlayProps)
       </div>
 
       {/* Content */}
-      <ScrollArea className="flex-1 bg-background">
-        <div className="p-6 space-y-8">
+      <ScrollArea className="flex-1 bg-white">
+        <div className="p-6 space-y-6">
           {/* Intro */}
           <p className="text-sm text-foreground leading-relaxed">
             Sie entscheiden, wie Sie beraten werden möchten. Volle Transparenz – wahlweise auf Honorarbasis oder auf Provisionsbasis.
@@ -147,41 +156,51 @@ export function OfferDetailOverlay({ isOpen, onClose }: OfferDetailOverlayProps)
             </div>
           </div>
 
-          {/* Beratungspakete */}
+          {/* Beratungspakete as clickable tiles */}
           <div>
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-4">
+            <h3 className="text-lg font-semibold text-foreground mb-4">
               Beratungspakete
             </h3>
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-3 gap-3">
               {packages.map((pkg) => (
                 <div
                   key={pkg.name}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setSelectedPackage(pkg)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setSelectedPackage(pkg);
+                    }
+                  }}
                   className={cn(
-                    'rounded-xl border p-4 transition-all',
-                    pkg.highlight
-                      ? 'border-primary bg-primary/5 shadow-md'
-                      : 'border-border bg-card'
+                    'relative aspect-[4/3] rounded-xl overflow-hidden cursor-pointer transition-all',
+                    'hover:scale-[1.02] hover:shadow-lg',
+                    'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
                   )}
                 >
-                  <div className="flex items-baseline justify-between mb-3">
-                    <h4 className="text-base font-semibold text-foreground">{pkg.name}</h4>
-                    <span className="text-lg font-bold text-primary">{pkg.price}</span>
-                  </div>
-                  <ul className="space-y-1.5">
-                    {pkg.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2 text-sm text-foreground">
-                        <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  {/* Gradient background */}
+                  <div className="w-full h-full bg-gradient-to-br from-amber-200 via-orange-300 to-amber-400" />
+
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+
+                  {/* Price badge */}
+                  <Badge className="absolute top-2 left-2 bg-white/20 text-white text-[10px] px-2 hover:bg-white/30">
+                    {pkg.price}
+                  </Badge>
+
+                  {/* Title */}
+                  <span className="absolute bottom-2 left-2 right-2 text-white text-sm font-medium">
+                    {pkg.name}
+                  </span>
                 </div>
               ))}
             </div>
 
-            {/* Hinweis */}
             <p className="text-xs text-muted-foreground mt-4 leading-relaxed">
-              Die Preisgestaltung wird vor Beratungsbeginn transparent vereinbart. Alle Beträge verstehen sich als einmaliges Beratungshonorar.
+              Die Preisgestaltung wird vor Beratungsbeginn transparent vereinbart.
             </p>
           </div>
 
@@ -193,6 +212,13 @@ export function OfferDetailOverlay({ isOpen, onClose }: OfferDetailOverlayProps)
           </div>
         </div>
       </ScrollArea>
+
+      {/* Package Detail Dialog */}
+      <OfferPackageDialog
+        pkg={selectedPackage}
+        isOpen={!!selectedPackage}
+        onClose={() => setSelectedPackage(null)}
+      />
     </div>
   );
 
