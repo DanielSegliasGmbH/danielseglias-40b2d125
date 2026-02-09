@@ -5,7 +5,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Check } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import type { OfferPackage } from './OfferDetailOverlay';
 
 interface OfferPackageDialogProps {
@@ -20,15 +19,23 @@ export function OfferPackageDialog({ pkg, isOpen, onClose }: OfferPackageDialogP
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-3xl">
-        {/* Header with gradient */}
-        <div className="bg-gradient-to-br from-amber-200 via-orange-300 to-amber-400 p-6">
-          <DialogHeader>
-            <DialogTitle className="text-white text-2xl font-bold">
-              {pkg.name}
-            </DialogTitle>
-          </DialogHeader>
-          <p className="text-white/90 text-2xl font-bold mt-2">{pkg.price}</p>
-          <p className="text-white/70 text-xs mt-1">Einmaliges Beratungshonorar</p>
+        {/* Header with package image */}
+        <div className="relative h-48">
+          <img
+            src={pkg.imageUrl}
+            alt={pkg.name}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-scale-11/80 via-scale-8/40 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-6">
+            <DialogHeader>
+              <DialogTitle className="text-white text-2xl font-bold">
+                {pkg.name}
+              </DialogTitle>
+            </DialogHeader>
+            <p className="text-white/90 text-2xl font-bold mt-2">{pkg.price}</p>
+            <p className="text-white/70 text-xs mt-1">Einmaliges Beratungshonorar</p>
+          </div>
         </div>
 
         {/* Features */}
