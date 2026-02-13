@@ -52,6 +52,17 @@ import InsuranceConsultingConsultation from "./pages/insurance-consulting/Insura
 import InsuranceConsultingSummary from "./pages/insurance-consulting/InsuranceConsultingSummary";
 import { ConsultationProvider } from "./hooks/useConsultationState";
 
+// Investment Consulting Pages
+import InvestmentConsultingStart from "./pages/investment-consulting/InvestmentConsultingStart";
+import InvestmentConsultingTopics from "./pages/investment-consulting/InvestmentConsultingTopics";
+import InvestmentConsultingIntroduction from "./pages/investment-consulting/InvestmentConsultingIntroduction";
+import InvestmentConsultingCompany from "./pages/investment-consulting/InvestmentConsultingCompany";
+import InvestmentConsultingAdvisorInfo from "./pages/investment-consulting/InvestmentConsultingAdvisorInfo";
+import InvestmentConsultingCustomerInfo from "./pages/investment-consulting/InvestmentConsultingCustomerInfo";
+import InvestmentConsultingConsultation from "./pages/investment-consulting/InvestmentConsultingConsultation";
+import InvestmentConsultingSummary from "./pages/investment-consulting/InvestmentConsultingSummary";
+import { InvestmentConsultationProvider } from "./hooks/useInvestmentConsultationState";
+
 // Public Pages (no auth required)
 import PublicLanding from "./pages/public/PublicLanding";
 import PublicContact from "./pages/public/PublicContact";
@@ -377,6 +388,92 @@ function App() {
                 }
               />
               
+              {/* Investment Consulting Routes - wrapped in InvestmentConsultationProvider */}
+              <Route
+                path="/app/investment-consulting"
+                element={<Navigate to="/app/investment-consulting/start" replace />}
+              />
+              <Route
+                path="/app/investment-consulting/start"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <InvestmentConsultationProvider>
+                      <InvestmentConsultingStart />
+                    </InvestmentConsultationProvider>
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/investment-consulting/topics"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <InvestmentConsultationProvider>
+                      <InvestmentConsultingTopics />
+                    </InvestmentConsultationProvider>
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/investment-consulting/introduction"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <InvestmentConsultationProvider>
+                      <InvestmentConsultingIntroduction />
+                    </InvestmentConsultationProvider>
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/investment-consulting/company"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <InvestmentConsultationProvider>
+                      <InvestmentConsultingCompany />
+                    </InvestmentConsultationProvider>
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/investment-consulting/advisor-info"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <InvestmentConsultationProvider>
+                      <InvestmentConsultingAdvisorInfo />
+                    </InvestmentConsultationProvider>
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/investment-consulting/customer-info"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <InvestmentConsultationProvider>
+                      <InvestmentConsultingCustomerInfo />
+                    </InvestmentConsultationProvider>
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/investment-consulting/consultation"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <InvestmentConsultationProvider>
+                      <InvestmentConsultingConsultation />
+                    </InvestmentConsultationProvider>
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/investment-consulting/summary"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <InvestmentConsultationProvider>
+                      <InvestmentConsultingSummary />
+                    </InvestmentConsultationProvider>
+                  </RouteGuard>
+                }
+              />
+
               {/* Old client route - redirect to new portal */}
               <Route
                 path="/client"
