@@ -841,6 +841,17 @@
     "consultation": "Unser Beratungsgespräch",
     "summary": "Zusammenfassung"
   },
+  "investmentConsulting": {
+    "title": "Anlageberatung",
+    "start": "Gespräch starten",
+    "topics": "Gesprächsthemen",
+    "introduction": "Meine Vorstellung",
+    "company": "Firma und unsere Services",
+    "advisorInfo": "Beraterinformationen",
+    "customerInfo": "Kundeninformationen",
+    "consultation": "Unser Beratungsgespräch",
+    "summary": "Zusammenfassung"
+  },
   "common": {
     "contentFollows": "Inhalt folgt"
   }
