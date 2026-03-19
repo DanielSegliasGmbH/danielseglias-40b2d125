@@ -53,6 +53,7 @@ const tileMap = Object.fromEntries(
 export default function InvestmentConsultingAnswers() {
   const navigate = useNavigate();
   const { consultationData, updateData } = useInvestmentConsultationState();
+  const { isPresenting, broadcast, startPresentation, stopPresentation } = usePresentationBroadcaster();
 
   // Read selected tiles from needs page
   const needsData = (consultationData.additionalData as any)?.needs as
@@ -79,6 +80,25 @@ export default function InvestmentConsultingAnswers() {
 
   // Active question index for sidebar navigation
   const [activeIdx, setActiveIdx] = useState(0);
+
+  // Broadcast state to client tab whenever relevant state changes
+  const buildPresentationState = useCallback(
+    (idx: number, ans: Record<string, AnswerState>, tool: string | null = null): PresentationState => ({
+      activeTileId: selectedTileIds[idx] ?? null,
+      activeIdx: idx,
+      selectedTileIds,
+      statuses: Object.fromEntries(Object.entries(ans).map(([k, v]) => [k, v.status])),
+      isActive: true,
+      openTool: tool,
+    }),
+    [selectedTileIds]
+  );
+
+  useEffect(() => {
+    if (isPresenting) {
+      broadcast(buildPresentationState(activeIdx, answers));
+    }
+  }, [activeIdx, answers, isPresenting, broadcast, buildPresentationState]);
 
   const persist = useCallback(
     (newAnswers: Record<string, AnswerState>) => {
