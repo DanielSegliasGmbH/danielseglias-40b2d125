@@ -14,6 +14,7 @@ import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, Clock, G
 import { useUpdateTool, Tool } from '@/hooks/useTools';
 import { toast } from 'sonner';
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
+import { RenditeRisikoTool } from '@/components/tools/rendite-risiko/RenditeRisikoTool';
 
 // Icon mapping
 const iconMap: Record<string, LucideIcon> = {
