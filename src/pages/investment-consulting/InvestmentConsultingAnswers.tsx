@@ -6,11 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { needsCategories } from '@/config/investmentNeedsConfig';
 import { tileAnswerMap } from '@/config/investmentAnswersConfig';
+import { categoryOfferMappings, type OfferModule } from '@/config/investmentOfferConfig';
 import { useInvestmentConsultationState } from '@/hooks/useInvestmentConsultationState';
 import { usePresentationBroadcaster, EMPTY_PRESENTATION_STATE, type PresentationState } from '@/hooks/usePresentationSync';
+import { useSectionBroadcast } from '@/hooks/useSectionBroadcast';
 import {
   CheckCircle2,
   AlertTriangle,
@@ -24,8 +27,7 @@ import {
   BookOpen,
   ShieldCheck,
   Heart,
-  Monitor,
-  MonitorOff,
+  Package,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -35,13 +37,17 @@ interface AnswerState {
   status: ClarificationStatus;
   note: string;
   sourcesVisible: boolean;
+  /** Offer module IDs selected for this tile */
+  selectedModuleIds: string[];
 }
 
 /** Build a flat lookup: tileId → categoryTitle */
 const tileCategoryMap: Record<string, string> = {};
+const tileToCategoryId: Record<string, string> = {};
 needsCategories.forEach((cat) => {
   cat.tiles.forEach((t) => {
     tileCategoryMap[t.id] = cat.title;
+    tileToCategoryId[t.id] = cat.id;
   });
 });
 
@@ -53,7 +59,7 @@ const tileMap = Object.fromEntries(
 export default function InvestmentConsultingAnswers() {
   const navigate = useNavigate();
   const { consultationData, updateData } = useInvestmentConsultationState();
-  const { isPresenting, broadcast, startPresentation, stopPresentation } = usePresentationBroadcaster();
+  const { isPresenting, broadcast } = usePresentationBroadcaster();
 
   // Read selected tiles from needs page
   const needsData = (consultationData.additionalData as any)?.needs as
@@ -73,7 +79,10 @@ export default function InvestmentConsultingAnswers() {
     if (saved) return saved;
     const init: Record<string, AnswerState> = {};
     selectedTileIds.forEach((id) => {
-      init[id] = { status: 'open', note: '', sourcesVisible: false };
+      // Auto-select all modules from matching category
+      const catId = tileToCategoryId[id];
+      const catModules = categoryOfferMappings.find((m) => m.categoryId === catId)?.modules ?? [];
+      init[id] = { status: 'open', note: '', sourcesVisible: false, selectedModuleIds: catModules.map((m) => m.id) };
     });
     return init;
   });
@@ -81,27 +90,21 @@ export default function InvestmentConsultingAnswers() {
   // Active question index for sidebar navigation
   const [activeIdx, setActiveIdx] = useState(0);
 
-  // Broadcast state to client tab whenever relevant state changes
-  const buildPresentationState = useCallback(
-    (idx: number, ans: Record<string, AnswerState>, tool: string | null = null): PresentationState => ({
-      ...EMPTY_PRESENTATION_STATE,
-      activeTileId: selectedTileIds[idx] ?? null,
-      activeIdx: idx,
-      selectedTileIds,
-      statuses: Object.fromEntries(Object.entries(ans).map(([k, v]) => [k, v.status])),
-      isActive: true,
-      currentSection: 'answers',
-      openTool: tool,
-      clientSelectedSteps: {},
-    }),
-    [selectedTileIds]
-  );
+  // Broadcast section data
+  const resolvedCount = Object.values(answers).filter((a) => a.status === 'resolved').length;
 
-  useEffect(() => {
-    if (isPresenting) {
-      broadcast(buildPresentationState(activeIdx, answers));
-    }
-  }, [activeIdx, answers, isPresenting, broadcast, buildPresentationState]);
+  useSectionBroadcast({
+    section: 'answers',
+    title: 'Antworten & Vertiefung',
+    subtitle: `${resolvedCount} von ${selectedTileIds.length} Fragen geklärt`,
+    items: selectedTileIds.map((id) => tileMap[id]?.title ?? id),
+    extra: {
+      activeTileId: selectedTileIds[activeIdx] ?? null,
+      activeIdx,
+      selectedTileIds,
+      statuses: Object.fromEntries(Object.entries(answers).map(([k, v]) => [k, v.status])),
+    },
+  });
 
   const persist = useCallback(
     (newAnswers: Record<string, AnswerState>) => {
@@ -142,7 +145,17 @@ export default function InvestmentConsultingAnswers() {
     });
   };
 
-  const resolvedCount = Object.values(answers).filter((a) => a.status === 'resolved').length;
+  const toggleOfferModule = (tileId: string, moduleId: string) => {
+    setAnswers((prev) => {
+      const current = prev[tileId]?.selectedModuleIds ?? [];
+      const next = current.includes(moduleId)
+        ? current.filter((id) => id !== moduleId)
+        : [...current, moduleId];
+      const updated = { ...prev, [tileId]: { ...prev[tileId], selectedModuleIds: next } };
+      persist(updated);
+      return updated;
+    });
+  };
 
   if (selectedTileIds.length === 0) {
     return (
@@ -174,7 +187,7 @@ export default function InvestmentConsultingAnswers() {
       <div className="min-h-screen bg-background">
         {/* Header */}
         <div className="border-b bg-card">
-          <div className="container py-6 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div className="container py-6">
             <div>
               <h1 className="text-2xl font-bold">Gemeinsam klären wir deine wichtigsten Fragen</h1>
               <p className="text-muted-foreground mt-1">
@@ -184,21 +197,6 @@ export default function InvestmentConsultingAnswers() {
                 {resolvedCount} von {selectedTileIds.length} Fragen geklärt
               </Badge>
             </div>
-            <Button
-              variant={isPresenting ? 'destructive' : 'outline'}
-              size="sm"
-              className="gap-2 shrink-0 self-start"
-              onClick={() => {
-                if (isPresenting) {
-                  stopPresentation();
-                } else {
-                  startPresentation(buildPresentationState(activeIdx, answers));
-                }
-              }}
-            >
-              {isPresenting ? <MonitorOff className="h-4 w-4" /> : <Monitor className="h-4 w-4" />}
-              {isPresenting ? 'Präsentation beenden' : 'Präsentation starten'}
-            </Button>
           </div>
         </div>
 
@@ -221,7 +219,7 @@ export default function InvestmentConsultingAnswers() {
                         className={cn(
                           'w-full text-left px-3 py-2 rounded-lg text-xs flex items-center gap-2 transition-colors',
                           idx === activeIdx
-                            ? 'bg-scale-1 text-foreground font-medium'
+                            ? 'bg-accent text-foreground font-medium'
                             : 'text-muted-foreground hover:bg-muted/50'
                         )}
                       >
@@ -249,7 +247,7 @@ export default function InvestmentConsultingAnswers() {
                       className={cn(
                         'shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors flex items-center gap-1.5',
                         idx === activeIdx
-                          ? 'bg-scale-6 text-white border-scale-6'
+                          ? 'bg-primary text-primary-foreground border-primary'
                           : 'bg-transparent text-muted-foreground border-border'
                       )}
                     >
@@ -263,12 +261,13 @@ export default function InvestmentConsultingAnswers() {
 
             <AnswerCard
               tileId={activeTileId}
-              answerState={answers[activeTileId] ?? { status: 'open', note: '', sourcesVisible: false }}
+              answerState={answers[activeTileId] ?? { status: 'open', note: '', sourcesVisible: false, selectedModuleIds: [] }}
               customerNote={needsData?.tiles?.[activeTileId]?.note ?? ''}
               onSetStatus={(s) => setStatus(activeTileId, s)}
               onSetNote={(n) => setNote(activeTileId, n)}
               onToggleSources={() => toggleSources(activeTileId)}
               onNavigateToTool={(slug) => navigate(`/app/tools/${slug}`)}
+              onToggleOfferModule={(moduleId) => toggleOfferModule(activeTileId, moduleId)}
             />
 
             {/* Prev / Next */}
@@ -320,6 +319,7 @@ interface AnswerCardProps {
   onSetNote: (n: string) => void;
   onToggleSources: () => void;
   onNavigateToTool: (slug: string) => void;
+  onToggleOfferModule: (moduleId: string) => void;
 }
 
 function AnswerCard({
@@ -330,10 +330,16 @@ function AnswerCard({
   onSetNote,
   onToggleSources,
   onNavigateToTool,
+  onToggleOfferModule,
 }: AnswerCardProps) {
   const tile = tileMap[tileId];
   const category = tileCategoryMap[tileId];
+  const catId = tileToCategoryId[tileId];
   const config = tileAnswerMap[tileId];
+
+  // Get offer modules for this tile's category
+  const categoryModules = categoryOfferMappings.find((m) => m.categoryId === catId)?.modules ?? [];
+  const selectedModuleIds = answerState.selectedModuleIds ?? [];
 
   return (
     <div className="space-y-4">
@@ -354,7 +360,7 @@ function AnswerCard({
       {customerNote && (
         <Card>
           <CardContent className="p-5 flex items-start gap-3">
-            <StickyNote className="h-4 w-4 text-scale-6 mt-0.5 shrink-0" />
+            <StickyNote className="h-4 w-4 text-primary mt-0.5 shrink-0" />
             <div>
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
                 Kundenkontext
@@ -396,7 +402,7 @@ function AnswerCard({
 
       {/* E) Explanation – storyline or simple bullets */}
       {config?.storyline && config.storyline.length > 0 ? (
-        <Card className={tileId === 'trust-1' ? 'border-scale-3 bg-scale-1/30' : ''}>
+        <Card className={tileId === 'trust-1' ? 'border-primary/20 bg-primary/5' : ''}>
           <CardContent className="p-5 space-y-5">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
               <Heart className="h-3.5 w-3.5" />
@@ -404,11 +410,11 @@ function AnswerCard({
             </p>
             {config.storyline.map((section, i) => (
               <div key={i} className="space-y-1.5">
-                <p className="text-xs font-semibold text-scale-8 uppercase tracking-wide">
+                <p className="text-xs font-semibold text-primary uppercase tracking-wide">
                   {section.heading}
                 </p>
                 {section.lines.map((line, j) => (
-                  <p key={j} className="text-sm text-foreground leading-relaxed pl-3 border-l-2 border-scale-3">
+                  <p key={j} className="text-sm text-foreground leading-relaxed pl-3 border-l-2 border-primary/30">
                     {line}
                   </p>
                 ))}
@@ -437,7 +443,7 @@ function AnswerCard({
 
       {/* Recognition block */}
       {config?.recognition && (
-        <Card className="border-scale-3">
+        <Card className="border-primary/20">
           <CardContent className="p-5 space-y-3">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
               <ShieldCheck className="h-3.5 w-3.5" />
@@ -446,7 +452,7 @@ function AnswerCard({
             <ul className="space-y-2">
               {config.recognition.items.map((item, i) => (
                 <li key={i} className="text-sm text-foreground flex items-center gap-2.5">
-                  <CheckCircle2 className="h-4 w-4 text-scale-6 shrink-0" />
+                  <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
                   <span>{item}</span>
                 </li>
               ))}
@@ -479,7 +485,7 @@ function AnswerCard({
                       href={src.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-scale-8 hover:text-scale-10 inline-flex items-center gap-1 transition-colors"
+                      className="text-xs text-primary hover:text-primary/80 inline-flex items-center gap-1 transition-colors"
                     >
                       {src.title}
                       <ExternalLink className="h-3 w-3 shrink-0" />
@@ -528,6 +534,46 @@ function AnswerCard({
           )}
         </CardContent>
       </Card>
+
+      {/* NEW: Offer modules for this question */}
+      {categoryModules.length > 0 && (
+        <Card className="border-primary/20">
+          <CardContent className="p-5 space-y-3">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+              <Package className="h-3.5 w-3.5" />
+              Was wir hier für dich optimieren können
+            </p>
+            <div className="space-y-2">
+              {categoryModules.map((mod) => {
+                const isSelected = selectedModuleIds.includes(mod.id);
+                return (
+                  <div
+                    key={mod.id}
+                    className={cn(
+                      'flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all',
+                      isSelected
+                        ? 'border-primary/30 bg-primary/5'
+                        : 'border-border hover:border-primary/20'
+                    )}
+                    onClick={() => onToggleOfferModule(mod.id)}
+                  >
+                    <div className={cn(
+                      'mt-0.5 shrink-0 w-5 h-5 rounded border flex items-center justify-center transition-colors',
+                      isSelected ? 'bg-primary border-primary text-primary-foreground' : 'border-muted-foreground/30'
+                    )}>
+                      {isSelected && <CheckCircle2 className="h-3.5 w-3.5" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm">{mod.title}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{mod.description}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* H) Additional notes */}
       <Card>

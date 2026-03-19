@@ -6,7 +6,7 @@
 import { usePresentationReceiver, SECTION_ORDER, type PresentationState } from '@/hooks/usePresentationSync';
 import { needsCategories } from '@/config/investmentNeedsConfig';
 import { tileAnswerMap } from '@/config/investmentAnswersConfig';
-import { riskReversalItems } from '@/config/investmentOfferConfig';
+import { categoryOfferMappings, riskReversalItems } from '@/config/investmentOfferConfig';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -26,7 +26,7 @@ needsCategories.forEach((cat) => {
 });
 
 export default function InvestmentConsultingPresentation() {
-  const { state, connected, sendStepClick, sendOfferAction } = usePresentationReceiver();
+  const { state, connected, sendStepClick, sendOfferAction, sendNeedsTileToggle } = usePresentationReceiver();
   const [transitioning, setTransitioning] = useState(false);
   const prevSectionRef = useRef(state.currentSection);
 
@@ -73,9 +73,6 @@ export default function InvestmentConsultingPresentation() {
           <div className="flex-1 max-w-xs">
             <Progress value={globalProgress} className="h-2" />
           </div>
-          <span className="text-xs text-muted-foreground shrink-0">
-            Schritt {sectionIdx + 1} / {totalSections}
-          </span>
         </div>
       </div>
 
@@ -86,7 +83,7 @@ export default function InvestmentConsultingPresentation() {
           transitioning ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0',
         )}
       >
-        <SectionContent state={state} sendStepClick={sendStepClick} sendOfferAction={sendOfferAction} />
+        <SectionContent state={state} sendStepClick={sendStepClick} sendOfferAction={sendOfferAction} sendNeedsTileToggle={sendNeedsTileToggle} />
       </div>
     </div>
   );
@@ -100,10 +97,12 @@ function SectionContent({
   state,
   sendStepClick,
   sendOfferAction,
+  sendNeedsTileToggle,
 }: {
   state: PresentationState;
   sendStepClick: (tileId: string, step: string) => void;
   sendOfferAction: (action: string) => void;
+  sendNeedsTileToggle: (tileId: string) => void;
 }) {
   switch (state.currentSection) {
     case 'answers':
@@ -113,7 +112,7 @@ function SectionContent({
     case 'summary':
       return <SummaryView state={state} />;
     case 'needs':
-      return <NeedsView state={state} />;
+      return <NeedsView state={state} sendNeedsTileToggle={sendNeedsTileToggle} />;
     default:
       return <GenericSectionView state={state} />;
   }
@@ -145,32 +144,73 @@ function GenericSectionView({ state }: { state: PresentationState }) {
   );
 }
 
-/* ── Needs view ── */
-function NeedsView({ state }: { state: PresentationState }) {
-  const selectedCount = state.selectedTileIds.length;
+/* ── Needs view – fully interactive with all categories ── */
+function NeedsView({ state, sendNeedsTileToggle }: { state: PresentationState; sendNeedsTileToggle: (tileId: string) => void }) {
+  const selectedIds = new Set(state.selectedTileIds);
+  const selectedCount = selectedIds.size;
+
   return (
-    <div className="max-w-3xl w-full space-y-8 text-center">
-      <h1 className="text-3xl md:text-5xl font-bold text-foreground leading-tight">
-        {state.sectionTitle || 'Deine wichtigsten Fragen'}
-      </h1>
-      <p className="text-lg text-muted-foreground">
-        {selectedCount > 0
-          ? `${selectedCount} Themen ausgewählt`
-          : 'Welche Themen sind dir besonders wichtig?'}
-      </p>
-      {selectedCount > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left max-w-2xl mx-auto">
-          {state.selectedTileIds.map((id) => {
-            const tile = tileMap[id];
-            return (
-              <div key={id} className="flex items-center gap-3 p-4 rounded-xl bg-card border">
-                <CheckCircle2 className="h-5 w-5 text-primary shrink-0" />
-                <span className="font-medium text-sm">{tile?.title ?? id}</span>
-              </div>
-            );
-          })}
+    <div className="max-w-4xl w-full space-y-8">
+      <div className="text-center space-y-2">
+        <h1 className="text-3xl md:text-5xl font-bold text-foreground leading-tight">
+          {state.sectionTitle || 'Was ist dir besonders wichtig?'}
+        </h1>
+        <p className="text-lg text-muted-foreground">
+          {selectedCount > 0
+            ? `${selectedCount} ${selectedCount === 1 ? 'Thema' : 'Themen'} ausgewählt`
+            : 'Wähle die Themen aus, die dich am meisten beschäftigen'}
+        </p>
+      </div>
+
+      {needsCategories.map((category) => (
+        <div key={category.id} className="space-y-3">
+          <h2 className={cn(
+            'text-sm font-semibold uppercase tracking-wide',
+            category.highlight ? 'text-primary' : 'text-muted-foreground'
+          )}>
+            {category.title}
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {category.tiles.map((tile) => {
+              const isSelected = selectedIds.has(tile.id);
+              return (
+                <button
+                  key={tile.id}
+                  onClick={() => sendNeedsTileToggle(tile.id)}
+                  className={cn(
+                    'text-left p-5 rounded-2xl border-2 transition-all duration-200',
+                    'hover:shadow-md hover:scale-[1.01] active:scale-[0.99]',
+                    isSelected
+                      ? 'border-primary bg-primary/5 shadow-sm ring-1 ring-primary/20'
+                      : 'border-border bg-card hover:border-primary/40',
+                  )}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className={cn(
+                      'mt-0.5 shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors',
+                      isSelected
+                        ? 'bg-primary border-primary text-primary-foreground'
+                        : 'border-muted-foreground/30 text-transparent'
+                    )}>
+                      <Check className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-sm font-medium text-foreground leading-snug block">
+                        {tile.title}
+                      </span>
+                      {tile.description && (
+                        <span className="text-xs text-muted-foreground mt-0.5 block">
+                          {tile.description}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      )}
+      ))}
     </div>
   );
 }
@@ -186,13 +226,12 @@ function AnswersView({
   const [clickedSteps, setClickedSteps] = useState<Record<string, Set<string>>>({});
   const { activeTileId, selectedTileIds, statuses } = state;
   const resolvedCount = Object.values(statuses).filter((s) => s === 'resolved').length;
-  const progressPercent = selectedTileIds.length > 0 ? (resolvedCount / selectedTileIds.length) * 100 : 0;
 
   if (!activeTileId) {
     return (
       <div className="max-w-2xl w-full space-y-8 text-center">
         <h1 className="text-3xl md:text-4xl font-bold text-foreground">
-          Zusammenfassung deiner wichtigsten Punkte
+          Deine wichtigsten Punkte
         </h1>
         <div className="space-y-3 text-left">
           {selectedTileIds.map((id) => {
@@ -221,6 +260,15 @@ function AnswersView({
   const config = tileAnswerMap[activeTileId];
   const currentStatus = statuses[activeTileId] ?? 'open';
   const tileClicked = clickedSteps[activeTileId] ?? new Set<string>();
+
+  // Derive offer modules relevant to this tile's category
+  const tileCatId = Object.entries(
+    Object.fromEntries(needsCategories.map((c) => [c.id, c.tiles.map((t) => t.id)]))
+  ).find(([, ids]) => ids.includes(activeTileId))?.[0];
+
+  const relevantModules = tileCatId
+    ? categoryOfferMappings.find((m) => m.categoryId === tileCatId)?.modules ?? []
+    : [];
 
   const handleStepClick = (label: string) => {
     setClickedSteps((prev) => {
@@ -294,6 +342,26 @@ function AnswersView({
               </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {/* Offer modules preview – customer sees simplified */}
+      {relevantModules.length > 0 && (
+        <div className="max-w-xl mx-auto space-y-3">
+          <p className="text-sm font-semibold text-muted-foreground text-center uppercase tracking-wider">
+            Was wir hier für dich optimieren können
+          </p>
+          <div className="space-y-2">
+            {relevantModules.map((mod) => (
+              <div key={mod.id} className="flex items-start gap-3 p-4 rounded-xl bg-card border">
+                <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium text-sm">{mod.title}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{mod.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

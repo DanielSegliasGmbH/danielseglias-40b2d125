@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { needsCategories, NeedsTile } from '@/config/investmentNeedsConfig';
 import { useInvestmentConsultationState } from '@/hooks/useInvestmentConsultationState';
+import { usePresentationBroadcaster } from '@/hooks/usePresentationSync';
 import { useSectionBroadcast } from '@/hooks/useSectionBroadcast';
 import { CheckCircle2, MessageSquare } from 'lucide-react';
 
@@ -17,6 +18,7 @@ interface TileState {
 
 export default function InvestmentConsultingNeeds() {
   const { consultationData, updateData: ctxUpdate } = useInvestmentConsultationState();
+  const { onClientNeedsToggleRef } = usePresentationBroadcaster();
 
   // Local state – will be persisted into consultationData.additionalData.needs
   const [tiles, setTiles] = useState<Record<string, TileState>>(() => {
@@ -60,14 +62,24 @@ export default function InvestmentConsultingNeeds() {
     }
   }, [ctxUpdate]);
 
-  const toggleTile = (tileId: string) => {
+  const toggleTile = useCallback((tileId: string) => {
     setTiles((prev) => {
       const current = prev[tileId] ?? { selected: false, note: '' };
       const updated = { ...prev, [tileId]: { ...current, selected: !current.selected } };
       persist(updated, freeText);
       return updated;
     });
-  };
+  }, [freeText, persist]);
+
+  // Listen for client-side tile toggles from presentation
+  useEffect(() => {
+    onClientNeedsToggleRef.current = (tileId: string) => {
+      toggleTile(tileId);
+    };
+    return () => {
+      onClientNeedsToggleRef.current = null;
+    };
+  }, [onClientNeedsToggleRef, toggleTile]);
 
   const updateNote = (tileId: string, note: string) => {
     setTiles((prev) => {
@@ -115,8 +127,8 @@ export default function InvestmentConsultingNeeds() {
               className={cn(
                 'px-3 py-1.5 rounded-full text-xs font-medium border transition-colors',
                 !activeCategory
-                  ? 'bg-scale-6 text-white border-scale-6'
-                  : 'bg-transparent text-muted-foreground border-border hover:border-scale-5'
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-transparent text-muted-foreground border-border hover:border-primary/40'
               )}
             >
               Alle
@@ -128,8 +140,8 @@ export default function InvestmentConsultingNeeds() {
                 className={cn(
                   'px-3 py-1.5 rounded-full text-xs font-medium border transition-colors',
                   activeCategory === cat.id
-                    ? 'bg-scale-6 text-white border-scale-6'
-                    : 'bg-transparent text-muted-foreground border-border hover:border-scale-5'
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-transparent text-muted-foreground border-border hover:border-primary/40'
                 )}
               >
                 {cat.title}
@@ -142,7 +154,7 @@ export default function InvestmentConsultingNeeds() {
             <div key={category.id} className="space-y-3">
               <h2 className={cn(
                 'text-sm font-semibold uppercase tracking-wide',
-                category.highlight ? 'text-scale-8' : 'text-muted-foreground'
+                category.highlight ? 'text-primary' : 'text-muted-foreground'
               )}>
                 {category.title}
               </h2>
@@ -166,7 +178,7 @@ export default function InvestmentConsultingNeeds() {
           <Card>
             <CardContent className="p-6 space-y-3">
               <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                <MessageSquare className="h-4 w-4 text-scale-6" />
+                <MessageSquare className="h-4 w-4 text-primary" />
                 Weitere Gedanken / individuelle Situation
               </h3>
               <Textarea
@@ -199,9 +211,9 @@ function TileCard({ tile, state, highlight, onToggle, onNoteChange }: TileCardPr
       className={cn(
         'cursor-pointer transition-all select-none',
         state.selected
-          ? 'ring-2 ring-scale-6 bg-scale-1/40'
+          ? 'ring-2 ring-primary bg-primary/5'
           : 'hover:shadow-md',
-        highlight && !state.selected && 'border-scale-4'
+        highlight && !state.selected && 'border-primary/20'
       )}
     >
       <CardContent className="p-4 space-y-3">
@@ -214,8 +226,8 @@ function TileCard({ tile, state, highlight, onToggle, onNoteChange }: TileCardPr
           <div className={cn(
             'mt-0.5 shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors',
             state.selected
-              ? 'bg-scale-6 border-scale-6 text-white'
-              : 'border-scale-4 text-transparent'
+              ? 'bg-primary border-primary text-primary-foreground'
+              : 'border-muted-foreground/30 text-transparent'
           )}>
             <CheckCircle2 className="h-3.5 w-3.5" />
           </div>

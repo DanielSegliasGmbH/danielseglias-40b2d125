@@ -60,7 +60,6 @@ export function PresentationBar() {
 
   const handleStop = () => {
     setPresentingFlag(false);
-    // The broadcaster hook will detect this and close the window
     window.dispatchEvent(new CustomEvent('stop-presentation'));
   };
 
@@ -85,9 +84,6 @@ export function PresentationBar() {
 
           <span className="text-xs text-muted-foreground px-2 min-w-[100px] text-center">
             {SECTION_ORDER[currentIdx]?.label ?? 'Beratung'}
-            <span className="text-muted-foreground/50 ml-1">
-              ({Math.max(currentIdx + 1, 1)}/{SECTION_ORDER.length})
-            </span>
           </span>
 
           <Button
