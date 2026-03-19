@@ -6,12 +6,12 @@
 import { usePresentationReceiver, SECTION_ORDER, type PresentationState } from '@/hooks/usePresentationSync';
 import { needsCategories } from '@/config/investmentNeedsConfig';
 import { tileAnswerMap } from '@/config/investmentAnswersConfig';
-import { categoryOfferMappings, riskReversalItems } from '@/config/investmentOfferConfig';
+import { riskReversalItems, packageConfigs, formatCHF } from '@/config/investmentOfferConfig';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import {
   CheckCircle2, AlertTriangle, CircleDot, Loader2, Check,
-  Target, Shield, Sparkles, Package, ArrowRight, Star,
+  Target, Shield, Sparkles, Package, ArrowRight, Star, ExternalLink, Crown,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect, useRef } from 'react';
@@ -118,7 +118,7 @@ function SectionContent({
   }
 }
 
-/* ── Generic section (intro, company, advisor, customer, topics, consultation) ── */
+/* ── Generic section ── */
 function GenericSectionView({ state }: { state: PresentationState }) {
   return (
     <div className="max-w-3xl w-full space-y-8 text-center">
@@ -144,7 +144,7 @@ function GenericSectionView({ state }: { state: PresentationState }) {
   );
 }
 
-/* ── Needs view – fully interactive with all categories ── */
+/* ── Needs view ── */
 function NeedsView({ state, sendNeedsTileToggle }: { state: PresentationState; sendNeedsTileToggle: (tileId: string) => void }) {
   const selectedIds = new Set(state.selectedTileIds);
   const selectedCount = selectedIds.size;
@@ -215,7 +215,7 @@ function NeedsView({ state, sendNeedsTileToggle }: { state: PresentationState; s
   );
 }
 
-/* ── Answers view (existing rich view) ── */
+/* ── Answers view ── */
 function AnswersView({
   state,
   sendStepClick,
@@ -223,7 +223,6 @@ function AnswersView({
   state: PresentationState;
   sendStepClick: (tileId: string, step: string) => void;
 }) {
-  const [clickedSteps, setClickedSteps] = useState<Record<string, Set<string>>>({});
   const { activeTileId, selectedTileIds, statuses } = state;
   const resolvedCount = Object.values(statuses).filter((s) => s === 'resolved').length;
 
@@ -259,25 +258,6 @@ function AnswersView({
   const tile = tileMap[activeTileId];
   const config = tileAnswerMap[activeTileId];
   const currentStatus = statuses[activeTileId] ?? 'open';
-  const tileClicked = clickedSteps[activeTileId] ?? new Set<string>();
-
-  // Derive offer modules relevant to this tile's category
-  const tileCatId = Object.entries(
-    Object.fromEntries(needsCategories.map((c) => [c.id, c.tiles.map((t) => t.id)]))
-  ).find(([, ids]) => ids.includes(activeTileId))?.[0];
-
-  const relevantModules = tileCatId
-    ? categoryOfferMappings.find((m) => m.categoryId === tileCatId)?.modules ?? []
-    : [];
-
-  const handleStepClick = (label: string) => {
-    setClickedSteps((prev) => {
-      const current = new Set(prev[activeTileId] ?? []);
-      current.add(label);
-      return { ...prev, [activeTileId]: current };
-    });
-    sendStepClick(activeTileId, label);
-  };
 
   return (
     <div className="max-w-3xl w-full space-y-12">
@@ -293,32 +273,47 @@ function AnswersView({
         )}
       </div>
 
-      {/* Interactive Steps */}
+      {/* Steps as clickable CTA links */}
       {config?.steps && config.steps.length > 0 && (
         <div className="space-y-4">
           <p className="text-sm font-medium text-muted-foreground text-center uppercase tracking-wider">
-            Was möchtest du genauer wissen?
+            Empfohlene nächste Schritte
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
             {config.steps.map((step) => {
-              const isClicked = tileClicked.has(step.label);
-              return (
-                <button
+              const url = step.externalUrl || (step.toolSlug ? `/app/tools/${step.toolSlug}` : null);
+
+              return url ? (
+                <a
                   key={step.label}
-                  onClick={() => handleStepClick(step.label)}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => sendStepClick(activeTileId, step.label)}
                   className={cn(
-                    'relative flex items-center gap-3 p-5 rounded-2xl border-2 text-left transition-all duration-200',
-                    'hover:shadow-md hover:scale-[1.02] active:scale-[0.98]',
-                    isClicked
-                      ? 'border-primary bg-primary/5 shadow-sm'
-                      : 'border-border bg-card hover:border-primary/40',
+                    'flex items-center gap-3 p-5 rounded-2xl border-2 border-primary/20 text-left transition-all duration-200',
+                    'hover:shadow-md hover:scale-[1.02] hover:border-primary/40 active:scale-[0.98]',
+                    'bg-card group',
                   )}
                 >
-                  <div className={cn(
-                    'flex items-center justify-center h-8 w-8 rounded-full shrink-0 transition-colors',
-                    isClicked ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground',
-                  )}>
-                    {isClicked ? <Check className="h-4 w-4" /> : <span className="text-sm font-medium">?</span>}
+                  <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 text-primary shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                    <ExternalLink className="h-4 w-4" />
+                  </div>
+                  <span className="text-base md:text-lg font-medium flex-1">{step.label}</span>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                </a>
+              ) : (
+                <button
+                  key={step.label}
+                  onClick={() => sendStepClick(activeTileId, step.label)}
+                  className={cn(
+                    'flex items-center gap-3 p-5 rounded-2xl border-2 border-border text-left transition-all duration-200',
+                    'hover:shadow-md hover:scale-[1.02] hover:border-primary/40 active:scale-[0.98]',
+                    'bg-card',
+                  )}
+                >
+                  <div className="flex items-center justify-center h-8 w-8 rounded-full bg-muted text-muted-foreground shrink-0">
+                    <ArrowRight className="h-4 w-4" />
                   </div>
                   <span className="text-base md:text-lg font-medium">{step.label}</span>
                 </button>
@@ -345,25 +340,25 @@ function AnswersView({
         </div>
       )}
 
-      {/* Offer modules preview – customer sees simplified */}
-      {relevantModules.length > 0 && (
-        <div className="max-w-xl mx-auto space-y-3">
-          <p className="text-sm font-semibold text-muted-foreground text-center uppercase tracking-wider">
-            Was wir hier für dich optimieren können
-          </p>
-          <div className="space-y-2">
-            {relevantModules.map((mod) => (
-              <div key={mod.id} className="flex items-start gap-3 p-4 rounded-xl bg-card border">
-                <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-medium text-sm">{mod.title}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{mod.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Simplified offer preview for customer */}
+      <div className="max-w-xl mx-auto space-y-3">
+        <p className="text-sm font-semibold text-muted-foreground text-center uppercase tracking-wider">
+          Was wir hier für dich optimieren können
+        </p>
+        <div className="space-y-2">
+          {[
+            'Klarheit über deine aktuelle Situation',
+            'Bessere Struktur und Übersicht',
+            'Konkrete Handlungsschritte',
+            'Persönliche Begleitung',
+          ].map((item) => (
+            <div key={item} className="flex items-start gap-3 p-4 rounded-xl bg-card border">
+              <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <p className="text-sm font-medium">{item}</p>
+            </div>
+          ))}
         </div>
-      )}
+      </div>
 
       {/* Status */}
       <div className="flex items-center justify-center gap-3 pt-4">
@@ -423,7 +418,7 @@ function SummaryView({ state }: { state: PresentationState }) {
   );
 }
 
-/* ── Offer view (customer-facing) ── */
+/* ── Offer view (customer-facing with 3 tiers) ── */
 function OfferView({
   state,
   sendOfferAction,
@@ -432,11 +427,11 @@ function OfferView({
   sendOfferAction: (action: string) => void;
 }) {
   return (
-    <div className="max-w-3xl w-full space-y-10">
+    <div className="max-w-4xl w-full space-y-10">
       {/* Header */}
       <div className="text-center space-y-3">
         <h1 className="text-3xl md:text-5xl font-bold text-foreground leading-tight">
-          Dein individuelles Konzept
+          Dein individuelles Angebot
         </h1>
         <p className="text-lg text-muted-foreground">
           Basierend auf unserem Gespräch zusammengestellt
@@ -461,23 +456,58 @@ function OfferView({
         )}
       </div>
 
-      {/* Modules */}
+      {/* 3 Package Tiers */}
       {state.offerModules.length > 0 && (
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div className="flex items-center gap-2 justify-center">
             <Package className="w-5 h-5 text-primary" />
-            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Was du bekommst</p>
+            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Deine Optionen</p>
           </div>
-          <div className="space-y-2 max-w-2xl mx-auto">
-            {state.offerModules.map((mod, i) => (
-              <div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-card border">
-                <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-medium text-sm">{mod.title}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{mod.description}</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {packageConfigs.map((pkg) => {
+              const isRecommended = pkg.recommended;
+              // Distribute modules across tiers for display
+              const tierModuleCount = pkg.tier === 'starter' 
+                ? Math.ceil(state.offerModules.length * 0.4)
+                : pkg.tier === 'standard'
+                  ? Math.ceil(state.offerModules.length * 0.7)
+                  : state.offerModules.length;
+              const tierModules = state.offerModules.slice(0, tierModuleCount);
+
+              return (
+                <div
+                  key={pkg.tier}
+                  className={cn(
+                    'rounded-2xl border-2 p-6 space-y-4 transition-all',
+                    isRecommended
+                      ? 'border-primary bg-primary/5 shadow-md ring-1 ring-primary/20'
+                      : 'border-border bg-card',
+                  )}
+                >
+                  {isRecommended && (
+                    <Badge className="bg-primary text-primary-foreground gap-1 mx-auto block w-fit">
+                      <Star className="w-3 h-3" />
+                      Empfohlen
+                    </Badge>
+                  )}
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold flex items-center justify-center gap-2">
+                      {pkg.tier === 'premium' && <Crown className="w-4 h-4 text-primary" />}
+                      {pkg.label}
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-1">{pkg.description}</p>
+                  </div>
+                  <ul className="space-y-2">
+                    {tierModules.map((mod, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm">
+                        <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                        <span>{mod.title}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
@@ -495,7 +525,7 @@ function OfferView({
 
       {state.offerPrice && (
         <div className="text-center space-y-2 py-4">
-          <p className="text-sm text-muted-foreground">Dein Preis heute</p>
+          <p className="text-sm text-muted-foreground">Ab</p>
           <p className="text-4xl font-bold text-primary">{state.offerPrice}</p>
         </div>
       )}

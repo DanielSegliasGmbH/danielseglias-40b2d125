@@ -1,5 +1,4 @@
 import { useState, useMemo, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -9,20 +8,23 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   CheckCircle2, Shield, ArrowRight, Sparkles,
   Target, Package, Star, Eye, EyeOff, Plus, Minus,
-  Save, MessageSquare,
+  Save, MessageSquare, Crown,
 } from 'lucide-react';
 import { useInvestmentConsultationState } from '@/hooks/useInvestmentConsultationState';
 import { needsCategories } from '@/config/investmentNeedsConfig';
 import { useSectionBroadcast } from '@/hooks/useSectionBroadcast';
 import {
-  categoryOfferMappings,
+  allOfferModules,
   defaultOutcomeGoals,
   riskReversalItems,
   formatCHF,
+  packageConfigs,
   type OfferModule,
+  type PackageTier,
 } from '@/config/investmentOfferConfig';
 import { cn } from '@/lib/utils';
 
@@ -38,7 +40,6 @@ function getActiveCategoryIds(selectedTileIds: string[]): string[] {
 }
 
 export default function InvestmentConsultingOffer() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const { consultationData, updateData } = useInvestmentConsultationState();
 
@@ -54,11 +55,6 @@ export default function InvestmentConsultingOffer() {
       .map(([id]) => id);
   }, [needsData]);
 
-  const activeCategoryIds = useMemo(
-    () => getActiveCategoryIds(selectedTileIds),
-    [selectedTileIds],
-  );
-
   /* ── Read module selections from answers ── */
   const answersData = (consultationData?.additionalData as any)?.answers as
     | Record<string, { selectedModuleIds?: string[] }>
@@ -73,88 +69,109 @@ export default function InvestmentConsultingOffer() {
     return ids;
   }, [answersData]);
 
+  /* ── Modules derived from answers ── */
+  const relevantModules = useMemo(() => {
+    if (answerSelectedModuleIds.size === 0) return [];
+    return allOfferModules.filter((m) => answerSelectedModuleIds.has(m.id));
+  }, [answerSelectedModuleIds]);
+
   /* ── Advisor controls ── */
   const [showAdvisorView, setShowAdvisorView] = useState(false);
-  const [removedModuleIds, setRemovedModuleIds] = useState<Set<string>>(new Set());
-  const [extraModules, setExtraModules] = useState<OfferModule[]>([]);
   const [priceOverrides, setPriceOverrides] = useState<Record<string, number>>({});
-  const [discountPercent, setDiscountPercent] = useState(0);
-  const [customPrice, setCustomPrice] = useState<number | null>(null);
+  const [extraModules, setExtraModules] = useState<OfferModule[]>([]);
+  const [recommendedTier, setRecommendedTier] = useState<PackageTier>('standard');
 
-  /* ── Computed modules: use answer selections if available, else category-based ── */
-  const autoModules = useMemo(() => {
-    const modules: OfferModule[] = [];
-    const seenIds = new Set<string>();
-    categoryOfferMappings.forEach((mapping) => {
-      if (activeCategoryIds.includes(mapping.categoryId)) {
-        mapping.modules.forEach((mod) => {
-          if (removedModuleIds.has(mod.id)) return;
-          // If answers data exists, only include modules selected there
-          if (answersData && answerSelectedModuleIds.size > 0 && !answerSelectedModuleIds.has(mod.id)) return;
-          if (seenIds.has(mod.id)) return;
-          seenIds.add(mod.id);
-          modules.push({ ...mod, value: priceOverrides[mod.id] ?? mod.value });
-        });
+  // Package tier assignments: moduleId → set of tiers
+  const [tierAssignments, setTierAssignments] = useState<Record<string, Set<PackageTier>>>(() => {
+    // Default: all modules in standard + premium, subset in starter
+    const assignments: Record<string, Set<PackageTier>> = {};
+    relevantModules.forEach((mod, idx) => {
+      assignments[mod.id] = new Set(
+        idx < 3 ? ['starter', 'standard', 'premium'] : ['standard', 'premium']
+      );
+    });
+    return assignments;
+  });
+
+  // Package prices
+  const [packagePrices, setPackagePrices] = useState<Record<PackageTier, number | null>>({
+    starter: null,
+    standard: null,
+    premium: null,
+  });
+
+  /* ── All modules for display ── */
+  const allModules = useMemo(() => {
+    const mods = relevantModules.map((m) => ({
+      ...m,
+      value: priceOverrides[m.id] ?? m.value,
+    }));
+    return [...mods, ...extraModules];
+  }, [relevantModules, priceOverrides, extraModules]);
+
+  /* ── Modules per tier ── */
+  const getModulesForTier = useCallback((tier: PackageTier) => {
+    return allModules.filter((m) => tierAssignments[m.id]?.has(tier));
+  }, [allModules, tierAssignments]);
+
+  const getTierValue = useCallback((tier: PackageTier) => {
+    return getModulesForTier(tier).reduce((sum, m) => sum + m.value, 0);
+  }, [getModulesForTier]);
+
+  const getTierPrice = useCallback((tier: PackageTier) => {
+    if (packagePrices[tier] !== null) return packagePrices[tier]!;
+    const value = getTierValue(tier);
+    const discounts: Record<PackageTier, number> = { starter: 0.5, standard: 0.35, premium: 0.25 };
+    return Math.round(value * (1 - discounts[tier]));
+  }, [packagePrices, getTierValue]);
+
+  /* ── Tier assignment toggle ── */
+  const toggleTierAssignment = useCallback((moduleId: string, tier: PackageTier) => {
+    setTierAssignments((prev) => {
+      const current = prev[moduleId] ?? new Set();
+      const next = new Set(current);
+      if (next.has(tier)) next.delete(tier);
+      else next.add(tier);
+      return { ...prev, [moduleId]: next };
+    });
+  }, []);
+
+  /* ── Ensure new modules get default tier assignments ── */
+  useMemo(() => {
+    allModules.forEach((mod) => {
+      if (!tierAssignments[mod.id]) {
+        setTierAssignments((prev) => ({
+          ...prev,
+          [mod.id]: new Set(['standard', 'premium'] as PackageTier[]),
+        }));
       }
     });
-    return modules;
-  }, [activeCategoryIds, removedModuleIds, priceOverrides, answersData, answerSelectedModuleIds]);
+  }, [allModules]);
 
-  const allModules = useMemo(
-    () => [...autoModules, ...extraModules],
-    [autoModules, extraModules],
-  );
-
-  const totalValue = useMemo(
-    () => allModules.reduce((sum, m) => sum + m.value, 0),
-    [allModules],
-  );
-
-  const finalPrice = customPrice ?? Math.round(totalValue * (1 - discountPercent / 100));
-  const savings = totalValue - finalPrice;
-
-  /* ── Broadcast to presentation ── */
+  /* ── Broadcast ── */
   useSectionBroadcast({
     section: 'offer',
-    title: 'Dein individuelles Konzept',
+    title: 'Dein individuelles Angebot',
     subtitle: 'Basierend auf unserem Gespräch zusammengestellt',
     items: defaultOutcomeGoals,
     extra: {
       offerModules: allModules.map((m) => ({ title: m.title, description: m.description })),
-      offerPrice: formatCHF(finalPrice),
-      offerTotalValue: formatCHF(totalValue),
+      offerPrice: formatCHF(getTierPrice('standard')),
+      offerTotalValue: formatCHF(getTierValue('standard')),
     },
   });
-
-  /* ── Advisor: toggle module ── */
-  const toggleModule = useCallback((id: string) => {
-    setRemovedModuleIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }, []);
-
-  /* ── Advisor: update value ── */
-  const updateModuleValue = useCallback((id: string, value: number) => {
-    setPriceOverrides((prev) => ({ ...prev, [id]: value }));
-  }, []);
 
   /* ── Advisor: add extra module ── */
   const [newModuleTitle, setNewModuleTitle] = useState('');
   const [newModuleValue, setNewModuleValue] = useState(500);
   const addExtraModule = useCallback(() => {
     if (!newModuleTitle.trim()) return;
+    const id = `custom-${Date.now()}`;
     setExtraModules((prev) => [
       ...prev,
-      {
-        id: `custom-${Date.now()}`,
-        title: newModuleTitle.trim(),
-        description: 'Individueller Baustein',
-        value: newModuleValue,
-      },
+      { id, title: newModuleTitle.trim(), description: 'Individueller Baustein', value: newModuleValue },
     ]);
+    setTierAssignments((prev) => ({ ...prev, [id]: new Set(['standard', 'premium'] as PackageTier[]) }));
     setNewModuleTitle('');
     setNewModuleValue(500);
   }, [newModuleTitle, newModuleValue]);
@@ -164,7 +181,7 @@ export default function InvestmentConsultingOffer() {
   }, []);
 
   /* ── No data state ── */
-  if (selectedTileIds.length === 0) {
+  if (selectedTileIds.length === 0 && allModules.length === 0) {
     return (
       <AppLayout>
         <div className="container py-12 max-w-3xl text-center space-y-4">
@@ -183,11 +200,11 @@ export default function InvestmentConsultingOffer() {
 
   return (
     <AppLayout>
-      <div className="container py-6 space-y-6 max-w-4xl">
+      <div className="container py-6 space-y-6 max-w-5xl">
         {/* ── Header ── */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold">Dein individuelles Konzept</h1>
+            <h1 className="text-2xl font-semibold">Dein individuelles Angebot</h1>
             <p className="text-muted-foreground mt-1">
               Basierend auf unserem Gespräch zusammengestellt
             </p>
@@ -199,10 +216,7 @@ export default function InvestmentConsultingOffer() {
               ) : (
                 <EyeOff className="w-4 h-4 text-muted-foreground" />
               )}
-              <Switch
-                checked={showAdvisorView}
-                onCheckedChange={setShowAdvisorView}
-              />
+              <Switch checked={showAdvisorView} onCheckedChange={setShowAdvisorView} />
               <span className="text-xs text-muted-foreground">Berateransicht</span>
             </div>
           </div>
@@ -210,9 +224,7 @@ export default function InvestmentConsultingOffer() {
 
         <Separator />
 
-        {/* ═══════════════════════════════════════════
-            BLOCK 1 – Outcome / Goal
-            ═══════════════════════════════════════════ */}
+        {/* BLOCK 1 – Outcome Goals */}
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
@@ -233,174 +245,175 @@ export default function InvestmentConsultingOffer() {
           </CardContent>
         </Card>
 
-        {/* ═══════════════════════════════════════════
-            BLOCK 2 – Dynamic Modules
-            ═══════════════════════════════════════════ */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Package className="w-5 h-5 text-primary" />
-              Was du bekommst
-            </CardTitle>
-            <CardDescription>
-              Individuell zusammengestellt aus {activeCategoryIds.length} Themenbereichen
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {allModules.map((mod) => (
-              <div
-                key={mod.id}
-                className="flex items-start gap-3 p-3 rounded-lg border bg-card hover:bg-accent/30 transition-colors"
+        {/* BLOCK 2 – 3 Package Tiers (Customer View) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {packageConfigs.map((pkg) => {
+            const tierModules = getModulesForTier(pkg.tier);
+            const tierValue = getTierValue(pkg.tier);
+            const tierPrice = getTierPrice(pkg.tier);
+            const isRecommended = pkg.tier === recommendedTier;
+
+            return (
+              <Card
+                key={pkg.tier}
+                className={cn(
+                  'relative transition-all',
+                  isRecommended
+                    ? 'border-primary shadow-md ring-1 ring-primary/20'
+                    : 'border-border',
+                )}
               >
-                <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm">{mod.title}</span>
-                    {showAdvisorView && (
-                      <Badge variant="outline" className="text-[10px]">
-                        {formatCHF(mod.value)}
-                      </Badge>
+                {isRecommended && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <Badge className="bg-primary text-primary-foreground gap-1">
+                      <Star className="w-3 h-3" />
+                      Empfohlen
+                    </Badge>
+                  </div>
+                )}
+                <CardHeader className="pb-3 pt-5">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    {pkg.tier === 'premium' && <Crown className="w-4 h-4 text-primary" />}
+                    {pkg.label}
+                  </CardTitle>
+                  <CardDescription className="text-xs">{pkg.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Module list */}
+                  <ul className="space-y-2">
+                    {tierModules.map((mod) => (
+                      <li key={mod.id} className="flex items-start gap-2 text-sm">
+                        <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                        <span>{mod.title}</span>
+                      </li>
+                    ))}
+                    {tierModules.length === 0 && (
+                      <li className="text-xs text-muted-foreground">Keine Bausteine zugeordnet</li>
+                    )}
+                  </ul>
+
+                  <Separator />
+
+                  {/* Value + Price */}
+                  <div className="space-y-1 text-center">
+                    <p className="text-xs text-muted-foreground line-through">
+                      Wert: {formatCHF(tierValue)}
+                    </p>
+                    <p className={cn(
+                      'text-2xl font-bold',
+                      isRecommended ? 'text-primary' : 'text-foreground',
+                    )}>
+                      {formatCHF(tierPrice)}
+                    </p>
+                  </div>
+
+                  {showAdvisorView && (
+                    <div className="pt-2 border-t space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-xs">Preis</Label>
+                        <Input
+                          type="number"
+                          className="h-7 text-xs flex-1"
+                          placeholder="Auto"
+                          value={packagePrices[pkg.tier] ?? ''}
+                          onChange={(e) => {
+                            const v = e.target.value ? parseInt(e.target.value) : null;
+                            setPackagePrices((prev) => ({ ...prev, [pkg.tier]: v }));
+                          }}
+                        />
+                      </div>
+                      <Button
+                        variant={isRecommended ? 'default' : 'outline'}
+                        size="sm"
+                        className="w-full text-xs"
+                        onClick={() => setRecommendedTier(pkg.tier)}
+                      >
+                        {isRecommended ? '✓ Empfohlen' : 'Als Empfehlung setzen'}
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* BLOCK 3 – Advisor: Module ↔ Tier Assignment */}
+        {showAdvisorView && (
+          <Card className="border-dashed border-muted-foreground/30">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
+                <Eye className="w-4 h-4" />
+                Bausteine den Paketen zuordnen
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="grid grid-cols-[1fr_80px_80px_80px_80px] gap-2 text-xs font-semibold text-muted-foreground pb-1 border-b">
+                <span>Baustein</span>
+                <span className="text-center">Wert</span>
+                <span className="text-center">Einst.</span>
+                <span className="text-center">Stand.</span>
+                <span className="text-center">Prem.</span>
+              </div>
+              {allModules.map((mod) => (
+                <div key={mod.id} className="grid grid-cols-[1fr_80px_80px_80px_80px] gap-2 items-center text-sm py-1.5 border-b border-border/50">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="truncate text-xs">{mod.title}</span>
+                    {mod.id.startsWith('custom-') && (
+                      <Button variant="ghost" size="icon" className="h-5 w-5 shrink-0" onClick={() => removeExtraModule(mod.id)}>
+                        <Minus className="w-3 h-3" />
+                      </Button>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">{mod.description}</p>
-                </div>
-                {showAdvisorView && (
-                  <div className="flex items-center gap-1 shrink-0">
+                  <div className="text-center">
                     <Input
                       type="number"
-                      className="w-20 h-7 text-xs"
+                      className="h-6 text-[11px] text-center w-full"
                       value={mod.value}
                       onChange={(e) => {
                         const v = parseInt(e.target.value) || 0;
                         if (mod.id.startsWith('custom-')) {
-                          setExtraModules((prev) =>
-                            prev.map((m) => (m.id === mod.id ? { ...m, value: v } : m))
-                          );
+                          setExtraModules((prev) => prev.map((m) => (m.id === mod.id ? { ...m, value: v } : m)));
                         } else {
-                          updateModuleValue(mod.id, v);
+                          setPriceOverrides((prev) => ({ ...prev, [mod.id]: v }));
                         }
                       }}
                     />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7"
-                      onClick={() => {
-                        if (mod.id.startsWith('custom-')) removeExtraModule(mod.id);
-                        else toggleModule(mod.id);
-                      }}
-                    >
-                      <Minus className="w-3 h-3" />
-                    </Button>
                   </div>
-                )}
-              </div>
-            ))}
+                  {(['starter', 'standard', 'premium'] as PackageTier[]).map((tier) => (
+                    <div key={tier} className="flex justify-center">
+                      <Checkbox
+                        checked={tierAssignments[mod.id]?.has(tier) ?? false}
+                        onCheckedChange={() => toggleTierAssignment(mod.id, tier)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              ))}
 
-            {/* Advisor: add custom module */}
-            {showAdvisorView && (
-              <div className="flex items-center gap-2 pt-2 border-t">
+              {/* Add custom module */}
+              <div className="flex items-center gap-2 pt-2">
                 <Input
                   placeholder="Baustein hinzufügen…"
-                  className="h-8 text-xs flex-1"
+                  className="h-7 text-xs flex-1"
                   value={newModuleTitle}
                   onChange={(e) => setNewModuleTitle(e.target.value)}
                 />
                 <Input
                   type="number"
-                  className="w-20 h-8 text-xs"
+                  className="w-20 h-7 text-xs"
                   value={newModuleValue}
                   onChange={(e) => setNewModuleValue(parseInt(e.target.value) || 0)}
                 />
-                <Button variant="outline" size="sm" className="h-8" onClick={addExtraModule}>
+                <Button variant="outline" size="sm" className="h-7 text-xs" onClick={addExtraModule}>
                   <Plus className="w-3 h-3 mr-1" /> Hinzufügen
                 </Button>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
 
-        {/* ═══════════════════════════════════════════
-            BLOCK 3 – Value Stack (Hormozi)
-            ═══════════════════════════════════════════ */}
-        <Card className="border-primary/20">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-primary" />
-              Dein Gesamtwert
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              {allModules.map((mod) => (
-                <div key={mod.id} className="flex items-center justify-between text-sm">
-                  <span>{mod.title}</span>
-                  <span className="text-muted-foreground">{formatCHF(mod.value)}</span>
-                </div>
-              ))}
-            </div>
-            <Separator />
-            <div className="flex items-center justify-between font-semibold">
-              <span>Gesamtwert</span>
-              <span className="text-lg">{formatCHF(totalValue)}+</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* ═══════════════════════════════════════════
-            BLOCK 4 – Price
-            ═══════════════════════════════════════════ */}
-        <Card className="bg-primary/5 border-primary/30">
-          <CardContent className="pt-6 text-center space-y-3">
-            <p className="text-sm text-muted-foreground">Dein Preis heute</p>
-            <div className="text-4xl font-bold text-primary">
-              {formatCHF(finalPrice)}
-            </div>
-            {savings > 0 && (
-              <p className="text-sm text-muted-foreground">
-                Du sparst {formatCHF(savings)} gegenüber dem Einzelwert
-              </p>
-            )}
-            {showAdvisorView && (
-              <div className="flex items-center justify-center gap-4 pt-3 border-t">
-                <div className="flex items-center gap-2">
-                  <Label className="text-xs">Rabatt %</Label>
-                  <Input
-                    type="number"
-                    className="w-16 h-7 text-xs"
-                    value={discountPercent}
-                    onChange={(e) => {
-                      setDiscountPercent(Math.max(0, Math.min(100, parseInt(e.target.value) || 0)));
-                      setCustomPrice(null);
-                    }}
-                  />
-                </div>
-                <div className="flex items-center gap-2">
-                  <Label className="text-xs">Festpreis</Label>
-                  <Input
-                    type="number"
-                    className="w-24 h-7 text-xs"
-                    placeholder="optional"
-                    value={customPrice ?? ''}
-                    onChange={(e) => {
-                      const v = e.target.value ? parseInt(e.target.value) : null;
-                      setCustomPrice(v);
-                    }}
-                  />
-                </div>
-                {customPrice !== null && (
-                  <Badge variant="outline" className="text-[10px]">
-                    Marge: {formatCHF(totalValue - finalPrice)}
-                  </Badge>
-                )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* ═══════════════════════════════════════════
-            BLOCK 5 – Risk Reversal
-            ═══════════════════════════════════════════ */}
+        {/* BLOCK 4 – Risk Reversal */}
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
@@ -420,9 +433,7 @@ export default function InvestmentConsultingOffer() {
           </CardContent>
         </Card>
 
-        {/* ═══════════════════════════════════════════
-            BLOCK 6 – Next Steps
-            ═══════════════════════════════════════════ */}
+        {/* BLOCK 5 – Next Steps */}
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
@@ -453,9 +464,7 @@ export default function InvestmentConsultingOffer() {
           </CardContent>
         </Card>
 
-        {/* ═══════════════════════════════════════════
-            Advisor: Internal Assessment
-            ═══════════════════════════════════════════ */}
+        {/* Advisor: Internal Assessment */}
         {showAdvisorView && (
           <Card className="border-dashed border-muted-foreground/30">
             <CardHeader className="pb-3">
