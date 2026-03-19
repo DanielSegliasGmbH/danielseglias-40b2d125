@@ -10,8 +10,8 @@ import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import {
-  CheckCircle2, Gift, Shield, ArrowRight, Sparkles,
-  Target, Package, Star, Percent, Eye, EyeOff, Plus, Minus,
+  CheckCircle2, Shield, ArrowRight, Sparkles,
+  Target, Package, Star, Eye, EyeOff, Plus, Minus,
   Save, MessageSquare,
 } from 'lucide-react';
 import { useInvestmentConsultationState } from '@/hooks/useInvestmentConsultationState';
@@ -59,6 +59,20 @@ export default function InvestmentConsultingOffer() {
     [selectedTileIds],
   );
 
+  /* ── Read module selections from answers ── */
+  const answersData = (consultationData?.additionalData as any)?.answers as
+    | Record<string, { selectedModuleIds?: string[] }>
+    | undefined;
+
+  const answerSelectedModuleIds = useMemo(() => {
+    if (!answersData) return new Set<string>();
+    const ids = new Set<string>();
+    Object.values(answersData).forEach((a) => {
+      a.selectedModuleIds?.forEach((id) => ids.add(id));
+    });
+    return ids;
+  }, [answersData]);
+
   /* ── Advisor controls ── */
   const [showAdvisorView, setShowAdvisorView] = useState(false);
   const [removedModuleIds, setRemovedModuleIds] = useState<Set<string>>(new Set());
@@ -67,20 +81,24 @@ export default function InvestmentConsultingOffer() {
   const [discountPercent, setDiscountPercent] = useState(0);
   const [customPrice, setCustomPrice] = useState<number | null>(null);
 
-  /* ── Computed modules ── */
+  /* ── Computed modules: use answer selections if available, else category-based ── */
   const autoModules = useMemo(() => {
     const modules: OfferModule[] = [];
+    const seenIds = new Set<string>();
     categoryOfferMappings.forEach((mapping) => {
       if (activeCategoryIds.includes(mapping.categoryId)) {
         mapping.modules.forEach((mod) => {
-          if (!removedModuleIds.has(mod.id)) {
-            modules.push({ ...mod, value: priceOverrides[mod.id] ?? mod.value });
-          }
+          if (removedModuleIds.has(mod.id)) return;
+          // If answers data exists, only include modules selected there
+          if (answersData && answerSelectedModuleIds.size > 0 && !answerSelectedModuleIds.has(mod.id)) return;
+          if (seenIds.has(mod.id)) return;
+          seenIds.add(mod.id);
+          modules.push({ ...mod, value: priceOverrides[mod.id] ?? mod.value });
         });
       }
     });
     return modules;
-  }, [activeCategoryIds, removedModuleIds, priceOverrides]);
+  }, [activeCategoryIds, removedModuleIds, priceOverrides, answersData, answerSelectedModuleIds]);
 
   const allModules = useMemo(
     () => [...autoModules, ...extraModules],
