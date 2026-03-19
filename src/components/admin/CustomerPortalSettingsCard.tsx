@@ -13,6 +13,7 @@ import {
   BookOpen,
   Wrench,
   Settings,
+  EyeOff,
 } from 'lucide-react';
 
 interface CustomerPortalSettingsCardProps {
@@ -46,10 +47,11 @@ export function CustomerPortalSettingsCard({ customerId }: CustomerPortalSetting
   };
 
   const getSettingValue = (key: string): boolean => {
-    if (!settings) return true; // Default to true if no settings
+    if (!settings) return key === 'show_strategy_privacy' ? false : true;
     const settingKey = key as keyof typeof settings;
     const value = settings[settingKey];
-    return typeof value === 'boolean' ? value : true;
+    if (typeof value === 'boolean') return value;
+    return key === 'show_strategy_privacy' ? false : true;
   };
 
   if (isLoading) {
@@ -64,6 +66,8 @@ export function CustomerPortalSettingsCard({ customerId }: CustomerPortalSetting
       </Card>
     );
   }
+
+  const privacyActive = getSettingValue('show_strategy_privacy');
 
   return (
     <Card>
@@ -92,6 +96,29 @@ export function CustomerPortalSettingsCard({ customerId }: CustomerPortalSetting
               />
             </div>
           ))}
+
+          {/* Privacy mode divider */}
+          <div className="border-t pt-4 mt-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <EyeOff className="h-5 w-5 text-red-500" />
+                <Label htmlFor="show_strategy_privacy" className="cursor-pointer font-medium">
+                  Privatsphäre aktiv
+                </Label>
+              </div>
+              <Switch
+                id="show_strategy_privacy"
+                checked={privacyActive}
+                onCheckedChange={(value) => handleToggle('show_strategy_privacy', value)}
+                disabled={updateSettings.isPending}
+              />
+            </div>
+            {privacyActive && (
+              <p className="text-xs text-muted-foreground pl-8">
+                Aktiv: Marken, Allokationen und Detailgewichte sind im Kundenbereich verborgen.
+              </p>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>
