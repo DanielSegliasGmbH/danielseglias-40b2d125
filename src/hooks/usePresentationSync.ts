@@ -81,6 +81,7 @@ type MessageType =
   | { type: 'STATE_UPDATE'; payload: PresentationState }
   | { type: 'CLIENT_STEP_CLICK'; tileId: string; stepLabel: string }
   | { type: 'CLIENT_OFFER_ACTION'; action: string }
+  | { type: 'CLIENT_NEEDS_TOGGLE'; tileId: string }
   | { type: 'PING' }
   | { type: 'PONG' };
 
@@ -123,6 +124,7 @@ export function usePresentationBroadcaster() {
 
   const onClientStepClickRef = useRef<((tileId: string, stepLabel: string) => void) | null>(null);
   const onClientOfferActionRef = useRef<((action: string) => void) | null>(null);
+  const onClientNeedsToggleRef = useRef<((tileId: string) => void) | null>(null);
 
   useEffect(() => {
     const ch = new BroadcastChannel(CHANNEL_NAME);
@@ -139,6 +141,8 @@ export function usePresentationBroadcaster() {
         onClientStepClickRef.current?.(e.data.tileId, e.data.stepLabel);
       } else if (e.data.type === 'CLIENT_OFFER_ACTION') {
         onClientOfferActionRef.current?.(e.data.action);
+      } else if (e.data.type === 'CLIENT_NEEDS_TOGGLE') {
+        onClientNeedsToggleRef.current?.(e.data.tileId);
       }
     };
 
@@ -199,6 +203,7 @@ export function usePresentationBroadcaster() {
     stopPresentation,
     onClientStepClickRef,
     onClientOfferActionRef,
+    onClientNeedsToggleRef,
   };
 }
 
@@ -238,5 +243,9 @@ export function usePresentationReceiver() {
     channelRef.current?.postMessage({ type: 'CLIENT_OFFER_ACTION', action } satisfies MessageType);
   }, []);
 
-  return { state, connected, sendStepClick, sendOfferAction };
+  const sendNeedsTileToggle = useCallback((tileId: string) => {
+    channelRef.current?.postMessage({ type: 'CLIENT_NEEDS_TOGGLE', tileId } satisfies MessageType);
+  }, []);
+
+  return { state, connected, sendStepClick, sendOfferAction, sendNeedsTileToggle };
 }
