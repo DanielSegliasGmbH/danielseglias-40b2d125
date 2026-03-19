@@ -11,11 +11,30 @@ export interface RecommendedStep {
   externalUrl?: string;
 }
 
+/** A structured storyline section for richer explanation blocks */
+export interface StorylineSection {
+  heading: string;
+  /** Paragraphs or bullet points */
+  lines: string[];
+}
+
+/** Extra checklist block (e.g. "Woran du eine gute Beratung erkennst") */
+export interface RecognitionBlock {
+  title: string;
+  items: string[];
+}
+
 export interface TileAnswerConfig {
   /** Matches NeedsTile.id */
   tileId: string;
-  /** Bullet-point explanation the advisor can reference */
+  /** Simple bullet-point explanation (used when storyline is absent) */
   explanation: string[];
+  /** Structured multi-section storyline (takes precedence over explanation) */
+  storyline?: StorylineSection[];
+  /** Optional recognition / checklist block */
+  recognition?: RecognitionBlock;
+  /** Optional confirmation prompt shown when status is set to "resolved" */
+  resolvedConfirmation?: string;
   /** Recommended tools / actions */
   steps: RecommendedStep[];
   /** Optional sources (togglable) */
