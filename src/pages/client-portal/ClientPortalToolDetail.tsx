@@ -55,6 +55,8 @@ export default function ClientPortalToolDetail() {
         return <VorsorgecheckTool />;
       case 'vvg-leistungsvergleich':
         return <VvgLeistungsvergleichTool />;
+      case 'rendite-risiko-simulation':
+        return <RenditeRisikoTool mode="internal" />;
       default:
         return (
           <Card>

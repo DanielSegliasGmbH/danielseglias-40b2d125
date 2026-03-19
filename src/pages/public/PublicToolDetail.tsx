@@ -125,6 +125,10 @@ export default function PublicToolDetail() {
                 <div className="mb-8">
                   <VorsorgecheckTool />
                 </div>
+              ) : slug === 'rendite-risiko-simulation' ? (
+                <div className="mb-8">
+                  <RenditeRisikoTool mode="public" />
+                </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
                   <CardContent className="py-6 prose prose-neutral dark:prose-invert max-w-none">
