@@ -66,6 +66,12 @@ export const investmentConsultingSections = [
     titleKey: 'investmentConsulting.summary',
     icon: FileCheck,
   },
+  {
+    key: 'offer',
+    path: '/app/investment-consulting/offer',
+    titleKey: 'investmentConsulting.offer',
+    icon: Gift,
+  },
 ] as const;
 
 export type InvestmentConsultingSectionKey = typeof investmentConsultingSections[number]['key'];

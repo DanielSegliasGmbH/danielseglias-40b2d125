@@ -497,6 +497,16 @@ function App() {
                   </RouteGuard>
                 }
               />
+              <Route
+                path="/app/investment-consulting/offer"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <InvestmentConsultationProvider>
+                      <InvestmentConsultingOffer />
+                    </InvestmentConsultationProvider>
+                  </RouteGuard>
+                }
+              />
 
               {/* Presentation mode – public route (no auth, synced via BroadcastChannel) */}
               <Route
