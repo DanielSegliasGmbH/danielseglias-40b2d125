@@ -63,6 +63,7 @@ import InvestmentConsultingConsultation from "./pages/investment-consulting/Inve
 import InvestmentConsultingNeeds from "./pages/investment-consulting/InvestmentConsultingNeeds";
 import InvestmentConsultingAnswers from "./pages/investment-consulting/InvestmentConsultingAnswers";
 import InvestmentConsultingSummary from "./pages/investment-consulting/InvestmentConsultingSummary";
+import InvestmentConsultingPresentation from "./pages/investment-consulting/InvestmentConsultingPresentation";
 import { InvestmentConsultationProvider } from "./hooks/useInvestmentConsultationState";
 
 // Public Pages (no auth required)
