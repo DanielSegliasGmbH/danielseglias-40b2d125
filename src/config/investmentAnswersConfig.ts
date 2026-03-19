@@ -918,13 +918,64 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
   },
   'dec-2': {
     tileId: 'dec-2',
-    explanation: [
-      'Basierend auf Kundenprofil, Zielen und Risikobereitschaft.',
-      'Evidenzbasierte Strategie: breit diversifiziert, kosteneffizient, langfristig.',
-      'Individuelle Anpassung an Lebenssituation.',
+    explanation: [],
+    storyline: [
+      {
+        heading: 'Einstieg',
+        lines: [
+          'Das ist die zentrale Frage – und genau darum geht es in der ganzen Beratung.',
+          'Es gibt nicht die beste Lösung – sondern die beste Lösung für dich.',
+        ],
+      },
+      {
+        heading: 'Kernbotschaft',
+        lines: [
+          'Jede Entscheidung ist individuell.',
+          'Wichtige Faktoren: Ziele, Zeithorizont, Risikobereitschaft, aktuelle Situation.',
+          'Standardlösungen passen oft nicht – Anpassung ist entscheidend.',
+        ],
+      },
+      {
+        heading: 'Erklärung',
+        lines: [
+          'Zusammenspiel der Faktoren: Kundenprofil, Ziele und Risikobereitschaft.',
+          'Evidenzbasierte Strategie: breit diversifiziert, kosteneffizient, langfristig.',
+          'Individuelle Anpassung an die Lebenssituation.',
+          'Warum Standardlösungen oft nicht passen – jeder Fall ist anders.',
+        ],
+      },
+      {
+        heading: 'Gesprächsfragen',
+        lines: [
+          '«Was ist dir am wichtigsten bei deiner Entscheidung?»',
+          '«Wie würdest du dich selbst einschätzen – eher vorsichtig oder wachstumsorientiert?»',
+          '«Was möchtest du mit deiner Vorsorge konkret erreichen?»',
+        ],
+      },
+      {
+        heading: 'Ziel des Gesprächs',
+        lines: [
+          'Individualität hervorheben.',
+          'Orientierung geben.',
+          'Entscheidungsgrundlage schaffen.',
+        ],
+      },
     ],
+    recognition: {
+      title: 'Was eine gute Lösung ausmacht',
+      items: [
+        'Sie passt zu deiner Situation.',
+        'Sie berücksichtigt deine Ziele.',
+        'Sie ist langfristig sinnvoll.',
+        'Sie bleibt verständlich und transparent.',
+      ],
+    },
+    resolvedConfirmation: 'Hat der Kunde Klarheit über seine optimale Lösung?',
     steps: [
-      { label: 'Zusammenfassung erstellen' },
+      { label: 'Meine aktuelle Situation analysieren', toolSlug: 'finanzcheck' },
+      { label: 'Welche Faktoren sind entscheidend?' },
+      { label: 'Unterschiedliche Lösungsansätze vergleichen' },
+      { label: 'Meine optimale Strategie ableiten' },
     ],
   },
   'dec-3': {
