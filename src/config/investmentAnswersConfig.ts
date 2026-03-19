@@ -543,14 +543,64 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
   },
   'return-2': {
     tileId: 'return-2',
-    explanation: [
-      'Zinseszinseffekt: CHF 500/Monat bei 7% p.a. → ca. CHF 580\'000 nach 30 Jahren.',
-      'Je früher der Start, desto stärker der Effekt.',
-      'Regelmässiges Investieren glättet Marktschwankungen (Cost Averaging).',
+    explanation: [],
+    storyline: [
+      {
+        heading: 'Einstieg',
+        lines: [
+          'Jetzt wird es spannend – wir schauen nicht nur auf heute, sondern auf deine Zukunft.',
+          'Die meisten unterschätzen, was über Zeit möglich ist.',
+        ],
+      },
+      {
+        heading: 'Kernbotschaft',
+        lines: [
+          'Zeit ist der wichtigste Faktor beim Vermögensaufbau.',
+          'Regelmässige Einzahlungen verstärken den Effekt enorm.',
+          'Struktur + Disziplin = langfristiger Erfolg.',
+        ],
+      },
+      {
+        heading: 'Erklärung',
+        lines: [
+          'Zinseszins-Effekt: CHF 500/Monat bei 7 % p.a. → ca. CHF 580\'000 nach 30 Jahren.',
+          'Je früher der Start, desto stärker der Effekt – 10 Jahre Unterschied können Hunderttausende ausmachen.',
+          'Regelmässiges Investieren glättet Marktschwankungen (Cost Averaging).',
+          'Kosten und Strategie beeinflussen das Endergebnis erheblich.',
+        ],
+      },
+      {
+        heading: 'Gesprächsfragen',
+        lines: [
+          '«Was wäre für dich ein gutes Ergebnis in 20–30 Jahren?»',
+          '«Hast du dir schon einmal konkret vorgestellt, wie sich dein Geld entwickeln könnte?»',
+          '«Was würde es für dich verändern, wenn das funktioniert?»',
+        ],
+      },
+      {
+        heading: 'Ziel des Gesprächs',
+        lines: [
+          'Zukunft visualisieren – konkret, nicht abstrakt.',
+          'Motivation erzeugen durch greifbare Zahlen.',
+          'Klarheit schaffen: gute Entscheidungen wirken langfristig.',
+        ],
+      },
     ],
+    recognition: {
+      title: 'Was langfristig den Unterschied macht',
+      items: [
+        'Zeit verstärkt den Effekt.',
+        'Regelmässige Einzahlungen sind entscheidend.',
+        'Kleine Unterschiede werden über Jahre gross.',
+        'Struktur und Disziplin zahlen sich aus.',
+      ],
+    },
+    resolvedConfirmation: 'Hat der Kunde die langfristige Entwicklung verstanden und ist motiviert?',
     steps: [
-      { label: 'Langfristprognose berechnen', toolSlug: 'rendite-risiko-simulation' },
-      { label: 'Vorsorgecheck öffnen', toolSlug: 'vorsorgecheck-3a' },
+      { label: 'Entwicklung über Zeit anschauen', toolSlug: 'rendite-risiko-simulation' },
+      { label: 'Unterschied zwischen früh starten und warten' },
+      { label: 'Einfluss von regelmässigem Investieren sehen', toolSlug: 'rendite-risiko-simulation' },
+      { label: 'Meine persönliche Entwicklung berechnen', toolSlug: 'rendite-risiko-simulation' },
     ],
   },
   'return-3': {
