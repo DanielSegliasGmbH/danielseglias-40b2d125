@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Pencil } from 'lucide-react';
+import { useSectionBroadcast } from '@/hooks/useSectionBroadcast';
 import heroImage from '@/assets/insurance-consulting-hero.jpg';
 
 const topics = [
@@ -15,6 +16,12 @@ const topics = [
 
 export default function InvestmentConsultingTopics() {
   const { t } = useTranslation();
+
+  useSectionBroadcast({
+    section: 'topics',
+    title: 'Unsere heutigen Gesprächsthemen',
+    items: topics,
+  });
 
   return (
     <AppLayout>
