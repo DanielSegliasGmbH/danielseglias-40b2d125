@@ -41,8 +41,7 @@ export const needsCategories: NeedsCategory[] = [
     title: 'Risiko & Sicherheit',
     tiles: [
       { id: 'risk-1', title: 'Kann ich Geld verlieren?', description: 'Verlustrisiken und Kapitalschutz' },
-      { id: 'risk-2', title: 'Was passiert bei einem Börsencrash?', description: 'Szenarien bei starken Marktrückgängen' },
-      { id: 'risk-3', title: 'Gibt es ein Worst-Case-Szenario?', description: 'Maximaler Verlust und Absicherung' },
+      { id: 'risk-2', title: 'Was passiert bei einem Börsencrash?', description: 'Marktschwankungen und Worst-Case verstehen' },
       { id: 'risk-4', title: 'Wie sicher ist mein Geld?', description: 'Sicherheitsverständnis und Kaufkraftschutz' },
     ],
   },

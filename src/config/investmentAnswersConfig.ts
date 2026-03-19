@@ -295,6 +295,7 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
         lines: [
           'Das ist die konkrete Form von Risiko, die viele im Kopf haben.',
           'Die Frage ist nicht, ob ein Crash passiert – sondern wie man damit umgeht.',
+          'Und es lohnt sich, auch extreme Szenarien offen anzuschauen.',
         ],
       },
       {
@@ -302,6 +303,7 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
         lines: [
           'Crashs passieren regelmässig – sie sind Teil des Systems.',
           'Historisch haben sich Märkte immer wieder erholt.',
+          'Worst Case bei globalem ETF-Portfolio: temporärer Verlust von 40–50 % (historisch).',
           'Entscheidend ist das Verhalten währenddessen, nicht der Crash selbst.',
         ],
       },
@@ -309,30 +311,32 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
         heading: 'Erklärung',
         lines: [
           'Beispiel 2008: MSCI World fiel ca. –40 %, erholte sich innerhalb von 4 Jahren vollständig.',
-          'Typische Rückgänge von –20 % bis –30 % kommen alle paar Jahre vor.',
-          'Unterschied zwischen Panikverkauf (Verlust realisieren) und investiert bleiben (Erholung mitnehmen).',
+          'Typische Rückgänge von –20 % bis –40 % kommen alle paar Jahre vor.',
+          'Unterschied zwischen temporärem Rückgang und dauerhaftem Schaden.',
+          'Panikverkauf macht temporäre Verluste dauerhaft – investiert bleiben ermöglicht Erholung.',
           'Historisch gab es keinen 15-Jahres-Zeitraum mit negativer Rendite am Weltaktienmarkt.',
+          'Strategie und Verhalten entscheiden über das Ergebnis, nicht der Crash selbst.',
         ],
       },
       {
         heading: 'Gesprächsfragen',
         lines: [
-          '«Wie würdest du reagieren, wenn dein Portfolio kurzfristig 20–30 % fällt?»',
-          '«Was wäre dein erster Impuls?»',
-          '«Was wäre langfristig die bessere Entscheidung?»',
+          '«Was würde ein starker Rückgang bei dir auslösen?»',
+          '«Wie würdest du reagieren, wenn dein Portfolio kurzfristig fällt?»',
+          '«Wie wichtig ist dir, solche Szenarien im Voraus zu verstehen?»',
         ],
       },
       {
         heading: 'Ziel des Gesprächs',
         lines: [
-          'Emotionale Reaktion bewusst machen.',
-          'Rationale Strategie aufbauen.',
-          'Vertrauen in den Prozess stärken.',
+          'Verständnis statt Angst aufbauen.',
+          'Langfristige Perspektive stärken.',
+          'Verhalten als entscheidenden Faktor hervorheben.',
         ],
       },
     ],
     recognition: {
-      title: 'Was bei einem Crash wichtig ist',
+      title: 'Was bei Crashs und Worst-Case-Szenarien wichtig ist',
       items: [
         'Rückgänge gehören zur Börse dazu.',
         'Märkte haben sich historisch immer erholt.',
@@ -340,74 +344,12 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
         'Langfristig zählt die Strategie, nicht der Moment.',
       ],
     },
-    resolvedConfirmation: 'Hat der Kunde verstanden, wie er bei einem Crash reagieren sollte?',
+    resolvedConfirmation: 'Hat der Kunde Crashs und Worst-Case-Szenarien verstanden und fühlt sich handlungsfähig?',
     steps: [
-      { label: 'Typische Crashs anschauen' },
-      { label: 'Erholung nach Crashs sehen' },
-      { label: 'Was passiert, wenn man investiert bleibt', toolSlug: 'rendite-risiko-simulation' },
-      { label: 'Vergleich: Panikverkauf vs. ruhig bleiben', toolSlug: 'rendite-risiko-simulation' },
-    ],
-  },
-  'risk-3': {
-    tileId: 'risk-3',
-    explanation: [],
-    storyline: [
-      {
-        heading: 'Einstieg',
-        lines: [
-          'Sehr wichtige Frage – die sich viele stellen, aber selten konkret anschauen.',
-          'Der Worst Case wirkt oft schlimmer im Kopf als in der Realität.',
-        ],
-      },
-      {
-        heading: 'Kernbotschaft',
-        lines: [
-          'Es gibt immer ein negatives Szenario.',
-          'Entscheidend ist: wie wahrscheinlich es ist, wie stark es ausfällt und wie man damit umgeht.',
-          'Worst Case bei globalem ETF-Portfolio: temporärer Verlust von 40–50 % (historisch).',
-        ],
-      },
-      {
-        heading: 'Erklärung',
-        lines: [
-          'Typische negative Szenarien: Markt fällt –20 % bis –40 %, Erholung dauert 2–5 Jahre.',
-          'Unterschied zwischen temporärem Rückgang und dauerhaftem Schaden.',
-          'Panikverkauf macht temporäre Verluste dauerhaft – investiert bleiben ermöglicht Erholung.',
-          'Strategie und Verhalten entscheiden über das Ergebnis, nicht der Crash selbst.',
-        ],
-      },
-      {
-        heading: 'Gesprächsfragen',
-        lines: [
-          '«Was wäre für dich persönlich ein Worst Case?»',
-          '«Wie würdest du reagieren, wenn dein Vermögen vorübergehend sinkt?»',
-          '«Was wäre schlimmer: kurzfristiger Rückgang oder langfristig zu wenig Wachstum?»',
-        ],
-      },
-      {
-        heading: 'Ziel des Gesprächs',
-        lines: [
-          'Worst Case konkretisieren – nicht abstrakt lassen.',
-          'Angst reduzieren durch Klarheit.',
-          'Entscheidungsfähigkeit stärken.',
-        ],
-      },
-    ],
-    recognition: {
-      title: 'Was im Worst Case wichtig ist',
-      items: [
-        'Rückgänge sind möglich.',
-        'Sie sind meist temporär.',
-        'Verhalten entscheidet über das Ergebnis.',
-        'Strategie hilft, ruhig zu bleiben.',
-      ],
-    },
-    resolvedConfirmation: 'Hat der Kunde den Worst Case verstanden und fühlt sich handlungsfähig?',
-    steps: [
-      { label: 'Realistische Worst-Case-Szenarien anschauen', toolSlug: 'rendite-risiko-simulation' },
-      { label: 'Entwicklung nach schwierigen Phasen sehen' },
-      { label: 'Unterschied: kurzfristiger Rückgang vs. langfristiger Schaden' },
-      { label: 'Wie man mit solchen Phasen umgeht' },
+      { label: 'Wie stark können Märkte fallen?', toolSlug: 'rendite-risiko-simulation' },
+      { label: 'Wie lange dauert eine Erholung?' },
+      { label: 'Was ist ein realistisches Worst-Case-Szenario?', toolSlug: 'rendite-risiko-simulation' },
+      { label: 'Wie sollte man sich in solchen Phasen verhalten?' },
     ],
   },
 
