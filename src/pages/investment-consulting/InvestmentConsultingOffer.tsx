@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useInvestmentConsultationState } from '@/hooks/useInvestmentConsultationState';
 import { needsCategories } from '@/config/investmentNeedsConfig';
+import { useSectionBroadcast } from '@/hooks/useSectionBroadcast';
 import {
   categoryOfferMappings,
   defaultOutcomeGoals,
