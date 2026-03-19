@@ -95,6 +95,19 @@ export default function InvestmentConsultingOffer() {
   const finalPrice = customPrice ?? Math.round(totalValue * (1 - discountPercent / 100));
   const savings = totalValue - finalPrice;
 
+  /* ── Broadcast to presentation ── */
+  useSectionBroadcast({
+    section: 'offer',
+    title: 'Dein individuelles Konzept',
+    subtitle: 'Basierend auf unserem Gespräch zusammengestellt',
+    items: defaultOutcomeGoals,
+    extra: {
+      offerModules: allModules.map((m) => ({ title: m.title, description: m.description })),
+      offerPrice: formatCHF(finalPrice),
+      offerTotalValue: formatCHF(totalValue),
+    },
+  });
+
   /* ── Advisor: toggle module ── */
   const toggleModule = useCallback((id: string) => {
     setRemovedModuleIds((prev) => {
