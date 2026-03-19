@@ -776,6 +776,10 @@
     "vvgLeistungsvergleich": {
       "name": "VVG-Leistungsvergleich",
       "description": "Vergleichen Sie die Leistungen verschiedener VVG-Zusatzversicherungen."
+    },
+    "renditeRisikoSimulation": {
+      "name": "Rendite- & Risikosimulation",
+      "description": "Interaktive Visualisierung von Risiko und Renditechancen über verschiedene Anlagehorizonte."
     }
   },
   "adminLeads": {

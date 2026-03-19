@@ -11,6 +11,7 @@ import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool'
 import VorsorgecheckTool from '@/components/tools/vorsorgecheck/VorsorgecheckTool';
 import KvgPraemienvergleichTool from '@/components/tools/kvg-praemienvergleich/KvgPraemienvergleichTool';
 import VvgLeistungsvergleichTool from '@/components/tools/vvg-leistungsvergleich/VvgLeistungsvergleichTool';
+import { RenditeRisikoTool } from '@/components/tools/rendite-risiko/RenditeRisikoTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -123,6 +124,10 @@ export default function PublicToolDetail() {
               ) : slug === 'vorsorgecheck-3a' ? (
                 <div className="mb-8">
                   <VorsorgecheckTool />
+                </div>
+              ) : slug === 'rendite-risiko-simulation' ? (
+                <div className="mb-8">
+                  <RenditeRisikoTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">

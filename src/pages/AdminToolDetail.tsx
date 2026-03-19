@@ -14,6 +14,7 @@ import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, Clock, G
 import { useUpdateTool, Tool } from '@/hooks/useTools';
 import { toast } from 'sonner';
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
+import { RenditeRisikoTool } from '@/components/tools/rendite-risiko/RenditeRisikoTool';
 
 // Icon mapping
 const iconMap: Record<string, LucideIcon> = {
@@ -100,6 +101,8 @@ export default function AdminToolDetail() {
     switch (tool.slug) {
       case 'finanzcheck':
         return <FinanzcheckTool mode="internal" />;
+      case 'rendite-risiko-simulation':
+        return <RenditeRisikoTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">

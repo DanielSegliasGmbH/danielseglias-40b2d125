@@ -10,6 +10,7 @@ import { ArrowLeft, Calculator, PieChart, TrendingUp, FileText, Wrench, Scale, L
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
 import VorsorgecheckTool from '@/components/tools/vorsorgecheck/VorsorgecheckTool';
 import VvgLeistungsvergleichTool from '@/components/tools/vvg-leistungsvergleich/VvgLeistungsvergleichTool';
+import { RenditeRisikoTool } from '@/components/tools/rendite-risiko/RenditeRisikoTool';
 
 const iconMap: Record<string, LucideIcon> = {
   'calculator': Calculator,
@@ -54,6 +55,8 @@ export default function ClientPortalToolDetail() {
         return <VorsorgecheckTool />;
       case 'vvg-leistungsvergleich':
         return <VvgLeistungsvergleichTool />;
+      case 'rendite-risiko-simulation':
+        return <RenditeRisikoTool mode="internal" />;
       default:
         return (
           <Card>
