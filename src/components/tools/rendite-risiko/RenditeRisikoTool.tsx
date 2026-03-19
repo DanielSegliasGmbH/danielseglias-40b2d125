@@ -196,20 +196,8 @@ export function RenditeRisikoTool({ mode }: Props) {
         </CardContent>
       </Card>
 
-      {/* Quellen */}
-      <Card>
-        <CardContent className="p-6 space-y-2">
-          <h3 className="text-sm font-semibold text-foreground">
-            Quellen &amp; Grundlagen
-          </h3>
-          <ul className="text-xs text-muted-foreground space-y-1 leading-relaxed">
-            <li>• UBS Global Investment Returns Yearbook (Dimson, Marsh, Staunton)</li>
-            <li>• MSCI World Index – Langfristige Renditekennzahlen</li>
-            <li>• Gerd Kommer – «Souverän investieren mit Indexfonds und ETFs»</li>
-            <li>• Credit Suisse Global Investment Returns Yearbook</li>
-          </ul>
-        </CardContent>
-      </Card>
+      {/* Quellen – only in public mode */}
+      {!isPrivateMode && <SourcesBlock />}
     </div>
   );
 }
