@@ -72,6 +72,9 @@ import PublicLanding from "./pages/public/PublicLanding";
 import PublicContact from "./pages/public/PublicContact";
 import PublicBlog from "./pages/public/PublicBlog";
 import PublicTools from "./pages/public/PublicTools";
+import PublicCaseStudies from "./pages/public/PublicCaseStudies";
+import PublicCaseStudyDetail from "./pages/public/PublicCaseStudyDetail";
+import { CaseStudyProvider } from "./hooks/useCaseStudies";
 
 const queryClient = new QueryClient({
   defaultOptions: {
