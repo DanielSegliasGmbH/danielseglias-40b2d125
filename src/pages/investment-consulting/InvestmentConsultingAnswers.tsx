@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { needsCategories } from '@/config/investmentNeedsConfig';
 import { tileAnswerMap } from '@/config/investmentAnswersConfig';
 import { useInvestmentConsultationState } from '@/hooks/useInvestmentConsultationState';
+import { usePresentationBroadcaster, type PresentationState } from '@/hooks/usePresentationSync';
 import {
   CheckCircle2,
   AlertTriangle,
@@ -23,6 +24,8 @@ import {
   BookOpen,
   ShieldCheck,
   Heart,
+  Monitor,
+  MonitorOff,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -50,6 +53,7 @@ const tileMap = Object.fromEntries(
 export default function InvestmentConsultingAnswers() {
   const navigate = useNavigate();
   const { consultationData, updateData } = useInvestmentConsultationState();
+  const { isPresenting, broadcast, startPresentation, stopPresentation } = usePresentationBroadcaster();
 
   // Read selected tiles from needs page
   const needsData = (consultationData.additionalData as any)?.needs as
@@ -76,6 +80,25 @@ export default function InvestmentConsultingAnswers() {
 
   // Active question index for sidebar navigation
   const [activeIdx, setActiveIdx] = useState(0);
+
+  // Broadcast state to client tab whenever relevant state changes
+  const buildPresentationState = useCallback(
+    (idx: number, ans: Record<string, AnswerState>, tool: string | null = null): PresentationState => ({
+      activeTileId: selectedTileIds[idx] ?? null,
+      activeIdx: idx,
+      selectedTileIds,
+      statuses: Object.fromEntries(Object.entries(ans).map(([k, v]) => [k, v.status])),
+      isActive: true,
+      openTool: tool,
+    }),
+    [selectedTileIds]
+  );
+
+  useEffect(() => {
+    if (isPresenting) {
+      broadcast(buildPresentationState(activeIdx, answers));
+    }
+  }, [activeIdx, answers, isPresenting, broadcast, buildPresentationState]);
 
   const persist = useCallback(
     (newAnswers: Record<string, AnswerState>) => {
@@ -148,14 +171,31 @@ export default function InvestmentConsultingAnswers() {
       <div className="min-h-screen bg-background">
         {/* Header */}
         <div className="border-b bg-card">
-          <div className="container py-6">
-            <h1 className="text-2xl font-bold">Gemeinsam klären wir deine wichtigsten Fragen</h1>
-            <p className="text-muted-foreground mt-1">
-              Wir gehen Schritt für Schritt durch die Themen, die dir wichtig sind.
-            </p>
-            <Badge variant="secondary" className="mt-3">
-              {resolvedCount} von {selectedTileIds.length} Fragen geklärt
-            </Badge>
+          <div className="container py-6 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold">Gemeinsam klären wir deine wichtigsten Fragen</h1>
+              <p className="text-muted-foreground mt-1">
+                Wir gehen Schritt für Schritt durch die Themen, die dir wichtig sind.
+              </p>
+              <Badge variant="secondary" className="mt-3">
+                {resolvedCount} von {selectedTileIds.length} Fragen geklärt
+              </Badge>
+            </div>
+            <Button
+              variant={isPresenting ? 'destructive' : 'outline'}
+              size="sm"
+              className="gap-2 shrink-0 self-start"
+              onClick={() => {
+                if (isPresenting) {
+                  stopPresentation();
+                } else {
+                  startPresentation(buildPresentationState(activeIdx, answers));
+                }
+              }}
+            >
+              {isPresenting ? <MonitorOff className="h-4 w-4" /> : <Monitor className="h-4 w-4" />}
+              {isPresenting ? 'Präsentation beenden' : 'Präsentation starten'}
+            </Button>
           </div>
         </div>
 

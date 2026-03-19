@@ -63,6 +63,7 @@ import InvestmentConsultingConsultation from "./pages/investment-consulting/Inve
 import InvestmentConsultingNeeds from "./pages/investment-consulting/InvestmentConsultingNeeds";
 import InvestmentConsultingAnswers from "./pages/investment-consulting/InvestmentConsultingAnswers";
 import InvestmentConsultingSummary from "./pages/investment-consulting/InvestmentConsultingSummary";
+import InvestmentConsultingPresentation from "./pages/investment-consulting/InvestmentConsultingPresentation";
 import { InvestmentConsultationProvider } from "./hooks/useInvestmentConsultationState";
 
 // Public Pages (no auth required)
@@ -494,6 +495,12 @@ function App() {
                     </InvestmentConsultationProvider>
                   </RouteGuard>
                 }
+              />
+
+              {/* Presentation mode – public route (no auth, synced via BroadcastChannel) */}
+              <Route
+                path="/presentation/investment"
+                element={<InvestmentConsultingPresentation />}
               />
 
               {/* Old client route - redirect to new portal */}
