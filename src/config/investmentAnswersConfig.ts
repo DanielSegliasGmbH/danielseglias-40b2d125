@@ -133,13 +133,64 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
   // ── Kosten & Gebühren ──
   'costs-1': {
     tileId: 'costs-1',
-    explanation: [
-      'Total Expense Ratio (TER) bei ETFs typisch 0.07–0.25 % p.a.',
-      'Beratungshonorar oder Courtage transparent dargelegt.',
-      'Vergleich: aktive Fonds kosten oft 1.5–2.0 % p.a. – passiv deutlich günstiger.',
+    explanation: [],
+    storyline: [
+      {
+        heading: 'Einstieg',
+        lines: [
+          'Die meisten Menschen unterschätzen nicht die Rendite – sondern die Kosten.',
+          'Gebühren spürt man oft nicht direkt, aber sie fehlen später im Vermögen.',
+        ],
+      },
+      {
+        heading: 'Kernbotschaft',
+        lines: [
+          'Kosten reduzieren die Rendite – nicht einmalig, sondern laufend.',
+          'Über viele Jahre entsteht daraus ein grosser Unterschied.',
+          'Total Expense Ratio (TER) bei ETFs typisch 0.07–0.25 % p.a. – aktive Fonds kosten oft 1.5–2.0 % p.a.',
+        ],
+      },
+      {
+        heading: 'Arten von Kosten',
+        lines: [
+          'Abschlusskosten – oft einmalig, aber spürbar.',
+          'Laufende Verwaltungsgebühren – jährlich vom Vermögen abgezogen.',
+          'Produktkosten (TER) – im Fonds versteckt.',
+          'Mögliche versteckte Kosten – z. B. Depotgebühren, Transaktionskosten.',
+        ],
+      },
+      {
+        heading: 'Beratungslogik',
+        lines: [
+          'Zuerst Verständnis schaffen – dann Unterschiede zeigen.',
+          'Danach die aktuelle Lösung des Kunden konkret einordnen.',
+          'Beratungshonorar oder Courtage wird transparent dargelegt.',
+        ],
+      },
+      {
+        heading: 'Gesprächsfragen',
+        lines: [
+          '«War dir bewusst, dass solche Kosten überhaupt anfallen?»',
+          '«Wie wichtig ist dir volle Transparenz bei so einer Entscheidung?»',
+          '«Möchtest du lieber tiefe Kosten oder ein Produkt, das sich nur gut anhört?»',
+        ],
+      },
     ],
+    recognition: {
+      title: 'Worauf du bei Kosten achten solltest',
+      items: [
+        'Kosten reduzieren deine Rendite.',
+        'Kleine Unterschiede wirken langfristig stark.',
+        'Transparenz ist wichtiger als schöne Verpackung.',
+        'Entscheidend ist, was am Ende bei dir bleibt.',
+      ],
+    },
+    resolvedConfirmation: 'Hat der Kunde die Kostenlogik verstanden und fühlt sich informiert?',
     steps: [
-      { label: 'Kostenvergleich-Rechner', toolSlug: 'finanzcheck' },
+      { label: 'Gebührenvergleich anzeigen', toolSlug: 'finanzcheck' },
+      { label: 'Langfristige Kostenwirkung zeigen', toolSlug: 'rendite-risiko-simulation' },
+      { label: 'Meine aktuelle Lösung analysieren' },
+      { label: 'Unterschied zwischen teuer und effizient zeigen' },
     ],
   },
   'costs-2': {
