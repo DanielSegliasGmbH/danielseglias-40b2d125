@@ -6,6 +6,7 @@
  */
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { setPresentingFlag } from '@/components/investment-consulting/PresentationBar';
 
 const CHANNEL_NAME = 'investment-presentation';
 
