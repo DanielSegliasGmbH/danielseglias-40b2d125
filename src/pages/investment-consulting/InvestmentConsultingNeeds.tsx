@@ -15,7 +15,7 @@ interface TileState {
 }
 
 export default function InvestmentConsultingNeeds() {
-  const { consultationData, updateData: ctxUpdate } = useInvestmentConsultationState?.() ?? {};
+  const { consultationData, updateData: ctxUpdate } = useInvestmentConsultationState();
 
   // Local state – will be persisted into consultationData.additionalData.needs
   const [tiles, setTiles] = useState<Record<string, TileState>>(() => {
