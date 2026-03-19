@@ -67,7 +67,7 @@ export function usePresentationBroadcaster() {
   }, [broadcast]);
 
   const stopPresentation = useCallback(() => {
-    broadcast({ activeTileId: null, activeIdx: 0, selectedTileIds: [], statuses: {}, isActive: false, openTool: null });
+    broadcast({ activeTileId: null, activeIdx: 0, selectedTileIds: [], statuses: {}, isActive: false, openTool: null, clientSelectedSteps: {} });
     setIsPresenting(false);
     if (clientWindowRef.current && !clientWindowRef.current.closed) {
       clientWindowRef.current.close();
