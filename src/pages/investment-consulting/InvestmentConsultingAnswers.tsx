@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { needsCategories } from '@/config/investmentNeedsConfig';
 import { tileAnswerMap } from '@/config/investmentAnswersConfig';
 import { useInvestmentConsultationState } from '@/hooks/useInvestmentConsultationState';
+import { usePresentationBroadcaster, type PresentationState } from '@/hooks/usePresentationSync';
 import {
   CheckCircle2,
   AlertTriangle,
@@ -23,6 +24,8 @@ import {
   BookOpen,
   ShieldCheck,
   Heart,
+  Monitor,
+  MonitorOff,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
