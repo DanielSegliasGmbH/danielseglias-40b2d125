@@ -1,19 +1,33 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, FileText } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { Plus, FileText, Pencil, Trash2, ExternalLink } from 'lucide-react';
 import type { CaseStudyData, CaseStudyStatus } from './types';
 import {
   STATUS_LABELS,
   CUSTOMER_TYPE_LABELS,
 } from './types';
+import { generateSlug } from '@/hooks/useCaseStudies';
 
 interface Props {
   caseStudies: CaseStudyData[];
   onEdit: (cs: CaseStudyData) => void;
   onNew: () => void;
+  onDelete: (id: string) => void;
 }
 
 const STATUS_COLORS: Record<CaseStudyStatus, string> = {
@@ -23,7 +37,7 @@ const STATUS_COLORS: Record<CaseStudyStatus, string> = {
   veroeffentlicht: 'bg-primary/10 text-primary',
 };
 
-export function CaseStudyOverview({ caseStudies, onEdit, onNew }: Props) {
+export function CaseStudyOverview({ caseStudies, onEdit, onNew, onDelete }: Props) {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
 
@@ -77,37 +91,73 @@ export function CaseStudyOverview({ caseStudies, onEdit, onNew }: Props) {
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filtered.map(cs => (
-            <Card
-              key={cs.id}
-              className="cursor-pointer hover:border-primary/30 transition-colors"
-              onClick={() => onEdit(cs)}
-            >
-              <CardContent className="p-5">
-                <div className="flex items-start justify-between mb-3">
-                  <Badge className={`text-xs ${STATUS_COLORS[cs.status]}`}>
-                    {STATUS_LABELS[cs.status]}
-                  </Badge>
-                  <Badge variant="outline" className="text-xs">
-                    {CUSTOMER_TYPE_LABELS[cs.customerType]}
-                  </Badge>
-                </div>
-                <h3 className="font-semibold text-foreground text-sm mb-2 line-clamp-2">
-                  {cs.publicTitle || cs.internalTitle}
-                </h3>
-                <p className="text-xs text-muted-foreground line-clamp-2">
-                  {cs.initialSituation}
-                </p>
-                {cs.estimatedValueCHF > 0 && (
-                  <div className="mt-3 pt-3 border-t border-border">
-                    <p className="text-xs text-muted-foreground">
-                      Mehrwert: <span className="font-semibold text-foreground">CHF {cs.estimatedValueCHF.toLocaleString('de-CH')}</span>
-                    </p>
+          {filtered.map(cs => {
+            const slug = generateSlug(cs.publicTitle || cs.internalTitle);
+            const isPublished = cs.status === 'veroeffentlicht';
+
+            return (
+              <Card key={cs.id} className="hover:border-primary/30 transition-colors">
+                <CardContent className="p-5">
+                  <div className="flex items-start justify-between mb-3">
+                    <Badge className={`text-xs ${STATUS_COLORS[cs.status]}`}>
+                      {STATUS_LABELS[cs.status]}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      {CUSTOMER_TYPE_LABELS[cs.customerType]}
+                    </Badge>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+                  <h3 className="font-semibold text-foreground text-sm mb-2 line-clamp-2">
+                    {cs.publicTitle || cs.internalTitle}
+                  </h3>
+                  <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
+                    {cs.initialSituation}
+                  </p>
+                  {cs.estimatedValueCHF > 0 && (
+                    <div className="mb-3 pt-3 border-t border-border">
+                      <p className="text-xs text-muted-foreground">
+                        Mehrwert: <span className="font-semibold text-foreground">CHF {cs.estimatedValueCHF.toLocaleString('de-CH')}</span>
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 pt-2 border-t border-border">
+                    {isPublished && slug && (
+                      <Link to={`/case-studies/${slug}`} target="_blank">
+                        <Button variant="ghost" size="sm" className="gap-1 text-xs h-8">
+                          <ExternalLink className="h-3 w-3" /> Ansehen
+                        </Button>
+                      </Link>
+                    )}
+                    <Button variant="ghost" size="sm" className="gap-1 text-xs h-8" onClick={() => onEdit(cs)}>
+                      <Pencil className="h-3 w-3" /> Bearbeiten
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="sm" className="gap-1 text-xs h-8 text-destructive hover:text-destructive">
+                          <Trash2 className="h-3 w-3" /> Löschen
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Case Study löschen?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Bist du sicher? Diese Case Study wird aus der Übersicht und dem öffentlichen Bereich entfernt. Diese Aktion kann nicht rückgängig gemacht werden.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => onDelete(cs.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                            Löschen
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>

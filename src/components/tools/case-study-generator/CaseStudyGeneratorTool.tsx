@@ -4,27 +4,18 @@ import { Button } from '@/components/ui/button';
 import { CaseStudyEditor } from './CaseStudyEditor';
 import { CaseStudyPreview } from './CaseStudyPreview';
 import { CaseStudyOverview } from './CaseStudyOverview';
-import { EMPTY_CASE_STUDY, MOCK_CASE_STUDIES, generateId, type CaseStudyData } from './types';
+import { EMPTY_CASE_STUDY, generateId, type CaseStudyData } from './types';
 import { FileEdit, LayoutList, Save } from 'lucide-react';
-import { toast } from 'sonner';
+import { useCaseStudies } from '@/hooks/useCaseStudies';
 
 export function CaseStudyGeneratorTool() {
   const [activeTab, setActiveTab] = useState<string>('editor');
-  const [caseStudies, setCaseStudies] = useState<CaseStudyData[]>([...MOCK_CASE_STUDIES]);
   const [currentStudy, setCurrentStudy] = useState<CaseStudyData>({ ...EMPTY_CASE_STUDY, id: generateId() });
+  const { caseStudies, save, remove } = useCaseStudies();
 
   const handleSave = useCallback(() => {
-    setCaseStudies(prev => {
-      const idx = prev.findIndex(cs => cs.id === currentStudy.id);
-      if (idx >= 0) {
-        const next = [...prev];
-        next[idx] = currentStudy;
-        return next;
-      }
-      return [...prev, currentStudy];
-    });
-    toast.success('Case Study gespeichert');
-  }, [currentStudy]);
+    save(currentStudy);
+  }, [currentStudy, save]);
 
   const handleEditFromOverview = (cs: CaseStudyData) => {
     setCurrentStudy(cs);
@@ -76,7 +67,12 @@ export function CaseStudyGeneratorTool() {
         </TabsContent>
 
         <TabsContent value="overview" className="mt-4">
-          <CaseStudyOverview caseStudies={caseStudies} onEdit={handleEditFromOverview} onNew={handleNew} />
+          <CaseStudyOverview
+            caseStudies={caseStudies}
+            onEdit={handleEditFromOverview}
+            onNew={handleNew}
+            onDelete={remove}
+          />
         </TabsContent>
       </Tabs>
     </div>
