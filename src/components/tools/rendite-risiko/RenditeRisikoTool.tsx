@@ -35,14 +35,36 @@ export function RenditeRisikoTool({ mode }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Title */}
-      <div>
-        <h2 className="text-xl font-semibold text-foreground">
-          Risiko- und Renditesimulation
-        </h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Entwicklung von Verlustwahrscheinlichkeit und Renditechancen über die Zeit
-        </p>
+      {/* Title + Private Mode Toggle */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-semibold text-foreground">
+            Risiko- und Renditesimulation
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Entwicklung von Verlustwahrscheinlichkeit und Renditechancen über die Zeit
+          </p>
+        </div>
+
+        {mode === 'internal' && (
+          <div className="flex items-center gap-2 shrink-0 pt-1">
+            <Label
+              htmlFor="private-mode"
+              className="text-xs text-muted-foreground flex items-center gap-1.5 cursor-pointer"
+            >
+              {isPrivateMode ? (
+                <><EyeOff className="h-3.5 w-3.5" /> Privatmodus</>
+              ) : (
+                <><Eye className="h-3.5 w-3.5" /> Öffentlich</>
+              )}
+            </Label>
+            <Switch
+              id="private-mode"
+              checked={isPrivateMode}
+              onCheckedChange={setIsPrivateMode}
+            />
+          </div>
+        )}
       </div>
 
       {/* Scenario Selector */}
