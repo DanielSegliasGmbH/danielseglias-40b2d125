@@ -171,17 +171,26 @@ export function usePresentationBroadcaster() {
     const url = `${window.location.origin}/presentation/investment`;
     clientWindowRef.current = window.open(url, 'investment-presentation', 'noopener');
     setIsPresenting(true);
+    setPresentingFlag(true);
     setTimeout(() => broadcast(state), 500);
   }, [broadcast]);
 
   const stopPresentation = useCallback(() => {
     broadcast({ ...EMPTY_PRESENTATION_STATE, isActive: false });
     setIsPresenting(false);
+    setPresentingFlag(false);
     if (clientWindowRef.current && !clientWindowRef.current.closed) {
       clientWindowRef.current.close();
     }
     clientWindowRef.current = null;
   }, [broadcast]);
+
+  // Listen for stop event from PresentationBar
+  useEffect(() => {
+    const handler = () => stopPresentation();
+    window.addEventListener('stop-presentation', handler);
+    return () => window.removeEventListener('stop-presentation', handler);
+  }, [stopPresentation]);
 
   return {
     isPresenting,
