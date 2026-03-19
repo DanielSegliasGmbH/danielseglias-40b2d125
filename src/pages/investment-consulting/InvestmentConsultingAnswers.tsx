@@ -3,14 +3,14 @@ import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { needsCategories } from '@/config/investmentNeedsConfig';
 import { tileAnswerMap } from '@/config/investmentAnswersConfig';
-import { categoryOfferMappings, type OfferModule } from '@/config/investmentOfferConfig';
+import { allOfferModules, type OfferModule } from '@/config/investmentOfferConfig';
 import { useInvestmentConsultationState } from '@/hooks/useInvestmentConsultationState';
 import { usePresentationBroadcaster, EMPTY_PRESENTATION_STATE, type PresentationState } from '@/hooks/usePresentationSync';
 import { useSectionBroadcast } from '@/hooks/useSectionBroadcast';
@@ -28,10 +28,17 @@ import {
   ShieldCheck,
   Heart,
   Package,
+  Pencil,
+  Link as LinkIcon,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 type ClarificationStatus = 'resolved' | 'partial' | 'open';
+
+interface StepOverride {
+  url?: string;
+  internalNote?: string;
+}
 
 interface AnswerState {
   status: ClarificationStatus;
@@ -39,6 +46,8 @@ interface AnswerState {
   sourcesVisible: boolean;
   /** Offer module IDs selected for this tile */
   selectedModuleIds: string[];
+  /** Per-step URL overrides keyed by step label */
+  stepOverrides?: Record<string, StepOverride>;
 }
 
 /** Build a flat lookup: tileId → categoryTitle */
@@ -79,10 +88,7 @@ export default function InvestmentConsultingAnswers() {
     if (saved) return saved;
     const init: Record<string, AnswerState> = {};
     selectedTileIds.forEach((id) => {
-      // Auto-select all modules from matching category
-      const catId = tileToCategoryId[id];
-      const catModules = categoryOfferMappings.find((m) => m.categoryId === catId)?.modules ?? [];
-      init[id] = { status: 'open', note: '', sourcesVisible: false, selectedModuleIds: catModules.map((m) => m.id) };
+      init[id] = { status: 'open', note: '', sourcesVisible: false, selectedModuleIds: [], stepOverrides: {} };
     });
     return init;
   });
@@ -152,6 +158,27 @@ export default function InvestmentConsultingAnswers() {
         ? current.filter((id) => id !== moduleId)
         : [...current, moduleId];
       const updated = { ...prev, [tileId]: { ...prev[tileId], selectedModuleIds: next } };
+      persist(updated);
+      return updated;
+    });
+  };
+
+  const updateStepOverride = (tileId: string, stepLabel: string, field: keyof StepOverride, value: string) => {
+    setAnswers((prev) => {
+      const currentOverrides = prev[tileId]?.stepOverrides ?? {};
+      const updated = {
+        ...prev,
+        [tileId]: {
+          ...prev[tileId],
+          stepOverrides: {
+            ...currentOverrides,
+            [stepLabel]: {
+              ...currentOverrides[stepLabel],
+              [field]: value,
+            },
+          },
+        },
+      };
       persist(updated);
       return updated;
     });
@@ -261,13 +288,13 @@ export default function InvestmentConsultingAnswers() {
 
             <AnswerCard
               tileId={activeTileId}
-              answerState={answers[activeTileId] ?? { status: 'open', note: '', sourcesVisible: false, selectedModuleIds: [] }}
+              answerState={answers[activeTileId] ?? { status: 'open', note: '', sourcesVisible: false, selectedModuleIds: [], stepOverrides: {} }}
               customerNote={needsData?.tiles?.[activeTileId]?.note ?? ''}
               onSetStatus={(s) => setStatus(activeTileId, s)}
               onSetNote={(n) => setNote(activeTileId, n)}
               onToggleSources={() => toggleSources(activeTileId)}
-              onNavigateToTool={(slug) => navigate(`/app/tools/${slug}`)}
               onToggleOfferModule={(moduleId) => toggleOfferModule(activeTileId, moduleId)}
+              onUpdateStepOverride={(stepLabel, field, value) => updateStepOverride(activeTileId, stepLabel, field, value)}
             />
 
             {/* Prev / Next */}
@@ -318,8 +345,8 @@ interface AnswerCardProps {
   onSetStatus: (s: ClarificationStatus) => void;
   onSetNote: (n: string) => void;
   onToggleSources: () => void;
-  onNavigateToTool: (slug: string) => void;
   onToggleOfferModule: (moduleId: string) => void;
+  onUpdateStepOverride: (stepLabel: string, field: keyof StepOverride, value: string) => void;
 }
 
 function AnswerCard({
@@ -329,17 +356,25 @@ function AnswerCard({
   onSetStatus,
   onSetNote,
   onToggleSources,
-  onNavigateToTool,
   onToggleOfferModule,
+  onUpdateStepOverride,
 }: AnswerCardProps) {
   const tile = tileMap[tileId];
   const category = tileCategoryMap[tileId];
-  const catId = tileToCategoryId[tileId];
   const config = tileAnswerMap[tileId];
+  const [editingSteps, setEditingSteps] = useState(false);
 
-  // Get offer modules for this tile's category
-  const categoryModules = categoryOfferMappings.find((m) => m.categoryId === catId)?.modules ?? [];
   const selectedModuleIds = answerState.selectedModuleIds ?? [];
+  const stepOverrides = answerState.stepOverrides ?? {};
+
+  /** Resolve the URL for a step: override > toolSlug > externalUrl */
+  const getStepUrl = (step: { label: string; toolSlug?: string; externalUrl?: string }): string | null => {
+    const override = stepOverrides[step.label]?.url;
+    if (override) return override;
+    if (step.externalUrl) return step.externalUrl;
+    if (step.toolSlug) return `/app/tools/${step.toolSlug}`;
+    return null;
+  };
 
   return (
     <div className="space-y-4">
@@ -371,36 +406,98 @@ function AnswerCard({
         </Card>
       )}
 
-      {/* C + D) Recommended steps & tools */}
+      {/* C) Recommended steps as CTA links */}
       {config?.steps && config.steps.length > 0 && (
         <Card>
           <CardContent className="p-5 space-y-3">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
-              <ArrowRight className="h-3.5 w-3.5" />
-              Empfohlene nächste Schritte
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {config.steps.map((step, i) => (
-                <Button
-                  key={i}
-                  variant="outline"
-                  size="sm"
-                  className="gap-1.5"
-                  onClick={() => {
-                    if (step.toolSlug) onNavigateToTool(step.toolSlug);
-                    if (step.externalUrl) window.open(step.externalUrl, '_blank');
-                  }}
-                >
-                  {step.label}
-                  {(step.toolSlug || step.externalUrl) && <ExternalLink className="h-3 w-3" />}
-                </Button>
-              ))}
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+                <ArrowRight className="h-3.5 w-3.5" />
+                Empfohlene nächste Schritte
+              </p>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs gap-1"
+                onClick={() => setEditingSteps(!editingSteps)}
+              >
+                <Pencil className="h-3 w-3" />
+                {editingSteps ? 'Fertig' : 'Links bearbeiten'}
+              </Button>
+            </div>
+
+            <div className="space-y-2">
+              {config.steps.map((step, i) => {
+                const url = getStepUrl(step);
+                const isExternal = url && (url.startsWith('http') || url.startsWith('//'));
+
+                return (
+                  <div key={i} className="space-y-1.5">
+                    {/* CTA Button */}
+                    {url ? (
+                      <a
+                        href={isExternal ? url : url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={cn(
+                          'flex items-center gap-2.5 px-4 py-3 rounded-xl border-2 border-primary/20',
+                          'bg-card hover:bg-primary/5 hover:border-primary/40 transition-all',
+                          'text-sm font-medium text-foreground group',
+                        )}
+                      >
+                        <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 text-primary shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                          <ExternalLink className="h-4 w-4" />
+                        </div>
+                        <span className="flex-1">{step.label}</span>
+                        <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                      </a>
+                    ) : (
+                      <div
+                        className={cn(
+                          'flex items-center gap-2.5 px-4 py-3 rounded-xl border border-border',
+                          'bg-card text-sm font-medium text-foreground',
+                        )}
+                      >
+                        <div className="flex items-center justify-center h-8 w-8 rounded-full bg-muted text-muted-foreground shrink-0">
+                          <LinkIcon className="h-4 w-4" />
+                        </div>
+                        <span className="flex-1">{step.label}</span>
+                        <span className="text-xs text-muted-foreground">Kein Link</span>
+                      </div>
+                    )}
+
+                    {/* Advisor: editable fields */}
+                    {editingSteps && (
+                      <div className="pl-12 space-y-1.5">
+                        <div className="flex items-center gap-2">
+                          <LinkIcon className="h-3 w-3 text-muted-foreground shrink-0" />
+                          <Input
+                            placeholder="URL / Link eingeben …"
+                            className="h-7 text-xs flex-1"
+                            value={stepOverrides[step.label]?.url ?? step.externalUrl ?? (step.toolSlug ? `/app/tools/${step.toolSlug}` : '')}
+                            onChange={(e) => onUpdateStepOverride(step.label, 'url', e.target.value)}
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <StickyNote className="h-3 w-3 text-muted-foreground shrink-0" />
+                          <Input
+                            placeholder="Interne Notiz (optional)"
+                            className="h-7 text-xs flex-1"
+                            value={stepOverrides[step.label]?.internalNote ?? ''}
+                            onChange={(e) => onUpdateStepOverride(step.label, 'internalNote', e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* E) Explanation – storyline or simple bullets */}
+      {/* D) Explanation – storyline or simple bullets */}
       {config?.storyline && config.storyline.length > 0 ? (
         <Card className={tileId === 'trust-1' ? 'border-primary/20 bg-primary/5' : ''}>
           <CardContent className="p-5 space-y-5">
@@ -461,7 +558,7 @@ function AnswerCard({
         </Card>
       )}
 
-      {/* F) Sources (toggleable) */}
+      {/* E) Sources (toggleable) */}
       {config?.sources && config.sources.length > 0 && (
         <Card>
           <CardContent className="p-5 space-y-2">
@@ -498,7 +595,7 @@ function AnswerCard({
         </Card>
       )}
 
-      {/* G) Status */}
+      {/* F) Status */}
       <Card>
         <CardContent className="p-5 space-y-3">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
@@ -535,45 +632,43 @@ function AnswerCard({
         </CardContent>
       </Card>
 
-      {/* NEW: Offer modules for this question */}
-      {categoryModules.length > 0 && (
-        <Card className="border-primary/20">
-          <CardContent className="p-5 space-y-3">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
-              <Package className="h-3.5 w-3.5" />
-              Was wir hier für dich optimieren können
-            </p>
-            <div className="space-y-2">
-              {categoryModules.map((mod) => {
-                const isSelected = selectedModuleIds.includes(mod.id);
-                return (
-                  <div
-                    key={mod.id}
-                    className={cn(
-                      'flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all',
-                      isSelected
-                        ? 'border-primary/30 bg-primary/5'
-                        : 'border-border hover:border-primary/20'
-                    )}
-                    onClick={() => onToggleOfferModule(mod.id)}
-                  >
-                    <div className={cn(
-                      'mt-0.5 shrink-0 w-5 h-5 rounded border flex items-center justify-center transition-colors',
-                      isSelected ? 'bg-primary border-primary text-primary-foreground' : 'border-muted-foreground/30'
-                    )}>
-                      {isSelected && <CheckCircle2 className="h-3.5 w-3.5" />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm">{mod.title}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{mod.description}</p>
-                    </div>
+      {/* G) Full offer module palette (advisor view) */}
+      <Card className="border-primary/20">
+        <CardContent className="p-5 space-y-3">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+            <Package className="h-3.5 w-3.5" />
+            Mögliche Angebotsbausteine für diese Frage
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {allOfferModules.map((mod) => {
+              const isSelected = selectedModuleIds.includes(mod.id);
+              return (
+                <div
+                  key={mod.id}
+                  className={cn(
+                    'flex items-start gap-2.5 p-3 rounded-lg border cursor-pointer transition-all',
+                    isSelected
+                      ? 'border-primary/30 bg-primary/5'
+                      : 'border-border hover:border-primary/20'
+                  )}
+                  onClick={() => onToggleOfferModule(mod.id)}
+                >
+                  <div className={cn(
+                    'mt-0.5 shrink-0 w-5 h-5 rounded border flex items-center justify-center transition-colors',
+                    isSelected ? 'bg-primary border-primary text-primary-foreground' : 'border-muted-foreground/30'
+                  )}>
+                    {isSelected && <CheckCircle2 className="h-3.5 w-3.5" />}
                   </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-xs">{mod.title}</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2">{mod.description}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* H) Additional notes */}
       <Card>

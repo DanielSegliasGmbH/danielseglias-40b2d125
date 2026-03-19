@@ -1,6 +1,7 @@
 /**
  * Configuration for the dynamic offer page in the investment consulting module.
  * Maps needs-categories to concrete service modules with value pricing.
+ * Extended with full module palette and 3-tier package support.
  */
 
 export interface OfferModule {
@@ -18,6 +19,35 @@ export interface CategoryOfferMapping {
   triggerLabel: string;
   modules: OfferModule[];
 }
+
+/** Package tier type */
+export type PackageTier = 'starter' | 'standard' | 'premium';
+
+export interface PackageConfig {
+  tier: PackageTier;
+  label: string;
+  description: string;
+  recommended?: boolean;
+}
+
+export const packageConfigs: PackageConfig[] = [
+  {
+    tier: 'starter',
+    label: 'Einsteiger',
+    description: 'Fokus auf die wichtigsten und dringendsten Themen – ein solider Start.',
+  },
+  {
+    tier: 'standard',
+    label: 'Standard',
+    description: 'Die empfohlene Hauptlösung – sauberer Aufbau und nachhaltige Umsetzung.',
+    recommended: true,
+  },
+  {
+    tier: 'premium',
+    label: 'Premium',
+    description: 'Maximale Tiefe, Begleitung und Ganzheitlichkeit – alles umfassend sauber aufsetzen.',
+  },
+];
 
 /**
  * Mapping: when tiles from a category are selected,
@@ -74,6 +104,21 @@ export const categoryOfferMappings: CategoryOfferMapping[] = [
       { id: 'investment-plan', title: 'Investitionsplan', description: 'Strukturierter Plan für regelmässige Einzahlungen und langfristigen Vermögensaufbau.', value: 1000 },
     ],
   },
+];
+
+/** Complete palette of all offer modules (including extras not tied to categories) */
+export const allOfferModules: OfferModule[] = [
+  // From categories
+  ...categoryOfferMappings.flatMap((m) => m.modules),
+  // Additional modules
+  { id: '3a-analysis', title: 'Analyse bestehender 3a-Lösungen', description: 'Detaillierte Prüfung deiner Säule-3a-Produkte auf Kosten, Flexibilität und Rendite.', value: 1200 },
+  { id: 'tax-optimization', title: 'Steueroptimierte Vorsorgestruktur', description: 'Optimierung deiner Vorsorge unter Berücksichtigung steuerlicher Vorteile und Abzüge.', value: 1800 },
+  { id: 'insurance-analysis', title: 'Absicherungsanalyse', description: 'Überprüfung deiner bestehenden Absicherungen (Invalidität, Todesfall, Krankheit).', value: 1500 },
+  { id: 'implementation-support', title: 'Umsetzungsbegleitung', description: 'Persönliche Unterstützung bei der konkreten Umsetzung aller empfohlenen Massnahmen.', value: 2000 },
+  { id: 'review-meetings', title: 'Laufende Review-Termine', description: 'Regelmässige Überprüfung und Anpassung deiner Strategie an veränderte Lebensumstände.', value: 2500 },
+  { id: 'pension-planning', title: 'Pensions- & Entnahmeplanung', description: 'Planung des optimalen Zeitpunkts und der Struktur für Kapitalbezug und Rentenplanung.', value: 1800 },
+  { id: 'financial-overview', title: 'Gesamtübersicht Finanzen', description: 'Vollständige Konsolidierung aller finanziellen Positionen in einer klaren Übersicht.', value: 1500 },
+  { id: 'priority-planning', title: 'Prioritäten- & Strukturplanung', description: 'Definition der wichtigsten finanziellen Prioritäten und Aufbau einer klaren Handlungsstruktur.', value: 1200 },
 ];
 
 /** Flat lookup: categoryId → modules */
