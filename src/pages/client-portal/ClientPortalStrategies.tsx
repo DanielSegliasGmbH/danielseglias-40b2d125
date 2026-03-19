@@ -4,12 +4,15 @@ import { PlatformSelector } from '@/components/client-portal/strategy/PlatformSe
 import { StrategySection } from '@/components/client-portal/strategy/StrategySection';
 import { GlidepathSection } from '@/components/client-portal/strategy/GlidepathSection';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, ArrowRight, Info } from 'lucide-react';
+import { TrendingUp, ArrowRight } from 'lucide-react';
+import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 
 export default function ClientPortalStrategies() {
   const [selectedPlatform, setSelectedPlatform] = useState('finpension');
-  const [selectedStrategy, setSelectedStrategy] = useState('marketcap');
   const [selectedRiskLevel, setSelectedRiskLevel] = useState('moderate');
+
+  const { data: settings } = useCustomerPortalSettings();
+  const privacyMode = settings?.show_strategy_privacy ?? false;
 
   return (
     <ClientPortalLayout>
@@ -28,13 +31,24 @@ export default function ClientPortalStrategies() {
         </div>
 
         {/* Section 1: Platform */}
-        <PlatformSelector selected={selectedPlatform} onSelect={setSelectedPlatform} />
+        <PlatformSelector
+          selected={selectedPlatform}
+          onSelect={setSelectedPlatform}
+          privacyMode={privacyMode}
+        />
 
         {/* Section 2: Strategy */}
-        <StrategySection selected={selectedStrategy} onSelect={setSelectedStrategy} />
+        <StrategySection
+          platformId={selectedPlatform}
+          privacyMode={privacyMode}
+        />
 
         {/* Section 3: Glidepath */}
-        <GlidepathSection selected={selectedRiskLevel} onSelect={setSelectedRiskLevel} />
+        <GlidepathSection
+          selected={selectedRiskLevel}
+          onSelect={setSelectedRiskLevel}
+          privacyMode={privacyMode}
+        />
 
         {/* CTA */}
         <section className="space-y-4">
@@ -52,16 +66,6 @@ export default function ClientPortalStrategies() {
             </Button>
           </div>
         </section>
-
-        {/* Disclaimer */}
-        <div className="flex items-start gap-2 text-xs text-muted-foreground">
-          <Info className="h-4 w-4 shrink-0 mt-0.5" />
-          <p>
-            Diese Darstellung ist modellbasiert und dient nur zur Veranschaulichung. 
-            Sie stellt keine Anlageempfehlung dar. Vergangene Renditen sind kein verlässlicher 
-            Indikator für zukünftige Ergebnisse.
-          </p>
-        </div>
       </div>
     </ClientPortalLayout>
   );

@@ -260,6 +260,7 @@ export type Database = {
           show_insurances: boolean
           show_library: boolean
           show_strategies: boolean
+          show_strategy_privacy: boolean
           show_tasks: boolean
           show_tools: boolean
           updated_at: string
@@ -272,6 +273,7 @@ export type Database = {
           show_insurances?: boolean
           show_library?: boolean
           show_strategies?: boolean
+          show_strategy_privacy?: boolean
           show_tasks?: boolean
           show_tools?: boolean
           updated_at?: string
@@ -284,6 +286,7 @@ export type Database = {
           show_insurances?: boolean
           show_library?: boolean
           show_strategies?: boolean
+          show_strategy_privacy?: boolean
           show_tasks?: boolean
           show_tools?: boolean
           updated_at?: string
