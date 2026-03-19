@@ -476,6 +476,16 @@ function App() {
                 }
               />
               <Route
+                path="/app/investment-consulting/answers"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <InvestmentConsultationProvider>
+                      <InvestmentConsultingAnswers />
+                    </InvestmentConsultationProvider>
+                  </RouteGuard>
+                }
+              />
+              <Route
                 path="/app/investment-consulting/summary"
                 element={
                   <RouteGuard allowedRoles={['admin', 'staff']}>
