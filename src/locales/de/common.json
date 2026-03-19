@@ -780,6 +780,10 @@
     "renditeRisikoSimulation": {
       "name": "Rendite- & Risikosimulation",
       "description": "Interaktive Visualisierung von Risiko und Renditechancen über verschiedene Anlagehorizonte."
+    },
+    "caseStudyGenerator": {
+      "name": "Case Study Generator",
+      "description": "Erstelle strukturierte, anonymisierte Case Studies für deine Finanzberatung."
     }
   },
   "adminLeads": {
