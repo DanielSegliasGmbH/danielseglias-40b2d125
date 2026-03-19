@@ -1,17 +1,36 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Eye, EyeOff } from 'lucide-react';
 import { useMonteCarloSimulation, SCENARIOS, type ScenarioKey } from './useMonteCarloSimulation';
 import { ScenarioSelector } from './ScenarioSelector';
 import { SimulationChart } from './SimulationChart';
+import { SourcesBlock } from './SourcesBlock';
 
 interface Props {
   mode: 'internal' | 'public';
 }
 
+const PRIVATE_MODE_KEY = 'rendite-risiko-private-mode';
+
 export function RenditeRisikoTool({ mode }: Props) {
   const [years, setYears] = useState(10);
   const [scenarioKey, setScenarioKey] = useState<ScenarioKey>('realistic');
+  const [isPrivateMode, setIsPrivateMode] = useState(() => {
+    try {
+      return localStorage.getItem(PRIVATE_MODE_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(PRIVATE_MODE_KEY, String(isPrivateMode));
+    } catch { /* ignore */ }
+  }, [isPrivateMode]);
   const sim = useMonteCarloSimulation(years, scenarioKey);
 
   return (
