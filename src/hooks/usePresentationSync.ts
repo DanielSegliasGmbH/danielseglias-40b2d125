@@ -93,8 +93,11 @@ export function usePresentationReceiver() {
   });
   const [connected, setConnected] = useState(false);
 
+  const channelRef = useRef<BroadcastChannel | null>(null);
+
   useEffect(() => {
     const ch = new BroadcastChannel(CHANNEL_NAME);
+    channelRef.current = ch;
 
     ch.onmessage = (e: MessageEvent<MessageType>) => {
       if (e.data.type === 'STATE_UPDATE') {
@@ -111,5 +114,9 @@ export function usePresentationReceiver() {
     return () => ch.close();
   }, []);
 
-  return { state, connected };
+  const sendStepClick = useCallback((tileId: string, stepLabel: string) => {
+    channelRef.current?.postMessage({ type: 'CLIENT_STEP_CLICK', tileId, stepLabel } satisfies MessageType);
+  }, []);
+
+  return { state, connected, sendStepClick };
 }
