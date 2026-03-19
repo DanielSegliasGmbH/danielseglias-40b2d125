@@ -11,6 +11,7 @@ import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool'
 import VorsorgecheckTool from '@/components/tools/vorsorgecheck/VorsorgecheckTool';
 import KvgPraemienvergleichTool from '@/components/tools/kvg-praemienvergleich/KvgPraemienvergleichTool';
 import VvgLeistungsvergleichTool from '@/components/tools/vvg-leistungsvergleich/VvgLeistungsvergleichTool';
+import { RenditeRisikoTool } from '@/components/tools/rendite-risiko/RenditeRisikoTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
