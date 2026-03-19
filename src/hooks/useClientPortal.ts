@@ -12,6 +12,7 @@ interface CustomerPortalSettings {
   show_strategies: boolean;
   show_library: boolean;
   show_tools: boolean;
+  show_strategy_privacy: boolean;
   created_at: string;
   updated_at: string;
 }
