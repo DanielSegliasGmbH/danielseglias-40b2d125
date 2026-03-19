@@ -1,16 +1,9 @@
 import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
-import { useMonteCarloSimulation } from './useMonteCarloSimulation';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from 'recharts';
+import { useMonteCarloSimulation, SCENARIOS, type ScenarioKey } from './useMonteCarloSimulation';
+import { ScenarioSelector } from './ScenarioSelector';
+import { SimulationChart } from './SimulationChart';
 
 interface Props {
   mode: 'internal' | 'public';
@@ -18,27 +11,8 @@ interface Props {
 
 export function RenditeRisikoTool({ mode }: Props) {
   const [years, setYears] = useState(10);
-  const sim = useMonteCarloSimulation(years);
-
-  // Filter buckets with probability > 0 for cleaner chart
-  const chartData = useMemo(
-    () =>
-      sim.buckets
-        .filter((b) => b.probability > 0.05)
-        .map((b) => ({
-          label: `${b.rangeStart}%`,
-          probability: Math.round(b.probability * 10) / 10,
-          isNegative: b.isNegative,
-          rangeStart: b.rangeStart,
-          rangeEnd: b.rangeEnd,
-        })),
-    [sim.buckets]
-  );
-
-  const maxProbability = useMemo(
-    () => Math.max(...chartData.map((d) => d.probability)),
-    [chartData]
-  );
+  const [scenarioKey, setScenarioKey] = useState<ScenarioKey>('realistic');
+  const sim = useMonteCarloSimulation(years, scenarioKey);
 
   return (
     <div className="space-y-6">
@@ -52,9 +26,11 @@ export function RenditeRisikoTool({ mode }: Props) {
         </p>
       </div>
 
+      {/* Scenario Selector */}
+      <ScenarioSelector activeKey={scenarioKey} onChange={setScenarioKey} />
+
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Loss probability */}
         <Card className="border-scale-2">
           <CardContent className="p-4">
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
@@ -66,7 +42,6 @@ export function RenditeRisikoTool({ mode }: Props) {
           </CardContent>
         </Card>
 
-        {/* Gain probability */}
         <Card className="border-scale-6">
           <CardContent className="p-4">
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
@@ -78,7 +53,6 @@ export function RenditeRisikoTool({ mode }: Props) {
           </CardContent>
         </Card>
 
-        {/* Stats */}
         <Card>
           <CardContent className="p-4 space-y-1">
             <div className="flex justify-between text-sm">
@@ -110,64 +84,7 @@ export function RenditeRisikoTool({ mode }: Props) {
       </div>
 
       {/* Chart */}
-      <Card>
-        <CardContent className="p-4 pt-6">
-          <p className="text-xs text-muted-foreground mb-2">Wahrscheinlichkeit</p>
-          <div className="h-[320px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={chartData}
-                margin={{ top: 5, right: 10, left: 0, bottom: 20 }}
-              >
-                <XAxis
-                  dataKey="label"
-                  tick={{ fontSize: 11, fill: 'hsl(60 9% 40%)' }}
-                  axisLine={{ stroke: 'hsl(60 9% 66%)' }}
-                  tickLine={false}
-                  interval="preserveStartEnd"
-                  label={{
-                    value: 'Portfoliorendite',
-                    position: 'insideBottom',
-                    offset: -10,
-                    fontSize: 12,
-                    fill: 'hsl(60 9% 40%)',
-                  }}
-                />
-                <YAxis
-                  tickFormatter={(v: number) => `${v}%`}
-                  tick={{ fontSize: 11, fill: 'hsl(60 9% 40%)' }}
-                  axisLine={false}
-                  tickLine={false}
-                  domain={[0, Math.ceil(maxProbability / 5) * 5]}
-                />
-                <Tooltip
-                  cursor={{ fill: 'hsl(60 9% 66% / 0.15)' }}
-                  contentStyle={{
-                    backgroundColor: 'hsl(0 0% 100%)',
-                    border: '1px solid hsl(60 9% 66%)',
-                    borderRadius: '12px',
-                    fontSize: '12px',
-                  }}
-                  formatter={(value: number) => [`${value}%`, 'Wahrscheinlichkeit']}
-                  labelFormatter={(label: string) => `Rendite: ${label}`}
-                />
-                <Bar dataKey="probability" radius={[3, 3, 0, 0]} maxBarSize={40}>
-                  {chartData.map((entry, index) => (
-                    <Cell
-                      key={index}
-                      fill={
-                        entry.isNegative
-                          ? 'hsl(60 9% 66%)'   /* scale-1 beige */
-                          : 'hsl(60 10% 44%)'   /* scale-6 olive */
-                      }
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+      <SimulationChart buckets={sim.buckets} />
 
       {/* Slider */}
       <Card>
@@ -192,7 +109,7 @@ export function RenditeRisikoTool({ mode }: Props) {
         </CardContent>
       </Card>
 
-      {/* Lesebeispiel */}
+      {/* Lesebeispiel + Hinweis */}
       <Card>
         <CardContent className="p-6 space-y-4">
           <div className="flex gap-4">
@@ -218,6 +135,38 @@ export function RenditeRisikoTool({ mode }: Props) {
               Schätzungen beruhen und keinerlei Gewähr besteht, dass diese so eintreten.
             </p>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Monte-Carlo Erklärung */}
+      <Card>
+        <CardContent className="p-6 space-y-2">
+          <h3 className="text-sm font-semibold text-foreground">
+            Was ist eine Monte-Carlo-Simulation?
+          </h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Eine Monte-Carlo-Simulation berechnet tausende mögliche Zukunftsverläufe auf
+            Basis statistischer Annahmen. Jeder Durchlauf simuliert eine andere
+            Marktentwicklung – einige optimistisch, andere pessimistisch. Das Ergebnis
+            ist keine Prognose, sondern eine Verteilung von Wahrscheinlichkeiten. So
+            lässt sich einschätzen, wie wahrscheinlich bestimmte Renditen oder Verluste
+            sind – ohne eine einzelne Zukunft vorherzusagen.
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Quellen */}
+      <Card>
+        <CardContent className="p-6 space-y-2">
+          <h3 className="text-sm font-semibold text-foreground">
+            Quellen &amp; Grundlagen
+          </h3>
+          <ul className="text-xs text-muted-foreground space-y-1 leading-relaxed">
+            <li>• UBS Global Investment Returns Yearbook (Dimson, Marsh, Staunton)</li>
+            <li>• MSCI World Index – Langfristige Renditekennzahlen</li>
+            <li>• Gerd Kommer – «Souverän investieren mit Indexfonds und ETFs»</li>
+            <li>• Credit Suisse Global Investment Returns Yearbook</li>
+          </ul>
         </CardContent>
       </Card>
     </div>
