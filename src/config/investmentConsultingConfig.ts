@@ -55,6 +55,12 @@ export const investmentConsultingSections = [
     icon: ClipboardList,
   },
   {
+    key: 'answers',
+    path: '/app/investment-consulting/answers',
+    titleKey: 'investmentConsulting.answers',
+    icon: Lightbulb,
+  },
+  {
     key: 'summary',
     path: '/app/investment-consulting/summary',
     titleKey: 'investmentConsulting.summary',
