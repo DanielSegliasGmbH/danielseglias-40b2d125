@@ -104,6 +104,8 @@ export default function AdminToolDetail() {
         return <FinanzcheckTool mode="internal" />;
       case 'rendite-risiko-simulation':
         return <RenditeRisikoTool mode="internal" />;
+      case 'case-study-generator':
+        return <CaseStudyGeneratorTool />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">

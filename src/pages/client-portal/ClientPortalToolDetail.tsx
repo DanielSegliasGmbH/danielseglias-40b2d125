@@ -58,6 +58,8 @@ export default function ClientPortalToolDetail() {
         return <VvgLeistungsvergleichTool />;
       case 'rendite-risiko-simulation':
         return <RenditeRisikoTool mode="internal" />;
+      case 'case-study-generator':
+        return <CaseStudyGeneratorTool />;
       default:
         return (
           <Card>
