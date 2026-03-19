@@ -23,6 +23,7 @@ export function PublicLayout({ children, title, description }: PublicLayoutProps
     { href: '/', label: t('public.nav.home') },
     { href: '/blog', label: t('public.nav.blog') },
     { href: '/tools', label: t('public.nav.tools') },
+    { href: '/case-studies', label: 'Case Studies' },
     { href: '/contact', label: t('public.nav.contact') },
   ];
 

@@ -72,6 +72,9 @@ import PublicLanding from "./pages/public/PublicLanding";
 import PublicContact from "./pages/public/PublicContact";
 import PublicBlog from "./pages/public/PublicBlog";
 import PublicTools from "./pages/public/PublicTools";
+import PublicCaseStudies from "./pages/public/PublicCaseStudies";
+import PublicCaseStudyDetail from "./pages/public/PublicCaseStudyDetail";
+import { CaseStudyProvider } from "./hooks/useCaseStudies";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -89,6 +92,7 @@ function App() {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <CaseStudyProvider>
           <AuthProvider>
             <Routes>
               {/* Public routes (no auth) */}
@@ -97,6 +101,8 @@ function App() {
               <Route path="/blog" element={<PublicBlog />} />
               <Route path="/blog/:slug" element={<PublicBlogDetail />} />
               <Route path="/tools" element={<PublicTools />} />
+              <Route path="/case-studies" element={<PublicCaseStudies />} />
+              <Route path="/case-studies/:slug" element={<PublicCaseStudyDetail />} />
               <Route path="/tools/:slug" element={<PublicToolDetail />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
@@ -526,6 +532,7 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>
+          </CaseStudyProvider>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
