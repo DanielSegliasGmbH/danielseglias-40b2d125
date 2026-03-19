@@ -49,14 +49,60 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
   // ── Vertrauen & Sicherheit ──
   'trust-1': {
     tileId: 'trust-1',
-    explanation: [
-      'Transparente Offenlegung aller Gebühren und Provisionen.',
-      'Unabhängige Beratung ohne Bindung an einzelne Produktanbieter.',
-      'Langfristige Kundenbeziehung statt einmaliger Transaktion.',
+    explanation: [],
+    storyline: [
+      {
+        heading: 'Einstieg',
+        lines: [
+          'Eine der wichtigsten Fragen überhaupt – und absolut berechtigt.',
+          'Am Ende geht es nicht nur um Zahlen, sondern darum, ob du dich auf die Person gegenüber verlassen kannst.',
+        ],
+      },
+      {
+        heading: 'Transparenz',
+        lines: [
+          'Ich zeige dir transparent, wie ich arbeite und wie ich Geld verdiene.',
+          'Keine versteckten Interessen – du sollst jederzeit verstehen, warum wir etwas machen.',
+        ],
+      },
+      {
+        heading: 'Was uns unterscheidet',
+        lines: [
+          'Keine produktgetriebene Beratung – Fokus auf Strategie statt Abschluss.',
+          'Langfristige Begleitung statt einmaliger Verkauf.',
+          'Evidenzbasierte Empfehlungen statt Bauchgefühl.',
+        ],
+      },
+      {
+        heading: 'Vertrauensanker',
+        lines: [
+          'Echte Kundenstimmen und Erfahrungen – keine leeren Versprechen.',
+          'Reale Beispiele aus der Beratungspraxis.',
+          'Nachvollziehbare Resultate und langfristige Kundenbeziehungen.',
+        ],
+      },
+      {
+        heading: 'Überleitung',
+        lines: [
+          'Am Ende musst du dich nicht heute entscheiden – sondern verstehen, ob das für dich Sinn ergibt.',
+        ],
+      },
     ],
+    recognition: {
+      title: 'Woran du eine gute Beratung erkennst',
+      items: [
+        'Du verstehst alle Kosten.',
+        'Du kannst jede Entscheidung nachvollziehen.',
+        'Du fühlst dich nicht unter Druck gesetzt.',
+        'Es geht um deine Situation, nicht um ein Produkt.',
+      ],
+    },
+    resolvedConfirmation: 'Hat der Kunde aktiv bestätigt, dass Vertrauen vorhanden ist?',
     steps: [
-      { label: 'Firmenprofil zeigen', toolSlug: undefined },
+      { label: 'Firmenprofil zeigen' },
       { label: 'Referenzen & Kundenstimmen' },
+      { label: 'Beratungsprozess erklären' },
+      { label: 'Beispiel-Kundenfall zeigen' },
     ],
   },
   'trust-2': {
