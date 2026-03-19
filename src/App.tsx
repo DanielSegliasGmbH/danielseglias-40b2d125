@@ -61,6 +61,7 @@ import InvestmentConsultingAdvisorInfo from "./pages/investment-consulting/Inves
 import InvestmentConsultingCustomerInfo from "./pages/investment-consulting/InvestmentConsultingCustomerInfo";
 import InvestmentConsultingConsultation from "./pages/investment-consulting/InvestmentConsultingConsultation";
 import InvestmentConsultingNeeds from "./pages/investment-consulting/InvestmentConsultingNeeds";
+import InvestmentConsultingAnswers from "./pages/investment-consulting/InvestmentConsultingAnswers";
 import InvestmentConsultingSummary from "./pages/investment-consulting/InvestmentConsultingSummary";
 import { InvestmentConsultationProvider } from "./hooks/useInvestmentConsultationState";
 

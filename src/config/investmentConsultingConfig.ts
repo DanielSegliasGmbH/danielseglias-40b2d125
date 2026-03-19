@@ -1,4 +1,4 @@
-import { MessageSquare, User, Building2, UserCircle, Users, Handshake, FileCheck, PlayCircle, ClipboardList } from 'lucide-react';
+import { MessageSquare, User, Building2, UserCircle, Users, Handshake, FileCheck, PlayCircle, ClipboardList, Lightbulb } from 'lucide-react';
 
 /**
  * Zentrale Konfiguration für den Bereich "Anlageberatung"
