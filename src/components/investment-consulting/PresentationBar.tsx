@@ -1,34 +1,67 @@
 /**
- * Floating presentation control bar shown on all investment consulting pages
- * when a presentation session is active.
+ * Floating presentation control bar.
+ * Uses a simple localStorage flag to detect if presentation is active,
+ * and navigates between sections.
  */
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Monitor, MonitorOff, ChevronLeft, ChevronRight } from 'lucide-react';
-import { usePresentationBroadcaster, SECTION_ORDER, sectionFromPath, type PresentationState } from '@/hooks/usePresentationSync';
+import { SECTION_ORDER, sectionFromPath } from '@/hooks/usePresentationSync';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { cn } from '@/lib/utils';
 
-interface PresentationBarProps {
-  /** Extra state fields to merge into the broadcast (e.g. answers data) */
-  extraState?: Partial<PresentationState>;
+const PRESENTING_KEY = 'investment-presenting';
+
+/** Call this when starting/stopping presentation */
+export function setPresentingFlag(active: boolean) {
+  if (active) {
+    localStorage.setItem(PRESENTING_KEY, 'true');
+    window.dispatchEvent(new StorageEvent('storage', { key: PRESENTING_KEY }));
+  } else {
+    localStorage.removeItem(PRESENTING_KEY);
+    window.dispatchEvent(new StorageEvent('storage', { key: PRESENTING_KEY }));
+  }
 }
 
-export function PresentationBar({ extraState }: PresentationBarProps) {
-  const { isPresenting, broadcast, startPresentation, stopPresentation } = usePresentationBroadcaster();
+export function PresentationBar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [isPresenting, setIsPresenting] = useState(
+    () => localStorage.getItem(PRESENTING_KEY) === 'true'
+  );
+
+  // Only show on investment-consulting routes
+  const isInvestmentRoute = location.pathname.startsWith('/app/investment-consulting');
+
+  useEffect(() => {
+    const handler = () => {
+      setIsPresenting(localStorage.getItem(PRESENTING_KEY) === 'true');
+    };
+    window.addEventListener('storage', handler);
+    // Also poll in case same-tab events
+    const interval = setInterval(handler, 1000);
+    return () => {
+      window.removeEventListener('storage', handler);
+      clearInterval(interval);
+    };
+  }, []);
+
+  if (!isPresenting || !isInvestmentRoute) return null;
 
   const currentSection = sectionFromPath(location.pathname);
   const currentIdx = SECTION_ORDER.findIndex((s) => s.key === currentSection);
-
-  if (!isPresenting) return null;
 
   const goToSection = (delta: number) => {
     const newIdx = currentIdx + delta;
     if (newIdx < 0 || newIdx >= SECTION_ORDER.length) return;
     const target = SECTION_ORDER[newIdx];
     navigate(`/app/investment-consulting/${target.key}`);
+  };
+
+  const handleStop = () => {
+    setPresentingFlag(false);
+    // The broadcaster hook will detect this and close the window
+    window.dispatchEvent(new CustomEvent('stop-presentation'));
   };
 
   return (
@@ -53,7 +86,7 @@ export function PresentationBar({ extraState }: PresentationBarProps) {
           <span className="text-xs text-muted-foreground px-2 min-w-[100px] text-center">
             {SECTION_ORDER[currentIdx]?.label ?? 'Beratung'}
             <span className="text-muted-foreground/50 ml-1">
-              ({currentIdx + 1}/{SECTION_ORDER.length})
+              ({Math.max(currentIdx + 1, 1)}/{SECTION_ORDER.length})
             </span>
           </span>
 
@@ -72,7 +105,7 @@ export function PresentationBar({ extraState }: PresentationBarProps) {
           variant="destructive"
           size="sm"
           className="h-7 text-xs gap-1"
-          onClick={stopPresentation}
+          onClick={handleStop}
         >
           <MonitorOff className="w-3 h-3" />
           Beenden
