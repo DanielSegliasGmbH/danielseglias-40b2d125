@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { needsCategories } from '@/config/investmentNeedsConfig';
 import { tileAnswerMap } from '@/config/investmentAnswersConfig';
@@ -20,6 +21,8 @@ import {
   StickyNote,
   Lightbulb,
   BookOpen,
+  ShieldCheck,
+  Heart,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
