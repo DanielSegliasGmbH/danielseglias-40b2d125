@@ -1,0 +1,1 @@
+ALTER TABLE public.customer_portal_settings ADD COLUMN IF NOT EXISTS show_strategy_privacy boolean NOT NULL DEFAULT false;
