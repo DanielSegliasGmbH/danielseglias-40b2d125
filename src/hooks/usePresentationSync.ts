@@ -19,10 +19,13 @@ export interface PresentationState {
   isActive: boolean;
   /** Currently opened tool slug (if any) */
   openTool: string | null;
+  /** Steps the client has clicked / selected (per tile) */
+  clientSelectedSteps: Record<string, string[]>;
 }
 
 type MessageType =
   | { type: 'STATE_UPDATE'; payload: PresentationState }
+  | { type: 'CLIENT_STEP_CLICK'; tileId: string; stepLabel: string }
   | { type: 'PING' }
   | { type: 'PONG' };
 
@@ -34,6 +37,8 @@ export function usePresentationBroadcaster() {
   const [isPresenting, setIsPresenting] = useState(false);
   const clientWindowRef = useRef<Window | null>(null);
 
+  const onClientStepClickRef = useRef<((tileId: string, stepLabel: string) => void) | null>(null);
+
   useEffect(() => {
     const ch = new BroadcastChannel(CHANNEL_NAME);
     channelRef.current = ch;
@@ -41,6 +46,8 @@ export function usePresentationBroadcaster() {
     ch.onmessage = (e: MessageEvent<MessageType>) => {
       if (e.data.type === 'PING') {
         ch.postMessage({ type: 'PONG' });
+      } else if (e.data.type === 'CLIENT_STEP_CLICK') {
+        onClientStepClickRef.current?.(e.data.tileId, e.data.stepLabel);
       }
     };
 
@@ -60,7 +67,7 @@ export function usePresentationBroadcaster() {
   }, [broadcast]);
 
   const stopPresentation = useCallback(() => {
-    broadcast({ activeTileId: null, activeIdx: 0, selectedTileIds: [], statuses: {}, isActive: false, openTool: null });
+    broadcast({ activeTileId: null, activeIdx: 0, selectedTileIds: [], statuses: {}, isActive: false, openTool: null, clientSelectedSteps: {} });
     setIsPresenting(false);
     if (clientWindowRef.current && !clientWindowRef.current.closed) {
       clientWindowRef.current.close();
@@ -68,7 +75,7 @@ export function usePresentationBroadcaster() {
     clientWindowRef.current = null;
   }, [broadcast]);
 
-  return { isPresenting, broadcast, startPresentation, stopPresentation };
+  return { isPresenting, broadcast, startPresentation, stopPresentation, onClientStepClickRef };
 }
 
 /**
@@ -82,11 +89,15 @@ export function usePresentationReceiver() {
     statuses: {},
     isActive: false,
     openTool: null,
+    clientSelectedSteps: {},
   });
   const [connected, setConnected] = useState(false);
 
+  const channelRef = useRef<BroadcastChannel | null>(null);
+
   useEffect(() => {
     const ch = new BroadcastChannel(CHANNEL_NAME);
+    channelRef.current = ch;
 
     ch.onmessage = (e: MessageEvent<MessageType>) => {
       if (e.data.type === 'STATE_UPDATE') {
@@ -103,5 +114,9 @@ export function usePresentationReceiver() {
     return () => ch.close();
   }, []);
 
-  return { state, connected };
+  const sendStepClick = useCallback((tileId: string, stepLabel: string) => {
+    channelRef.current?.postMessage({ type: 'CLIENT_STEP_CLICK', tileId, stepLabel } satisfies MessageType);
+  }, []);
+
+  return { state, connected, sendStepClick };
 }
