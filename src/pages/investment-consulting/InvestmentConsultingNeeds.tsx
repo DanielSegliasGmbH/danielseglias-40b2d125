@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { needsCategories, NeedsTile } from '@/config/investmentNeedsConfig';
 import { useInvestmentConsultationState } from '@/hooks/useInvestmentConsultationState';
+import { useSectionBroadcast } from '@/hooks/useSectionBroadcast';
 import { CheckCircle2, MessageSquare } from 'lucide-react';
 
 /** Local state shape for a single tile */
@@ -26,6 +27,25 @@ export default function InvestmentConsultingNeeds() {
     return ((consultationData?.additionalData as any)?.needs?.freeText as string) ?? '';
   });
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  const selectedTileIds = useMemo(() => {
+    return Object.entries(tiles).filter(([, v]) => v.selected).map(([id]) => id);
+  }, [tiles]);
+
+  const selectedTileNames = useMemo(() => {
+    const tileMap = Object.fromEntries(
+      needsCategories.flatMap((c) => c.tiles.map((t) => [t.id, t.title]))
+    );
+    return selectedTileIds.map((id) => tileMap[id] ?? id);
+  }, [selectedTileIds]);
+
+  useSectionBroadcast({
+    section: 'needs',
+    title: 'Deine wichtigsten Fragen',
+    subtitle: selectedTileIds.length > 0 ? `${selectedTileIds.length} Themen ausgewählt` : 'Welche Themen sind dir besonders wichtig?',
+    items: selectedTileNames,
+    extra: { selectedTileIds },
+  });
 
   // Persist into consultation context whenever state changes
   const persist = useCallback((newTiles: Record<string, TileState>, newFreeText: string) => {

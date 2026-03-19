@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { needsCategories } from '@/config/investmentNeedsConfig';
 import { tileAnswerMap } from '@/config/investmentAnswersConfig';
 import { useInvestmentConsultationState } from '@/hooks/useInvestmentConsultationState';
-import { usePresentationBroadcaster, type PresentationState } from '@/hooks/usePresentationSync';
+import { usePresentationBroadcaster, EMPTY_PRESENTATION_STATE, type PresentationState } from '@/hooks/usePresentationSync';
 import {
   CheckCircle2,
   AlertTriangle,
@@ -84,11 +84,13 @@ export default function InvestmentConsultingAnswers() {
   // Broadcast state to client tab whenever relevant state changes
   const buildPresentationState = useCallback(
     (idx: number, ans: Record<string, AnswerState>, tool: string | null = null): PresentationState => ({
+      ...EMPTY_PRESENTATION_STATE,
       activeTileId: selectedTileIds[idx] ?? null,
       activeIdx: idx,
       selectedTileIds,
       statuses: Object.fromEntries(Object.entries(ans).map(([k, v]) => [k, v.status])),
       isActive: true,
+      currentSection: 'answers',
       openTool: tool,
       clientSelectedSteps: {},
     }),

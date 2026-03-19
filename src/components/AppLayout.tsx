@@ -1,5 +1,6 @@
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/AppSidebar';
+import { PresentationBar } from '@/components/investment-consulting/PresentationBar';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -14,6 +15,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           {children}
         </SidebarInset>
       </div>
+      <PresentationBar />
     </SidebarProvider>
   );
 }
