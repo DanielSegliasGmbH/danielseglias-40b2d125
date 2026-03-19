@@ -19,6 +19,8 @@ export interface PresentationState {
   isActive: boolean;
   /** Currently opened tool slug (if any) */
   openTool: string | null;
+  /** Steps the client has clicked / selected (per tile) */
+  clientSelectedSteps: Record<string, string[]>;
 }
 
 type MessageType =
