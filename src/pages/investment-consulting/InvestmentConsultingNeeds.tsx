@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { needsCategories, NeedsTile } from '@/config/investmentNeedsConfig';
 import { useInvestmentConsultationState } from '@/hooks/useInvestmentConsultationState';
+import { useSectionBroadcast } from '@/hooks/useSectionBroadcast';
 import { CheckCircle2, MessageSquare } from 'lucide-react';
 
 /** Local state shape for a single tile */
