@@ -90,6 +90,7 @@ export default function InvestmentConsultingAnswers() {
       statuses: Object.fromEntries(Object.entries(ans).map(([k, v]) => [k, v.status])),
       isActive: true,
       openTool: tool,
+      clientSelectedSteps: {},
     }),
     [selectedTileIds]
   );

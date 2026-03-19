@@ -89,6 +89,8 @@ export function usePresentationReceiver() {
     statuses: {},
     isActive: false,
     openTool: null,
+    clientSelectedSteps: {},
+    openTool: null,
   });
   const [connected, setConnected] = useState(false);
 
