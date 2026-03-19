@@ -365,6 +365,7 @@ export function InvestmentConsultationProvider({ children }: { children: ReactNo
 
   const value: InvestmentConsultationContextValue = {
     consultationData,
+    updateData,
     currentConsultationId,
     isLoading,
     hasUnsavedChanges,
