@@ -980,13 +980,63 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
   },
   'dec-3': {
     tileId: 'dec-3',
-    explanation: [
-      'Persönliche Empfehlung des Beraters basierend auf Erfahrung und Analyse.',
-      'Transparenz: gleiche Strategie, die der Berater selbst verfolgt.',
-      'Entscheidung liegt immer beim Kunden – Berater gibt Orientierung.',
+    explanation: [],
+    storyline: [
+      {
+        heading: 'Einstieg',
+        lines: [
+          'Das ist eine sehr gute Frage – und gleichzeitig eine grosse Verantwortung.',
+          'Ich kann dir keine Entscheidung abnehmen, aber ich kann dir sagen, wie ich es sehe.',
+        ],
+      },
+      {
+        heading: 'Kernbotschaft',
+        lines: [
+          'Meine Empfehlung basiert auf deinen Zielen, deiner aktuellen Situation und den besprochenen Themen.',
+          'Transparenz: gleiche Strategie, die ich selbst verfolge.',
+          'Entscheidung liegt immer bei dir – ich gebe Orientierung.',
+        ],
+      },
+      {
+        heading: 'Erklärung',
+        lines: [
+          'Zusammenfassung der wichtigsten Erkenntnisse: Risiko, Kosten, Flexibilität, Ziele.',
+          'Daraus abgeleitete Empfehlung – individuell auf deine Situation zugeschnitten.',
+          'Persönliche Einschätzung basierend auf Erfahrung und Analyse.',
+        ],
+      },
+      {
+        heading: 'Gesprächsfragen',
+        lines: [
+          '«Fühlt sich das für dich logisch an?»',
+          '«Gibt es noch etwas, das dich zurückhält?»',
+          '«Was brauchst du noch, um dich sicher zu fühlen?»',
+        ],
+      },
+      {
+        heading: 'Ziel des Gesprächs',
+        lines: [
+          'Entscheidung unterstützen – nicht Druck erzeugen.',
+          'Letzte Unsicherheiten klären.',
+          'Abschluss vorbereiten.',
+        ],
+      },
     ],
+    recognition: {
+      title: 'Worauf meine Einschätzung basiert',
+      items: [
+        'Deine persönliche Situation.',
+        'Deine Ziele und Prioritäten.',
+        'Die besprochenen Themen.',
+        'Eine langfristig sinnvolle Strategie.',
+      ],
+    },
+    resolvedConfirmation: 'Hat der Kunde die Empfehlung verstanden und fühlt sich entscheidungsfähig?',
     steps: [
-      { label: 'Beratungsempfehlung zusammenfassen' },
+      { label: 'Meine Situation zusammengefasst sehen' },
+      { label: 'Wichtigste Erkenntnisse anschauen' },
+      { label: 'Empfohlene Strategie verstehen' },
+      { label: 'Nächste Schritte klären' },
     ],
   },
 };
