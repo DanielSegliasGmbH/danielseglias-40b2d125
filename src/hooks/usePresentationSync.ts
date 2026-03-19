@@ -25,6 +25,7 @@ export interface PresentationState {
 
 type MessageType =
   | { type: 'STATE_UPDATE'; payload: PresentationState }
+  | { type: 'CLIENT_STEP_CLICK'; tileId: string; stepLabel: string }
   | { type: 'PING' }
   | { type: 'PONG' };
 
