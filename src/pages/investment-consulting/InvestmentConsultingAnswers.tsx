@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { needsCategories } from '@/config/investmentNeedsConfig';
 import { tileAnswerMap } from '@/config/investmentAnswersConfig';
 import { useInvestmentConsultationState } from '@/hooks/useInvestmentConsultationState';
-import { usePresentationBroadcaster, type PresentationState } from '@/hooks/usePresentationSync';
+import { usePresentationBroadcaster, EMPTY_PRESENTATION_STATE, type PresentationState } from '@/hooks/usePresentationSync';
 import {
   CheckCircle2,
   AlertTriangle,
