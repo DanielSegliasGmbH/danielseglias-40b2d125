@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { needsCategories } from '@/config/investmentNeedsConfig';
 import { tileAnswerMap } from '@/config/investmentAnswersConfig';
@@ -20,6 +21,8 @@ import {
   StickyNote,
   Lightbulb,
   BookOpen,
+  ShieldCheck,
+  Heart,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -348,8 +351,29 @@ function AnswerCard({
         </Card>
       )}
 
-      {/* E) Explanation */}
-      {config?.explanation && config.explanation.length > 0 && (
+      {/* E) Explanation – storyline or simple bullets */}
+      {config?.storyline && config.storyline.length > 0 ? (
+        <Card className={tileId === 'trust-1' ? 'border-scale-3 bg-scale-1/30' : ''}>
+          <CardContent className="p-5 space-y-5">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+              <Heart className="h-3.5 w-3.5" />
+              Gesprächsleitfaden
+            </p>
+            {config.storyline.map((section, i) => (
+              <div key={i} className="space-y-1.5">
+                <p className="text-xs font-semibold text-scale-8 uppercase tracking-wide">
+                  {section.heading}
+                </p>
+                {section.lines.map((line, j) => (
+                  <p key={j} className="text-sm text-foreground leading-relaxed pl-3 border-l-2 border-scale-3">
+                    {line}
+                  </p>
+                ))}
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      ) : config?.explanation && config.explanation.length > 0 ? (
         <Card>
           <CardContent className="p-5 space-y-3">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
@@ -361,6 +385,26 @@ function AnswerCard({
                 <li key={i} className="text-sm text-foreground flex items-start gap-2">
                   <span className="text-muted-foreground mt-0.5">•</span>
                   <span>{line}</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {/* Recognition block */}
+      {config?.recognition && (
+        <Card className="border-scale-3">
+          <CardContent className="p-5 space-y-3">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              {config.recognition.title}
+            </p>
+            <ul className="space-y-2">
+              {config.recognition.items.map((item, i) => (
+                <li key={i} className="text-sm text-foreground flex items-center gap-2.5">
+                  <CheckCircle2 className="h-4 w-4 text-scale-6 shrink-0" />
+                  <span>{item}</span>
                 </li>
               ))}
             </ul>
@@ -429,6 +473,16 @@ function AnswerCard({
               </Button>
             ))}
           </div>
+
+          {/* Resolved confirmation prompt */}
+          {answerState.status === 'resolved' && config?.resolvedConfirmation && (
+            <div className="flex items-center gap-2 pt-2 pl-1">
+              <Checkbox id={`confirm-${tileId}`} />
+              <label htmlFor={`confirm-${tileId}`} className="text-xs text-muted-foreground cursor-pointer">
+                {config.resolvedConfirmation}
+              </label>
+            </div>
+          )}
         </CardContent>
       </Card>
 

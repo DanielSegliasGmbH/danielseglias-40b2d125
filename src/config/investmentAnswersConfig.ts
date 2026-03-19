@@ -11,11 +11,30 @@ export interface RecommendedStep {
   externalUrl?: string;
 }
 
+/** A structured storyline section for richer explanation blocks */
+export interface StorylineSection {
+  heading: string;
+  /** Paragraphs or bullet points */
+  lines: string[];
+}
+
+/** Extra checklist block (e.g. "Woran du eine gute Beratung erkennst") */
+export interface RecognitionBlock {
+  title: string;
+  items: string[];
+}
+
 export interface TileAnswerConfig {
   /** Matches NeedsTile.id */
   tileId: string;
-  /** Bullet-point explanation the advisor can reference */
+  /** Simple bullet-point explanation (used when storyline is absent) */
   explanation: string[];
+  /** Structured multi-section storyline (takes precedence over explanation) */
+  storyline?: StorylineSection[];
+  /** Optional recognition / checklist block */
+  recognition?: RecognitionBlock;
+  /** Optional confirmation prompt shown when status is set to "resolved" */
+  resolvedConfirmation?: string;
   /** Recommended tools / actions */
   steps: RecommendedStep[];
   /** Optional sources (togglable) */
@@ -30,14 +49,60 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
   // ── Vertrauen & Sicherheit ──
   'trust-1': {
     tileId: 'trust-1',
-    explanation: [
-      'Transparente Offenlegung aller Gebühren und Provisionen.',
-      'Unabhängige Beratung ohne Bindung an einzelne Produktanbieter.',
-      'Langfristige Kundenbeziehung statt einmaliger Transaktion.',
+    explanation: [],
+    storyline: [
+      {
+        heading: 'Einstieg',
+        lines: [
+          'Eine der wichtigsten Fragen überhaupt – und absolut berechtigt.',
+          'Am Ende geht es nicht nur um Zahlen, sondern darum, ob du dich auf die Person gegenüber verlassen kannst.',
+        ],
+      },
+      {
+        heading: 'Transparenz',
+        lines: [
+          'Ich zeige dir transparent, wie ich arbeite und wie ich Geld verdiene.',
+          'Keine versteckten Interessen – du sollst jederzeit verstehen, warum wir etwas machen.',
+        ],
+      },
+      {
+        heading: 'Was uns unterscheidet',
+        lines: [
+          'Keine produktgetriebene Beratung – Fokus auf Strategie statt Abschluss.',
+          'Langfristige Begleitung statt einmaliger Verkauf.',
+          'Evidenzbasierte Empfehlungen statt Bauchgefühl.',
+        ],
+      },
+      {
+        heading: 'Vertrauensanker',
+        lines: [
+          'Echte Kundenstimmen und Erfahrungen – keine leeren Versprechen.',
+          'Reale Beispiele aus der Beratungspraxis.',
+          'Nachvollziehbare Resultate und langfristige Kundenbeziehungen.',
+        ],
+      },
+      {
+        heading: 'Überleitung',
+        lines: [
+          'Am Ende musst du dich nicht heute entscheiden – sondern verstehen, ob das für dich Sinn ergibt.',
+        ],
+      },
     ],
+    recognition: {
+      title: 'Woran du eine gute Beratung erkennst',
+      items: [
+        'Du verstehst alle Kosten.',
+        'Du kannst jede Entscheidung nachvollziehen.',
+        'Du fühlst dich nicht unter Druck gesetzt.',
+        'Es geht um deine Situation, nicht um ein Produkt.',
+      ],
+    },
+    resolvedConfirmation: 'Hat der Kunde aktiv bestätigt, dass Vertrauen vorhanden ist?',
     steps: [
-      { label: 'Firmenprofil zeigen', toolSlug: undefined },
+      { label: 'Firmenprofil zeigen' },
       { label: 'Referenzen & Kundenstimmen' },
+      { label: 'Beratungsprozess erklären' },
+      { label: 'Beispiel-Kundenfall zeigen' },
     ],
   },
   'trust-2': {
