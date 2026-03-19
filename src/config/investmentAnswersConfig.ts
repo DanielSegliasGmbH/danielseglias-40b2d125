@@ -856,14 +856,64 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
   // ── Entscheidungsfragen ──
   'dec-1': {
     tileId: 'dec-1',
-    explanation: [
-      'Jedes Jahr ohne Investition kostet durchschnittlich 7–8% entgangene Rendite.',
-      'Inflation entwertet Ersparnisse auf dem Sparkonto.',
-      'Versicherungslücken können teuer werden, je später man sie schliesst.',
+    explanation: [],
+    storyline: [
+      {
+        heading: 'Einstieg',
+        lines: [
+          'Eine der wichtigsten, aber oft übersehenen Fragen.',
+          'Viele denken, nichts zu machen sei neutral – ist es aber nicht.',
+        ],
+      },
+      {
+        heading: 'Kernbotschaft',
+        lines: [
+          'Stillstand ist keine neutrale Entscheidung.',
+          'Es entstehen Opportunitätskosten – jedes Jahr ohne Investition kostet durchschnittlich 7–8 % entgangene Rendite.',
+          'Inflation und entgangene Rendite wirken im Hintergrund.',
+        ],
+      },
+      {
+        heading: 'Erklärung',
+        lines: [
+          'Geld auf dem Konto verliert Kaufkraft durch Inflation (1–2 % p.a.).',
+          'Fehlendes Wachstum bedeutet verpasste Chancen – der Zinseszins wirkt nicht.',
+          'Versicherungslücken können teuer werden, je später man sie schliesst.',
+          'Zeit wirkt – egal ob man handelt oder nicht.',
+        ],
+      },
+      {
+        heading: 'Gesprächsfragen',
+        lines: [
+          '«Was passiert aktuell mit deinem Geld, wenn du nichts änderst?»',
+          '«Wie würde sich deine Situation in 10–20 Jahren entwickeln?»',
+          '«Wäre es für dich okay, wenn alles genau so bleibt?»',
+        ],
+      },
+      {
+        heading: 'Ziel des Gesprächs',
+        lines: [
+          'Bewusstsein schaffen – nicht Druck erzeugen.',
+          'Positiven Handlungsdruck erzeugen.',
+          'Entscheidung anstossen.',
+        ],
+      },
     ],
+    recognition: {
+      title: 'Was Stillstand bedeutet',
+      items: [
+        'Dein Geld entwickelt sich trotzdem weiter.',
+        'Inflation wirkt im Hintergrund.',
+        'Chancen werden verpasst.',
+        'Zeit arbeitet – auch ohne Entscheidung.',
+      ],
+    },
+    resolvedConfirmation: 'Hat der Kunde die Konsequenzen von Nichtstun verstanden?',
     steps: [
-      { label: 'Opportunitätskosten berechnen', toolSlug: 'rendite-risiko-simulation' },
-      { label: 'Finanzcheck durchführen', toolSlug: 'finanzcheck' },
+      { label: 'Entwicklung ohne Veränderung anschauen', toolSlug: 'rendite-risiko-simulation' },
+      { label: 'Einfluss von Inflation verstehen' },
+      { label: 'Unterschied: aktiv vs. nichts tun' },
+      { label: 'Was mich das langfristig kostet', toolSlug: 'finanzcheck' },
     ],
   },
   'dec-2': {
