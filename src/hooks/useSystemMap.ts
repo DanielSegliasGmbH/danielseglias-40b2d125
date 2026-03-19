@@ -154,7 +154,7 @@ export function useNodeEdgeCount(nodeKey: string | null, edges: SystemMapEdge[] 
 
 export function useDebouncedPositionUpdate() {
   const queryClient = useQueryClient();
-  const debounceTimerRef = useRef<Record<string, NodeJS.Timeout>>({});
+  const debounceTimerRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const lastSavedRef = useRef<Record<string, { x: number; y: number }>>({});
 
   const updatePosition = useMutation({
