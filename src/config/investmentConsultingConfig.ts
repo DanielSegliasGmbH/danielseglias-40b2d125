@@ -1,4 +1,4 @@
-import { MessageSquare, User, Building2, UserCircle, Users, Handshake, FileCheck, PlayCircle, ClipboardList, Lightbulb } from 'lucide-react';
+import { MessageSquare, User, Building2, UserCircle, Users, Handshake, FileCheck, PlayCircle, ClipboardList, Lightbulb, Gift } from 'lucide-react';
 
 /**
  * Zentrale Konfiguration für den Bereich "Anlageberatung"
@@ -65,6 +65,12 @@ export const investmentConsultingSections = [
     path: '/app/investment-consulting/summary',
     titleKey: 'investmentConsulting.summary',
     icon: FileCheck,
+  },
+  {
+    key: 'offer',
+    path: '/app/investment-consulting/offer',
+    titleKey: 'investmentConsulting.offer',
+    icon: Gift,
   },
 ] as const;
 

@@ -63,6 +63,7 @@ import InvestmentConsultingConsultation from "./pages/investment-consulting/Inve
 import InvestmentConsultingNeeds from "./pages/investment-consulting/InvestmentConsultingNeeds";
 import InvestmentConsultingAnswers from "./pages/investment-consulting/InvestmentConsultingAnswers";
 import InvestmentConsultingSummary from "./pages/investment-consulting/InvestmentConsultingSummary";
+import InvestmentConsultingOffer from "./pages/investment-consulting/InvestmentConsultingOffer";
 import InvestmentConsultingPresentation from "./pages/investment-consulting/InvestmentConsultingPresentation";
 import { InvestmentConsultationProvider } from "./hooks/useInvestmentConsultationState";
 
@@ -492,6 +493,16 @@ function App() {
                   <RouteGuard allowedRoles={['admin', 'staff']}>
                     <InvestmentConsultationProvider>
                       <InvestmentConsultingSummary />
+                    </InvestmentConsultationProvider>
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/investment-consulting/offer"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff']}>
+                    <InvestmentConsultationProvider>
+                      <InvestmentConsultingOffer />
                     </InvestmentConsultationProvider>
                   </RouteGuard>
                 }
