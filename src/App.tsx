@@ -497,6 +497,12 @@ function App() {
                 }
               />
 
+              {/* Presentation mode – public route (no auth, synced via BroadcastChannel) */}
+              <Route
+                path="/presentation/investment"
+                element={<InvestmentConsultingPresentation />}
+              />
+
               {/* Old client route - redirect to new portal */}
               <Route
                 path="/client"
