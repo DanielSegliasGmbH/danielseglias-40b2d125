@@ -37,6 +37,8 @@ export function usePresentationBroadcaster() {
   const [isPresenting, setIsPresenting] = useState(false);
   const clientWindowRef = useRef<Window | null>(null);
 
+  const onClientStepClickRef = useRef<((tileId: string, stepLabel: string) => void) | null>(null);
+
   useEffect(() => {
     const ch = new BroadcastChannel(CHANNEL_NAME);
     channelRef.current = ch;
@@ -44,6 +46,8 @@ export function usePresentationBroadcaster() {
     ch.onmessage = (e: MessageEvent<MessageType>) => {
       if (e.data.type === 'PING') {
         ch.postMessage({ type: 'PONG' });
+      } else if (e.data.type === 'CLIENT_STEP_CLICK') {
+        onClientStepClickRef.current?.(e.data.tileId, e.data.stepLabel);
       }
     };
 
