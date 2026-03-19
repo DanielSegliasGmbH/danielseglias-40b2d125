@@ -669,13 +669,64 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
   // ── Flexibilität & Umsetzung ──
   'flex-1': {
     tileId: 'flex-1',
-    explanation: [
-      'ETF-Depots können jederzeit teilweise oder vollständig aufgelöst werden.',
-      'Keine festen Laufzeiten oder Kündigungsfristen.',
-      'Säule 3a: gebundene Vorsorge – Auszahlung an Bedingungen geknüpft.',
+    explanation: [],
+    storyline: [
+      {
+        heading: 'Einstieg',
+        lines: [
+          'Sehr wichtige Frage – vor allem, wenn man schlechte Erfahrungen gemacht hat.',
+          'Niemand möchte in einer Lösung feststecken.',
+        ],
+      },
+      {
+        heading: 'Kernbotschaft',
+        lines: [
+          'Nicht alle Lösungen sind gleich flexibel.',
+          'Banklösungen (ETF-Depots) sind meist jederzeit auflösbar – keine festen Laufzeiten.',
+          'Versicherungslösungen (z. B. 3a-Police) sind oft gebunden – Auszahlung an Bedingungen geknüpft.',
+        ],
+      },
+      {
+        heading: 'Erklärung',
+        lines: [
+          'Kündigungsfristen: bei Bankprodukten meist T+2 Bankarbeitstage.',
+          'Laufzeiten: bei Versicherungen oft 5–10+ Jahre.',
+          'Konsequenzen bei Kündigung: mögliche Rückkaufsverluste bei Versicherungsprodukten.',
+          'Unterschied zwischen stoppen (keine neuen Einzahlungen), pausieren (vorübergehend) und kündigen (Auflösung).',
+        ],
+      },
+      {
+        heading: 'Gesprächsfragen',
+        lines: [
+          '«Wie wichtig ist dir Flexibilität auf einer Skala von 1–10?»',
+          '«Möchtest du jederzeit reagieren können oder lieber eine fixe Struktur haben?»',
+          '«Hattest du schon einmal eine negative Erfahrung mit Bindung?»',
+        ],
+      },
+      {
+        heading: 'Ziel des Gesprächs',
+        lines: [
+          'Vertrauen schaffen durch Transparenz.',
+          'Entscheidungsfreiheit betonen.',
+          'Unterschiede klar aufzeigen.',
+        ],
+      },
     ],
+    recognition: {
+      title: 'Was bei Kündigung wichtig ist',
+      items: [
+        'Nicht jede Lösung ist gleich flexibel.',
+        'Kündigung kann Konsequenzen haben.',
+        'Pausieren ist oft möglich.',
+        'Flexibilität hängt vom Produkt ab.',
+      ],
+    },
+    resolvedConfirmation: 'Hat der Kunde die Flexibilität seiner Lösung verstanden?',
     steps: [
-      { label: '3a-Vergleich zeigen', toolSlug: 'kvg-praemienvergleich' },
+      { label: 'Unterschied zwischen flexibel und gebunden' },
+      { label: 'Kündigungsbedingungen verstehen' },
+      { label: 'Was passiert bei Kündigung?' },
+      { label: 'Alternative: pausieren statt kündigen' },
     ],
   },
   'flex-2': {
