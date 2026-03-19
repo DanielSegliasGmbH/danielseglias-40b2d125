@@ -350,13 +350,64 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
   },
   'risk-3': {
     tileId: 'risk-3',
-    explanation: [
-      'Worst Case bei globalem ETF-Portfolio: temporärer Verlust von 40–50% (historisch).',
-      'Totalverlust ist bei breiter Diversifikation praktisch ausgeschlossen.',
-      'Monte-Carlo-Simulation zeigt die Bandbreite möglicher Szenarien.',
+    explanation: [],
+    storyline: [
+      {
+        heading: 'Einstieg',
+        lines: [
+          'Das ist eine der extremsten, aber wichtigen Fragen.',
+          'Viele denken das, sprechen es aber nicht immer aus.',
+        ],
+      },
+      {
+        heading: 'Kernbotschaft',
+        lines: [
+          'Totalverlust ist theoretisch möglich, aber extrem unwahrscheinlich bei breiter Streuung.',
+          'Unterschied: Einzelaktie (hohes Risiko) vs. global diversifiziertes Portfolio (deutlich stabiler).',
+          'Worst Case bei globalem ETF-Portfolio: temporärer Verlust von 40–50 % (historisch).',
+        ],
+      },
+      {
+        heading: 'Erklärung',
+        lines: [
+          'Was müsste passieren, damit alles auf 0 fällt? – Zusammenbruch der gesamten Weltwirtschaft.',
+          'Globale Wirtschaft vs. einzelnes Unternehmen: völlig unterschiedliche Risikoklasse.',
+          'Diversifikation verteilt das Risiko auf Tausende Unternehmen weltweit.',
+          'Totalverlust ist bei breiter Diversifikation praktisch ausgeschlossen.',
+        ],
+      },
+      {
+        heading: 'Gesprächsfragen',
+        lines: [
+          '«Wovor genau hast du Angst – kurzfristige Verluste oder wirklich alles zu verlieren?»',
+          '«Was müsste passieren, damit die gesamte Weltwirtschaft zusammenbricht?»',
+          '«Wie realistisch schätzt du dieses Szenario ein?»',
+        ],
+      },
+      {
+        heading: 'Ziel des Gesprächs',
+        lines: [
+          'Worst Case bewusst machen – nicht lächerlich machen.',
+          'Irrationalen Angstanteil reduzieren.',
+          'Rationales Verständnis aufbauen.',
+        ],
+      },
     ],
+    recognition: {
+      title: 'Was du über Totalverlust wissen solltest',
+      items: [
+        'Einzelne Anlagen können ausfallen.',
+        'Breite Streuung reduziert das Risiko massiv.',
+        'Ein Totalverlust bedeutet Zusammenbruch ganzer Märkte.',
+        'Solche Szenarien sind extrem selten.',
+      ],
+    },
+    resolvedConfirmation: 'Hat der Kunde den Unterschied zwischen Einzel- und Marktrisiko verstanden?',
     steps: [
-      { label: 'Monte-Carlo-Simulation öffnen', toolSlug: 'rendite-risiko-simulation' },
+      { label: 'Unterschied: Einzelaktie vs. Gesamtmarkt' },
+      { label: 'Was müsste passieren für einen Totalverlust' },
+      { label: 'Wie Diversifikation schützt' },
+      { label: 'Realistische vs. extreme Szenarien', toolSlug: 'rendite-risiko-simulation' },
     ],
   },
 
