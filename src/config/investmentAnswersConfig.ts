@@ -222,14 +222,65 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
   // ── Risiko & Sicherheit ──
   'risk-1': {
     tileId: 'risk-1',
-    explanation: [
-      'Kurzfristig sind Verluste möglich – langfristig hat der globale Aktienmarkt immer zugelegt.',
-      'Diversifikation reduziert das Einzelrisiko erheblich.',
-      'Je länger der Anlagehorizont, desto geringer die Verlustwahrscheinlichkeit.',
+    explanation: [],
+    storyline: [
+      {
+        heading: 'Einstieg',
+        lines: [
+          'Sehr wichtige Frage – und absolut berechtigt.',
+          'Die meisten Menschen haben nicht Angst vor schlechten Produkten, sondern vor Verlust.',
+        ],
+      },
+      {
+        heading: 'Kernbotschaft',
+        lines: [
+          'Risiko ist real, aber steuerbar.',
+          'Schwankung ≠ permanenter Verlust.',
+          'Zeit reduziert Risiko erheblich.',
+          'Falsche Struktur kann ein grösseres Risiko sein als die Börse selbst.',
+        ],
+      },
+      {
+        heading: 'Erklärung',
+        lines: [
+          'Unterschied zwischen Volatilität (kurzfristige Schwankung) und echtem Verlust.',
+          'Diversifikation reduziert das Einzelrisiko erheblich.',
+          'Je länger der Anlagehorizont, desto geringer die Verlustwahrscheinlichkeit.',
+          'Historisch gab es keinen 15-Jahres-Zeitraum mit negativer Rendite am Weltaktienmarkt.',
+        ],
+      },
+      {
+        heading: 'Gesprächsfragen',
+        lines: [
+          '«Was genau macht dir am meisten Sorgen – kurzfristige Schwankungen oder langfristiger Verlust?»',
+          '«Wie würdest du reagieren, wenn dein Portfolio zwischenzeitlich sinkt?»',
+          '«Ist dir wichtiger: keine Schwankung oder bessere langfristige Chancen?»',
+        ],
+      },
+      {
+        heading: 'Ziel des Gesprächs',
+        lines: [
+          'Angst in Verständnis umwandeln.',
+          'Emotionale Sicherheit schaffen.',
+          'Rationale Entscheidungsbasis schaffen.',
+        ],
+      },
     ],
+    recognition: {
+      title: 'Was du über Risiko wissen solltest',
+      items: [
+        'Schwankungen gehören zum Investieren dazu.',
+        'Kurzfristige Verluste sind möglich.',
+        'Langfristig gleichen sich viele Schwankungen aus.',
+        'Entscheidend ist die richtige Struktur und Zeit.',
+      ],
+    },
+    resolvedConfirmation: 'Hat der Kunde das Risiko verstanden und fühlt sich sicher genug?',
     steps: [
-      { label: 'Risikosimulation starten', toolSlug: 'rendite-risiko-simulation' },
-      { label: 'Historische Marktdaten zeigen' },
+      { label: 'Worst-Case-Szenario anschauen', toolSlug: 'rendite-risiko-simulation' },
+      { label: 'Historische Marktentwicklung sehen' },
+      { label: 'Unterschied zwischen Risiko und Verlust verstehen' },
+      { label: 'Wie sich Zeit auf Risiko auswirkt', toolSlug: 'rendite-risiko-simulation' },
     ],
     sources: [
       { title: 'UBS Global Investment Returns Yearbook', url: 'https://www.ubs.com/global/en/investment-bank/in-focus/2024/global-investment-returns-yearbook.html' },
