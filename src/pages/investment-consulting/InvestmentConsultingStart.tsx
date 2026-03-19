@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { PlusCircle, FolderOpen, Clock, FileText, Loader2 } from 'lucide-react';
+import { PlusCircle, FolderOpen, Clock, FileText, Loader2, Monitor } from 'lucide-react';
 import { useInvestmentConsultationState, SavedInvestmentConsultation } from '@/hooks/useInvestmentConsultationState';
+import { usePresentationBroadcaster } from '@/hooks/usePresentationSync';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import heroImage from '@/assets/insurance-consulting-hero.jpg';
@@ -16,6 +17,7 @@ export default function InvestmentConsultingStart() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { startNewConsultation, loadConsultation, fetchSavedConsultations, isLoading } = useInvestmentConsultationState();
+  const { startPresentation } = usePresentationBroadcaster();
   
   const [savedConsultations, setSavedConsultations] = useState<SavedInvestmentConsultation[]>([]);
   const [isLoadingList, setIsLoadingList] = useState(false);
@@ -29,8 +31,14 @@ export default function InvestmentConsultingStart() {
     setIsLoadingList(false);
   };
 
-  const handleStartNew = () => {
+  const handleStartNew = (withPresentation = false) => {
     startNewConsultation();
+    if (withPresentation) {
+      // Small delay to let state settle, then open presentation
+      setTimeout(() => {
+        startPresentation({ currentSection: 'topics' });
+      }, 200);
+    }
     navigate('/app/investment-consulting/topics');
   };
 
@@ -55,8 +63,9 @@ export default function InvestmentConsultingStart() {
               Starten Sie ein neues Beratungsgespräch oder setzen Sie eine gespeicherte Beratung fort.
             </p>
 
-            <div className="grid gap-6 md:grid-cols-2">
-              <Card className="border-2 hover:border-primary/50 transition-colors cursor-pointer group" onClick={handleStartNew}>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {/* New consultation */}
+              <Card className="border-2 hover:border-primary/50 transition-colors cursor-pointer group" onClick={() => handleStartNew(false)}>
                 <CardHeader>
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                     <PlusCircle className="w-6 h-6 text-primary" />
@@ -72,6 +81,27 @@ export default function InvestmentConsultingStart() {
                 </CardContent>
               </Card>
 
+              {/* New consultation WITH presentation */}
+              <Card
+                className="border-2 border-primary/30 hover:border-primary transition-colors cursor-pointer group bg-primary/5"
+                onClick={() => handleStartNew(true)}
+              >
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mb-4 group-hover:bg-primary/30 transition-colors">
+                    <Monitor className="w-6 h-6 text-primary" />
+                  </div>
+                  <CardTitle className="text-xl">Gespräch mit Präsentation</CardTitle>
+                  <CardDescription>Starten Sie ein Gespräch mit synchronisierter Kundenansicht auf einem zweiten Bildschirm.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full" size="lg" variant="default">
+                    <Monitor className="w-4 h-4 mr-2" />
+                    Präsentation starten
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Load saved */}
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
                   <Card className="border-2 hover:border-primary/50 transition-colors cursor-pointer group" onClick={handleOpenDialog}>
@@ -105,7 +135,7 @@ export default function InvestmentConsultingStart() {
                     <div className="text-center py-12">
                       <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
                       <p className="text-muted-foreground">Keine gespeicherten Beratungen vorhanden.</p>
-                      <Button variant="link" onClick={() => { setIsDialogOpen(false); handleStartNew(); }}>
+                      <Button variant="link" onClick={() => { setIsDialogOpen(false); handleStartNew(false); }}>
                         Neue Beratung starten
                       </Button>
                     </div>
