@@ -28,6 +28,25 @@ export default function InvestmentConsultingNeeds() {
   });
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
+  const selectedTileIds = useMemo(() => {
+    return Object.entries(tiles).filter(([, v]) => v.selected).map(([id]) => id);
+  }, [tiles]);
+
+  const selectedTileNames = useMemo(() => {
+    const tileMap = Object.fromEntries(
+      needsCategories.flatMap((c) => c.tiles.map((t) => [t.id, t.title]))
+    );
+    return selectedTileIds.map((id) => tileMap[id] ?? id);
+  }, [selectedTileIds]);
+
+  useSectionBroadcast({
+    section: 'needs',
+    title: 'Deine wichtigsten Fragen',
+    subtitle: selectedTileIds.length > 0 ? `${selectedTileIds.length} Themen ausgewählt` : 'Welche Themen sind dir besonders wichtig?',
+    items: selectedTileNames,
+    extra: { selectedTileIds },
+  });
+
   // Persist into consultation context whenever state changes
   const persist = useCallback((newTiles: Record<string, TileState>, newFreeText: string) => {
     if (ctxUpdate) {
