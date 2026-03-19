@@ -792,13 +792,64 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
   },
   'flex-3': {
     tileId: 'flex-3',
-    explanation: [
-      'Freies Vermögen: jederzeit verfügbar (T+2 Bankarbeitstage).',
-      'Gebundene Vorsorge (3a): Auszahlung bei Pensionierung, Eigenheim, Auswanderung.',
-      'Empfehlung: Notgroschen (3–6 Monate) separat auf Sparkonto halten.',
+    explanation: [],
+    storyline: [
+      {
+        heading: 'Einstieg',
+        lines: [
+          'Sehr wichtige Frage – weil es um Kontrolle geht.',
+          'Du willst wissen, ob dein Geld wirklich dir gehört und verfügbar ist.',
+        ],
+      },
+      {
+        heading: 'Kernbotschaft',
+        lines: [
+          'Zugriff ist geregelt – z. B. bei Säule 3a.',
+          'Einschränkungen haben einen Zweck: Vorsorge langfristig sichern.',
+          'Es gibt definierte Ausnahmen (Eigenheim, Selbstständigkeit, Auswanderung).',
+        ],
+      },
+      {
+        heading: 'Erklärung',
+        lines: [
+          'Freies Vermögen: jederzeit verfügbar (T+2 Bankarbeitstage).',
+          'Gebundene Vorsorge (3a): Auszahlung bei Pensionierung, Eigenheim, Auswanderung.',
+          'Unterschied zwischen frei verfügbarem Geld und gebundenem Vorsorgegeld.',
+          'Empfehlung: Notgroschen (3–6 Monate) separat auf Sparkonto halten.',
+        ],
+      },
+      {
+        heading: 'Gesprächsfragen',
+        lines: [
+          '«Wie wichtig ist dir jederzeitiger Zugriff?»',
+          '«Hast du aktuell genügend freie Liquidität?»',
+          '«Wäre es für dich okay, einen Teil bewusst zu reservieren?»',
+        ],
+      },
+      {
+        heading: 'Ziel des Gesprächs',
+        lines: [
+          'Verständnis schaffen für die Regeln.',
+          'Sicherheit geben trotz Einschränkungen.',
+          'Sinn der Struktur erklären.',
+        ],
+      },
     ],
+    recognition: {
+      title: 'Was beim Zugriff wichtig ist',
+      items: [
+        'Vorsorgegelder sind teilweise gebunden.',
+        'Es gibt klare Regeln für den Bezug.',
+        'Ausnahmen sind möglich.',
+        'Wichtig ist die richtige Aufteilung.',
+      ],
+    },
+    resolvedConfirmation: 'Hat der Kunde die Zugriffsbedingungen verstanden?',
     steps: [
-      { label: 'Liquiditätsplanung erklären' },
+      { label: 'Wann kann ich mein Geld beziehen?' },
+      { label: 'Welche Ausnahmen gibt es?' },
+      { label: 'Unterschied zwischen gebundenem und freiem Geld' },
+      { label: 'Wie viel sollte flexibel bleiben?' },
     ],
   },
 
