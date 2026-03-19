@@ -288,14 +288,64 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
   },
   'risk-2': {
     tileId: 'risk-2',
-    explanation: [
-      'Beispiel 2008: MSCI World fiel ca. –40%, erholte sich innerhalb von 4 Jahren vollständig.',
-      'Historisch gab es keinen 15-Jahres-Zeitraum mit negativer Rendite am Weltaktienmarkt.',
-      'Strategie: Breit diversifiziert investiert bleiben, nicht in Panik verkaufen.',
+    explanation: [],
+    storyline: [
+      {
+        heading: 'Einstieg',
+        lines: [
+          'Das ist die konkrete Form von Risiko, die viele im Kopf haben.',
+          'Die Frage ist nicht, ob ein Crash passiert – sondern wie man damit umgeht.',
+        ],
+      },
+      {
+        heading: 'Kernbotschaft',
+        lines: [
+          'Crashs passieren regelmässig – sie sind Teil des Systems.',
+          'Historisch haben sich Märkte immer wieder erholt.',
+          'Entscheidend ist das Verhalten währenddessen, nicht der Crash selbst.',
+        ],
+      },
+      {
+        heading: 'Erklärung',
+        lines: [
+          'Beispiel 2008: MSCI World fiel ca. –40 %, erholte sich innerhalb von 4 Jahren vollständig.',
+          'Typische Rückgänge von –20 % bis –30 % kommen alle paar Jahre vor.',
+          'Unterschied zwischen Panikverkauf (Verlust realisieren) und investiert bleiben (Erholung mitnehmen).',
+          'Historisch gab es keinen 15-Jahres-Zeitraum mit negativer Rendite am Weltaktienmarkt.',
+        ],
+      },
+      {
+        heading: 'Gesprächsfragen',
+        lines: [
+          '«Wie würdest du reagieren, wenn dein Portfolio kurzfristig 20–30 % fällt?»',
+          '«Was wäre dein erster Impuls?»',
+          '«Was wäre langfristig die bessere Entscheidung?»',
+        ],
+      },
+      {
+        heading: 'Ziel des Gesprächs',
+        lines: [
+          'Emotionale Reaktion bewusst machen.',
+          'Rationale Strategie aufbauen.',
+          'Vertrauen in den Prozess stärken.',
+        ],
+      },
     ],
+    recognition: {
+      title: 'Was bei einem Crash wichtig ist',
+      items: [
+        'Rückgänge gehören zur Börse dazu.',
+        'Märkte haben sich historisch immer erholt.',
+        'Verhalten in solchen Phasen ist entscheidend.',
+        'Langfristig zählt die Strategie, nicht der Moment.',
+      ],
+    },
+    resolvedConfirmation: 'Hat der Kunde verstanden, wie er bei einem Crash reagieren sollte?',
     steps: [
-      { label: 'Worst-Case-Szenario simulieren', toolSlug: 'rendite-risiko-simulation' },
-      { label: 'Historische Crashs zeigen' },
+      { label: 'Typische Crashs anschauen' },
+      { label: 'Erholung nach Crashs sehen' },
+      { label: 'Was passiert, wenn man investiert bleibt', toolSlug: 'rendite-risiko-simulation' },
+      { label: 'Vergleich: Panikverkauf vs. ruhig bleiben', toolSlug: 'rendite-risiko-simulation' },
     ],
   },
   'risk-3': {
