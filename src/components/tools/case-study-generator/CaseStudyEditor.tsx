@@ -4,27 +4,28 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
-import { Plus, Trash2, Upload } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import type {
   CaseStudyData,
   CustomerType,
   AgeRange,
   CaseStudyStatus,
-  StrategyType,
+  AcquisitionSource,
+  Duration,
   PreviousSolution,
   MainProblem,
-  CtaType,
 } from './types';
 import {
   CUSTOMER_TYPE_LABELS,
   AGE_RANGE_LABELS,
   STATUS_LABELS,
-  STRATEGY_LABELS,
+  ACQUISITION_SOURCE_LABELS,
+  DURATION_LABELS,
   PREVIOUS_SOLUTION_LABELS,
   MAIN_PROBLEM_LABELS,
-  CTA_LABELS,
+  BENEFIT_OPTIONS,
 } from './types';
 
 interface Props {
@@ -37,18 +38,12 @@ export function CaseStudyEditor({ data, onChange }: Props) {
     onChange({ ...data, [key]: value });
   };
 
-  const updateBenefit = (index: number, value: string) => {
-    const benefits = [...data.additionalBenefits];
-    benefits[index] = value;
-    onChange({ ...data, additionalBenefits: benefits });
-  };
-
-  const addBenefit = () => {
-    onChange({ ...data, additionalBenefits: [...data.additionalBenefits, ''] });
-  };
-
-  const removeBenefit = (index: number) => {
-    onChange({ ...data, additionalBenefits: data.additionalBenefits.filter((_, i) => i !== index) });
+  const toggleBenefit = (benefit: string) => {
+    const current = data.benefits;
+    const next = current.includes(benefit)
+      ? current.filter(b => b !== benefit)
+      : [...current, benefit];
+    update('benefits', next);
   };
 
   return (
@@ -93,24 +88,44 @@ export function CaseStudyEditor({ data, onChange }: Props) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-xs text-muted-foreground">Lebenssituation</Label>
-              <Input value={data.lifeSituation} onChange={e => update('lifeSituation', e.target.value)} placeholder="optional" />
+              <Label className="text-xs text-muted-foreground">Wie hat der Kunde uns gefunden?</Label>
+              <Select value={data.acquisitionSource} onValueChange={v => update('acquisitionSource', v as AcquisitionSource)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {Object.entries(ACQUISITION_SOURCE_LABELS).map(([k, v]) => (
+                    <SelectItem key={k} value={k}>{v}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground">Region</Label>
-              <Input value={data.region} onChange={e => update('region', e.target.value)} placeholder="optional" />
+              <Label className="text-xs text-muted-foreground">Start der Zusammenarbeit</Label>
+              <Input type="date" value={data.startDate} onChange={e => update('startDate', e.target.value)} />
             </div>
           </div>
-          <div>
-            <Label className="text-xs text-muted-foreground">Status</Label>
-            <Select value={data.status} onValueChange={v => update('status', v as CaseStudyStatus)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {Object.entries(STATUS_LABELS).map(([k, v]) => (
-                  <SelectItem key={k} value={k}>{v}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs text-muted-foreground">Betreuungsdauer</Label>
+              <Select value={data.duration} onValueChange={v => update('duration', v as Duration)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {Object.entries(DURATION_LABELS).map(([k, v]) => (
+                    <SelectItem key={k} value={k}>{v}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground">Status</Label>
+              <Select value={data.status} onValueChange={v => update('status', v as CaseStudyStatus)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {Object.entries(STATUS_LABELS).map(([k, v]) => (
+                    <SelectItem key={k} value={k}>{v}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -122,8 +137,8 @@ export function CaseStudyEditor({ data, onChange }: Props) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label className="text-xs text-muted-foreground">Beschreibung der Ausgangslage</Label>
-            <Textarea value={data.initialSituation} onChange={e => update('initialSituation', e.target.value)} rows={3} placeholder="Beschreibe die Situation vor der Beratung..." />
+            <Label className="text-xs text-muted-foreground">Wie war die Situation vor der Beratung?</Label>
+            <Textarea value={data.initialSituation} onChange={e => update('initialSituation', e.target.value)} rows={3} placeholder="Beschreibe die Ausgangslage des Kunden..." />
           </div>
           <div>
             <Label className="text-xs text-muted-foreground">Bisherige Lösung</Label>
@@ -156,76 +171,88 @@ export function CaseStudyEditor({ data, onChange }: Props) {
         </CardContent>
       </Card>
 
-      {/* Lösung / Strategie */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Lösung & Strategie</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label className="text-xs text-muted-foreground">Empfohlene Lösung</Label>
-            <Textarea value={data.recommendedSolution} onChange={e => update('recommendedSolution', e.target.value)} rows={3} placeholder="Was wurde empfohlen?" />
-          </div>
-          <div>
-            <Label className="text-xs text-muted-foreground">Strategie-Typ</Label>
-            <Select value={data.strategyType} onValueChange={v => update('strategyType', v as StrategyType)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {Object.entries(STRATEGY_LABELS).map(([k, v]) => (
-                  <SelectItem key={k} value={k}>{v}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label className="text-xs text-muted-foreground">Struktur</Label>
-            <Input value={data.structure} onChange={e => update('structure', e.target.value)} placeholder="z. B. 4 Konten, gestaffelter Bezug" />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Resultate */}
+      {/* Resultate & Mehrwert */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Resultate & Mehrwert</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <div>
-              <Label className="text-xs text-muted-foreground">Geschätzter Mehrwert (CHF)</Label>
+              <Label className="text-xs text-muted-foreground">Mehrwert (CHF)</Label>
               <Input type="number" value={data.estimatedValueCHF || ''} onChange={e => update('estimatedValueCHF', Number(e.target.value))} />
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground">Gebührenersparnis (CHF/Jahr)</Label>
+              <Label className="text-xs text-muted-foreground">Ersparnis (CHF/Jahr)</Label>
               <Input type="number" value={data.feeSavings || ''} onChange={e => update('feeSavings', Number(e.target.value))} />
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground">ROI (Monate)</Label>
+              <Input type="number" value={data.roiMonths || ''} onChange={e => update('roiMonths', Number(e.target.value))} placeholder="Break-even" />
             </div>
           </div>
           <div>
             <Label className="text-xs text-muted-foreground">Erwartete Verbesserung</Label>
-            <Textarea value={data.expectedImprovement} onChange={e => update('expectedImprovement', e.target.value)} rows={2} />
-          </div>
-          <div>
-            <Label className="text-xs text-muted-foreground">Zusätzliche Vorteile</Label>
-            <div className="space-y-2">
-              {data.additionalBenefits.map((b, i) => (
-                <div key={i} className="flex gap-2">
-                  <Input value={b} onChange={e => updateBenefit(i, e.target.value)} placeholder="Vorteil eingeben..." />
-                  {data.additionalBenefits.length > 1 && (
-                    <Button variant="ghost" size="icon" onClick={() => removeBenefit(i)} className="shrink-0">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-              <Button variant="outline" size="sm" onClick={addBenefit}>
-                <Plus className="h-3 w-3 mr-1" /> Vorteil hinzufügen
-              </Button>
-            </div>
+            <Textarea value={data.expectedImprovement} onChange={e => update('expectedImprovement', e.target.value)} rows={2} placeholder="z. B. bessere Entwicklung, mehr Klarheit..." />
           </div>
         </CardContent>
       </Card>
 
-      {/* Medien (Mock) */}
+      {/* Zusätzliche Vorteile */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Zusätzliche Vorteile</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {BENEFIT_OPTIONS.map(benefit => (
+              <label key={benefit} className="flex items-center gap-2.5 cursor-pointer group">
+                <Checkbox
+                  checked={data.benefits.includes(benefit)}
+                  onCheckedChange={() => toggleBenefit(benefit)}
+                />
+                <span className="text-sm text-foreground group-hover:text-primary transition-colors">{benefit}</span>
+              </label>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Testimonial / Google Review */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Testimonial / Google Bewertung</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label className="text-sm">Testimonial anzeigen</Label>
+            <Switch checked={data.showTestimonial} onCheckedChange={v => update('showTestimonial', v)} />
+          </div>
+          {data.showTestimonial && (
+            <>
+              <Separator />
+              <div>
+                <Label className="text-xs text-muted-foreground">Kundenname (optional, anonym möglich)</Label>
+                <Input value={data.testimonialName} onChange={e => update('testimonialName', e.target.value)} placeholder="z. B. Familie M., Zürich" />
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Bewertungstext</Label>
+                <Textarea value={data.testimonialText} onChange={e => update('testimonialText', e.target.value)} rows={3} placeholder="Was sagt der Kunde?" />
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Link zur Google Bewertung (optional)</Label>
+                <Input value={data.testimonialGoogleLink} onChange={e => update('testimonialGoogleLink', e.target.value)} placeholder="https://g.co/kgs/..." />
+              </div>
+              <div className="border-2 border-dashed border-border rounded-xl p-6 text-center">
+                <Upload className="h-6 w-6 text-muted-foreground mx-auto mb-1.5" />
+                <p className="text-xs text-muted-foreground">Kundenbild hochladen (optional, noch nicht aktiv)</p>
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Medien */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Medien & Dokumente</CardTitle>
@@ -234,47 +261,25 @@ export function CaseStudyEditor({ data, onChange }: Props) {
           <div className="border-2 border-dashed border-border rounded-xl p-8 text-center">
             <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
             <p className="text-sm text-muted-foreground">Dateien hierher ziehen oder klicken</p>
-            <p className="text-xs text-muted-foreground mt-1">Bilder, PDFs, Screenshots (noch nicht aktiv)</p>
+            <p className="text-xs text-muted-foreground mt-1">Vergleichsbilder, Screenshots, PDFs (noch nicht aktiv)</p>
           </div>
         </CardContent>
       </Card>
 
-      {/* Anonymisierung & Freigabe */}
+      {/* Einstellungen */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Anonymisierung & Freigabe</CardTitle>
+          <CardTitle className="text-base">Einstellungen</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Label className="text-sm">Firmenname anzeigen</Label>
-            <Switch checked={data.showCompanyName} onCheckedChange={v => update('showCompanyName', v)} />
-          </div>
           <div className="flex items-center justify-between">
             <Label className="text-sm">Zahlen gerundet anzeigen</Label>
             <Switch checked={data.roundNumbers} onCheckedChange={v => update('roundNumbers', v)} />
           </div>
           <div className="flex items-center justify-between">
-            <Label className="text-sm">Testimonial anzeigen</Label>
-            <Switch checked={data.showTestimonial} onCheckedChange={v => update('showTestimonial', v)} />
-          </div>
-          <div className="flex items-center justify-between">
             <Label className="text-sm">Veröffentlichung erlaubt</Label>
             <Switch checked={data.publishingAllowed} onCheckedChange={v => update('publishingAllowed', v)} />
           </div>
-
-          {data.showTestimonial && (
-            <>
-              <Separator />
-              <div>
-                <Label className="text-xs text-muted-foreground">Testimonial-Text</Label>
-                <Textarea value={data.testimonialText} onChange={e => update('testimonialText', e.target.value)} rows={2} placeholder="Was sagt der Kunde?" />
-              </div>
-              <div>
-                <Label className="text-xs text-muted-foreground">Autor</Label>
-                <Input value={data.testimonialAuthor} onChange={e => update('testimonialAuthor', e.target.value)} placeholder="z. B. Familie M., Zürich" />
-              </div>
-            </>
-          )}
         </CardContent>
       </Card>
 
@@ -283,15 +288,12 @@ export function CaseStudyEditor({ data, onChange }: Props) {
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Call-to-Action</CardTitle>
         </CardHeader>
-        <CardContent>
-          <Select value={data.ctaType} onValueChange={v => update('ctaType', v as CtaType)}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {Object.entries(CTA_LABELS).map(([k, v]) => (
-                <SelectItem key={k} value={k}>{v}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">Button: «15 Minuten Gespräch buchen»</p>
+          <div>
+            <Label className="text-xs text-muted-foreground">Link (URL)</Label>
+            <Input value={data.ctaLink} onChange={e => update('ctaLink', e.target.value)} placeholder="https://calendly.com/..." />
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -1,87 +1,99 @@
 export type CustomerType = 'angestellt' | 'selbststaendig' | 'familie' | 'paar' | 'student' | 'rentner';
 export type AgeRange = '20-25' | '25-30' | '30-35' | '35-40' | '40-45';
 export type CaseStudyStatus = 'entwurf' | 'freigabe' | 'freigegeben' | 'veroeffentlicht';
-export type StrategyType = 'market-cap' | 'faktor' | 'passiv' | 'aktiv' | 'hybrid';
-export type PreviousSolution = 'versicherung' | 'bank' | 'keine' | 'eigenstaendig' | 'andere';
+export type AcquisitionSource = 'werbeanzeige' | 'linkedin' | 'instagram' | 'netzwerk' | 'empfehlung' | 'website' | 'sonstiges';
+export type Duration = '<3' | '3-6' | '6-12' | '12+';
+export type PreviousSolution = 'versicherung' | 'bank' | 'kombination' | 'unklar';
 export type MainProblem = 'hohe-gebuehren' | 'keine-strategie' | 'falsche-produkte' | 'keine-vorsorge' | 'steueroptimierung' | 'andere';
-export type CtaType = 'zweitmeinung' | 'situation-pruefen' | 'termin-buchen';
+
+export const BENEFIT_OPTIONS = [
+  'Mehr Flexibilität',
+  'Tiefere Gebührenstruktur',
+  'Bessere Renditechancen',
+  'Klare Strategie & Verständnis',
+  'Strukturierte Vorsorgeplanung',
+  'Zugang zur Online-Akademie',
+  'Zugang zur Wissensbibliothek',
+  '1:1 Betreuung',
+  'Wöchentlicher Austausch',
+  'Teilnahme an Live Calls',
+  'Mehr Sicherheit im Entscheidungsprozess',
+  'Transparenz über Kosten & Entwicklung',
+] as const;
 
 export interface CaseStudyData {
-  // Grunddaten
+  id: string;
   internalTitle: string;
   publicTitle: string;
   customerType: CustomerType;
   ageRange: AgeRange;
-  lifeSituation: string;
-  region: string;
+  acquisitionSource: AcquisitionSource;
+  startDate: string;
+  duration: Duration;
   status: CaseStudyStatus;
 
-  // Ausgangssituation
   initialSituation: string;
   previousSolution: PreviousSolution;
   mainProblem: MainProblem;
   mainProblemCustom: string;
 
-  // Lösung / Strategie
-  recommendedSolution: string;
-  strategyType: StrategyType;
-  structure: string;
-
-  // Resultate
   estimatedValueCHF: number;
   feeSavings: number;
+  roiMonths: number;
   expectedImprovement: string;
-  additionalBenefits: string[];
+  benefits: string[];
 
-  // Anonymisierung & Freigabe
-  showCompanyName: boolean;
-  roundNumbers: boolean;
+  testimonialName: string;
+  testimonialText: string;
+  testimonialGoogleLink: string;
   showTestimonial: boolean;
+
+  roundNumbers: boolean;
   publishingAllowed: boolean;
 
-  // CTA
-  ctaType: CtaType;
+  ctaLink: string;
+}
 
-  // Testimonial
-  testimonialText: string;
-  testimonialAuthor: string;
+let _counter = 0;
+export function generateId(): string {
+  return `cs_${Date.now()}_${++_counter}`;
 }
 
 export const EMPTY_CASE_STUDY: CaseStudyData = {
+  id: '',
   internalTitle: '',
   publicTitle: '',
   customerType: 'angestellt',
   ageRange: '30-35',
-  lifeSituation: '',
-  region: '',
+  acquisitionSource: 'website',
+  startDate: '',
+  duration: '3-6',
   status: 'entwurf',
   initialSituation: '',
   previousSolution: 'bank',
   mainProblem: 'hohe-gebuehren',
   mainProblemCustom: '',
-  recommendedSolution: '',
-  strategyType: 'passiv',
-  structure: '',
   estimatedValueCHF: 0,
   feeSavings: 0,
+  roiMonths: 0,
   expectedImprovement: '',
-  additionalBenefits: [''],
-  showCompanyName: false,
-  roundNumbers: true,
-  showTestimonial: false,
-  publishingAllowed: false,
-  ctaType: 'zweitmeinung',
+  benefits: [],
+  testimonialName: '',
   testimonialText: '',
-  testimonialAuthor: '',
+  testimonialGoogleLink: '',
+  showTestimonial: false,
+  roundNumbers: true,
+  publishingAllowed: false,
+  ctaLink: '',
 };
 
 export const CUSTOMER_TYPE_LABELS: Record<CustomerType, string> = {
-  'angestellt': 'Angestellt',
-  'selbststaendig': 'Selbstständig',
-  'familie': 'Familie',
-  'paar': 'Paar',
-  'student': 'Student/in',
-  'rentner': 'Rentner/in',
+  angestellt: 'Angestellt',
+  selbststaendig: 'Selbstständig',
+  familie: 'Familie',
+  paar: 'Paar',
+  student: 'Student/in',
+  rentner: 'Rentner/in',
 };
 
 export const AGE_RANGE_LABELS: Record<AgeRange, string> = {
@@ -93,26 +105,34 @@ export const AGE_RANGE_LABELS: Record<AgeRange, string> = {
 };
 
 export const STATUS_LABELS: Record<CaseStudyStatus, string> = {
-  'entwurf': 'Entwurf',
-  'freigabe': 'Zur Freigabe',
-  'freigegeben': 'Freigegeben',
-  'veroeffentlicht': 'Veröffentlicht',
+  entwurf: 'Entwurf',
+  freigabe: 'Zur Freigabe',
+  freigegeben: 'Freigegeben',
+  veroeffentlicht: 'Veröffentlicht',
 };
 
-export const STRATEGY_LABELS: Record<StrategyType, string> = {
-  'market-cap': 'Market Cap',
-  'faktor': 'Faktor-Strategie',
-  'passiv': 'Passiv (Index)',
-  'aktiv': 'Aktiv verwaltet',
-  'hybrid': 'Hybrid',
+export const ACQUISITION_SOURCE_LABELS: Record<AcquisitionSource, string> = {
+  werbeanzeige: 'Werbeanzeige',
+  linkedin: 'LinkedIn',
+  instagram: 'Instagram',
+  netzwerk: 'Netzwerk',
+  empfehlung: 'Empfehlung',
+  website: 'Website',
+  sonstiges: 'Sonstiges',
+};
+
+export const DURATION_LABELS: Record<Duration, string> = {
+  '<3': '< 3 Monate',
+  '3-6': '3–6 Monate',
+  '6-12': '6–12 Monate',
+  '12+': '12+ Monate',
 };
 
 export const PREVIOUS_SOLUTION_LABELS: Record<PreviousSolution, string> = {
-  'versicherung': 'Versicherungslösung',
-  'bank': 'Banklösung',
-  'keine': 'Keine bisherige Lösung',
-  'eigenstaendig': 'Eigenständig verwaltet',
-  'andere': 'Andere',
+  versicherung: 'Versicherungslösung',
+  bank: 'Banklösung',
+  kombination: 'Kombination',
+  unklar: 'Unklar / keine Lösung',
 };
 
 export const MAIN_PROBLEM_LABELS: Record<MainProblem, string> = {
@@ -120,77 +140,77 @@ export const MAIN_PROBLEM_LABELS: Record<MainProblem, string> = {
   'keine-strategie': 'Keine klare Strategie',
   'falsche-produkte': 'Falsche Produkte',
   'keine-vorsorge': 'Keine Vorsorge',
-  'steueroptimierung': 'Fehlende Steueroptimierung',
-  'andere': 'Anderes Problem',
+  steueroptimierung: 'Fehlende Steueroptimierung',
+  andere: 'Anderes Problem',
 };
 
-export const CTA_LABELS: Record<CtaType, string> = {
-  'zweitmeinung': 'Zweitmeinung anfragen',
-  'situation-pruefen': 'Situation prüfen',
-  'termin-buchen': 'Termin buchen',
-};
-
-// Mock case studies for overview
 export const MOCK_CASE_STUDIES: CaseStudyData[] = [
   {
     ...EMPTY_CASE_STUDY,
+    id: 'mock-1',
     internalTitle: 'Familie Meier – 3a Optimierung',
     publicTitle: 'Wie eine junge Familie CHF 2\'400 pro Jahr spart',
     customerType: 'familie',
     ageRange: '30-35',
-    lifeSituation: 'Verheiratet, 2 Kinder',
-    region: 'Zürich',
+    acquisitionSource: 'empfehlung',
+    startDate: '2025-01-15',
+    duration: '3-6',
     status: 'veroeffentlicht',
     initialSituation: 'Beide Partner hatten eine teure Versicherungslösung für die Säule 3a mit hohen Gebühren und intransparenten Kosten.',
     previousSolution: 'versicherung',
     mainProblem: 'hohe-gebuehren',
-    recommendedSolution: 'Umstellung auf eine kostengünstige ETF-basierte 3a-Lösung mit klarer Splitting-Strategie.',
-    strategyType: 'passiv',
-    structure: '4 separate 3a-Konten pro Person, gestaffelter Bezug geplant',
     estimatedValueCHF: 48000,
     feeSavings: 2400,
-    expectedImprovement: 'Deutlich tiefere Gebühren, höhere erwartete Rendite, bessere Flexibilität und Steueroptimierung beim Bezug.',
-    additionalBenefits: ['Steueroptimierung durch Splitting', 'Höhere Renditechancen', 'Volle Transparenz'],
+    roiMonths: 2,
+    expectedImprovement: 'Deutlich tiefere Gebühren, höhere erwartete Rendite, bessere Flexibilität.',
+    benefits: ['Tiefere Gebührenstruktur', 'Mehr Flexibilität', 'Transparenz über Kosten & Entwicklung'],
     showTestimonial: true,
     testimonialText: 'Wir hätten nie gedacht, dass der Wechsel so einfach ist – und so viel bringt.',
-    testimonialAuthor: 'Familie M., Zürich',
+    testimonialName: 'Familie M., Zürich',
+    testimonialGoogleLink: 'https://g.co/kgs/example1',
     publishingAllowed: true,
-    ctaType: 'situation-pruefen',
+    ctaLink: 'https://calendly.com/example',
   },
   {
     ...EMPTY_CASE_STUDY,
+    id: 'mock-2',
     internalTitle: 'Marco S. – Neustart nach Scheidung',
     publicTitle: 'Neustart mit klarer Finanzstrategie',
     customerType: 'angestellt',
     ageRange: '40-45',
+    acquisitionSource: 'linkedin',
+    startDate: '2024-09-01',
+    duration: '6-12',
     status: 'freigegeben',
     initialSituation: 'Nach einer Scheidung war die finanzielle Situation unklar. Pensionskasse geteilt, kein Sparplan vorhanden.',
-    previousSolution: 'keine',
+    previousSolution: 'unklar',
     mainProblem: 'keine-strategie',
-    recommendedSolution: 'Kompletter Finanzplan mit Sparplan, 3a-Splitting und optimierter Freizügigkeitsstrategie.',
-    strategyType: 'hybrid',
     estimatedValueCHF: 35000,
     feeSavings: 1200,
+    roiMonths: 4,
     expectedImprovement: 'Klare Struktur, automatisiertes Sparen, optimierte Vorsorge.',
-    additionalBenefits: ['Klarheit über Gesamtsituation', 'Automatisiertes Sparen'],
-    ctaType: 'termin-buchen',
+    benefits: ['Klare Strategie & Verständnis', 'Strukturierte Vorsorgeplanung', '1:1 Betreuung'],
+    ctaLink: 'https://calendly.com/example',
   },
   {
     ...EMPTY_CASE_STUDY,
+    id: 'mock-3',
     internalTitle: 'Entwurf – Selbstständige Designerin',
     publicTitle: 'Als Selbstständige optimal vorsorgen',
     customerType: 'selbststaendig',
     ageRange: '25-30',
+    acquisitionSource: 'instagram',
+    startDate: '2025-03-01',
+    duration: '<3',
     status: 'entwurf',
     initialSituation: 'Keine Pensionskasse, keine strukturierte Vorsorge, unregelmässiges Einkommen.',
-    previousSolution: 'keine',
+    previousSolution: 'unklar',
     mainProblem: 'keine-vorsorge',
-    recommendedSolution: 'Flexible 3a-Strategie mit angepasstem Sparplan.',
-    strategyType: 'passiv',
     estimatedValueCHF: 15000,
     feeSavings: 800,
+    roiMonths: 3,
     expectedImprovement: 'Grundlegende Absicherung und strukturierter Vermögensaufbau.',
-    additionalBenefits: ['Flexibel anpassbar', 'Steuerersparnis ab Tag 1'],
-    ctaType: 'zweitmeinung',
+    benefits: ['Strukturierte Vorsorgeplanung', 'Mehr Sicherheit im Entscheidungsprozess'],
+    ctaLink: '',
   },
 ];

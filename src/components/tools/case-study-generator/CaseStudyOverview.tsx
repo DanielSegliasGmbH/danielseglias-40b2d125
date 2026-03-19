@@ -4,14 +4,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, FileText } from 'lucide-react';
-import type { CaseStudyData, CaseStudyStatus, CustomerType } from './types';
+import type { CaseStudyData, CaseStudyStatus } from './types';
 import {
-  MOCK_CASE_STUDIES,
   STATUS_LABELS,
   CUSTOMER_TYPE_LABELS,
 } from './types';
 
 interface Props {
+  caseStudies: CaseStudyData[];
   onEdit: (cs: CaseStudyData) => void;
   onNew: () => void;
 }
@@ -23,11 +23,11 @@ const STATUS_COLORS: Record<CaseStudyStatus, string> = {
   veroeffentlicht: 'bg-primary/10 text-primary',
 };
 
-export function CaseStudyOverview({ onEdit, onNew }: Props) {
+export function CaseStudyOverview({ caseStudies, onEdit, onNew }: Props) {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
 
-  const filtered = MOCK_CASE_STUDIES.filter(cs => {
+  const filtered = caseStudies.filter(cs => {
     if (statusFilter !== 'all' && cs.status !== statusFilter) return false;
     if (typeFilter !== 'all' && cs.customerType !== typeFilter) return false;
     return true;
@@ -35,18 +35,16 @@ export function CaseStudyOverview({ onEdit, onNew }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold text-foreground">Alle Case Studies</h2>
-          <p className="text-sm text-muted-foreground">{MOCK_CASE_STUDIES.length} Case Studies erstellt</p>
+          <p className="text-sm text-muted-foreground">{caseStudies.length} Case Studies</p>
         </div>
         <Button onClick={onNew}>
           <Plus className="h-4 w-4 mr-2" /> Neue Case Study
         </Button>
       </div>
 
-      {/* Filters */}
       <div className="flex gap-3">
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[180px]">
@@ -72,7 +70,6 @@ export function CaseStudyOverview({ onEdit, onNew }: Props) {
         </Select>
       </div>
 
-      {/* Cards */}
       {filtered.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           <FileText className="h-10 w-10 mx-auto mb-3 opacity-30" />
@@ -80,9 +77,9 @@ export function CaseStudyOverview({ onEdit, onNew }: Props) {
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((cs, idx) => (
+          {filtered.map(cs => (
             <Card
-              key={idx}
+              key={cs.id}
               className="cursor-pointer hover:border-primary/30 transition-colors"
               onClick={() => onEdit(cs)}
             >
