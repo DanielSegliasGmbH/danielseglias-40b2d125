@@ -1,44 +1,67 @@
-import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, Clock } from 'lucide-react';
+import { PlatformSelector } from '@/components/client-portal/strategy/PlatformSelector';
+import { StrategySection } from '@/components/client-portal/strategy/StrategySection';
+import { GlidepathSection } from '@/components/client-portal/strategy/GlidepathSection';
+import { Button } from '@/components/ui/button';
+import { TrendingUp, ArrowRight, Info } from 'lucide-react';
 
 export default function ClientPortalStrategies() {
-  const { t } = useTranslation();
+  const [selectedPlatform, setSelectedPlatform] = useState('finpension');
+  const [selectedStrategy, setSelectedStrategy] = useState('marketcap');
+  const [selectedRiskLevel, setSelectedRiskLevel] = useState('moderate');
 
   return (
     <ClientPortalLayout>
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center">
-            <TrendingUp className="h-6 w-6 text-purple-500" />
+      <div className="max-w-5xl mx-auto space-y-10 pb-12">
+        {/* Header */}
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+            <TrendingUp className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">{t('clientPortal.strategies')}</h1>
-            <p className="text-muted-foreground">{t('clientPortal.strategiesDesc')}</p>
+            <h1 className="text-2xl font-bold text-foreground">Anlageberatung</h1>
+            <p className="text-muted-foreground">
+              Plattform wählen, Strategie verstehen, Umsetzung nachvollziehen
+            </p>
           </div>
         </div>
 
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Clock className="h-5 w-5 text-muted-foreground" />
-              <CardTitle>{t('clientPortal.comingSoon')}</CardTitle>
-            </div>
-            <CardDescription>{t('clientPortal.inDevelopment')}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="bg-muted/50 rounded-lg p-6">
-              <h3 className="font-medium mb-3">{t('clientPortal.plannedFeatures')}</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>• {t('clientPortal.strategiesFeatures.feature1')}</li>
-                <li>• {t('clientPortal.strategiesFeatures.feature2')}</li>
-                <li>• {t('clientPortal.strategiesFeatures.feature3')}</li>
-                <li>• {t('clientPortal.strategiesFeatures.feature4')}</li>
-              </ul>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Section 1: Platform */}
+        <PlatformSelector selected={selectedPlatform} onSelect={setSelectedPlatform} />
+
+        {/* Section 2: Strategy */}
+        <StrategySection selected={selectedStrategy} onSelect={setSelectedStrategy} />
+
+        {/* Section 3: Glidepath */}
+        <GlidepathSection selected={selectedRiskLevel} onSelect={setSelectedRiskLevel} />
+
+        {/* CTA */}
+        <section className="space-y-4">
+          <div className="bg-card border rounded-2xl p-8 text-center space-y-4">
+            <h2 className="text-xl md:text-2xl font-bold text-foreground">
+              Diese Strategie auf deine Situation anwenden
+            </h2>
+            <p className="text-muted-foreground max-w-lg mx-auto">
+              Lass uns gemeinsam prüfen, welche Kombination aus Plattform, Strategie und
+              Ablaufmanagement optimal zu deiner Situation passt.
+            </p>
+            <Button size="lg" className="mt-2">
+              Kostenlose Analyse starten
+              <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+        </section>
+
+        {/* Disclaimer */}
+        <div className="flex items-start gap-2 text-xs text-muted-foreground">
+          <Info className="h-4 w-4 shrink-0 mt-0.5" />
+          <p>
+            Diese Darstellung ist modellbasiert und dient nur zur Veranschaulichung. 
+            Sie stellt keine Anlageempfehlung dar. Vergangene Renditen sind kein verlässlicher 
+            Indikator für zukünftige Ergebnisse.
+          </p>
+        </div>
       </div>
     </ClientPortalLayout>
   );
