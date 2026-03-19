@@ -532,6 +532,7 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>
+          </CaseStudyProvider>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
