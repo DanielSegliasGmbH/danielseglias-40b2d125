@@ -75,7 +75,7 @@ export function usePresentationBroadcaster() {
     clientWindowRef.current = null;
   }, [broadcast]);
 
-  return { isPresenting, broadcast, startPresentation, stopPresentation };
+  return { isPresenting, broadcast, startPresentation, stopPresentation, onClientStepClickRef };
 }
 
 /**
