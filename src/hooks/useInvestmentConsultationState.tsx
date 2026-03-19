@@ -79,6 +79,7 @@ const generateDefaultConsultationData = (): InvestmentConsultationData => ({
 
 interface InvestmentConsultationContextValue {
   consultationData: InvestmentConsultationData;
+  updateData: (updater: (prev: InvestmentConsultationData) => InvestmentConsultationData) => void;
   currentConsultationId: string | null;
   isLoading: boolean;
   hasUnsavedChanges: boolean;
