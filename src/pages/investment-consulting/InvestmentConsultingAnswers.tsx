@@ -84,11 +84,13 @@ export default function InvestmentConsultingAnswers() {
   // Broadcast state to client tab whenever relevant state changes
   const buildPresentationState = useCallback(
     (idx: number, ans: Record<string, AnswerState>, tool: string | null = null): PresentationState => ({
+      ...EMPTY_PRESENTATION_STATE,
       activeTileId: selectedTileIds[idx] ?? null,
       activeIdx: idx,
       selectedTileIds,
       statuses: Object.fromEntries(Object.entries(ans).map(([k, v]) => [k, v.status])),
       isActive: true,
+      currentSection: 'answers',
       openTool: tool,
       clientSelectedSteps: {},
     }),
