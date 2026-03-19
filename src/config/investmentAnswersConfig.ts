@@ -731,13 +731,63 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
   },
   'flex-2': {
     tileId: 'flex-2',
-    explanation: [
-      'Beiträge können jederzeit angepasst, pausiert oder erhöht werden.',
-      'Umschichtungen zwischen Anlageklassen sind möglich.',
-      'Strategie wird regelmässig überprüft und bei Bedarf angepasst.',
+    explanation: [],
+    storyline: [
+      {
+        heading: 'Einstieg',
+        lines: [
+          'Das Leben verändert sich – und eine gute Lösung sollte das auch können.',
+          'Es geht nicht nur darum, heute die richtige Entscheidung zu treffen, sondern auch morgen noch flexibel zu bleiben.',
+        ],
+      },
+      {
+        heading: 'Kernbotschaft',
+        lines: [
+          'Flexibilität bedeutet Anpassbarkeit.',
+          'Gute Lösungen lassen sich verändern – starre Produkte können langfristig problematisch sein.',
+        ],
+      },
+      {
+        heading: 'Erklärung',
+        lines: [
+          'Beiträge können jederzeit angepasst, pausiert oder erhöht werden.',
+          'Umschichtungen zwischen Anlageklassen sind möglich.',
+          'Strategie wird regelmässig überprüft und bei Bedarf angepasst.',
+          'Unterschied zwischen flexiblen Lösungen (Bank/ETF) und starren Produkten (Versicherungspolicen).',
+        ],
+      },
+      {
+        heading: 'Gesprächsfragen',
+        lines: [
+          '«Wie wichtig ist dir, dass du deine Lösung später anpassen kannst?»',
+          '«Rechnest du damit, dass sich deine Situation verändern wird?»',
+          '«Möchtest du Spielraum haben oder eine fixe Struktur?»',
+        ],
+      },
+      {
+        heading: 'Ziel des Gesprächs',
+        lines: [
+          'Flexibilität als Mehrwert positionieren.',
+          'Vertrauen schaffen.',
+          'Langfristige Perspektive stärken.',
+        ],
+      },
     ],
+    recognition: {
+      title: 'Was Flexibilität bedeutet',
+      items: [
+        'Deine Situation kann sich ändern.',
+        'Gute Lösungen passen sich an.',
+        'Anpassungen sollten möglich sein.',
+        'Flexibilität gibt dir Kontrolle.',
+      ],
+    },
+    resolvedConfirmation: 'Hat der Kunde die Flexibilität der Lösung verstanden?',
     steps: [
-      { label: 'Anlagestruktur erklären' },
+      { label: 'Welche Anpassungen sind möglich?' },
+      { label: 'Beitrag erhöhen oder reduzieren' },
+      { label: 'Strategie jederzeit anpassen' },
+      { label: 'Was passiert bei Lebensveränderungen?' },
     ],
   },
   'flex-3': {
