@@ -1,29 +1,70 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Eye, EyeOff } from 'lucide-react';
 import { useMonteCarloSimulation, SCENARIOS, type ScenarioKey } from './useMonteCarloSimulation';
 import { ScenarioSelector } from './ScenarioSelector';
 import { SimulationChart } from './SimulationChart';
+import { SourcesBlock } from './SourcesBlock';
 
 interface Props {
   mode: 'internal' | 'public';
 }
 
+const PRIVATE_MODE_KEY = 'rendite-risiko-private-mode';
+
 export function RenditeRisikoTool({ mode }: Props) {
   const [years, setYears] = useState(10);
   const [scenarioKey, setScenarioKey] = useState<ScenarioKey>('realistic');
+  const [isPrivateMode, setIsPrivateMode] = useState(() => {
+    try {
+      return localStorage.getItem(PRIVATE_MODE_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(PRIVATE_MODE_KEY, String(isPrivateMode));
+    } catch { /* ignore */ }
+  }, [isPrivateMode]);
   const sim = useMonteCarloSimulation(years, scenarioKey);
 
   return (
     <div className="space-y-6">
-      {/* Title */}
-      <div>
-        <h2 className="text-xl font-semibold text-foreground">
-          Risiko- und Renditesimulation
-        </h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Entwicklung von Verlustwahrscheinlichkeit und Renditechancen über die Zeit
-        </p>
+      {/* Title + Private Mode Toggle */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-semibold text-foreground">
+            Risiko- und Renditesimulation
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Entwicklung von Verlustwahrscheinlichkeit und Renditechancen über die Zeit
+          </p>
+        </div>
+
+        {mode === 'internal' && (
+          <div className="flex items-center gap-2 shrink-0 pt-1">
+            <Label
+              htmlFor="private-mode"
+              className="text-xs text-muted-foreground flex items-center gap-1.5 cursor-pointer"
+            >
+              {isPrivateMode ? (
+                <><EyeOff className="h-3.5 w-3.5" /> Privatmodus</>
+              ) : (
+                <><Eye className="h-3.5 w-3.5" /> Öffentlich</>
+              )}
+            </Label>
+            <Switch
+              id="private-mode"
+              checked={isPrivateMode}
+              onCheckedChange={setIsPrivateMode}
+            />
+          </div>
+        )}
       </div>
 
       {/* Scenario Selector */}
@@ -155,20 +196,8 @@ export function RenditeRisikoTool({ mode }: Props) {
         </CardContent>
       </Card>
 
-      {/* Quellen */}
-      <Card>
-        <CardContent className="p-6 space-y-2">
-          <h3 className="text-sm font-semibold text-foreground">
-            Quellen &amp; Grundlagen
-          </h3>
-          <ul className="text-xs text-muted-foreground space-y-1 leading-relaxed">
-            <li>• UBS Global Investment Returns Yearbook (Dimson, Marsh, Staunton)</li>
-            <li>• MSCI World Index – Langfristige Renditekennzahlen</li>
-            <li>• Gerd Kommer – «Souverän investieren mit Indexfonds und ETFs»</li>
-            <li>• Credit Suisse Global Investment Returns Yearbook</li>
-          </ul>
-        </CardContent>
-      </Card>
+      {/* Quellen – only in public mode */}
+      {!isPrivateMode && <SourcesBlock />}
     </div>
   );
 }
