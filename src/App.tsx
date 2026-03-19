@@ -92,6 +92,7 @@ function App() {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <CaseStudyProvider>
           <AuthProvider>
             <Routes>
               {/* Public routes (no auth) */}
