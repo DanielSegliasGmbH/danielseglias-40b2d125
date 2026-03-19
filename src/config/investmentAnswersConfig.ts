@@ -262,16 +262,68 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
   // ── Rendite & Entwicklung ──
   'return-1': {
     tileId: 'return-1',
-    explanation: [
-      'Globaler Aktienmarkt: historisch ca. 7–8% p.a. nominal (vor Inflation).',
-      'Real (nach Inflation): ca. 5–6% p.a.',
-      'Keine Garantie – aber statistisch robuste Langfristerwartung.',
+    explanation: [],
+    storyline: [
+      {
+        heading: 'Einstieg',
+        lines: [
+          'Die meisten unterschätzen nicht die Rendite – sondern die Zeit.',
+          'Es geht nicht darum, schnell viel zu gewinnen, sondern langfristig sinnvoll zu wachsen.',
+        ],
+      },
+      {
+        heading: 'Kernbotschaft',
+        lines: [
+          'Rendite ist eine Erwartung, kein Versprechen.',
+          'Zeit ist der wichtigste Hebel – der Zinseszins entfaltet seine Wirkung über Jahre.',
+          'Struktur (Kosten, Diversifikation) entscheidet stark über das Endergebnis.',
+        ],
+      },
+      {
+        heading: 'Erklärung',
+        lines: [
+          'Globaler Aktienmarkt: historisch ca. 7–8 % p.a. nominal (vor Inflation).',
+          'Real (nach Inflation): ca. 5–6 % p.a. – keine Garantie, aber statistisch robust.',
+          'Kurzfristige Schwankungen sind normal – langfristig zeigt der Trend nach oben.',
+          'Regelmässige Einzahlungen glätten das Risiko (Cost Averaging).',
+        ],
+      },
+      {
+        heading: 'Gesprächsfragen',
+        lines: [
+          '«Was wäre für dich ein gutes Ergebnis in 20–30 Jahren?»',
+          '«Ist dir Sicherheit wichtiger oder Wachstum?»',
+          '«Hast du schon einmal gesehen, wie sich Geld über Zeit entwickelt?»',
+        ],
+      },
+      {
+        heading: 'Ziel des Gesprächs',
+        lines: [
+          'Realistische Erwartung setzen – keine unrealistischen Versprechen.',
+          'Motivation erzeugen durch konkrete Beispiele.',
+          'Klarheit schaffen: gute Entscheidungen wirken langfristig.',
+        ],
+      },
     ],
+    recognition: {
+      title: 'Was bei Rendite entscheidend ist',
+      items: [
+        'Rendite entsteht über Zeit, nicht kurzfristig.',
+        'Schwankungen gehören dazu.',
+        'Struktur und Kosten beeinflussen das Ergebnis stark.',
+        'Entscheidend ist, was langfristig bei dir ankommt.',
+      ],
+    },
+    resolvedConfirmation: 'Hat der Kunde eine realistische Renditeerwartung und versteht den Zeithorizont?',
     steps: [
-      { label: 'Renditesimulation starten', toolSlug: 'rendite-risiko-simulation' },
+      { label: 'Entwicklung über Zeit anschauen', toolSlug: 'rendite-risiko-simulation' },
+      { label: 'Unterschied zwischen Sparen und Investieren sehen' },
+      { label: 'Best- / Worst-Case vergleichen', toolSlug: 'rendite-risiko-simulation' },
+      { label: 'Meine mögliche Entwicklung berechnen', toolSlug: 'rendite-risiko-simulation' },
     ],
     sources: [
       { title: 'MSCI World Factsheet', url: 'https://www.msci.com/documents/10199/178e6643-6ae6-47b9-82be-e1fc565ededb' },
+      { title: 'UBS Global Investment Returns Yearbook', url: 'https://www.ubs.com/global/en/investment-bank/in-focus/2024/global-investment-returns-yearbook.html' },
     ],
   },
   'return-2': {
