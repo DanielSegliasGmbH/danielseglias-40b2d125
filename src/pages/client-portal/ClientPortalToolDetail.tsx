@@ -11,6 +11,7 @@ import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool'
 import VorsorgecheckTool from '@/components/tools/vorsorgecheck/VorsorgecheckTool';
 import VvgLeistungsvergleichTool from '@/components/tools/vvg-leistungsvergleich/VvgLeistungsvergleichTool';
 import { RenditeRisikoTool } from '@/components/tools/rendite-risiko/RenditeRisikoTool';
+import { CaseStudyGeneratorTool } from '@/components/tools/case-study-generator/CaseStudyGeneratorTool';
 
 const iconMap: Record<string, LucideIcon> = {
   'calculator': Calculator,
@@ -57,6 +58,8 @@ export default function ClientPortalToolDetail() {
         return <VvgLeistungsvergleichTool />;
       case 'rendite-risiko-simulation':
         return <RenditeRisikoTool mode="internal" />;
+      case 'case-study-generator':
+        return <CaseStudyGeneratorTool />;
       default:
         return (
           <Card>

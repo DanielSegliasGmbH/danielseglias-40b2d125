@@ -15,6 +15,7 @@ import { useUpdateTool, Tool } from '@/hooks/useTools';
 import { toast } from 'sonner';
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
 import { RenditeRisikoTool } from '@/components/tools/rendite-risiko/RenditeRisikoTool';
+import { CaseStudyGeneratorTool } from '@/components/tools/case-study-generator/CaseStudyGeneratorTool';
 
 // Icon mapping
 const iconMap: Record<string, LucideIcon> = {
@@ -103,6 +104,8 @@ export default function AdminToolDetail() {
         return <FinanzcheckTool mode="internal" />;
       case 'rendite-risiko-simulation':
         return <RenditeRisikoTool mode="internal" />;
+      case 'case-study-generator':
+        return <CaseStudyGeneratorTool />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">
