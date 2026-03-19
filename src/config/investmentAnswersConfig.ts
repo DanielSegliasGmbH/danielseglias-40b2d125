@@ -605,13 +605,64 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
   },
   'return-3': {
     tileId: 'return-3',
-    explanation: [
-      'Schweizer Inflation historisch ca. 1–2% p.a.',
-      'Auf dem Sparkonto verliert Geld real an Wert.',
-      'Aktienanlage ist einer der wenigen Wege, die Kaufkraft langfristig zu erhalten.',
+    explanation: [],
+    storyline: [
+      {
+        heading: 'Einstieg',
+        lines: [
+          'Ein Thema, das viele unterschätzen – weil man es nicht direkt sieht.',
+          'Inflation passiert leise – aber konstant.',
+        ],
+      },
+      {
+        heading: 'Kernbotschaft',
+        lines: [
+          'Geld verliert über Zeit an Kaufkraft.',
+          'Scheinbare Sicherheit kann real Verlust bedeuten.',
+          'Wachstum ist notwendig, um Kaufkraft zu erhalten.',
+        ],
+      },
+      {
+        heading: 'Erklärung',
+        lines: [
+          'Schweizer Inflation historisch ca. 1–2 % p.a.',
+          'Unterschied: nominaler Geldwert (bleibt gleich) vs. reale Kaufkraft (sinkt).',
+          'Beispiel: CHF 100\'000 sind bei 2 % Inflation in 20 Jahren nur noch ca. CHF 67\'000 wert.',
+          'Auf dem Sparkonto verliert Geld real an Wert – Aktienanlage ist einer der wenigen Wege, die Kaufkraft zu erhalten.',
+        ],
+      },
+      {
+        heading: 'Gesprächsfragen',
+        lines: [
+          '«Hast du dir schon einmal überlegt, was dein Geld in 20 Jahren noch wert ist?»',
+          '«Ist dir wichtiger, dass dein Geld gleich bleibt oder dass es seine Kaufkraft behält?»',
+          '«War dir bewusst, dass Stillstand real Verlust bedeuten kann?»',
+        ],
+      },
+      {
+        heading: 'Ziel des Gesprächs',
+        lines: [
+          'Unsichtbares Risiko sichtbar machen.',
+          'Verständnis schaffen: Inflation ist ein stiller Wertverlust.',
+          'Motivation für sinnvolle Struktur erzeugen.',
+        ],
+      },
     ],
+    recognition: {
+      title: 'Was Inflation bedeutet',
+      items: [
+        'Preise steigen über Zeit.',
+        'Geld verliert an Kaufkraft.',
+        'Stillstand kann real Verlust sein.',
+        'Wachstum schützt langfristig.',
+      ],
+    },
+    resolvedConfirmation: 'Hat der Kunde den Einfluss von Inflation verstanden?',
     steps: [
-      { label: 'Inflationseffekt visualisieren' },
+      { label: 'Kaufkraftverlust über Zeit sehen' },
+      { label: 'Unterschied zwischen nominal und real verstehen' },
+      { label: 'Beispiel: Geld heute vs. in Zukunft' },
+      { label: 'Warum Stillstand ein Risiko ist' },
     ],
   },
 
