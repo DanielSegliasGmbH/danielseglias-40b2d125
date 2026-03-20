@@ -61,6 +61,8 @@ export default function ClientPortalToolDetail() {
         return <RenditeRisikoTool mode="internal" />;
       case 'case-study-generator':
         return <CaseStudyGeneratorTool />;
+      case 'vergleichsrechner-3a':
+        return <Vergleichsrechner3aTool />;
       default:
         return (
           <Card>
