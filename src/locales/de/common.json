@@ -826,6 +826,10 @@
     "wahrscheinlichkeitsrechner": {
       "name": "Wahrscheinlichkeits-Rechner",
       "description": "Finde heraus, wie wahrscheinlich es ist, dass du dein finanzielles Ziel erreichst."
+    },
+    "zufallsRealitaetsCheck": {
+      "name": "Zufalls-Realitäts-Check",
+      "description": "Finde heraus, wie wahrscheinlich es ist, dass du das Thema Finanzen wirklich richtig angehst."
     }
   },
   "adminLeads": {

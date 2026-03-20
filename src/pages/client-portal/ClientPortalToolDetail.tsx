@@ -87,6 +87,8 @@ export default function ClientPortalToolDetail() {
         return <KostenImpactSimulatorTool mode="internal" />;
       case 'wahrscheinlichkeitsrechner':
         return <WahrscheinlichkeitsrechnerTool mode="internal" />;
+      case 'zufalls-realitaets-check':
+        return <ZufallsRealitaetsCheckTool mode="internal" />;
       default:
         return (
           <Card>

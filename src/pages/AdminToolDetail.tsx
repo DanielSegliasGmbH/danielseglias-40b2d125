@@ -116,6 +116,8 @@ export default function AdminToolDetail() {
         return <KostenImpactSimulatorTool mode="internal" />;
       case 'wahrscheinlichkeitsrechner':
         return <WahrscheinlichkeitsrechnerTool mode="internal" />;
+      case 'zufalls-realitaets-check':
+        return <ZufallsRealitaetsCheckTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">
