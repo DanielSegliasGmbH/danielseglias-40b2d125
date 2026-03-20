@@ -23,6 +23,7 @@ import { ZufallsRealitaetsCheckTool } from '@/components/tools/zufalls-realitaet
 import { RecoveryAnalyseTool } from '@/components/tools/recovery-analyse/RecoveryAnalyseTool';
 import { SicherheitsvergleichTool } from '@/components/tools/sicherheitsvergleich/SicherheitsvergleichTool';
 import { ZeitverlustSimulatorTool } from '@/components/tools/zeitverlust-simulator/ZeitverlustSimulatorTool';
+import { BeratungsreiseTool } from '@/components/tools/beratungsreise/BeratungsreiseTool';
 
 // Icon mapping
 const iconMap: Record<string, LucideIcon> = {
