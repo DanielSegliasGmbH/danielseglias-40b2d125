@@ -45,7 +45,7 @@ import ClientPortalToolDetail from "./pages/client-portal/ClientPortalToolDetail
 // Insurance Consulting Pages
 import InsuranceConsultingStart from "./pages/insurance-consulting/InsuranceConsultingStart";
 import InsuranceConsultingFocus from "./pages/insurance-consulting/InsuranceConsultingFocus";
-// Legacy topics redirect
+import InsuranceConsultingIntroduction from "./pages/insurance-consulting/InsuranceConsultingIntroduction";
 import InsuranceConsultingCompany from "./pages/insurance-consulting/InsuranceConsultingCompany";
 import InsuranceConsultingAdvisorInfo from "./pages/insurance-consulting/InsuranceConsultingAdvisorInfo";
 import InsuranceConsultingCustomerInfo from "./pages/insurance-consulting/InsuranceConsultingCustomerInfo";
