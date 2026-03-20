@@ -18,6 +18,7 @@ import { TragbarkeitsrechnerTool } from '@/components/tools/tragbarkeitsrechner/
 import { Verlustrechner3aTool } from '@/components/tools/verlustrechner-3a/Verlustrechner3aTool';
 import { TransparenzCheckTool } from '@/components/tools/transparenz-check/TransparenzCheckTool';
 import { KostenaufschluesselungTool } from '@/components/tools/kostenaufschluesselung/KostenaufschluesselungTool';
+import { KostenImpactSimulatorTool } from '@/components/tools/kosten-impact-simulator/KostenImpactSimulatorTool';
 
 const iconMap: Record<string, LucideIcon> = {
   'calculator': Calculator,
