@@ -22,6 +22,7 @@ import { KostenImpactSimulatorTool } from '@/components/tools/kosten-impact-simu
 import { WahrscheinlichkeitsrechnerTool } from '@/components/tools/wahrscheinlichkeitsrechner/WahrscheinlichkeitsrechnerTool';
 import { ZufallsRealitaetsCheckTool } from '@/components/tools/zufalls-realitaets-check/ZufallsRealitaetsCheckTool';
 import { RecoveryAnalyseTool } from '@/components/tools/recovery-analyse/RecoveryAnalyseTool';
+import { SicherheitsvergleichTool } from '@/components/tools/sicherheitsvergleich/SicherheitsvergleichTool';
 
 const iconMap: Record<string, LucideIcon> = {
   'calculator': Calculator,
