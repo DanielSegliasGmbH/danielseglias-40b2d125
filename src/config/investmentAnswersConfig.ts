@@ -291,14 +291,55 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
   },
   'costs-3': {
     tileId: 'costs-3',
-    explanation: [
-      'Beispiel: 1% höhere Gebühren reduzieren das Endvermögen nach 30 Jahren um ca. 25%.',
-      'Kosteneffekt wird durch den Zinseszins über die Zeit verstärkt.',
-      'Visualisierung im Rendite-Risiko-Tool möglich.',
+    explanation: [],
+    storyline: [
+      {
+        heading: 'Einstieg',
+        lines: [
+          'Auf den ersten Blick wirken Kosten oft klein – 1% klingt nicht nach viel.',
+        ],
+      },
+      {
+        heading: 'Kernbotschaft',
+        lines: [
+          'Über Zeit wirken Kosten wie ein stiller Gegenspieler.',
+          'Sie reduzieren nicht nur deine Rendite – sie reduzieren auch den Zinseszins auf diese Rendite.',
+        ],
+      },
+      {
+        heading: 'Erklärung',
+        lines: [
+          'Kosten wirken jährlich – nicht einmalig.',
+          'Sie reduzieren die Rendite direkt.',
+          'Und sie wirken exponentiell: Weniger Rendite → weniger Zinseszins → weniger Endkapital.',
+        ],
+      },
+      {
+        heading: 'Aha-Moment',
+        lines: [
+          'Ein Unterschied von 1–2% kann über mehrere Jahrzehnte mehrere hunderttausend Franken ausmachen.',
+          'Das klingt abstrakt – aber genau das zeigen die Zahlen.',
+        ],
+      },
+      {
+        heading: 'Shift',
+        lines: [
+          'Die entscheidende Frage ist nicht, ob du Kosten hast – sondern wie stark sie dein Ergebnis beeinflussen.',
+        ],
+      },
+      {
+        heading: 'Interner Leitfaden',
+        lines: [
+          '🎯 Ruhig erklären – nicht überfordern.',
+          '📊 Visuell arbeiten – Kosten-Impact-Simulator nutzen.',
+          '💡 Kunde soll selbst erkennen, nicht belehrt werden.',
+          '📦 Möglicher Angebotsbaustein: Optimierung.',
+        ],
+      },
     ],
     steps: [
-      { label: 'Kosten-Impact simulieren', toolSlug: 'kosten-impact-simulator' },
-      { label: 'Rendite- & Risikosimulation öffnen', toolSlug: 'rendite-risiko-simulation' },
+      { label: 'Unterschied berechnen', toolSlug: 'kosten-impact-simulator' },
+      { label: '3a Vergleichsrechner öffnen', toolSlug: 'vergleichsrechner-3a' },
     ],
     sources: [
       { title: 'Gerd Kommer – Souverän investieren', url: 'https://gerd-kommer.de/buecher/' },
