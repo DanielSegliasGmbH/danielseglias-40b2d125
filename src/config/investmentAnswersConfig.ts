@@ -120,14 +120,60 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
   },
   'trust-3': {
     tileId: 'trust-3',
-    explanation: [
-      'Ganzheitlicher Ansatz: Vorsorge, Anlage und Versicherung aus einer Hand.',
-      'Evidenzbasierte Strategie statt Bauchgefühl.',
-      'Digitale Tools für Transparenz und Nachvollziehbarkeit.',
+    explanation: [],
+    storyline: [
+      {
+        heading: 'Einstieg',
+        lines: [
+          'Die meisten Unterschiede sind nicht sofort sichtbar.',
+          'Auf den ersten Blick wirken viele Anbieter ähnlich – der Unterschied zeigt sich meist erst im Detail.',
+        ],
+      },
+      {
+        heading: 'Kernbotschaft',
+        lines: [
+          'Der grösste Unterschied liegt nicht im Produkt – sondern in der Art, wie beraten wird.',
+        ],
+      },
+      {
+        heading: 'Klassische Beratung',
+        lines: [
+          'Fokus auf Produktverkauf.',
+          'Provisionen im Hintergrund.',
+          'Wenig Transparenz bei Kosten und Entscheidungen.',
+          'Anbieter und Abschluss stehen im Mittelpunkt.',
+        ],
+      },
+      {
+        heading: 'Mein Ansatz',
+        lines: [
+          'Fokus auf Verständnis – du sollst nachvollziehen können, warum etwas empfohlen wird.',
+          'Transparente Struktur – Kosten, Vergütung und Prozess sind offen.',
+          'Klare Aufklärung – keine Verkaufsrhetorik, sondern ehrliche Einordnung.',
+          'Du stehst im Mittelpunkt – nicht ein Produkt.',
+        ],
+      },
+      {
+        heading: 'Überleitung',
+        lines: [
+          'Am Ende geht es nicht darum, ob etwas gut klingt – sondern ob du es wirklich verstehst und dahinter stehen kannst.',
+        ],
+      },
     ],
+    recognition: {
+      title: 'Woran du den Unterschied erkennst',
+      items: [
+        'Du verstehst, warum etwas empfohlen wird.',
+        'Es gibt keine versteckten Interessen.',
+        'Du fühlst dich aufgeklärt, nicht überredet.',
+        'Die Beratung dreht sich um dich, nicht um ein Produkt.',
+      ],
+    },
+    resolvedConfirmation: 'Hat der Kunde den Unterschied klar erkannt?',
     steps: [
+      { label: 'Unterschiede sehen', toolSlug: 'transparenz-check' },
       { label: 'Beratungsphilosophie erklären' },
-      { label: 'Vergleich mit Bankberatung' },
+      { label: 'Vergleich mit klassischer Beratung' },
     ],
   },
 

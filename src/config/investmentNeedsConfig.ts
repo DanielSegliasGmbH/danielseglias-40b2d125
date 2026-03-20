@@ -45,7 +45,7 @@ export const needsCategories: NeedsCategory[] = [
     tiles: [
       { id: 'trust-1', title: 'Kann ich dir wirklich vertrauen?', description: 'Vertrauen ist in diesem Bereich extrem wichtig. Was brauchst du, um sagen zu können: Ich kann dir wirklich vertrauen?', category: 'trust', linkedTools: ['transparenz-check'], linkedProducts: ['beratung', 'transparenz'] },
       { id: 'trust-2', title: 'Wo ist der Haken?', description: 'Skepsis gegenüber Finanzprodukten und Beratung', category: 'trust', linkedTools: [], linkedProducts: ['transparenz', 'analyse'] },
-      { id: 'trust-3', title: 'Was unterscheidet dich von anderen?', description: 'Alleinstellungsmerkmale der Beratung', category: 'trust', linkedTools: [], linkedProducts: ['beratung'] },
+      { id: 'trust-3', title: 'Was unterscheidet dich von anderen?', description: 'Auf den ersten Blick wirken viele Anbieter ähnlich. Der Unterschied zeigt sich meist erst im Detail.', category: 'trust', linkedTools: ['transparenz-check'], linkedProducts: ['analyse', 'begleitung'] },
     ],
   },
   {
