@@ -37,6 +37,7 @@ export function InflationsrechnerTool() {
   const activeAmount = mode === 'future' ? amount : pastAmount;
 
   return (
+    <PdfExportWrapper toolName="Inflationsrechner">
     <div className="space-y-6">
       {/* Mode Tabs */}
       <Tabs value={mode} onValueChange={(v) => setMode(v as 'future' | 'past' | 'simulation')}>

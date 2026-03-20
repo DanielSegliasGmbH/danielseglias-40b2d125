@@ -100,5 +100,6 @@ export function FinanzcheckTool({ mode }: Props) {
         <FinanzcheckStep3 result={result} onBack={goBack} onReset={reset} />
       )}
     </div>
+    </PdfExportWrapper>
   );
 }
