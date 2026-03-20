@@ -39,7 +39,7 @@ export function LinkCustomerDialog({ userId, currentCustomerId }: LinkCustomerDi
     setLoading(true);
     try {
       await linkCustomer.mutateAsync({ userId, customerId: selectedCustomerId });
-      toast.success(t('userManagement.clientLinked'));
+      toast.success(t('userManagement.customerLinked'));
       setOpen(false);
     } catch (error: any) {
       toast.error(`${t('userManagement.clientLinkError')}: ${error.message}`);
