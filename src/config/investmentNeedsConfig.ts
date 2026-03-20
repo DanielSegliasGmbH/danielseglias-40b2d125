@@ -71,7 +71,7 @@ export const needsCategories: NeedsCategory[] = [
     title: 'Rendite & Entwicklung',
     tiles: [
       { id: 'return-1', title: 'Wie viel Rendite ist realistisch?', description: 'Unrealistische Erwartungen erkennen und Vertrauen in eine rationale, fundierte Strategie aufbauen', category: 'rendite', linkedTools: ['rendite-risiko-simulation', 'kosten-impact-simulator'], linkedProducts: ['strategie', 'optimierung'] },
-      { id: 'return-2', title: 'Wie entwickelt sich mein Geld langfristig?', description: 'Zinseszins und Vermögensaufbau', category: 'rendite', linkedTools: ['vergleichsrechner-3a'], linkedProducts: ['strategie'] },
+      { id: 'return-2', title: 'Wie entwickelt sich mein Geld langfristig?', description: 'Erkennen, dass Vermögen durch Dauer entsteht – nicht durch Timing', category: 'langfristigkeit', linkedTools: ['kosten-impact-simulator', 'vergleichsrechner-3a', 'zeitverlust-simulator'], linkedProducts: ['strategie', 'begleitung'] },
       { id: 'return-3', title: 'Wie wirkt sich Inflation aus?', description: 'Kaufkraftverlust und reale Rendite', category: 'rendite', linkedTools: ['inflationsrechner'], linkedProducts: ['analyse', 'strategie'] },
     ],
   },
