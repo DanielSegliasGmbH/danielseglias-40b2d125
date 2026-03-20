@@ -256,5 +256,6 @@ export function BeratungsreiseTool({ mode = 'internal' }: BeratungsreiseToolProp
         </div>
       )}
     </div>
+    </PdfExportWrapper>
   );
 }

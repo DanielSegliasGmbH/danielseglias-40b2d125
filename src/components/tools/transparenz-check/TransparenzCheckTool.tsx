@@ -132,6 +132,7 @@ export function TransparenzCheckTool({ mode = 'public' }: Props) {
   /* ══════════════════ ADMIN VIEW ══════════════════ */
   if (isAdmin) {
     return (
+      <PdfExportWrapper toolName="Transparenz-Check">
       <div className="space-y-6">
         {/* Registration links */}
         <Section icon={ShieldCheck} title="Offizielle Nachweise" delay={0}>
