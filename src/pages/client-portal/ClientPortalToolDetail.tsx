@@ -81,6 +81,8 @@ export default function ClientPortalToolDetail() {
         return <TransparenzCheckTool mode="internal" />;
       case 'kostenaufschluesselung':
         return <KostenaufschluesselungTool mode="internal" />;
+      case 'kosten-impact-simulator':
+        return <KostenImpactSimulatorTool mode="internal" />;
       default:
         return (
           <Card>
