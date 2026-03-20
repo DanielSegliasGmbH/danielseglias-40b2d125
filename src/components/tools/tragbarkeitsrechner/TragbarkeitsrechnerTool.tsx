@@ -124,6 +124,7 @@ export function TragbarkeitsrechnerTool({ mode = 'internal' }: Props) {
   const result = useMemo(() => calculate(inputs), [inputs]);
 
   return (
+    <PdfExportWrapper toolName="Tragbarkeitsrechner" hideExport={mode === 'public'}>
     <div className="space-y-8">
       {/* Header */}
       <div className="space-y-2">
