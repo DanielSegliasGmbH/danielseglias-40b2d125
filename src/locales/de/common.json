@@ -818,6 +818,10 @@
     "kostenaufschluesselung": {
       "name": "Kostenaufschlüsselung",
       "description": "Finde heraus, wo deine Kosten wirklich entstehen – sichtbar und unsichtbar."
+    },
+    "kostenImpactSimulator": {
+      "name": "Kosten-Impact-Simulator",
+      "description": "Vergleiche zwei Szenarien und erkenne, wie sich Kostenunterschiede langfristig auswirken."
     }
   },
   "adminLeads": {
