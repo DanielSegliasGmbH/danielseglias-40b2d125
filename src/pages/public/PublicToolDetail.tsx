@@ -152,6 +152,9 @@ export default function PublicToolDetail() {
                 <div className="mb-8">
                   <KostenaufschluesselungTool mode="public" />
                 </div>
+              ) : slug === 'kosten-impact-simulator' ? (
+                <div className="mb-8">
+                  <KostenImpactSimulatorTool mode="public" />
               ) : publicPage.content ? (
                 <Card className="mb-8">
                   <CardContent className="py-6 prose prose-neutral dark:prose-invert max-w-none">
