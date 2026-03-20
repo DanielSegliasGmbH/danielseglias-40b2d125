@@ -140,74 +140,77 @@ export function InflationsrechnerTool() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* Simulation Tab */}
+        <TabsContent value="simulation" className="mt-4">
+          <SimulationWalkway />
+        </TabsContent>
       </Tabs>
 
-      {/* Result Hero */}
-      <Card className="border-primary/20 bg-primary/[0.03]">
-        <CardContent className="py-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <p className="text-sm text-muted-foreground">Kaufkraft von CHF {formatCHF(activeAmount)}</p>
-              <p className="text-3xl font-bold text-foreground tabular-nums">
-                CHF {formatCHF(activeResult.endValue)}
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="text-right">
-                <p className="text-sm text-muted-foreground">Kaufkraftverlust</p>
-                <p className="text-2xl font-bold text-destructive tabular-nums">
-                  –{activeResult.lossPercent}%
-                </p>
+      {/* Result Hero – only for future/past */}
+      {mode !== 'simulation' && (
+        <>
+          <Card className="border-primary/20 bg-primary/[0.03]">
+            <CardContent className="py-6">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Kaufkraft von CHF {formatCHF(activeAmount)}</p>
+                  <p className="text-3xl font-bold text-foreground tabular-nums">
+                    CHF {formatCHF(activeResult.endValue)}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="text-right">
+                    <p className="text-sm text-muted-foreground">Kaufkraftverlust</p>
+                    <p className="text-2xl font-bold text-destructive tabular-nums">
+                      –{activeResult.lossPercent}%
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
 
-      {/* Chart */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg">Kaufkraftentwicklung</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <InflationChart data={activeResult.points} mode={mode} />
-        </CardContent>
-      </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Kaufkraftentwicklung</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <InflationChart data={activeResult.points} mode={mode as 'future' | 'past'} />
+            </CardContent>
+          </Card>
 
-      {/* Life Examples – future mode only */}
-      {mode === 'future' && (
-        <div className="space-y-3">
-          <h3 className="text-lg font-semibold text-foreground">Was bedeutet das im Alltag?</h3>
-          <p className="text-sm text-muted-foreground">
-            So verändern sich Alltagspreise bei {rate}% Inflation über {years} Jahre:
-          </p>
-          <LifeExamples years={years} rate={rate} />
-        </div>
-      )}
-
-      {/* Walkway visualization */}
-      <InflationWalkway />
-
-      {/* Insight */}
-      <Card className="bg-muted/40 border-muted">
-        <CardContent className="py-5 flex gap-3">
-          <Info className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-          <div className="space-y-2 text-sm text-muted-foreground">
-            <p className="font-medium text-foreground">
-              Inflation wirkt langsam – aber konstant.
-            </p>
-            <p>
-              Das bedeutet: Dein Geld verliert jedes Jahr an Wert, auch wenn du es nicht aktiv bemerkst.
-              Nach 30 Jahren verliert dein Geld bei 2% Inflation rund 45% seiner Kaufkraft.
-            </p>
-            {mode === 'past' && (
-              <p className="text-xs mt-2">
-                Quelle: Bundesamt für Statistik (BFS) – Landesindex der Konsumentenpreise (LIK)
+          {mode === 'future' && (
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-foreground">Was bedeutet das im Alltag?</h3>
+              <p className="text-sm text-muted-foreground">
+                So verändern sich Alltagspreise bei {rate}% Inflation über {years} Jahre:
               </p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+              <LifeExamples years={years} rate={rate} />
+            </div>
+          )}
+
+          <Card className="bg-muted/40 border-muted">
+            <CardContent className="py-5 flex gap-3">
+              <Info className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p className="font-medium text-foreground">
+                  Inflation wirkt langsam – aber konstant.
+                </p>
+                <p>
+                  Das bedeutet: Dein Geld verliert jedes Jahr an Wert, auch wenn du es nicht aktiv bemerkst.
+                  Nach 30 Jahren verliert dein Geld bei 2% Inflation rund 45% seiner Kaufkraft.
+                </p>
+                {mode === 'past' && (
+                  <p className="text-xs mt-2">
+                    Quelle: Bundesamt für Statistik (BFS) – Landesindex der Konsumentenpreise (LIK)
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </>
+      )}
     </div>
   );
 }
