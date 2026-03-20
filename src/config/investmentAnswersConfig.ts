@@ -103,7 +103,7 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
     steps: [
       { label: 'Alles überprüfen', toolSlug: 'transparenz-check' },
       { label: 'Firmenprofil zeigen', externalUrl: 'https://danielseglias.ch' },
-      { label: 'Beratungsprozess erklären' },
+      { label: 'Beratungsprozess erklären', toolSlug: 'beratungsreise' },
     ],
   },
   'trust-2': {
