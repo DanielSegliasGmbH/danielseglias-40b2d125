@@ -67,6 +67,8 @@ import InvestmentConsultingSummary from "./pages/investment-consulting/Investmen
 import InvestmentConsultingOffer from "./pages/investment-consulting/InvestmentConsultingOffer";
 import InvestmentConsultingPresentation from "./pages/investment-consulting/InvestmentConsultingPresentation";
 import { InvestmentConsultationProvider } from "./hooks/useInvestmentConsultationState";
+import ConsultationPresentationPage from "./pages/presentation/ConsultationPresentationPage";
+import { ViewModeProvider } from "./hooks/useViewMode";
 
 // Public Pages (no auth required)
 import PublicLanding from "./pages/public/PublicLanding";
