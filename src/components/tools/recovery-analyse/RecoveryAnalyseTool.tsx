@@ -32,6 +32,7 @@ export function RecoveryAnalyseTool({ mode = 'internal' }: Props) {
   const formatValue = (v: number) => v.toLocaleString('de-CH', { maximumFractionDigits: 0 });
 
   return (
+    <PdfExportWrapper toolName="Recovery-Analyse" hideExport={mode === 'public'}>
     <div className="space-y-8">
       {/* Header */}
       <div>
