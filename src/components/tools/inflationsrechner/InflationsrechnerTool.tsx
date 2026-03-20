@@ -7,6 +7,7 @@ import { Slider } from '@/components/ui/slider';
 import { TrendingDown, Calendar, Info } from 'lucide-react';
 import { InflationChart } from './InflationChart';
 import { LifeExamples } from './LifeExamples';
+import { InflationWalkway } from './InflationWalkway';
 import {
   calcFutureProjection,
   calcPastProjection,
