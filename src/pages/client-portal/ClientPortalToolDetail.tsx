@@ -78,6 +78,8 @@ export default function ClientPortalToolDetail() {
         return <Verlustrechner3aTool />;
       case 'transparenz-check':
         return <TransparenzCheckTool mode="internal" />;
+      case 'kostenaufschluesselung':
+        return <KostenaufschluesselungTool mode="internal" />;
       default:
         return (
           <Card>

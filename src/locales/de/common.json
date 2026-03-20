@@ -896,4 +896,8 @@
   "common": {
     "contentFollows": "Inhalt folgt"
   }
-}
+    },
+    "kostenaufschluesselung": {
+      "name": "Kostenaufschlüsselung",
+      "description": "Finde heraus, wo deine Kosten wirklich entstehen – sichtbar und unsichtbar."
+    }

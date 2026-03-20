@@ -107,6 +107,8 @@ export default function AdminToolDetail() {
         return <RenditeRisikoTool mode="internal" />;
       case 'case-study-generator':
         return <CaseStudyGeneratorTool />;
+      case 'kostenaufschluesselung':
+        return <KostenaufschluesselungTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">
