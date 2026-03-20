@@ -15,6 +15,7 @@ import { RenditeRisikoTool } from '@/components/tools/rendite-risiko/RenditeRisi
 import { TragbarkeitsrechnerTool } from '@/components/tools/tragbarkeitsrechner/TragbarkeitsrechnerTool';
 import { Verlustrechner3aTool } from '@/components/tools/verlustrechner-3a/Verlustrechner3aTool';
 import { TransparenzCheckTool } from '@/components/tools/transparenz-check/TransparenzCheckTool';
+import { KostenaufschluesselungTool } from '@/components/tools/kostenaufschluesselung/KostenaufschluesselungTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -145,6 +146,10 @@ export default function PublicToolDetail() {
               ) : slug === 'transparenz-check' ? (
                 <div className="mb-8">
                   <TransparenzCheckTool mode="public" />
+                </div>
+              ) : slug === 'kostenaufschluesselung' ? (
+                <div className="mb-8">
+                  <KostenaufschluesselungTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
