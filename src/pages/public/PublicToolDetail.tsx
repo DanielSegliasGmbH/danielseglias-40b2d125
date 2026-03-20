@@ -14,6 +14,7 @@ import VvgLeistungsvergleichTool from '@/components/tools/vvg-leistungsvergleich
 import { RenditeRisikoTool } from '@/components/tools/rendite-risiko/RenditeRisikoTool';
 import { TragbarkeitsrechnerTool } from '@/components/tools/tragbarkeitsrechner/TragbarkeitsrechnerTool';
 import { Verlustrechner3aTool } from '@/components/tools/verlustrechner-3a/Verlustrechner3aTool';
+import { TransparenzCheckTool } from '@/components/tools/transparenz-check/TransparenzCheckTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
