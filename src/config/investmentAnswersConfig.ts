@@ -115,7 +115,7 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
     ],
     steps: [
       { label: 'Kostenübersicht öffnen' },
-      { label: 'Vertragsbeispiel zeigen' },
+      { label: 'Vertragsbeispiel zeigen', externalUrl: 'https://drive.google.com/file/d/1uHrEHm1ZBDaDbVNMQ88bewaOuu9QXg_5/view?usp=drive_link' },
     ],
   },
   'trust-3': {
