@@ -5,13 +5,16 @@ import { type AdvisorInfoData, DEFAULT_ADVISOR_INFO_DATA } from '@/components/co
 
 export default function InvestmentConsultingAdvisorInfo() {
   const { consultationData, updateData } = useConsultationState('investment');
-  useSectionBroadcast('advisor-info');
+  useSectionBroadcast({ section: 'advisor-info', title: 'Transparenz & Nachweise' });
 
   const advisorData: AdvisorInfoData =
     (consultationData?.additionalData as any)?.advisorInfoData ?? DEFAULT_ADVISOR_INFO_DATA;
 
   const handleChange = (d: AdvisorInfoData) => {
-    updateData({ advisorInfoData: d });
+    updateData((prev) => ({
+      ...prev,
+      additionalData: { ...prev.additionalData, advisorInfoData: d },
+    }));
   };
 
   return <AdvisorInfoPage data={advisorData} onDataChange={handleChange} />;
