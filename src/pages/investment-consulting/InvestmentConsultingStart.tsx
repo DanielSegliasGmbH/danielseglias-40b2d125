@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,19 +8,21 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { PlusCircle, FolderOpen, Clock, FileText, Loader2, Monitor } from 'lucide-react';
 import { useInvestmentConsultationState, SavedInvestmentConsultation } from '@/hooks/useInvestmentConsultationState';
 import { usePresentationBroadcaster } from '@/hooks/usePresentationSync';
+import { StartConsultationDialog } from '@/components/consultation/StartConsultationDialog';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import heroImage from '@/assets/insurance-consulting-hero.jpg';
 
 export default function InvestmentConsultingStart() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
-  const { startNewConsultation, loadConsultation, fetchSavedConsultations, isLoading } = useInvestmentConsultationState();
+  const { createAndStartConsultation, loadConsultation, fetchSavedConsultations, isLoading } = useInvestmentConsultationState();
   const { startPresentation } = usePresentationBroadcaster();
   
   const [savedConsultations, setSavedConsultations] = useState<SavedInvestmentConsultation[]>([]);
   const [isLoadingList, setIsLoadingList] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isStartOpen, setIsStartOpen] = useState(false);
+  const [startWithPresentation, setStartWithPresentation] = useState(false);
 
   const handleOpenDialog = async () => {
     setIsDialogOpen(true);
@@ -31,15 +32,17 @@ export default function InvestmentConsultingStart() {
     setIsLoadingList(false);
   };
 
-  const handleStartNew = (withPresentation = false) => {
-    startNewConsultation();
-    if (withPresentation) {
-      // Small delay to let state settle, then open presentation
-      setTimeout(() => {
-        startPresentation({ currentSection: 'topics' });
-      }, 200);
+  const handleStartNew = async (title: string, customerId?: string) => {
+    const id = await createAndStartConsultation(title, customerId);
+    if (id) {
+      setIsStartOpen(false);
+      if (startWithPresentation) {
+        setTimeout(() => {
+          startPresentation({ currentSection: 'topics' });
+        }, 200);
+      }
+      navigate('/app/investment-consulting/topics');
     }
-    navigate('/app/investment-consulting/topics');
   };
 
   const handleLoadConsultation = async (consultation: SavedInvestmentConsultation) => {
@@ -60,18 +63,21 @@ export default function InvestmentConsultingStart() {
           <div className="max-w-4xl mx-auto">
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">Anlageberatung</h1>
             <p className="text-lg text-muted-foreground mb-8">
-              Starten Sie ein neues Beratungsgespräch oder setzen Sie eine gespeicherte Beratung fort.
+              Starte ein neues Beratungsgespräch oder setze eine gespeicherte Beratung fort.
             </p>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {/* New consultation */}
-              <Card className="border-2 hover:border-primary/50 transition-colors cursor-pointer group" onClick={() => handleStartNew(false)}>
+              <Card
+                className="border-2 hover:border-primary/50 transition-colors cursor-pointer group"
+                onClick={() => { setStartWithPresentation(false); setIsStartOpen(true); }}
+              >
                 <CardHeader>
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                     <PlusCircle className="w-6 h-6 text-primary" />
                   </div>
                   <CardTitle className="text-xl">Neues Gespräch starten</CardTitle>
-                  <CardDescription>Beginnen Sie eine neue Anlageberatung mit einem frischen Ausgangszustand.</CardDescription>
+                  <CardDescription>Beginne eine neue Anlageberatung. Das Gespräch wird automatisch gespeichert.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Button className="w-full" size="lg">
@@ -81,17 +87,17 @@ export default function InvestmentConsultingStart() {
                 </CardContent>
               </Card>
 
-              {/* New consultation WITH presentation */}
+              {/* With presentation */}
               <Card
                 className="border-2 border-primary/30 hover:border-primary transition-colors cursor-pointer group bg-primary/5"
-                onClick={() => handleStartNew(true)}
+                onClick={() => { setStartWithPresentation(true); setIsStartOpen(true); }}
               >
                 <CardHeader>
                   <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mb-4 group-hover:bg-primary/30 transition-colors">
                     <Monitor className="w-6 h-6 text-primary" />
                   </div>
                   <CardTitle className="text-xl">Gespräch mit Präsentation</CardTitle>
-                  <CardDescription>Starten Sie ein Gespräch mit synchronisierter Kundenansicht auf einem zweiten Bildschirm.</CardDescription>
+                  <CardDescription>Starte ein Gespräch mit synchronisierter Kundenansicht auf einem zweiten Bildschirm.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Button className="w-full" size="lg" variant="default">
@@ -110,7 +116,7 @@ export default function InvestmentConsultingStart() {
                         <FolderOpen className="w-6 h-6 text-foreground" />
                       </div>
                       <CardTitle className="text-xl">Gespeicherte Beratung fortführen</CardTitle>
-                      <CardDescription>Laden Sie eine bereits begonnene Beratung und setzen Sie diese fort.</CardDescription>
+                      <CardDescription>Lade eine bereits begonnene Beratung und setze diese fort.</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <Button variant="secondary" className="w-full" size="lg">
@@ -124,7 +130,7 @@ export default function InvestmentConsultingStart() {
                 <DialogContent className="max-w-2xl max-h-[80vh]">
                   <DialogHeader>
                     <DialogTitle>Gespeicherte Beratungen</DialogTitle>
-                    <DialogDescription>Wählen Sie eine Beratung aus, um sie fortzusetzen.</DialogDescription>
+                    <DialogDescription>Wähle eine Beratung aus, um sie fortzusetzen.</DialogDescription>
                   </DialogHeader>
 
                   {isLoadingList ? (
@@ -135,7 +141,7 @@ export default function InvestmentConsultingStart() {
                     <div className="text-center py-12">
                       <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
                       <p className="text-muted-foreground">Keine gespeicherten Beratungen vorhanden.</p>
-                      <Button variant="link" onClick={() => { setIsDialogOpen(false); handleStartNew(false); }}>
+                      <Button variant="link" onClick={() => { setIsDialogOpen(false); setStartWithPresentation(false); setIsStartOpen(true); }}>
                         Neue Beratung starten
                       </Button>
                     </div>
@@ -150,17 +156,17 @@ export default function InvestmentConsultingStart() {
                           >
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
-                                <div className="font-medium">{consultation.label || 'Unbenannte Beratung'}</div>
+                                <div className="font-medium">{consultation.title || consultation.label || 'Unbenannte Beratung'}</div>
                                 <div className="text-sm text-muted-foreground flex items-center gap-4 mt-1">
                                   <span className="flex items-center gap-1">
                                     <Clock className="w-3 h-3" />
                                     {format(new Date(consultation.created_at), 'dd.MM.yyyy HH:mm', { locale: de })}
                                   </span>
-                                  <span className="text-xs font-mono bg-muted px-2 py-0.5 rounded">{consultation.version_key}</span>
                                 </div>
                               </div>
                               <div className="text-xs px-2 py-1 rounded-full bg-muted">
-                                {consultation.status === 'completed' ? 'Abgeschlossen' : consultation.status === 'archived' ? 'Archiviert' : 'Entwurf'}
+                                {consultation.status === 'completed' ? 'Abgeschlossen' :
+                                 consultation.status === 'active' ? 'Aktiv' : 'Entwurf'}
                               </div>
                             </div>
                           </div>
@@ -174,6 +180,14 @@ export default function InvestmentConsultingStart() {
           </div>
         </div>
       </div>
+
+      <StartConsultationDialog
+        open={isStartOpen}
+        onOpenChange={setIsStartOpen}
+        onStart={handleStartNew}
+        isLoading={isLoading}
+        type="investment"
+      />
     </AppLayout>
   );
 }
