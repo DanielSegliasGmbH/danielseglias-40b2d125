@@ -54,7 +54,7 @@ export default function InvestmentConsultingNeeds() {
         ? `${selectedTileIds.length} Themen ausgewählt`
         : 'Welche Themen sind dir besonders wichtig?',
     items: selectedTileNames,
-    extra: { selectedTileIds, productScores },
+    extra: { selectedTileIds } as Partial<import('@/hooks/usePresentationSync').PresentationState>,
   });
 
   // Persist into consultation context
