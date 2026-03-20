@@ -353,5 +353,6 @@ export function TransparenzCheckTool({ mode = 'public' }: Props) {
         </Collapsible>
       </Section>
     </div>
+    </PdfExportWrapper>
   );
 }
