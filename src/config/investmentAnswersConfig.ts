@@ -54,55 +54,56 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
       {
         heading: 'Einstieg',
         lines: [
-          'Eine der wichtigsten Fragen überhaupt – und absolut berechtigt.',
-          'Am Ende geht es nicht nur um Zahlen, sondern darum, ob du dich auf die Person gegenüber verlassen kannst.',
+          'Ich verstehe diese Frage extrem gut – gerade in der Finanzbranche.',
+          'Vertrauen ist hier nicht selbstverständlich, und das ist völlig normal.',
         ],
       },
       {
-        heading: 'Transparenz',
+        heading: 'Kernbotschaft',
         lines: [
-          'Ich zeige dir transparent, wie ich arbeite und wie ich Geld verdiene.',
-          'Keine versteckten Interessen – du sollst jederzeit verstehen, warum wir etwas machen.',
+          'Vertrauen entsteht nicht durch Worte – sondern durch Transparenz.',
+          'Du sollst nichts glauben müssen. Du kannst alles überprüfen.',
         ],
       },
       {
-        heading: 'Was uns unterscheidet',
+        heading: 'Arbeitsweise & Vergütung',
         lines: [
-          'Keine produktgetriebene Beratung – Fokus auf Strategie statt Abschluss.',
-          'Langfristige Begleitung statt einmaliger Verkauf.',
-          'Evidenzbasierte Empfehlungen statt Bauchgefühl.',
+          'Ich lege offen, wie ich arbeite und wie ich Geld verdiene.',
+          'Mein Vergütungsmodell ist transparent – keine versteckten Provisionen, keine Interessenskonflikte.',
+          'Im Unterschied zu klassischen Verkaufsmodellen stehe ich nicht unter Druck, dir ein bestimmtes Produkt zu empfehlen.',
+          'Du kannst meine Registrierung, Qualifikationen und Arbeitsweise jederzeit extern überprüfen.',
         ],
       },
       {
-        heading: 'Vertrauensanker',
+        heading: 'Was das konkret bedeutet',
         lines: [
-          'Echte Kundenstimmen und Erfahrungen – keine leeren Versprechen.',
-          'Reale Beispiele aus der Beratungspraxis.',
-          'Nachvollziehbare Resultate und langfristige Kundenbeziehungen.',
+          'Kein Lebenslauf, keine Selbstdarstellung – nur Nachvollziehbarkeit.',
+          'Du verstehst jede Entscheidung, jeden Kostenpunkt, jeden Schritt.',
+          'Und wenn etwas unklar ist, fragen wir gemeinsam nach.',
         ],
       },
       {
         heading: 'Überleitung',
         lines: [
-          'Am Ende musst du dich nicht heute entscheiden – sondern verstehen, ob das für dich Sinn ergibt.',
+          'Am Ende musst du dich nicht heute entscheiden.',
+          'Aber du sollst das Gefühl haben: Ich kann dem vertrauen, weil ich alles selbst prüfen kann.',
         ],
       },
     ],
     recognition: {
-      title: 'Woran du eine gute Beratung erkennst',
+      title: 'Woran du eine vertrauenswürdige Beratung erkennst',
       items: [
         'Du verstehst alle Kosten.',
         'Du kannst jede Entscheidung nachvollziehen.',
         'Du fühlst dich nicht unter Druck gesetzt.',
-        'Es geht um deine Situation, nicht um ein Produkt.',
+        'Alle Angaben sind extern überprüfbar.',
       ],
     },
     resolvedConfirmation: 'Hat der Kunde aktiv bestätigt, dass Vertrauen vorhanden ist?',
     steps: [
+      { label: 'Alles überprüfen', toolSlug: 'transparenz-check' },
       { label: 'Firmenprofil zeigen' },
-      { label: 'Referenzen & Kundenstimmen' },
       { label: 'Beratungsprozess erklären' },
-      { label: 'Beispiel-Kundenfall zeigen' },
     ],
   },
   'trust-2': {
