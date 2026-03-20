@@ -181,18 +181,16 @@ export function useCreateCaseForCustomer() {
       description?: string;
       due_date?: string;
     }) => {
-      // Use raw insert with explicit columns to avoid type issues
       const { error } = await supabase
         .from('cases')
         .insert({
           customer_id: data.customer_id,
-          client_id: data.customer_id, // Temporary: also set client_id for backward compatibility
           title: data.title,
           description: data.description || null,
           due_date: data.due_date || null,
           assigned_to: user?.id,
           created_by: user?.id,
-        } as any);
+        });
       if (error) throw error;
       return { success: true };
     },
