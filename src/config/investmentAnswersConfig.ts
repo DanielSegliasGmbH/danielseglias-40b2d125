@@ -102,7 +102,7 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
     resolvedConfirmation: 'Hat der Kunde aktiv bestätigt, dass Vertrauen vorhanden ist?',
     steps: [
       { label: 'Alles überprüfen', toolSlug: 'transparenz-check' },
-      { label: 'Firmenprofil zeigen' },
+      { label: 'Firmenprofil zeigen', externalUrl: 'https://danielseglias.ch' },
       { label: 'Beratungsprozess erklären' },
     ],
   },
