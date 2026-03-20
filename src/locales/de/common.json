@@ -814,6 +814,10 @@
     "transparenzCheck": {
       "name": "Transparenz-Check",
       "description": "Überprüfe selbst, wie transparent und nachvollziehbar deine Beratung ist."
+    },
+    "kostenaufschluesselung": {
+      "name": "Kostenaufschlüsselung",
+      "description": "Finde heraus, wo deine Kosten wirklich entstehen – sichtbar und unsichtbar."
     }
   },
   "adminLeads": {
@@ -896,8 +900,4 @@
   "common": {
     "contentFollows": "Inhalt folgt"
   }
-    },
-    "kostenaufschluesselung": {
-      "name": "Kostenaufschlüsselung",
-      "description": "Finde heraus, wo deine Kosten wirklich entstehen – sichtbar und unsichtbar."
-    }
+}
