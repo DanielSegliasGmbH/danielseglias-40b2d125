@@ -29,6 +29,7 @@ export function FinanzcheckTool({ mode }: Props) {
   const steps = ['Start', 'Basisdaten', 'Themen', 'Ergebnis'];
 
   return (
+    <PdfExportWrapper toolName="Finanzcheck" hideExport={mode === 'public'}>
     <div className="max-w-3xl mx-auto">
       {/* Progress Steps */}
       {currentStep > 0 && currentStep < 3 && (
