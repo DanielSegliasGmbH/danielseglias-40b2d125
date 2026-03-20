@@ -235,7 +235,7 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
     steps: [
       { label: 'Kosten konkret anschauen', toolSlug: 'vergleichsrechner-3a' },
       { label: 'Langfristige Kostenwirkung zeigen', toolSlug: 'verlustrechner-3a' },
-      { label: 'Meine aktuelle Lösung analysieren' },
+      { label: 'Meine aktuelle Lösung analysieren', toolSlug: 'mini-3a-kurzcheck' },
     ],
   },
   'costs-2': {
