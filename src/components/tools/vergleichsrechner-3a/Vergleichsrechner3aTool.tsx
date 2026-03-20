@@ -142,6 +142,7 @@ export function Vergleichsrechner3aTool() {
   );
 
   return (
+    <PdfExportWrapper toolName="3a-Vergleichsrechner">
     <div className="space-y-6">
 
       {/* ═══ STORY INTRO ═══ */}
