@@ -810,6 +810,10 @@
     "verlustrechner3a": {
       "name": "3a-Verlustrechner",
       "description": "Finde heraus, wie viel Kapital dir mit deiner aktuellen Säule 3a entgeht."
+    },
+    "transparenzCheck": {
+      "name": "Transparenz-Check",
+      "description": "Überprüfe selbst, wie transparent und nachvollziehbar deine Beratung ist."
     }
   },
   "adminLeads": {
