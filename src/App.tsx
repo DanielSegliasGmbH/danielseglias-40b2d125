@@ -128,7 +128,16 @@ function App() {
                 }
               />
 
-              {/* Protected: Admin only - System Map */}
+              {/* Protected: Profile (all authenticated) */}
+              <Route
+                path="/app/profile"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff', 'client']}>
+                    <Profile />
+                  </RouteGuard>
+                }
+              />
+
               <Route
                 path="/app/system-map"
                 element={
