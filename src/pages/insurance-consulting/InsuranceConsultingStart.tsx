@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { PlusCircle, FolderOpen, Clock, FileText, Loader2 } from 'lucide-react';
+import { PlusCircle, FolderOpen, Clock, FileText, Loader2, Monitor } from 'lucide-react';
 import { useConsultationState, SavedConsultation } from '@/hooks/useConsultationState';
 import { StartConsultationDialog } from '@/components/consultation/StartConsultationDialog';
 import { format } from 'date-fns';
@@ -20,6 +20,7 @@ export default function InsuranceConsultingStart() {
   const [isLoadingList, setIsLoadingList] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isStartOpen, setIsStartOpen] = useState(false);
+  const [startWithPresentation, setStartWithPresentation] = useState(false);
 
   const handleOpenDialog = async () => {
     setIsDialogOpen(true);
@@ -33,6 +34,10 @@ export default function InsuranceConsultingStart() {
     const id = await createAndStartConsultation(title, customerId);
     if (id) {
       setIsStartOpen(false);
+      if (startWithPresentation) {
+        const url = `${window.location.origin}/presentation/insurance/${id}`;
+        window.open(url, `presentation-${id}`, 'noopener');
+      }
       navigate('/app/insurance-consulting/topics');
     }
   };
@@ -60,11 +65,11 @@ export default function InsuranceConsultingStart() {
               Starte ein neues Beratungsgespräch oder setze eine gespeicherte Beratung fort.
             </p>
 
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {/* New Consultation Card */}
               <Card
                 className="border-2 hover:border-primary/50 transition-colors cursor-pointer group"
-                onClick={() => setIsStartOpen(true)}
+                onClick={() => { setStartWithPresentation(false); setIsStartOpen(true); }}
               >
                 <CardHeader>
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
@@ -79,6 +84,26 @@ export default function InsuranceConsultingStart() {
                   <Button className="w-full" size="lg">
                     <PlusCircle className="w-4 h-4 mr-2" />
                     Jetzt starten
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* With presentation */}
+              <Card
+                className="border-2 border-primary/30 hover:border-primary transition-colors cursor-pointer group bg-primary/5"
+                onClick={() => { setStartWithPresentation(true); setIsStartOpen(true); }}
+              >
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mb-4 group-hover:bg-primary/30 transition-colors">
+                    <Monitor className="w-6 h-6 text-primary" />
+                  </div>
+                  <CardTitle className="text-xl">Gespräch mit Präsentation</CardTitle>
+                  <CardDescription>Starte ein Gespräch mit synchronisierter Kundenansicht auf einem zweiten Bildschirm.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full" size="lg" variant="default">
+                    <Monitor className="w-4 h-4 mr-2" />
+                    Präsentation starten
                   </Button>
                 </CardContent>
               </Card>
@@ -128,6 +153,7 @@ export default function InsuranceConsultingStart() {
                         variant="link"
                         onClick={() => {
                           setIsDialogOpen(false);
+                          setStartWithPresentation(false);
                           setIsStartOpen(true);
                         }}
                       >
