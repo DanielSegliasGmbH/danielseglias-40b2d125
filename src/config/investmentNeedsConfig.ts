@@ -53,7 +53,7 @@ export const needsCategories: NeedsCategory[] = [
     title: 'Kosten & Gebühren',
     tiles: [
       { id: 'costs-1', title: 'Was kostet mich das wirklich?', description: 'Die meisten wissen ungefähr, was sie einzahlen… aber kaum jemand weiss, was es ihn wirklich kostet.', category: 'kosten', linkedTools: ['vergleichsrechner-3a', 'verlustrechner-3a'], linkedProducts: ['optimierung', 'analyse'] },
-      { id: 'costs-2', title: 'Gibt es versteckte Gebühren?', description: 'Vollständige Offenlegung aller Kosten', category: 'kosten', linkedTools: ['verlustrechner-3a'], linkedProducts: ['transparenz', 'optimierung'] },
+      { id: 'costs-2', title: 'Gibt es versteckte Gebühren?', description: 'Viele wissen, was sie zahlen… aber nicht unbedingt, wo überall Kosten entstehen.', category: 'kosten', linkedTools: ['vergleichsrechner-3a', 'kostenaufschluesselung'], linkedProducts: ['analyse', 'optimierung'] },
       { id: 'costs-3', title: 'Wie viel verliere ich durch Kosten?', description: 'Auswirkung von Gebühren auf die Rendite', category: 'kosten', linkedTools: ['verlustrechner-3a', 'vergleichsrechner-3a'], linkedProducts: ['optimierung'] },
     ],
   },
