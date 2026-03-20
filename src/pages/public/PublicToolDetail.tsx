@@ -19,6 +19,7 @@ import { KostenaufschluesselungTool } from '@/components/tools/kostenaufschluess
 import { KostenImpactSimulatorTool } from '@/components/tools/kosten-impact-simulator/KostenImpactSimulatorTool';
 import { WahrscheinlichkeitsrechnerTool } from '@/components/tools/wahrscheinlichkeitsrechner/WahrscheinlichkeitsrechnerTool';
 import { ZufallsRealitaetsCheckTool } from '@/components/tools/zufalls-realitaets-check/ZufallsRealitaetsCheckTool';
+import { RecoveryAnalyseTool } from '@/components/tools/recovery-analyse/RecoveryAnalyseTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
