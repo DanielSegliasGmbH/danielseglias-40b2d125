@@ -35,6 +35,7 @@ export function KostenaufschluesselungTool({ mode = 'internal' }: Props) {
   const hiddenPct = totalCosts > 0 ? (result.hiddenCosts / totalCosts) * 100 : 50;
 
   return (
+    <PdfExportWrapper toolName="Kostenaufschlüsselung" hideExport={mode === 'public'}>
     <div className="space-y-8">
       {/* Header */}
       <div className="space-y-2">
