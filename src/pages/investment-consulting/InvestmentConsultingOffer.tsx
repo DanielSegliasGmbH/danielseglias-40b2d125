@@ -125,12 +125,17 @@ export default function InvestmentConsultingOffer() {
   };
 
   /* ── Broadcast ── */
+  const recPkg = packages.find((p) => p.config.tier === recommendedTier);
   useSectionBroadcast({
     section: 'offer',
     title: 'Das ergibt sich aus unserem Gespräch',
     subtitle: 'Deine individuelle Empfehlung',
     items: scored.filter((p) => p.tier === 'main').map((p) => p.name),
-    extra: { recommendedTier },
+    extra: {
+      offerModules: scored.map((p) => ({ title: p.name, description: p.description })),
+      offerPrice: recPkg ? formatCHF(getPackagePrice(recPkg, recommendedTier)) : '',
+      offerTotalValue: recPkg ? formatCHF(recPkg.totalValue) : '',
+    },
   });
 
   /* ── Empty state ── */
