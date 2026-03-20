@@ -1,3 +1,4 @@
+import { PdfExportWrapper } from '../PdfExportWrapper';
 import { useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import {
