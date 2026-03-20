@@ -20,6 +20,7 @@ import { KostenImpactSimulatorTool } from '@/components/tools/kosten-impact-simu
 import { WahrscheinlichkeitsrechnerTool } from '@/components/tools/wahrscheinlichkeitsrechner/WahrscheinlichkeitsrechnerTool';
 import { ZufallsRealitaetsCheckTool } from '@/components/tools/zufalls-realitaets-check/ZufallsRealitaetsCheckTool';
 import { RecoveryAnalyseTool } from '@/components/tools/recovery-analyse/RecoveryAnalyseTool';
+import { SicherheitsvergleichTool } from '@/components/tools/sicherheitsvergleich/SicherheitsvergleichTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -170,6 +171,10 @@ export default function PublicToolDetail() {
               ) : slug === 'recovery-analyse' ? (
                 <div className="mb-8">
                   <RecoveryAnalyseTool mode="public" />
+                </div>
+              ) : slug === 'sicherheitsvergleich' ? (
+                <div className="mb-8">
+                  <SicherheitsvergleichTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">

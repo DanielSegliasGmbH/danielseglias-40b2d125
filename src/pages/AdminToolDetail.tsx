@@ -21,6 +21,7 @@ import { KostenImpactSimulatorTool } from '@/components/tools/kosten-impact-simu
 import { WahrscheinlichkeitsrechnerTool } from '@/components/tools/wahrscheinlichkeitsrechner/WahrscheinlichkeitsrechnerTool';
 import { ZufallsRealitaetsCheckTool } from '@/components/tools/zufalls-realitaets-check/ZufallsRealitaetsCheckTool';
 import { RecoveryAnalyseTool } from '@/components/tools/recovery-analyse/RecoveryAnalyseTool';
+import { SicherheitsvergleichTool } from '@/components/tools/sicherheitsvergleich/SicherheitsvergleichTool';
 
 // Icon mapping
 const iconMap: Record<string, LucideIcon> = {
@@ -121,6 +122,8 @@ export default function AdminToolDetail() {
         return <ZufallsRealitaetsCheckTool mode="internal" />;
       case 'recovery-analyse':
         return <RecoveryAnalyseTool mode="internal" />;
+      case 'sicherheitsvergleich':
+        return <SicherheitsvergleichTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">

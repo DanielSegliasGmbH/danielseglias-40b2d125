@@ -1,0 +1,2 @@
+INSERT INTO public.tools (key, name_key, description_key, icon, status, enabled_for_clients, enabled_for_public, sort_order, slug, cta_mode)
+VALUES ('sicherheitsvergleich', 'tools.sicherheitsvergleich.name', 'tools.sicherheitsvergleich.description', 'ShieldCheck', 'active', false, false, 160, 'sicherheitsvergleich', 'contact');
