@@ -822,6 +822,10 @@
     "kostenImpactSimulator": {
       "name": "Kosten-Impact-Simulator",
       "description": "Vergleiche zwei Szenarien und erkenne, wie sich Kostenunterschiede langfristig auswirken."
+    },
+    "wahrscheinlichkeitsrechner": {
+      "name": "Wahrscheinlichkeits-Rechner",
+      "description": "Finde heraus, wie wahrscheinlich es ist, dass du dein finanzielles Ziel erreichst."
     }
   },
   "adminLeads": {

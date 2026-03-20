@@ -84,6 +84,8 @@ export default function ClientPortalToolDetail() {
         return <KostenaufschluesselungTool mode="internal" />;
       case 'kosten-impact-simulator':
         return <KostenImpactSimulatorTool mode="internal" />;
+      case 'wahrscheinlichkeitsrechner':
+        return <WahrscheinlichkeitsrechnerTool mode="internal" />;
       default:
         return (
           <Card>

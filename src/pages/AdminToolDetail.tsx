@@ -113,6 +113,8 @@ export default function AdminToolDetail() {
         return <KostenaufschluesselungTool mode="internal" />;
       case 'kosten-impact-simulator':
         return <KostenImpactSimulatorTool mode="internal" />;
+      case 'wahrscheinlichkeitsrechner':
+        return <WahrscheinlichkeitsrechnerTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">
