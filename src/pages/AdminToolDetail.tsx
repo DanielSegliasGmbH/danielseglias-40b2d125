@@ -19,6 +19,7 @@ import { CaseStudyGeneratorTool } from '@/components/tools/case-study-generator/
 import { KostenaufschluesselungTool } from '@/components/tools/kostenaufschluesselung/KostenaufschluesselungTool';
 import { KostenImpactSimulatorTool } from '@/components/tools/kosten-impact-simulator/KostenImpactSimulatorTool';
 import { WahrscheinlichkeitsrechnerTool } from '@/components/tools/wahrscheinlichkeitsrechner/WahrscheinlichkeitsrechnerTool';
+import { ZufallsRealitaetsCheckTool } from '@/components/tools/zufalls-realitaets-check/ZufallsRealitaetsCheckTool';
 
 // Icon mapping
 const iconMap: Record<string, LucideIcon> = {
@@ -115,6 +116,8 @@ export default function AdminToolDetail() {
         return <KostenImpactSimulatorTool mode="internal" />;
       case 'wahrscheinlichkeitsrechner':
         return <WahrscheinlichkeitsrechnerTool mode="internal" />;
+      case 'zufalls-realitaets-check':
+        return <ZufallsRealitaetsCheckTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">
