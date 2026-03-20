@@ -838,6 +838,10 @@
     "sicherheitsvergleich": {
       "name": "Sicherheitsvergleich",
       "description": "Ist keine Schwankung wirklich sicherer? Vergleiche scheinbare und echte langfristige Sicherheit."
+    },
+    "zeitverlustSimulator": {
+      "name": "Zeitverlust-Simulator",
+      "description": "Was kostet es dich, wenn du mit dem Investieren wartest? Berechne den finanziellen Preis des Aufschiebens."
     }
   },
   "adminLeads": {
