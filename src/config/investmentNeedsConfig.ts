@@ -80,7 +80,7 @@ export const needsCategories: NeedsCategory[] = [
     title: 'Flexibilität & Umsetzung',
     tiles: [
       { id: 'flex-1', title: 'Kann ich jederzeit kündigen?', description: 'Sicherheit und Kontrolle fühlen – Angst vor Bindung verlieren', category: 'flexibilität', linkedTools: ['vergleichsrechner-3a'], linkedProducts: ['analyse', 'optimierung'] },
-      { id: 'flex-2', title: 'Wie flexibel ist die Lösung?', description: 'Anpassungsmöglichkeiten bei Veränderungen', category: 'flexibilitaet', linkedTools: [], linkedProducts: ['optimierung'] },
+      { id: 'flex-2', title: 'Wie flexibel ist die Lösung?', description: 'Verstehen, dass Flexibilität aktiv wertvoll ist und starre Lösungen ein Risiko darstellen', category: 'flexibilität', linkedTools: ['vergleichsrechner-3a'], linkedProducts: ['strategie', 'optimierung'] },
       { id: 'flex-3', title: 'Habe ich Zugriff auf mein Geld?', description: 'Liquidität und Verfügbarkeit', category: 'flexibilitaet', linkedTools: [], linkedProducts: ['analyse'] },
     ],
   },
