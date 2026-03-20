@@ -128,6 +128,8 @@ export default function AdminToolDetail() {
         return <SicherheitsvergleichTool mode="internal" />;
       case 'zeitverlust-simulator':
         return <ZeitverlustSimulatorTool mode="internal" />;
+      case 'beratungsreise':
+        return <BeratungsreiseTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">
