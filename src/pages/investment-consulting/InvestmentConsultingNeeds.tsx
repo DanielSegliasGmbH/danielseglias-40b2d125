@@ -10,6 +10,7 @@ import {
   NeedsTile,
   NeedsTileState,
   allTileIds,
+  tileMap,
   calculateProductScores,
 } from '@/config/investmentNeedsConfig';
 import { useInvestmentConsultationState } from '@/hooks/useInvestmentConsultationState';
