@@ -21,6 +21,7 @@ import { KostenaufschluesselungTool } from '@/components/tools/kostenaufschluess
 import { KostenImpactSimulatorTool } from '@/components/tools/kosten-impact-simulator/KostenImpactSimulatorTool';
 import { WahrscheinlichkeitsrechnerTool } from '@/components/tools/wahrscheinlichkeitsrechner/WahrscheinlichkeitsrechnerTool';
 import { ZufallsRealitaetsCheckTool } from '@/components/tools/zufalls-realitaets-check/ZufallsRealitaetsCheckTool';
+import { RecoveryAnalyseTool } from '@/components/tools/recovery-analyse/RecoveryAnalyseTool';
 
 const iconMap: Record<string, LucideIcon> = {
   'calculator': Calculator,
@@ -89,6 +90,8 @@ export default function ClientPortalToolDetail() {
         return <WahrscheinlichkeitsrechnerTool mode="internal" />;
       case 'zufalls-realitaets-check':
         return <ZufallsRealitaetsCheckTool mode="internal" />;
+      case 'recovery-analyse':
+        return <RecoveryAnalyseTool mode="internal" />;
       default:
         return (
           <Card>

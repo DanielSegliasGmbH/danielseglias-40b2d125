@@ -1,0 +1,2 @@
+INSERT INTO public.tools (key, name_key, description_key, icon, status, enabled_for_clients, enabled_for_public, sort_order, slug, cta_mode)
+VALUES ('recovery-analyse', 'tools.recoveryAnalyse.name', 'tools.recoveryAnalyse.description', 'trending-up', 'active', false, false, 150, 'recovery-analyse', 'contact');
