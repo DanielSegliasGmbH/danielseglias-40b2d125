@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AppDashboard from "./pages/AppDashboard";
 import UserManagement from "./pages/UserManagement";
+import Profile from "./pages/Profile";
 import CustomersList from "./pages/CustomersList";
 import CustomerDetail from "./pages/CustomerDetail";
 
