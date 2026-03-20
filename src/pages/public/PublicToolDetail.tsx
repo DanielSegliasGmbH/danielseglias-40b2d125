@@ -136,6 +136,10 @@ export default function PublicToolDetail() {
                 <div className="mb-8">
                   <TragbarkeitsrechnerTool mode="public" />
                 </div>
+              ) : slug === 'verlustrechner-3a' ? (
+                <div className="mb-8">
+                  <Verlustrechner3aTool />
+                </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
                   <CardContent className="py-6 prose prose-neutral dark:prose-invert max-w-none">

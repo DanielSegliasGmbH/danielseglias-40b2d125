@@ -806,6 +806,10 @@
     "tragbarkeitsrechner": {
       "name": "Tragbarkeitsrechner Immobilie",
       "description": "Prüfe, ob eine Immobilie in der Schweiz anhand von Kaufpreis, Eigenmitteln und Einkommen tragbar ist."
+    },
+    "verlustrechner3a": {
+      "name": "3a-Verlustrechner",
+      "description": "Finde heraus, wie viel Kapital dir mit deiner aktuellen Säule 3a entgeht."
     }
   },
   "adminLeads": {
