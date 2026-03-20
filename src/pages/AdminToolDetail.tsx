@@ -17,6 +17,7 @@ import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool'
 import { RenditeRisikoTool } from '@/components/tools/rendite-risiko/RenditeRisikoTool';
 import { CaseStudyGeneratorTool } from '@/components/tools/case-study-generator/CaseStudyGeneratorTool';
 import { KostenaufschluesselungTool } from '@/components/tools/kostenaufschluesselung/KostenaufschluesselungTool';
+import { KostenImpactSimulatorTool } from '@/components/tools/kosten-impact-simulator/KostenImpactSimulatorTool';
 
 // Icon mapping
 const iconMap: Record<string, LucideIcon> = {
