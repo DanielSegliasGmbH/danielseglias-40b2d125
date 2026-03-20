@@ -788,6 +788,10 @@
     "vergleichsrechner3a": {
       "name": "3a-Vergleichsrechner",
       "description": "Vergleich zwischen bestehender und optimierter 3a-Lösung – Aktuell vs. Optimiert."
+    },
+    "inflationsrechner": {
+      "name": "Inflationsrechner Schweiz",
+      "description": "Verstehe, wie Inflation deine Kaufkraft über die Zeit verändert – mit realen Schweizer Daten."
     }
   },
   "adminLeads": {
