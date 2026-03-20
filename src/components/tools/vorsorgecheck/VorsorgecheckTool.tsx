@@ -209,5 +209,6 @@ export default function VorsorgecheckTool() {
         </Button>
       </div>
     </div>
+    </PdfExportWrapper>
   );
 }

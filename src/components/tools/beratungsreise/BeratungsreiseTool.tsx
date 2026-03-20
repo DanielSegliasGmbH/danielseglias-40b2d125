@@ -109,6 +109,7 @@ export function BeratungsreiseTool({ mode = 'internal' }: BeratungsreiseToolProp
   const completedCount = activeStep - 1;
 
   return (
+    <PdfExportWrapper toolName="Beratungsreise" hideExport={mode === 'public'}>
     <div className="space-y-8">
       {/* Header */}
       <div className="text-center space-y-2">

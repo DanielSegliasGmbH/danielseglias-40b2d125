@@ -397,5 +397,6 @@ export function ZufallsRealitaetsCheckTool({ mode = 'internal' }: Props) {
         </div>
       )}
     </div>
+    </PdfExportWrapper>
   );
 }

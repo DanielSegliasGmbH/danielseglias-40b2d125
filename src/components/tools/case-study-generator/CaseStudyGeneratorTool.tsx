@@ -78,5 +78,6 @@ export function CaseStudyGeneratorTool() {
         </TabsContent>
       </Tabs>
     </div>
+    </PdfExportWrapper>
   );
 }
