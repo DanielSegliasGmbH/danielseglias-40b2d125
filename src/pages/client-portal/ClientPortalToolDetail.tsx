@@ -25,6 +25,7 @@ import { RecoveryAnalyseTool } from '@/components/tools/recovery-analyse/Recover
 import { SicherheitsvergleichTool } from '@/components/tools/sicherheitsvergleich/SicherheitsvergleichTool';
 import { ZeitverlustSimulatorTool } from '@/components/tools/zeitverlust-simulator/ZeitverlustSimulatorTool';
 import { BeratungsreiseTool } from '@/components/tools/beratungsreise/BeratungsreiseTool';
+import { Mini3aKurzcheckTool } from '@/components/tools/mini-3a-kurzcheck/Mini3aKurzcheckTool';
 
 const iconMap: Record<string, LucideIcon> = {
   'calculator': Calculator,
@@ -101,6 +102,8 @@ export default function ClientPortalToolDetail() {
         return <ZeitverlustSimulatorTool mode="internal" />;
       case 'beratungsreise':
         return <BeratungsreiseTool mode="internal" />;
+      case 'mini-3a-kurzcheck':
+        return <Mini3aKurzcheckTool mode="internal" />;
       default:
         return (
           <Card>
