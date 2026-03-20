@@ -1091,5 +1091,6 @@ export default function KvgPraemienvergleichTool() {
         </div>
       </section>
     </div>
+    </PdfExportWrapper>
   );
 }

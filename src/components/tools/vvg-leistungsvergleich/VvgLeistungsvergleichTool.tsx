@@ -817,6 +817,7 @@ export default function VvgLeistungsvergleichTool() {
   }
 
   return (
+    <PdfExportWrapper toolName="VVG-Leistungsvergleich">
     <div className="space-y-8">
       {/* Header */}
       <div>
