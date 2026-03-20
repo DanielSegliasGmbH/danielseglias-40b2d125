@@ -13,6 +13,7 @@ import KvgPraemienvergleichTool from '@/components/tools/kvg-praemienvergleich/K
 import VvgLeistungsvergleichTool from '@/components/tools/vvg-leistungsvergleich/VvgLeistungsvergleichTool';
 import { RenditeRisikoTool } from '@/components/tools/rendite-risiko/RenditeRisikoTool';
 import { TragbarkeitsrechnerTool } from '@/components/tools/tragbarkeitsrechner/TragbarkeitsrechnerTool';
+import { Verlustrechner3aTool } from '@/components/tools/verlustrechner-3a/Verlustrechner3aTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -134,6 +135,10 @@ export default function PublicToolDetail() {
               ) : slug === 'tragbarkeitsrechner' ? (
                 <div className="mb-8">
                   <TragbarkeitsrechnerTool mode="public" />
+                </div>
+              ) : slug === 'verlustrechner-3a' ? (
+                <div className="mb-8">
+                  <Verlustrechner3aTool />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
