@@ -214,5 +214,6 @@ export function InflationsrechnerTool() {
         </>
       )}
     </div>
+    </PdfExportWrapper>
   );
 }
