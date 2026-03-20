@@ -13,6 +13,8 @@ export interface VerlustResult {
   loss: number;
 }
 
+export const MAX_CONTRIBUTION = 7258;
+
 const rates: Record<string, number> = {
   versicherung: 0.02,
   bank: 0.01,

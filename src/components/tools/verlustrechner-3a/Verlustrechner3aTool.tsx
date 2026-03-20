@@ -6,7 +6,8 @@ import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TrendingDown, ArrowRight, Info } from 'lucide-react';
-import { calculate, formatCHF, type VerlustInputs } from './calcLogic';
+import { calculate, formatCHF, MAX_CONTRIBUTION, type VerlustInputs } from './calcLogic';
+import { LifeImpactSection } from './LifeImpactSection';
 
 export function Verlustrechner3aTool() {
   const [inputs, setInputs] = useState<VerlustInputs>({
@@ -107,17 +108,22 @@ export function Verlustrechner3aTool() {
               <Input
                 type="number"
                 min={0}
-                max={14112}
+                max={MAX_CONTRIBUTION}
                 value={inputs.annualContribution}
-                onChange={e => update('annualContribution')(Math.max(0, parseInt(e.target.value) || 0))}
+                onChange={e => update('annualContribution')(Math.min(Math.max(0, parseInt(e.target.value) || 0), MAX_CONTRIBUTION))}
               />
               <Slider
                 min={0}
-                max={14112}
+                max={MAX_CONTRIBUTION}
                 step={100}
                 value={[inputs.annualContribution]}
                 onValueChange={v => update('annualContribution')(v[0])}
               />
+              {inputs.annualContribution >= MAX_CONTRIBUTION && (
+                <p className="text-xs text-muted-foreground">
+                  Maximaler steuerlich abzugsfähiger Betrag berücksichtigt.
+                </p>
+              )}
             </div>
 
             {/* Aktuelle Lösung */}
@@ -256,6 +262,9 @@ export function Verlustrechner3aTool() {
           </Button>
         </div>
       </div>
+
+      {/* Emotionale Sektion */}
+      <LifeImpactSection loss={result.loss} />
 
       {/* Disclaimer */}
       <div className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-4">
