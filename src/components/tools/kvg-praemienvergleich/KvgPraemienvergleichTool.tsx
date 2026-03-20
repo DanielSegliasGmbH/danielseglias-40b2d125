@@ -817,6 +817,7 @@ export default function KvgPraemienvergleichTool() {
   }
 
   return (
+    <PdfExportWrapper toolName="KVG-Prämienvergleich">
     <div className="space-y-8">
       {/* Header */}
       <div>
