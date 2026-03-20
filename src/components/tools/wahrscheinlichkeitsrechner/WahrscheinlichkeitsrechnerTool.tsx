@@ -74,6 +74,7 @@ export function WahrscheinlichkeitsrechnerTool({ mode = 'internal' }: Props) {
   const occ = colorClasses[optColor];
 
   return (
+    <PdfExportWrapper toolName="Wahrscheinlichkeitsrechner" hideExport={mode === 'public'}>
     <div className="space-y-8">
       {/* Header */}
       <div className="space-y-2">
