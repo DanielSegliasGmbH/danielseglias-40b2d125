@@ -7,7 +7,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { PlusCircle, FolderOpen, Clock, FileText, Loader2, Monitor } from 'lucide-react';
 import { useInvestmentConsultationState, SavedInvestmentConsultation } from '@/hooks/useInvestmentConsultationState';
-import { usePresentationBroadcaster } from '@/hooks/usePresentationSync';
 import { StartConsultationDialog } from '@/components/consultation/StartConsultationDialog';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -16,7 +15,6 @@ import heroImage from '@/assets/insurance-consulting-hero.jpg';
 export default function InvestmentConsultingStart() {
   const navigate = useNavigate();
   const { createAndStartConsultation, loadConsultation, fetchSavedConsultations, isLoading } = useInvestmentConsultationState();
-  const { startPresentation } = usePresentationBroadcaster();
   
   const [savedConsultations, setSavedConsultations] = useState<SavedInvestmentConsultation[]>([]);
   const [isLoadingList, setIsLoadingList] = useState(false);
@@ -37,9 +35,9 @@ export default function InvestmentConsultingStart() {
     if (id) {
       setIsStartOpen(false);
       if (startWithPresentation) {
-        setTimeout(() => {
-          startPresentation({ currentSection: 'topics' });
-        }, 200);
+        // Open the new unified presentation tab with conversation ID
+        const url = `${window.location.origin}/presentation/investment/${id}`;
+        window.open(url, `presentation-${id}`, 'noopener');
       }
       navigate('/app/investment-consulting/topics');
     }

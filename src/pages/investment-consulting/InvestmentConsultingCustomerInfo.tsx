@@ -2,9 +2,27 @@ import { useTranslation } from 'react-i18next';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Calendar, FileText } from 'lucide-react';
+import { useViewMode } from '@/hooks/useViewMode';
 
 export default function InvestmentConsultingCustomerInfo() {
   const { t } = useTranslation();
+  const { isPresentation } = useViewMode();
+
+  // In presentation mode, show a clean customer-facing view
+  if (isPresentation) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-8">
+        <div className="max-w-2xl text-center space-y-6">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+            Deine Informationen
+          </h1>
+          <p className="text-lg text-muted-foreground">
+            In diesem Abschnitt besprechen wir deine persönliche Situation und stellen sicher, dass wir alle relevanten Informationen haben.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <AppLayout>

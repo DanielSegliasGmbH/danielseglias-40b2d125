@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Pencil, Eye, Users, Coins } from 'lucide-react';
+import { useViewMode } from '@/hooks/useViewMode';
 import companyHero from '@/assets/company-hero.jpg';
 
 const companyData = {
@@ -22,9 +23,12 @@ const companyData = {
 
 export default function InvestmentConsultingCompany() {
   const { t } = useTranslation();
+  const { isPresentation } = useViewMode();
+
+  const Wrapper = isPresentation ? 'div' : AppLayout;
 
   return (
-    <AppLayout>
+    <Wrapper>
       <div className="min-h-screen bg-background">
         <div className="bg-primary/10 p-8 md:p-12">
           <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-8 items-center">
@@ -72,15 +76,17 @@ export default function InvestmentConsultingCompany() {
           </div>
         </div>
 
-        <div className="p-4 border-t border-border">
-          <div className="max-w-5xl mx-auto">
-            <Button variant="link" className="text-primary p-0 h-auto font-normal">
-              <Pencil className="w-4 h-4 mr-1" />
-              Bearbeiten
-            </Button>
+        {!isPresentation && (
+          <div className="p-4 border-t border-border">
+            <div className="max-w-5xl mx-auto">
+              <Button variant="link" className="text-primary p-0 h-auto font-normal">
+                <Pencil className="w-4 h-4 mr-1" />
+                Bearbeiten
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
-    </AppLayout>
+    </Wrapper>
   );
 }

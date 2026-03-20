@@ -67,6 +67,8 @@ import InvestmentConsultingSummary from "./pages/investment-consulting/Investmen
 import InvestmentConsultingOffer from "./pages/investment-consulting/InvestmentConsultingOffer";
 import InvestmentConsultingPresentation from "./pages/investment-consulting/InvestmentConsultingPresentation";
 import { InvestmentConsultationProvider } from "./hooks/useInvestmentConsultationState";
+import ConsultationPresentationPage from "./pages/presentation/ConsultationPresentationPage";
+import { ViewModeProvider } from "./hooks/useViewMode";
 
 // Public Pages (no auth required)
 import PublicLanding from "./pages/public/PublicLanding";
@@ -528,6 +530,12 @@ function App() {
               <Route
                 path="/presentation/investment"
                 element={<InvestmentConsultingPresentation />}
+              />
+
+              {/* Unified presentation mode – loads consultation by ID */}
+              <Route
+                path="/presentation/:type/:id"
+                element={<ConsultationPresentationPage />}
               />
 
               {/* Old client route - redirect to new portal */}

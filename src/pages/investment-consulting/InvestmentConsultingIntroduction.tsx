@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Pencil } from 'lucide-react';
+import { useViewMode } from '@/hooks/useViewMode';
 import advisorProfile from '@/assets/advisor-profile.jpg';
 
 const advisorData = {
@@ -29,9 +30,12 @@ const advisorData = {
 
 export default function InvestmentConsultingIntroduction() {
   const { t } = useTranslation();
+  const { isPresentation } = useViewMode();
+
+  const Wrapper = isPresentation ? 'div' : AppLayout;
 
   return (
-    <AppLayout>
+    <Wrapper>
       <div className="min-h-screen bg-muted/30 p-6 md:p-10">
         <div className="max-w-4xl mx-auto bg-background rounded-lg shadow-sm overflow-hidden">
           <div className="p-8 md:p-12">
@@ -96,14 +100,17 @@ export default function InvestmentConsultingIntroduction() {
               </div>
             </div>
           </div>
-          <div className="p-4 border-t border-border">
-            <Button variant="link" className="text-primary p-0 h-auto font-normal">
-              <Pencil className="w-4 h-4 mr-1" />
-              Bearbeiten
-            </Button>
-          </div>
+
+          {!isPresentation && (
+            <div className="p-4 border-t border-border">
+              <Button variant="link" className="text-primary p-0 h-auto font-normal">
+                <Pencil className="w-4 h-4 mr-1" />
+                Bearbeiten
+              </Button>
+            </div>
+          )}
         </div>
       </div>
-    </AppLayout>
+    </Wrapper>
   );
 }
