@@ -6,12 +6,13 @@ import { PublicLayout } from '@/layouts/PublicLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LeadCaptureForm } from '@/components/public/LeadCaptureForm';
-import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, ClipboardCheck, LucideIcon } from 'lucide-react';
+import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, ClipboardCheck, Home, LucideIcon } from 'lucide-react';
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
 import VorsorgecheckTool from '@/components/tools/vorsorgecheck/VorsorgecheckTool';
 import KvgPraemienvergleichTool from '@/components/tools/kvg-praemienvergleich/KvgPraemienvergleichTool';
 import VvgLeistungsvergleichTool from '@/components/tools/vvg-leistungsvergleich/VvgLeistungsvergleichTool';
 import { RenditeRisikoTool } from '@/components/tools/rendite-risiko/RenditeRisikoTool';
+import { TragbarkeitsrechnerTool } from '@/components/tools/tragbarkeitsrechner/TragbarkeitsrechnerTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -22,6 +23,7 @@ const iconMap: Record<string, LucideIcon> = {
   'file-text': FileText,
   'wrench': Wrench,
   'ClipboardCheck': ClipboardCheck,
+  'home': Home,
 };
 
 export default function PublicToolDetail() {
@@ -128,6 +130,10 @@ export default function PublicToolDetail() {
               ) : slug === 'rendite-risiko-simulation' ? (
                 <div className="mb-8">
                   <RenditeRisikoTool mode="public" />
+                </div>
+              ) : slug === 'tragbarkeitsrechner' ? (
+                <div className="mb-8">
+                  <TragbarkeitsrechnerTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">

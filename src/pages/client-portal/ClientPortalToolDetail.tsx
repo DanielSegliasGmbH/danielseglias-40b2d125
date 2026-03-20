@@ -6,7 +6,7 @@ import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Calculator, PieChart, TrendingUp, FileText, Wrench, Scale, LucideIcon } from 'lucide-react';
+import { ArrowLeft, Calculator, PieChart, TrendingUp, FileText, Wrench, Scale, Home, LucideIcon } from 'lucide-react';
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
 import VorsorgecheckTool from '@/components/tools/vorsorgecheck/VorsorgecheckTool';
 import VvgLeistungsvergleichTool from '@/components/tools/vvg-leistungsvergleich/VvgLeistungsvergleichTool';
@@ -14,6 +14,7 @@ import { RenditeRisikoTool } from '@/components/tools/rendite-risiko/RenditeRisi
 import { CaseStudyGeneratorTool } from '@/components/tools/case-study-generator/CaseStudyGeneratorTool';
 import { Vergleichsrechner3aTool } from '@/components/tools/vergleichsrechner-3a/Vergleichsrechner3aTool';
 import { InflationsrechnerTool } from '@/components/tools/inflationsrechner/InflationsrechnerTool';
+import { TragbarkeitsrechnerTool } from '@/components/tools/tragbarkeitsrechner/TragbarkeitsrechnerTool';
 
 const iconMap: Record<string, LucideIcon> = {
   'calculator': Calculator,
@@ -22,6 +23,7 @@ const iconMap: Record<string, LucideIcon> = {
   'file-text': FileText,
   'wrench': Wrench,
   'Scale': Scale,
+  'home': Home,
 };
 
 export default function ClientPortalToolDetail() {
@@ -66,6 +68,8 @@ export default function ClientPortalToolDetail() {
         return <Vergleichsrechner3aTool />;
       case 'inflationsrechner':
         return <InflationsrechnerTool />;
+      case 'tragbarkeitsrechner':
+        return <TragbarkeitsrechnerTool mode="internal" />;
       default:
         return (
           <Card>
