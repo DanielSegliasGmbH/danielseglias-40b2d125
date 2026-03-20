@@ -48,10 +48,8 @@ export function CreateCaseDialog() {
     }
 
     setLoading(true);
-    // Phase 2: Set customer_id as source of truth, client_id stays for backward compat (will be removed in Phase 3)
     const { error } = await supabase.from('cases').insert({
       customer_id: formData.customer_id,
-      client_id: formData.customer_id, // Temporarily set both during transition
       title: formData.title,
       description: formData.description || null,
       due_date: formData.due_date || null,
