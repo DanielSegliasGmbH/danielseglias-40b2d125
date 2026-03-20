@@ -240,13 +240,53 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
   },
   'costs-2': {
     tileId: 'costs-2',
-    explanation: [
-      'Keine Ausgabeaufschläge, keine Performance Fees bei unserer Strategie.',
-      'Depotgebühren und Transaktionskosten werden vorab beziffert.',
-      'Steuerliche Auswirkungen werden berücksichtigt.',
+    explanation: [],
+    storyline: [
+      {
+        heading: 'Einstieg',
+        lines: [
+          'Die meisten Kosten sind nicht direkt versteckt – aber sie sind auch nicht immer offensichtlich.',
+        ],
+      },
+      {
+        heading: 'Kernbotschaft',
+        lines: [
+          'Viele Kosten sind indirekt eingebaut – und werden deshalb oft unterschätzt.',
+        ],
+      },
+      {
+        heading: 'Was oft übersehen wird',
+        lines: [
+          'Fondskosten (TER), die nicht separat ausgewiesen werden.',
+          'Strukturkosten, die in der Produktgestaltung stecken.',
+          'Eingebaute Provisionen, die den Ertrag schmälern.',
+          'Produktabhängige Gebühren, die erst bei genauerem Hinsehen sichtbar werden.',
+        ],
+      },
+      {
+        heading: 'Aha-Moment',
+        lines: [
+          'Das Problem ist nicht, dass es diese Kosten gibt – sondern dass sie selten klar ausgewiesen werden.',
+        ],
+      },
+      {
+        heading: 'Shift',
+        lines: [
+          'Die entscheidende Frage ist: Weisst du wirklich, wo überall Kosten entstehen?',
+        ],
+      },
+      {
+        heading: 'Gesprächsleitfaden (intern)',
+        lines: [
+          'Ruhig bleiben – kein Angriff auf bestehende Lösung.',
+          'Aufklären statt kritisieren.',
+          'Kunden selbst erkennen lassen.',
+        ],
+      },
     ],
     steps: [
-      { label: 'Gebührenübersicht zeigen' },
+      { label: 'Kostenstruktur anschauen', toolSlug: 'vergleichsrechner-3a' },
+      { label: 'Kostenaufschlüsselung öffnen', toolSlug: 'kostenaufschluesselung' },
     ],
   },
   'costs-3': {
