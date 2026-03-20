@@ -225,6 +225,7 @@ export function TransparenzCheckTool({ mode = 'public' }: Props) {
           </div>
         </Section>
       </div>
+      </PdfExportWrapper>
     );
   }
 
