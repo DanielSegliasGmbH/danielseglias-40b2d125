@@ -55,7 +55,7 @@ import { ConsultationProvider } from "./hooks/useConsultationState";
 
 // Investment Consulting Pages
 import InvestmentConsultingStart from "./pages/investment-consulting/InvestmentConsultingStart";
-import InvestmentConsultingTopics from "./pages/investment-consulting/InvestmentConsultingTopics";
+import InvestmentConsultingFocus from "./pages/investment-consulting/InvestmentConsultingFocus";
 import InvestmentConsultingIntroduction from "./pages/investment-consulting/InvestmentConsultingIntroduction";
 import InvestmentConsultingCompany from "./pages/investment-consulting/InvestmentConsultingCompany";
 import InvestmentConsultingAdvisorInfo from "./pages/investment-consulting/InvestmentConsultingAdvisorInfo";
