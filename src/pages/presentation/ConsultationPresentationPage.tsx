@@ -88,7 +88,7 @@ function getSectionComponent(type: string, section: string) {
 
 export default function ConsultationPresentationPage() {
   const { type, id } = useParams<{ type: string; id: string }>();
-  const [currentSection, setCurrentSection] = useState<string>('topics');
+  const [currentSection, setCurrentSection] = useState<string>('focus');
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(true);
   const [consultationTitle, setConsultationTitle] = useState<string>('');
