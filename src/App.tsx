@@ -340,14 +340,18 @@ function App() {
                 }
               />
               <Route
-                path="/app/insurance-consulting/topics"
+                path="/app/insurance-consulting/focus"
                 element={
                   <RouteGuard allowedRoles={['admin', 'staff']}>
                     <ConsultationProvider>
-                      <InsuranceConsultingTopics />
+                      <InsuranceConsultingFocus />
                     </ConsultationProvider>
                   </RouteGuard>
                 }
+              />
+              <Route
+                path="/app/insurance-consulting/topics"
+                element={<Navigate to="/app/insurance-consulting/focus" replace />}
               />
               <Route
                 path="/app/insurance-consulting/introduction"
