@@ -1091,5 +1091,6 @@ export default function VvgLeistungsvergleichTool() {
         </div>
       </section>
     </div>
+    </PdfExportWrapper>
   );
 }
