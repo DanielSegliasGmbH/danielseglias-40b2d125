@@ -354,42 +354,43 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
       {
         heading: 'Einstieg',
         lines: [
-          'Sehr wichtige Frage – und absolut berechtigt.',
-          'Die meisten Menschen haben nicht Angst vor schlechten Produkten, sondern vor Verlust.',
+          'Die ehrliche Antwort ist: Ja – kurzfristig kann dein Geld schwanken.',
+          'Das ist wahrscheinlich die wichtigste Frage überhaupt.',
         ],
       },
       {
         heading: 'Kernbotschaft',
         lines: [
-          'Risiko ist real, aber steuerbar.',
-          'Schwankung ≠ permanenter Verlust.',
-          'Zeit reduziert Risiko erheblich.',
-          'Falsche Struktur kann ein grösseres Risiko sein als die Börse selbst.',
+          'Die entscheidende Frage ist nicht, ob es Schwankungen gibt – sondern wie du damit umgehst.',
         ],
       },
       {
         heading: 'Erklärung',
         lines: [
-          'Unterschied zwischen Volatilität (kurzfristige Schwankung) und echtem Verlust.',
-          'Diversifikation reduziert das Einzelrisiko erheblich.',
-          'Je länger der Anlagehorizont, desto geringer die Verlustwahrscheinlichkeit.',
-          'Historisch gab es keinen 15-Jahres-Zeitraum mit negativer Rendite am Weltaktienmarkt.',
+          'Kurzfristige Schwankungen sind normal und gehören zum Investieren dazu.',
+          'Die langfristige Entwicklung breit diversifizierter Märkte war historisch positiv.',
+          'Das Verhalten des Anlegers ist oft entscheidender als der Markt selbst.',
         ],
       },
       {
-        heading: 'Gesprächsfragen',
+        heading: 'Aha-Moment',
         lines: [
-          '«Was genau macht dir am meisten Sorgen – kurzfristige Schwankungen oder langfristiger Verlust?»',
-          '«Wie würdest du reagieren, wenn dein Portfolio zwischenzeitlich sinkt?»',
-          '«Ist dir wichtiger: keine Schwankung oder bessere langfristige Chancen?»',
+          'Die grössten Verluste entstehen oft nicht durch den Markt – sondern durch falsche Entscheidungen im falschen Moment.',
         ],
       },
       {
-        heading: 'Ziel des Gesprächs',
+        heading: 'Shift',
         lines: [
-          'Angst in Verständnis umwandeln.',
-          'Emotionale Sicherheit schaffen.',
-          'Rationale Entscheidungsbasis schaffen.',
+          'Die entscheidende Frage ist nicht, ob es schwankt – sondern ob du eine Strategie hast, damit umzugehen.',
+        ],
+      },
+      {
+        heading: 'Interner Leitfaden',
+        lines: [
+          '🎯 Ehrlich bleiben – keine Verharmlosung.',
+          '🛡️ Sicherheit durch Verständnis schaffen, nicht durch Versprechen.',
+          '📊 Visualisierung nutzen: Recovery-Analyse zeigen.',
+          '💡 Angst in rationale Entscheidungsbasis umwandeln.',
         ],
       },
     ],
@@ -397,17 +398,15 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
       title: 'Was du über Risiko wissen solltest',
       items: [
         'Schwankungen gehören zum Investieren dazu.',
-        'Kurzfristige Verluste sind möglich.',
-        'Langfristig gleichen sich viele Schwankungen aus.',
-        'Entscheidend ist die richtige Struktur und Zeit.',
+        'Kurzfristige Verluste sind möglich – aber historisch haben sich breite Märkte erholt.',
+        'Entscheidend ist die richtige Struktur, Zeit und Verhalten.',
+        'Panik-Verkäufe sind oft gefährlicher als der Markt selbst.',
       ],
     },
     resolvedConfirmation: 'Hat der Kunde das Risiko verstanden und fühlt sich sicher genug?',
     steps: [
-      { label: 'Worst-Case-Szenario anschauen', toolSlug: 'rendite-risiko-simulation' },
-      { label: 'Historische Marktentwicklung sehen' },
-      { label: 'Unterschied zwischen Risiko und Verlust verstehen' },
-      { label: 'Wie sich Zeit auf Risiko auswirkt', toolSlug: 'rendite-risiko-simulation' },
+      { label: 'Risiko verstehen', toolSlug: 'rendite-risiko-simulation' },
+      { label: 'Recovery-Analyse anschauen', toolSlug: 'recovery-analyse' },
     ],
     sources: [
       { title: 'UBS Global Investment Returns Yearbook', url: 'https://www.ubs.com/global/en/investment-bank/in-focus/2024/global-investment-returns-yearbook.html' },
