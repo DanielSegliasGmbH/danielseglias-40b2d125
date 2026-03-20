@@ -83,7 +83,7 @@
   "roles": {
     "admin": "Administrator",
     "staff": "Mitarbeiter",
-    "client": "Mandant"
+    "client": "Benutzer"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -297,15 +297,25 @@
     "userCreated": "Benutzer erfolgreich erstellt",
     "userCreateError": "Fehler beim Erstellen des Benutzers",
     "selectRole": "Rolle auswählen",
-    "selectClient": "Client auswählen",
+    "selectCustomer": "Kunde auswählen",
     "noRole": "Keine Rolle",
-    "linkClient": "Client verknüpfen",
-    "clientLinked": "Client erfolgreich verknüpft",
-    "clientLinkError": "Fehler beim Verknüpfen des Clients",
-    "requiredFields": "E-Mail, Passwort, Vor- und Nachname sind Pflichtfelder",
-    "clientRequired": "Für Client-Rolle muss ein Client ausgewählt werden",
+    "linkCustomer": "Kunde verknüpfen",
+    "customerLinked": "Kunde erfolgreich verknüpft",
+    "customerLinkError": "Fehler beim Verknüpfen des Kunden",
+    "requiredFields": "Vorname, Nachname, E-Mail und Passwort sind Pflichtfelder.",
+    "customerRequired": "Bitte wähle einen Kunden aus.",
     "userId": "User ID",
-    "userIdCopied": "User ID kopiert"
+    "userIdCopied": "User ID kopiert",
+    "passwordHint": "Es wird ein einmaliges Startpasswort gesetzt. Der Benutzer kann dieses später in seinem Profil ändern.",
+    "passwordChange": "Passwort ändern",
+    "currentPassword": "Aktuelles Passwort",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Neues Passwort wiederholen",
+    "passwordMismatch": "Die Passwörter stimmen nicht überein.",
+    "passwordChanged": "Passwort erfolgreich geändert.",
+    "passwordChangeError": "Fehler beim Ändern des Passworts.",
+    "passwordTooShort": "Das Passwort muss mindestens 6 Zeichen lang sein.",
+    "profile": "Mein Profil"
   },
   "language": {
     "de": "Deutsch",

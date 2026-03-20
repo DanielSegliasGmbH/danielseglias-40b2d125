@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AppDashboard from "./pages/AppDashboard";
 import UserManagement from "./pages/UserManagement";
+import Profile from "./pages/Profile";
 import CustomersList from "./pages/CustomersList";
 import CustomerDetail from "./pages/CustomerDetail";
 
@@ -127,7 +128,16 @@ function App() {
                 }
               />
 
-              {/* Protected: Admin only - System Map */}
+              {/* Protected: Profile (all authenticated) */}
+              <Route
+                path="/app/profile"
+                element={
+                  <RouteGuard allowedRoles={['admin', 'staff', 'client']}>
+                    <Profile />
+                  </RouteGuard>
+                }
+              />
+
               <Route
                 path="/app/system-map"
                 element={

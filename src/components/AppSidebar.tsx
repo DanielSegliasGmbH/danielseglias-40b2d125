@@ -38,6 +38,7 @@ import {
   UserPlus,
   Globe,
   Shield,
+  KeyRound,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -228,7 +229,18 @@ export function AppSidebar() {
         )}
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border p-4">
+      <SidebarFooter className="border-t border-sidebar-border p-4 space-y-1">
+        <Button
+          variant="ghost"
+          size={isCollapsed ? 'icon' : 'default'}
+          asChild
+          className={isCollapsed ? 'w-full justify-center text-sidebar-foreground hover:bg-sidebar-accent' : 'w-full justify-start gap-3 text-sidebar-foreground hover:bg-sidebar-accent'}
+        >
+          <NavLink to="/app/profile">
+            <KeyRound className="h-5 w-5 shrink-0" />
+            {!isCollapsed && <span>{t('userManagement.profile')}</span>}
+          </NavLink>
+        </Button>
         <Button
           variant="ghost"
           size={isCollapsed ? 'icon' : 'default'}

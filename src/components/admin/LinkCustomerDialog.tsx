@@ -39,10 +39,10 @@ export function LinkCustomerDialog({ userId, currentCustomerId }: LinkCustomerDi
     setLoading(true);
     try {
       await linkCustomer.mutateAsync({ userId, customerId: selectedCustomerId });
-      toast.success(t('userManagement.clientLinked'));
+      toast.success(t('userManagement.customerLinked'));
       setOpen(false);
     } catch (error: any) {
-      toast.error(`${t('userManagement.clientLinkError')}: ${error.message}`);
+      toast.error(`${t('userManagement.customerLinkError')}: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -53,7 +53,7 @@ export function LinkCustomerDialog({ userId, currentCustomerId }: LinkCustomerDi
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" className="gap-1">
           <Link className="h-3 w-3" />
-          {t('userManagement.linkClient')}
+          {t('userManagement.linkCustomer', 'Kunde verknüpfen')}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-sm">

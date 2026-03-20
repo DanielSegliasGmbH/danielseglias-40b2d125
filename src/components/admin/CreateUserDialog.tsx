@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQueryClient } from '@tanstack/react-query';
 import { useCreateUser } from '@/hooks/useUserManagement';
 import { useCustomers } from '@/hooks/useCustomerData';
 import { Button } from '@/components/ui/button';
@@ -51,7 +50,7 @@ export function CreateUserDialog() {
     }
 
     if (formData.role === 'client' && !formData.customerId) {
-      toast.error(t('userManagement.clientRequired'));
+      toast.error(t('userManagement.customerRequired'));
       return;
     }
 
@@ -120,7 +119,7 @@ export function CreateUserDialog() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">{t('auth.password')} *</Label>
+            <Label htmlFor="password">Passwort *</Label>
             <Input
               id="password"
               type="password"
@@ -129,6 +128,9 @@ export function CreateUserDialog() {
               required
               minLength={6}
             />
+            <p className="text-xs text-muted-foreground">
+              {t('userManagement.passwordHint')}
+            </p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="role">{t('table.role')} *</Label>
@@ -152,10 +154,10 @@ export function CreateUserDialog() {
               <Label htmlFor="customerId">{t('customer.singular', 'Kunde')} *</Label>
               <Select
                 value={formData.customerId}
-                onValueChange={(value) => setFormData({ ...formData, customerId: value })}
+                onValueChange={(value) => setFormData((prev) => ({ ...prev, customerId: value }))}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={t('userManagement.selectCustomer', 'Kunde auswählen')} />
+                  <SelectValue placeholder={t('userManagement.selectCustomer')} />
                 </SelectTrigger>
                 <SelectContent>
                   {customers?.map((customer) => (
