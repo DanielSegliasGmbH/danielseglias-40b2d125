@@ -102,6 +102,8 @@ export default function ClientPortalToolDetail() {
         return <ZeitverlustSimulatorTool mode="internal" />;
       case 'beratungsreise':
         return <BeratungsreiseTool mode="internal" />;
+      case 'mini-3a-kurzcheck':
+        return <Mini3aKurzcheckTool mode="internal" />;
       default:
         return (
           <Card>

@@ -846,6 +846,10 @@
     "beratungsreise": {
       "name": "Beratungsreise",
       "description": "Deine Finanz-Roadmap – sieh auf einen Blick, wo du stehst und was als Nächstes kommt."
+    },
+    "mini3aKurzcheck": {
+      "name": "Mini-3A-Kurzcheck",
+      "description": "Schnelle qualitative Analyse deiner bestehenden Säule-3a-Lösung mit Bewertung, Visualisierung und Empfehlung."
     }
   },
   "adminLeads": {
