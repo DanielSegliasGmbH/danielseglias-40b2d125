@@ -51,12 +51,12 @@ interface SyncMessage {
 }
 
 /* ── Lazy section components ── */
-import InsuranceConsultingTopics from '@/pages/insurance-consulting/InsuranceConsultingTopics';
+import InsuranceConsultingFocus from '@/pages/insurance-consulting/InsuranceConsultingFocus';
 import InsuranceConsultingIntroduction from '@/pages/insurance-consulting/InsuranceConsultingIntroduction';
 import InsuranceConsultingCompany from '@/pages/insurance-consulting/InsuranceConsultingCompany';
 import InsuranceConsultingAdvisorInfo from '@/pages/insurance-consulting/InsuranceConsultingAdvisorInfo';
 import InsuranceConsultingCustomerInfo from '@/pages/insurance-consulting/InsuranceConsultingCustomerInfo';
-import InvestmentConsultingTopics from '@/pages/investment-consulting/InvestmentConsultingTopics';
+import InvestmentConsultingFocus from '@/pages/investment-consulting/InvestmentConsultingFocus';
 import InvestmentConsultingIntroduction from '@/pages/investment-consulting/InvestmentConsultingIntroduction';
 import InvestmentConsultingCompany from '@/pages/investment-consulting/InvestmentConsultingCompany';
 import InvestmentConsultingAdvisorInfo from '@/pages/investment-consulting/InvestmentConsultingAdvisorInfo';
