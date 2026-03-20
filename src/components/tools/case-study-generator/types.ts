@@ -239,7 +239,7 @@ export const MOCK_CASE_STUDIES: CaseStudyData[] = [
     acquisitionSource: 'empfehlung',
     startDate: '2026-02-01',
     duration: '<3',
-    status: 'entwurf',
+    status: 'veroeffentlicht',
     initialSituation: 'Der Kunde zahlte über mehrere Jahre konsequent in seine Säule 3a ein, nutzte jedoch lediglich ein klassisches Sparkonto ohne nennenswerte Verzinsung. Sein Geld war faktisch „parkiert" und entwickelte sich kaum weiter. Er ging davon aus, dass dies eine sichere und ausreichende Lösung für seine Vorsorge sei, ohne die langfristigen Auswirkungen zu kennen.',
     previousSolution: 'bank',
     mainProblem: 'keine-strategie',
