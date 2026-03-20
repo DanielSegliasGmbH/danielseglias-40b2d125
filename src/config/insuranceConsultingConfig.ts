@@ -18,9 +18,9 @@ export const insuranceConsultingSections = [
     icon: PlayCircle,
   },
   {
-    key: 'topics',
-    path: '/app/insurance-consulting/topics',
-    titleKey: 'insuranceConsulting.topics',
+    key: 'focus',
+    path: '/app/insurance-consulting/focus',
+    titleKey: 'insuranceConsulting.focus',
     icon: MessageSquare,
   },
   {

@@ -82,6 +82,7 @@ const generateDefaultConsultationData = (): ConsultationData => ({
 // Context interface
 interface ConsultationContextValue {
   consultationData: ConsultationData;
+  updateData: (updater: (prev: ConsultationData) => ConsultationData) => void;
   currentConsultationId: string | null;
   currentTitle: string | null;
   isLoading: boolean;
@@ -449,6 +450,7 @@ export function ConsultationProvider({ children }: { children: ReactNode }) {
 
   const value: ConsultationContextValue = {
     consultationData,
+    updateData,
     currentConsultationId,
     currentTitle,
     isLoading,

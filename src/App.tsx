@@ -44,7 +44,7 @@ import ClientPortalToolDetail from "./pages/client-portal/ClientPortalToolDetail
 
 // Insurance Consulting Pages
 import InsuranceConsultingStart from "./pages/insurance-consulting/InsuranceConsultingStart";
-import InsuranceConsultingTopics from "./pages/insurance-consulting/InsuranceConsultingTopics";
+import InsuranceConsultingFocus from "./pages/insurance-consulting/InsuranceConsultingFocus";
 import InsuranceConsultingIntroduction from "./pages/insurance-consulting/InsuranceConsultingIntroduction";
 import InsuranceConsultingCompany from "./pages/insurance-consulting/InsuranceConsultingCompany";
 import InsuranceConsultingAdvisorInfo from "./pages/insurance-consulting/InsuranceConsultingAdvisorInfo";
@@ -55,7 +55,7 @@ import { ConsultationProvider } from "./hooks/useConsultationState";
 
 // Investment Consulting Pages
 import InvestmentConsultingStart from "./pages/investment-consulting/InvestmentConsultingStart";
-import InvestmentConsultingTopics from "./pages/investment-consulting/InvestmentConsultingTopics";
+import InvestmentConsultingFocus from "./pages/investment-consulting/InvestmentConsultingFocus";
 import InvestmentConsultingIntroduction from "./pages/investment-consulting/InvestmentConsultingIntroduction";
 import InvestmentConsultingCompany from "./pages/investment-consulting/InvestmentConsultingCompany";
 import InvestmentConsultingAdvisorInfo from "./pages/investment-consulting/InvestmentConsultingAdvisorInfo";
@@ -340,14 +340,18 @@ function App() {
                 }
               />
               <Route
-                path="/app/insurance-consulting/topics"
+                path="/app/insurance-consulting/focus"
                 element={
                   <RouteGuard allowedRoles={['admin', 'staff']}>
                     <ConsultationProvider>
-                      <InsuranceConsultingTopics />
+                      <InsuranceConsultingFocus />
                     </ConsultationProvider>
                   </RouteGuard>
                 }
+              />
+              <Route
+                path="/app/insurance-consulting/topics"
+                element={<Navigate to="/app/insurance-consulting/focus" replace />}
               />
               <Route
                 path="/app/insurance-consulting/introduction"
@@ -426,14 +430,18 @@ function App() {
                 }
               />
               <Route
-                path="/app/investment-consulting/topics"
+                path="/app/investment-consulting/focus"
                 element={
                   <RouteGuard allowedRoles={['admin', 'staff']}>
                     <InvestmentConsultationProvider>
-                      <InvestmentConsultingTopics />
+                      <InvestmentConsultingFocus />
                     </InvestmentConsultationProvider>
                   </RouteGuard>
                 }
+              />
+              <Route
+                path="/app/investment-consulting/topics"
+                element={<Navigate to="/app/investment-consulting/focus" replace />}
               />
               <Route
                 path="/app/investment-consulting/introduction"

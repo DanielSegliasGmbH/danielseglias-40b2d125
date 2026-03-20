@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
 
 /* ── Section configs ── */
 const INSURANCE_SECTIONS = [
-  { key: 'topics', label: 'Themenauswahl' },
+  { key: 'focus', label: 'Gesprächsfokus' },
   { key: 'introduction', label: 'Vorstellung' },
   { key: 'company', label: 'Unternehmen' },
   { key: 'advisor-info', label: 'Beraterinformationen' },
@@ -29,7 +29,7 @@ const INSURANCE_SECTIONS = [
 ];
 
 const INVESTMENT_SECTIONS = [
-  { key: 'topics', label: 'Themenauswahl' },
+  { key: 'focus', label: 'Gesprächsfokus' },
   { key: 'introduction', label: 'Vorstellung' },
   { key: 'company', label: 'Unternehmen' },
   { key: 'advisor-info', label: 'Beraterinformationen' },
@@ -51,12 +51,12 @@ interface SyncMessage {
 }
 
 /* ── Lazy section components ── */
-import InsuranceConsultingTopics from '@/pages/insurance-consulting/InsuranceConsultingTopics';
+import InsuranceConsultingFocus from '@/pages/insurance-consulting/InsuranceConsultingFocus';
 import InsuranceConsultingIntroduction from '@/pages/insurance-consulting/InsuranceConsultingIntroduction';
 import InsuranceConsultingCompany from '@/pages/insurance-consulting/InsuranceConsultingCompany';
 import InsuranceConsultingAdvisorInfo from '@/pages/insurance-consulting/InsuranceConsultingAdvisorInfo';
 import InsuranceConsultingCustomerInfo from '@/pages/insurance-consulting/InsuranceConsultingCustomerInfo';
-import InvestmentConsultingTopics from '@/pages/investment-consulting/InvestmentConsultingTopics';
+import InvestmentConsultingFocus from '@/pages/investment-consulting/InvestmentConsultingFocus';
 import InvestmentConsultingIntroduction from '@/pages/investment-consulting/InvestmentConsultingIntroduction';
 import InvestmentConsultingCompany from '@/pages/investment-consulting/InvestmentConsultingCompany';
 import InvestmentConsultingAdvisorInfo from '@/pages/investment-consulting/InvestmentConsultingAdvisorInfo';
@@ -65,7 +65,7 @@ import InvestmentConsultingCustomerInfo from '@/pages/investment-consulting/Inve
 function getSectionComponent(type: string, section: string) {
   if (type === 'insurance') {
     switch (section) {
-      case 'topics': return <InsuranceConsultingTopics />;
+      case 'focus': return <InsuranceConsultingFocus />;
       case 'introduction': return <InsuranceConsultingIntroduction />;
       case 'company': return <InsuranceConsultingCompany />;
       case 'advisor-info': return <InsuranceConsultingAdvisorInfo />;
@@ -75,7 +75,7 @@ function getSectionComponent(type: string, section: string) {
   }
   if (type === 'investment') {
     switch (section) {
-      case 'topics': return <InvestmentConsultingTopics />;
+      case 'focus': return <InvestmentConsultingFocus />;
       case 'introduction': return <InvestmentConsultingIntroduction />;
       case 'company': return <InvestmentConsultingCompany />;
       case 'advisor-info': return <InvestmentConsultingAdvisorInfo />;
@@ -88,7 +88,7 @@ function getSectionComponent(type: string, section: string) {
 
 export default function ConsultationPresentationPage() {
   const { type, id } = useParams<{ type: string; id: string }>();
-  const [currentSection, setCurrentSection] = useState<string>('topics');
+  const [currentSection, setCurrentSection] = useState<string>('focus');
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(true);
   const [consultationTitle, setConsultationTitle] = useState<string>('');

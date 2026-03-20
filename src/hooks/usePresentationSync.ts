@@ -13,6 +13,7 @@ const CHANNEL_NAME = 'investment-presentation';
 /** All sections that can be presented */
 export type PresentationSection =
   | 'topics'
+  | 'focus'
   | 'introduction'
   | 'company'
   | 'advisor-info'
