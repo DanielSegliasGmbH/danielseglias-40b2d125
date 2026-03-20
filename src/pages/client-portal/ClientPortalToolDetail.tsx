@@ -71,6 +71,8 @@ export default function ClientPortalToolDetail() {
         return <InflationsrechnerTool />;
       case 'tragbarkeitsrechner':
         return <TragbarkeitsrechnerTool mode="internal" />;
+      case 'verlustrechner-3a':
+        return <Verlustrechner3aTool />;
       default:
         return (
           <Card>
