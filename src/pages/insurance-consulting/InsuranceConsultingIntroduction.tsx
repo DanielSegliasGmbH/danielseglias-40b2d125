@@ -1,143 +1,262 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { useViewMode } from '@/hooks/useViewMode';
 import { useConsultationState } from '@/hooks/useConsultationState';
+import { useSectionBroadcast } from '@/hooks/useSectionBroadcast';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Phone, Mail } from 'lucide-react';
+import { Pencil, Phone, Mail, MapPin } from 'lucide-react';
 
 /* ─── Data Model ─────────────────────────────────────────── */
-interface InsuranceIntroData {
+interface RistoIntroData {
   name: string;
   role: string;
-  headline: string;
-  whatIDo: string;
-  experience: string;
-  approach: string;
-  personal: string;
+  career: string[];
+  quote: string;
+  facts: string[];
+  hobbies: string[];
+  dreams: string[];
+  company: string;
+  location: string;
+  street: string;
+  zip: string;
+  country: string;
   phone: string;
   email: string;
 }
 
-const DEFAULT_DATA: InsuranceIntroData = {
-  name: 'Daniel Celias',
-  role: 'Geschäftsführer & Versicherungsberater',
-  headline:
-    'Ich begleite Menschen dabei, ihre Versicherungssituation transparent, verständlich und langfristig optimal aufzubauen.',
-  whatIDo:
-    'Ich unterstütze Menschen in der Schweiz dabei, ihre Versicherungen strukturiert und verständlich zu optimieren – mit Fokus auf echten Schutz und Klarheit.',
-  experience:
-    'Seit 2016 bin ich in der Finanzbranche tätig.\n2019 habe ich die Weiterbildung zum Versicherungsberater FAV abgeschlossen.\nSeit Februar 2023 bin ich selbstständig und begleite Kunden unabhängig und transparent.',
-  approach:
-    'Mein Fokus liegt nicht auf dem Verkauf von Produkten, sondern auf echter Aufklärung und nachhaltiger Strategie.\nIch arbeite ohne versteckte Provisionen und lege grossen Wert auf Transparenz, Verständnis und langfristigen Mehrwert.',
-  personal:
-    'Ich bin sportlich sehr aktiv und bereite mich aktuell auf langfristige Ausdauerziele wie einen Ironman vor.\nPersönliche Entwicklung, Disziplin und Klarheit sind zentrale Bestandteile meines Lebens und meiner Arbeit.',
-  phone: '077 444 8608',
-  email: 'hallo@danielcelias.ch',
+const DEFAULT_DATA: RistoIntroData = {
+  name: 'Risto Rikic',
+  role: 'Abteilungsleiter Versicherungen und Aussendienst',
+  career: [
+    'Lehre in der Gemeinde',
+    'In der Versicherungsbranche seit 2017',
+    'Bei Daniel Seglias GmbH seit Februar 2026',
+  ],
+  quote:
+    'Ihr starker Partner für Versicherung und Vorsorge: Gemeinsam gestalten wir Ihre Zukunft.',
+  facts: ['Verantwortungsbewusst', 'Lösungsorientiert', 'Wohnhaft in Oetwil a.d.L'],
+  hobbies: ['Lesen', 'Reisen', 'Meditieren', 'Wandern'],
+  dreams: ['Weltreise', 'Eigenheim', 'Weiterbildung IAF'],
+  company: 'Daniel Seglias GmbH',
+  location: 'Standort Limmattal',
+  street: 'Lerzenstrasse 19a',
+  zip: '8953 Dietikon',
+  country: 'Schweiz',
+  phone: '+41 79 772 83 97',
+  email: 'risto@danielseglias.ch',
 };
 
-/* ─── Field Helper ────────────────────────────────────────── */
-function Field({
-  label,
-  value,
-  onChange,
-  multiline = false,
-  rows = 3,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  multiline?: boolean;
-  rows?: number;
-}) {
-  return (
-    <div className="space-y-1.5">
-      <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-        {label}
-      </Label>
-      {multiline ? (
-        <Textarea
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          rows={rows}
-          className="text-sm resize-none"
-        />
-      ) : (
-        <Input value={value} onChange={(e) => onChange(e.target.value)} className="text-sm" />
-      )}
-    </div>
-  );
-}
+const STORAGE_KEY = 'insuranceIntroData';
 
 /* ─── Component ───────────────────────────────────────────── */
 export default function InsuranceConsultingIntroduction() {
   const { isPresentation } = useViewMode();
   const { consultationData, updateData } = useConsultationState();
 
-  const [data, setData] = useState<InsuranceIntroData>(
-    () => (consultationData.additionalData?.insuranceIntroData as InsuranceIntroData) ?? DEFAULT_DATA
+  useSectionBroadcast({
+    section: 'introduction',
+    title: 'Meine Vorstellung',
+  });
+
+  const [data, setData] = useState<RistoIntroData>(
+    () => (consultationData.additionalData?.[STORAGE_KEY] as RistoIntroData) ?? DEFAULT_DATA
   );
+  const [editing, setEditing] = useState(false);
 
-  useEffect(() => {
-    const saved = consultationData.additionalData?.insuranceIntroData as InsuranceIntroData | undefined;
-    if (saved) setData(saved);
-  }, [consultationData.additionalData?.insuranceIntroData]);
-
-  const update = useCallback(
-    (field: keyof InsuranceIntroData, value: string) => {
-      setData((prev) => {
-        const next = { ...prev, [field]: value };
-        updateData((cd) => ({
-          ...cd,
-          additionalData: { ...cd.additionalData, insuranceIntroData: next },
-        }));
-        return next;
-      });
+  const persist = useCallback(
+    (next: RistoIntroData) => {
+      setData(next);
+      updateData((cd) => ({
+        ...cd,
+        additionalData: { ...cd.additionalData, [STORAGE_KEY]: next },
+      }));
     },
     [updateData]
+  );
+
+  const updateField = useCallback(
+    <K extends keyof RistoIntroData>(field: K, value: RistoIntroData[K]) => {
+      const next = { ...data, [field]: value };
+      persist(next);
+    },
+    [data, persist]
+  );
+
+  const updateArrayItem = useCallback(
+    (field: 'career' | 'facts' | 'hobbies' | 'dreams', idx: number, value: string) => {
+      const arr = [...data[field]];
+      arr[idx] = value;
+      persist({ ...data, [field]: arr });
+    },
+    [data, persist]
+  );
+
+  /* ─── Shared Profile Card ──────────────────────────────── */
+  const ProfileCard = ({ editable = false }: { editable?: boolean }) => (
+    <div className="bg-card rounded-3xl border border-border shadow-sm overflow-hidden">
+      {/* Header: Avatar + Name */}
+      <div className="px-8 pt-8 pb-6 flex items-start gap-8">
+        <Avatar className="w-28 h-28 md:w-36 md:h-36 shrink-0 ring-4 ring-background shadow-md">
+          <AvatarFallback className="text-2xl md:text-3xl font-semibold bg-muted text-muted-foreground">
+            RR
+          </AvatarFallback>
+        </Avatar>
+
+        <div className="space-y-3 min-w-0">
+          {editable && editing ? (
+            <>
+              <Input
+                value={data.name}
+                onChange={(e) => updateField('name', e.target.value)}
+                className="text-2xl font-bold"
+              />
+              <Input
+                value={data.role}
+                onChange={(e) => updateField('role', e.target.value)}
+                className="text-sm"
+              />
+            </>
+          ) : (
+            <>
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
+                {data.name}
+              </h1>
+              <p className="text-sm md:text-base text-muted-foreground">{data.role}</p>
+            </>
+          )}
+
+          {/* Career / Berufsleben */}
+          <div className="pt-2">
+            <h2 className="text-base font-semibold text-foreground mb-2">Berufsleben</h2>
+            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+              {data.career.map((item, i) =>
+                editable && editing ? (
+                  <li key={i} className="list-none">
+                    <Input
+                      value={item}
+                      onChange={(e) => updateArrayItem('career', i, e.target.value)}
+                      className="text-sm mb-1"
+                    />
+                  </li>
+                ) : (
+                  <li key={i}>{item}</li>
+                )
+              )}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Quote */}
+      <div className="px-8 py-6 border-t border-border">
+        {editable && editing ? (
+          <Textarea
+            value={data.quote}
+            onChange={(e) => updateField('quote', e.target.value)}
+            rows={2}
+            className="text-sm italic text-center resize-none"
+          />
+        ) : (
+          <p className="text-center text-base md:text-lg italic text-primary leading-relaxed">
+            &ldquo;{data.quote}&rdquo;
+          </p>
+        )}
+      </div>
+
+      {/* 3-Column Grid */}
+      <div className="grid grid-cols-3 border-t border-border divide-x divide-border">
+        <ColumnBlock
+          title="Fakten"
+          items={data.facts}
+          field="facts"
+          editable={editable && editing}
+          onItemChange={updateArrayItem}
+        />
+        <ColumnBlock
+          title="Hobbys"
+          items={data.hobbies}
+          field="hobbies"
+          editable={editable && editing}
+          onItemChange={updateArrayItem}
+        />
+        <ColumnBlock
+          title="Träume & Ziele"
+          items={data.dreams}
+          field="dreams"
+          editable={editable && editing}
+          onItemChange={updateArrayItem}
+        />
+      </div>
+
+      {/* Contact Footer */}
+      <div className="px-8 py-6 border-t border-border bg-muted/30">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div className="text-sm text-muted-foreground space-y-0.5">
+            {editable && editing ? (
+              <>
+                <Input value={data.company} onChange={(e) => updateField('company', e.target.value)} className="text-sm mb-1" />
+                <Input value={data.location} onChange={(e) => updateField('location', e.target.value)} className="text-sm mb-1" />
+                <Input value={data.street} onChange={(e) => updateField('street', e.target.value)} className="text-sm mb-1" />
+                <Input value={data.zip} onChange={(e) => updateField('zip', e.target.value)} className="text-sm mb-1" />
+                <Input value={data.country} onChange={(e) => updateField('country', e.target.value)} className="text-sm mb-1" />
+              </>
+            ) : (
+              <>
+                <p className="font-semibold text-foreground">{data.company}</p>
+                <p>{data.location}</p>
+                <p>{data.street}</p>
+                <p>{data.zip}</p>
+                <p>{data.country}</p>
+              </>
+            )}
+          </div>
+
+          <div className="text-sm text-muted-foreground space-y-1">
+            {editable && editing ? (
+              <>
+                <Input value={data.phone} onChange={(e) => updateField('phone', e.target.value)} className="text-sm mb-1" />
+                <Input value={data.email} onChange={(e) => updateField('email', e.target.value)} className="text-sm" />
+              </>
+            ) : (
+              <>
+                <p className="flex items-center gap-2">
+                  <Phone className="w-3.5 h-3.5" /> {data.phone}
+                </p>
+                <a
+                  href={`mailto:${data.email}`}
+                  className="flex items-center gap-2 text-primary hover:underline"
+                >
+                  <Mail className="w-3.5 h-3.5" /> {data.email}
+                </a>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Edit Toggle (admin only) */}
+      {editable && (
+        <button
+          onClick={() => setEditing(!editing)}
+          className="w-full flex items-center justify-center gap-2 py-3 border-t border-border text-sm text-muted-foreground hover:bg-muted/50 transition-colors"
+        >
+          <Pencil className="w-3.5 h-3.5" />
+          {editing ? 'Fertig' : 'Bearbeiten'}
+        </button>
+      )}
+    </div>
   );
 
   /* ─── PRESENTATION ─────────────────────────────────────── */
   if (isPresentation) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="max-w-2xl mx-auto px-6 py-16 md:py-24 space-y-14">
-          <header
-            className="space-y-4 animate-in fade-in slide-in-from-bottom-3 fill-mode-both"
-            style={{ animationDuration: '700ms' }}
-          >
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight leading-tight">
-              {data.name}
-            </h1>
-            <p className="text-base text-primary font-medium">{data.role}</p>
-            <p className="text-lg text-foreground/80 leading-relaxed max-w-prose">
-              {data.headline}
-            </p>
-          </header>
-
-          <div className="h-px bg-border" />
-
-          <Section title="Was ich mache" delay={100}>{data.whatIDo}</Section>
-          <Section title="Erfahrung & Hintergrund" delay={200}>{data.experience}</Section>
-          <Section title="Mein Ansatz" delay={300}>{data.approach}</Section>
-          <Section title="Persönliches" delay={400}>{data.personal}</Section>
-
-          <footer
-            className="pt-6 border-t border-border animate-in fade-in fill-mode-both"
-            style={{ animationDelay: '500ms', animationDuration: '600ms' }}
-          >
-            <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
-              <span className="flex items-center gap-2">
-                <Phone className="w-3.5 h-3.5" />
-                {data.phone}
-              </span>
-              <span className="flex items-center gap-2">
-                <Mail className="w-3.5 h-3.5" />
-                {data.email}
-              </span>
-            </div>
-          </footer>
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 fill-mode-both duration-700">
+          <ProfileCard />
         </div>
       </div>
     );
@@ -146,52 +265,50 @@ export default function InsuranceConsultingIntroduction() {
   /* ─── ADMIN ────────────────────────────────────────────── */
   return (
     <AppLayout>
-      <div className="p-6 md:p-8 max-w-3xl mx-auto space-y-8">
+      <div className="p-6 md:p-8 max-w-3xl mx-auto space-y-6">
         <div className="space-y-1">
           <h1 className="text-xl font-semibold text-foreground">Meine Vorstellung</h1>
           <p className="text-sm text-muted-foreground">
-            Bearbeite dein Profil für die Kundenpräsentation. Änderungen werden automatisch gespeichert.
+            Profil für die Kundenpräsentation in der Versicherungsberatung.
           </p>
         </div>
-
-        <section className="space-y-4">
-          <h2 className="text-base font-semibold text-foreground">Basisinformationen</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Name" value={data.name} onChange={(v) => update('name', v)} />
-            <Field label="Rolle" value={data.role} onChange={(v) => update('role', v)} />
-          </div>
-          <Field label="Headline" value={data.headline} onChange={(v) => update('headline', v)} multiline rows={2} />
-        </section>
-
-        <section className="space-y-4">
-          <h2 className="text-base font-semibold text-foreground">Inhalte</h2>
-          <Field label="Was ich mache" value={data.whatIDo} onChange={(v) => update('whatIDo', v)} multiline rows={3} />
-          <Field label="Erfahrung & Hintergrund" value={data.experience} onChange={(v) => update('experience', v)} multiline rows={5} />
-          <Field label="Mein Ansatz" value={data.approach} onChange={(v) => update('approach', v)} multiline rows={4} />
-          <Field label="Persönliches" value={data.personal} onChange={(v) => update('personal', v)} multiline rows={3} />
-        </section>
-
-        <section className="space-y-4">
-          <h2 className="text-base font-semibold text-foreground">Kontakt</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Telefon" value={data.phone} onChange={(v) => update('phone', v)} />
-            <Field label="E-Mail" value={data.email} onChange={(v) => update('email', v)} />
-          </div>
-        </section>
+        <ProfileCard editable />
       </div>
     </AppLayout>
   );
 }
 
-/* ─── Presentation Section ────────────────────────────────── */
-function Section({ title, children, delay = 0 }: { title: string; children: React.ReactNode; delay?: number }) {
+/* ─── 3-Column Block ──────────────────────────────────────── */
+function ColumnBlock({
+  title,
+  items,
+  field,
+  editable,
+  onItemChange,
+}: {
+  title: string;
+  items: string[];
+  field: 'career' | 'facts' | 'hobbies' | 'dreams';
+  editable: boolean;
+  onItemChange: (field: 'career' | 'facts' | 'hobbies' | 'dreams', idx: number, value: string) => void;
+}) {
   return (
-    <section
-      className="space-y-3 animate-in fade-in slide-in-from-bottom-3 fill-mode-both"
-      style={{ animationDelay: `${delay}ms`, animationDuration: '600ms' }}
-    >
-      <h2 className="text-lg font-semibold text-foreground">{title}</h2>
-      <div className="text-[15px] leading-relaxed text-muted-foreground whitespace-pre-line">{children}</div>
-    </section>
+    <div className="px-6 py-5">
+      <h3 className="text-sm font-semibold text-foreground mb-3">{title}</h3>
+      <div className="space-y-1.5 text-sm text-muted-foreground">
+        {items.map((item, i) =>
+          editable ? (
+            <Input
+              key={i}
+              value={item}
+              onChange={(e) => onItemChange(field, i, e.target.value)}
+              className="text-sm"
+            />
+          ) : (
+            <p key={i}>{item}</p>
+          )
+        )}
+      </div>
+    </div>
   );
 }
