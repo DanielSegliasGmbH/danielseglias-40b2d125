@@ -119,6 +119,8 @@ export default function AdminToolDetail() {
         return <WahrscheinlichkeitsrechnerTool mode="internal" />;
       case 'zufalls-realitaets-check':
         return <ZufallsRealitaetsCheckTool mode="internal" />;
+      case 'recovery-analyse':
+        return <RecoveryAnalyseTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">

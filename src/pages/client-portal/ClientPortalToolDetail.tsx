@@ -90,6 +90,8 @@ export default function ClientPortalToolDetail() {
         return <WahrscheinlichkeitsrechnerTool mode="internal" />;
       case 'zufalls-realitaets-check':
         return <ZufallsRealitaetsCheckTool mode="internal" />;
+      case 'recovery-analyse':
+        return <RecoveryAnalyseTool mode="internal" />;
       default:
         return (
           <Card>
