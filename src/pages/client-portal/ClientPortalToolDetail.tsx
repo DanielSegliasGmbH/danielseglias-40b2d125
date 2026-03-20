@@ -23,6 +23,7 @@ import { WahrscheinlichkeitsrechnerTool } from '@/components/tools/wahrscheinlic
 import { ZufallsRealitaetsCheckTool } from '@/components/tools/zufalls-realitaets-check/ZufallsRealitaetsCheckTool';
 import { RecoveryAnalyseTool } from '@/components/tools/recovery-analyse/RecoveryAnalyseTool';
 import { SicherheitsvergleichTool } from '@/components/tools/sicherheitsvergleich/SicherheitsvergleichTool';
+import { ZeitverlustSimulatorTool } from '@/components/tools/zeitverlust-simulator/ZeitverlustSimulatorTool';
 
 const iconMap: Record<string, LucideIcon> = {
   'calculator': Calculator,
