@@ -141,6 +141,10 @@ export default function PublicToolDetail() {
                 <div className="mb-8">
                   <Verlustrechner3aTool />
                 </div>
+              ) : slug === 'transparenz-check' ? (
+                <div className="mb-8">
+                  <TransparenzCheckTool mode="public" />
+                </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
                   <CardContent className="py-6 prose prose-neutral dark:prose-invert max-w-none">

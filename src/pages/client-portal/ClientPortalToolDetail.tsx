@@ -73,6 +73,8 @@ export default function ClientPortalToolDetail() {
         return <TragbarkeitsrechnerTool mode="internal" />;
       case 'verlustrechner-3a':
         return <Verlustrechner3aTool />;
+      case 'transparenz-check':
+        return <TransparenzCheckTool mode="internal" />;
       default:
         return (
           <Card>
