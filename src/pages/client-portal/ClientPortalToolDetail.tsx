@@ -12,6 +12,7 @@ import VorsorgecheckTool from '@/components/tools/vorsorgecheck/VorsorgecheckToo
 import VvgLeistungsvergleichTool from '@/components/tools/vvg-leistungsvergleich/VvgLeistungsvergleichTool';
 import { RenditeRisikoTool } from '@/components/tools/rendite-risiko/RenditeRisikoTool';
 import { CaseStudyGeneratorTool } from '@/components/tools/case-study-generator/CaseStudyGeneratorTool';
+import { Vergleichsrechner3aTool } from '@/components/tools/vergleichsrechner-3a/Vergleichsrechner3aTool';
 
 const iconMap: Record<string, LucideIcon> = {
   'calculator': Calculator,
@@ -60,6 +61,8 @@ export default function ClientPortalToolDetail() {
         return <RenditeRisikoTool mode="internal" />;
       case 'case-study-generator':
         return <CaseStudyGeneratorTool />;
+      case 'vergleichsrechner-3a':
+        return <Vergleichsrechner3aTool />;
       default:
         return (
           <Card>

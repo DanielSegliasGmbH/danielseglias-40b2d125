@@ -784,6 +784,10 @@
     "caseStudyGenerator": {
       "name": "Case Study Generator",
       "description": "Erstelle strukturierte, anonymisierte Case Studies für deine Finanzberatung."
+    },
+    "vergleichsrechner3a": {
+      "name": "3a-Vergleichsrechner",
+      "description": "Vergleich zwischen bestehender und optimierter 3a-Lösung – Aktuell vs. Optimiert."
     }
   },
   "adminLeads": {
