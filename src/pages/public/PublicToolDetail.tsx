@@ -21,6 +21,7 @@ import { WahrscheinlichkeitsrechnerTool } from '@/components/tools/wahrscheinlic
 import { ZufallsRealitaetsCheckTool } from '@/components/tools/zufalls-realitaets-check/ZufallsRealitaetsCheckTool';
 import { RecoveryAnalyseTool } from '@/components/tools/recovery-analyse/RecoveryAnalyseTool';
 import { SicherheitsvergleichTool } from '@/components/tools/sicherheitsvergleich/SicherheitsvergleichTool';
+import { ZeitverlustSimulatorTool } from '@/components/tools/zeitverlust-simulator/ZeitverlustSimulatorTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -175,6 +176,10 @@ export default function PublicToolDetail() {
               ) : slug === 'sicherheitsvergleich' ? (
                 <div className="mb-8">
                   <SicherheitsvergleichTool mode="public" />
+                </div>
+              ) : slug === 'zeitverlust-simulator' ? (
+                <div className="mb-8">
+                  <ZeitverlustSimulatorTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">

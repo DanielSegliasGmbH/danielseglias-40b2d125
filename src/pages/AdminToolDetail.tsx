@@ -22,6 +22,7 @@ import { WahrscheinlichkeitsrechnerTool } from '@/components/tools/wahrscheinlic
 import { ZufallsRealitaetsCheckTool } from '@/components/tools/zufalls-realitaets-check/ZufallsRealitaetsCheckTool';
 import { RecoveryAnalyseTool } from '@/components/tools/recovery-analyse/RecoveryAnalyseTool';
 import { SicherheitsvergleichTool } from '@/components/tools/sicherheitsvergleich/SicherheitsvergleichTool';
+import { ZeitverlustSimulatorTool } from '@/components/tools/zeitverlust-simulator/ZeitverlustSimulatorTool';
 
 // Icon mapping
 const iconMap: Record<string, LucideIcon> = {
@@ -124,6 +125,8 @@ export default function AdminToolDetail() {
         return <RecoveryAnalyseTool mode="internal" />;
       case 'sicherheitsvergleich':
         return <SicherheitsvergleichTool mode="internal" />;
+      case 'zeitverlust-simulator':
+        return <ZeitverlustSimulatorTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">
