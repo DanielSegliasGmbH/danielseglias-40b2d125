@@ -215,14 +215,27 @@ export default function InvestmentConsultingNeeds() {
         {/* Header */}
         <div className="border-b bg-card">
           <div className="container py-6">
-            <h1 className="text-2xl font-bold">Was ist dir bei deiner Vorsorge wirklich wichtig?</h1>
-            <p className="text-muted-foreground mt-1">
-              Wähle gemeinsam mit dem Kunden die wichtigsten Punkte aus. Mehrfachauswahl möglich.
-            </p>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h1 className="text-2xl font-bold">Was ist dir bei deiner Vorsorge wirklich wichtig?</h1>
+                <p className="text-muted-foreground mt-1">
+                  Wähle gemeinsam mit dem Kunden die wichtigsten Punkte aus. Mehrfachauswahl möglich.
+                </p>
+              </div>
+              <Button
+                variant={allSelected ? 'outline' : 'default'}
+                size="sm"
+                onClick={toggleAll}
+                className="shrink-0 gap-1.5"
+              >
+                <CheckCheck className="h-4 w-4" />
+                {allSelected ? 'Alle abwählen' : 'Alle auswählen'}
+              </Button>
+            </div>
             <div className="flex items-center gap-3 mt-3 flex-wrap">
               {selectedCount > 0 && (
                 <Badge variant="secondary">
-                  {selectedCount} {selectedCount === 1 ? 'Thema' : 'Themen'} ausgewählt
+                  {selectedCount}/{totalCount} {selectedCount === 1 ? 'Thema' : 'Themen'} ausgewählt
                 </Badge>
               )}
               {Object.keys(productScores).length > 0 && (
