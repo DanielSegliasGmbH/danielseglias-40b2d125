@@ -5,6 +5,8 @@
  *   Phase 1 – Vorleistung (pre-work, always shown, fixed price)
  *   Phase 2 – Umsetzung  (implementation products, scored from conversation)
  *   Phase 3 – Begleitung (ongoing support, optional add-on)
+ *
+ * Scoring uses category weights and absolute thresholds for tier assignment.
  */
 
 /* ── Product definition ── */
@@ -33,6 +35,7 @@ export interface PreWorkItem {
 export const preWork = {
   title: 'Standortbestimmung & Analyse',
   value: 400,
+  status: 'bereits erhalten' as const,
   items: [
     { label: 'Analyse der aktuellen Situation' },
     { label: 'Aufdecken von Kosten, Risiken und Chancen' },
@@ -63,75 +66,126 @@ export const products: Product[] = [
   { id: 'personal-coaching',  name: 'Persönliche 1:1 Betreuung',          description: 'Langfristige Begleitung mit regelmässigen Check-ins und direktem Kontakt.',                     category: 'betreuung',   baseValue: 2000, active: true, baseScore: 0 },
 ];
 
+/* ── Category weights ── */
+
+/** Question category keys (from investmentNeedsConfig tile categories) */
+export type QuestionCategory = 'kosten' | 'risiko' | 'rendite' | 'trust' | 'flexibilitaet' | 'entscheidung';
+
+/** Default category multipliers – can be overridden by admin */
+export const defaultCategoryWeights: Record<QuestionCategory, number> = {
+  kosten: 1.5,
+  risiko: 1.2,
+  rendite: 1.0,
+  trust: 0.8,
+  flexibilitaet: 1.0,
+  entscheidung: 1.3,
+};
+
+/** Human-readable labels for categories */
+export const categoryLabels: Record<QuestionCategory, string> = {
+  kosten: 'Kosten & Gebühren',
+  risiko: 'Risiko & Sicherheit',
+  rendite: 'Rendite & Entwicklung',
+  trust: 'Vertrauen',
+  flexibilitaet: 'Flexibilität',
+  entscheidung: 'Entscheidung',
+};
+
 /* ── Question → Product linking weights ── */
 
 export interface QuestionProductLink {
   questionId: string;
   productId: string;
   weight: number;
+  /** Category for applying category weight multiplier */
+  category: QuestionCategory;
 }
 
-/**
- * Maps tile IDs from investmentNeedsConfig to products with weights.
- * When a tile is selected, linked products gain score = weight.
- */
 export const questionProductLinks: QuestionProductLink[] = [
   // Costs tiles
-  { questionId: 'costs-1', productId: 'fee-analysis',       weight: 3 },
-  { questionId: 'costs-1', productId: 'cost-optimization',  weight: 2 },
-  { questionId: 'costs-2', productId: 'fee-analysis',       weight: 3 },
-  { questionId: 'costs-2', productId: 'product-comparison', weight: 2 },
-  { questionId: 'costs-3', productId: 'cost-optimization',  weight: 3 },
-  { questionId: 'costs-3', productId: '3a-analysis',        weight: 2 },
+  { questionId: 'costs-1', productId: 'fee-analysis',       weight: 3, category: 'kosten' },
+  { questionId: 'costs-1', productId: 'cost-optimization',  weight: 2, category: 'kosten' },
+  { questionId: 'costs-2', productId: 'fee-analysis',       weight: 3, category: 'kosten' },
+  { questionId: 'costs-2', productId: 'product-comparison', weight: 2, category: 'kosten' },
+  { questionId: 'costs-3', productId: 'cost-optimization',  weight: 3, category: 'kosten' },
+  { questionId: 'costs-3', productId: '3a-analysis',        weight: 2, category: 'kosten' },
   // Risk tiles
-  { questionId: 'risk-1',  productId: 'risk-analysis',      weight: 3 },
-  { questionId: 'risk-1',  productId: 'strategy-dev',       weight: 1 },
-  { questionId: 'risk-2',  productId: 'risk-analysis',      weight: 2 },
-  { questionId: 'risk-2',  productId: 'strategy-dev',       weight: 2 },
-  { questionId: 'risk-4',  productId: 'insurance-check',    weight: 2 },
-  { questionId: 'risk-4',  productId: 'risk-analysis',      weight: 2 },
+  { questionId: 'risk-1',  productId: 'risk-analysis',      weight: 3, category: 'risiko' },
+  { questionId: 'risk-1',  productId: 'strategy-dev',       weight: 1, category: 'risiko' },
+  { questionId: 'risk-2',  productId: 'risk-analysis',      weight: 2, category: 'risiko' },
+  { questionId: 'risk-2',  productId: 'strategy-dev',       weight: 2, category: 'risiko' },
+  { questionId: 'risk-4',  productId: 'insurance-check',    weight: 2, category: 'risiko' },
+  { questionId: 'risk-4',  productId: 'risk-analysis',      weight: 2, category: 'risiko' },
   // Return tiles
-  { questionId: 'return-1', productId: 'return-projection', weight: 3 },
-  { questionId: 'return-1', productId: 'strategy-dev',      weight: 2 },
-  { questionId: 'return-2', productId: 'investment-plan',   weight: 3 },
-  { questionId: 'return-2', productId: 'return-projection', weight: 2 },
-  { questionId: 'return-3', productId: 'return-projection', weight: 2 },
-  { questionId: 'return-3', productId: 'strategy-dev',      weight: 1 },
+  { questionId: 'return-1', productId: 'return-projection', weight: 3, category: 'rendite' },
+  { questionId: 'return-1', productId: 'strategy-dev',      weight: 2, category: 'rendite' },
+  { questionId: 'return-2', productId: 'investment-plan',   weight: 3, category: 'rendite' },
+  { questionId: 'return-2', productId: 'return-projection', weight: 2, category: 'rendite' },
+  { questionId: 'return-3', productId: 'return-projection', weight: 2, category: 'rendite' },
+  { questionId: 'return-3', productId: 'strategy-dev',      weight: 1, category: 'rendite' },
   // Trust tiles
-  { questionId: 'trust-1', productId: 'personal-coaching',  weight: 2 },
-  { questionId: 'trust-2', productId: 'fee-analysis',       weight: 1 },
-  { questionId: 'trust-3', productId: 'personal-coaching',  weight: 2 },
+  { questionId: 'trust-1', productId: 'personal-coaching',  weight: 2, category: 'trust' },
+  { questionId: 'trust-2', productId: 'fee-analysis',       weight: 1, category: 'trust' },
+  { questionId: 'trust-3', productId: 'personal-coaching',  weight: 2, category: 'trust' },
   // Flexibility tiles
-  { questionId: 'flex-1',  productId: 'structure-planning',  weight: 2 },
-  { questionId: 'flex-1',  productId: 'liquidity-strategy',  weight: 2 },
-  { questionId: 'flex-2',  productId: 'structure-planning',  weight: 3 },
-  { questionId: 'flex-3',  productId: 'liquidity-strategy',  weight: 3 },
+  { questionId: 'flex-1',  productId: 'structure-planning',  weight: 2, category: 'flexibilitaet' },
+  { questionId: 'flex-1',  productId: 'liquidity-strategy',  weight: 2, category: 'flexibilitaet' },
+  { questionId: 'flex-2',  productId: 'structure-planning',  weight: 3, category: 'flexibilitaet' },
+  { questionId: 'flex-3',  productId: 'liquidity-strategy',  weight: 3, category: 'flexibilitaet' },
   // Decision tiles
-  { questionId: 'dec-1',   productId: 'cost-optimization',  weight: 2 },
-  { questionId: 'dec-1',   productId: 'strategy-dev',       weight: 2 },
-  { questionId: 'dec-2',   productId: 'strategy-dev',       weight: 3 },
-  { questionId: 'dec-2',   productId: 'implementation',     weight: 1 },
-  { questionId: 'dec-3',   productId: 'strategy-dev',       weight: 2 },
-  { questionId: 'dec-3',   productId: 'personal-coaching',  weight: 1 },
+  { questionId: 'dec-1',   productId: 'cost-optimization',  weight: 2, category: 'entscheidung' },
+  { questionId: 'dec-1',   productId: 'strategy-dev',       weight: 2, category: 'entscheidung' },
+  { questionId: 'dec-2',   productId: 'strategy-dev',       weight: 3, category: 'entscheidung' },
+  { questionId: 'dec-2',   productId: 'implementation',     weight: 1, category: 'entscheidung' },
+  { questionId: 'dec-3',   productId: 'strategy-dev',       weight: 2, category: 'entscheidung' },
+  { questionId: 'dec-3',   productId: 'personal-coaching',  weight: 1, category: 'entscheidung' },
 ];
+
+/* ── Score thresholds (absolute) ── */
+
+export const SCORE_THRESHOLDS = {
+  /** Below this → not shown at all */
+  hidden: 2,
+  /** 2–4 → optional */
+  optional: 4,
+  /** 4–6 → complementary */
+  complementary: 6,
+  /** > 6 → main focus */
+} as const;
 
 /* ── Scoring engine ── */
 
 export interface ScoredProduct extends Product {
   score: number;
+  /** Raw score before rounding (for display) */
+  rawScore: number;
   tier: 'main' | 'complementary' | 'optional';
 }
 
+/** Category scores derived from conversation */
+export interface CategoryScores {
+  [category: string]: number;
+}
+
+export interface ScoringResult {
+  products: ScoredProduct[];
+  categoryScores: CategoryScores;
+  /** Max score across all products (for percentage calculation) */
+  maxScore: number;
+}
+
 /**
- * Calculate product scores from selected tile IDs.
- * Returns products sorted by score descending, with tier assignment.
+ * Calculate product scores from selected tile IDs with category weight multipliers.
  */
 export function scoreProducts(
   selectedTileIds: string[],
   overrides?: Record<string, number>,
   disabledIds?: Set<string>,
-): ScoredProduct[] {
+  categoryWeights?: Record<QuestionCategory, number>,
+): ScoringResult {
+  const weights = categoryWeights ?? defaultCategoryWeights;
   const scores: Record<string, number> = {};
+  const catScores: CategoryScores = {};
 
   // Base scores
   products.forEach((p) => {
@@ -140,12 +194,17 @@ export function scoreProducts(
     }
   });
 
-  // Add weights from selected tiles
+  // Add weighted scores from selected tiles
   const selectedSet = new Set(selectedTileIds);
   questionProductLinks.forEach((link) => {
-    if (selectedSet.has(link.questionId) && scores[link.productId] !== undefined) {
-      scores[link.productId] += link.weight;
-    }
+    if (!selectedSet.has(link.questionId)) return;
+    if (scores[link.productId] === undefined) return;
+
+    const catMultiplier = weights[link.category] ?? 1.0;
+    const weightedScore = link.weight * catMultiplier;
+
+    scores[link.productId] += weightedScore;
+    catScores[link.category] = (catScores[link.category] ?? 0) + weightedScore;
   });
 
   // Apply manual overrides
@@ -155,24 +214,21 @@ export function scoreProducts(
     });
   }
 
-  // Sort & tier
+  // Sort by score descending, filter out hidden (< threshold)
   const sorted = Object.entries(scores)
-    .filter(([, s]) => s > 0)
+    .filter(([, s]) => s >= SCORE_THRESHOLDS.hidden)
     .sort(([, a], [, b]) => b - a)
-    .map(([id, score]) => {
+    .map(([id, score]): ScoredProduct => {
       const product = products.find((p) => p.id === id)!;
-      return { ...product, score };
+      let tier: ScoredProduct['tier'] = 'optional';
+      if (score > SCORE_THRESHOLDS.complementary) tier = 'main';
+      else if (score > SCORE_THRESHOLDS.optional) tier = 'complementary';
+      return { ...product, score: Math.round(score * 10) / 10, rawScore: score, tier };
     });
 
-  // Assign tiers: top 30% = main, next 40% = complementary, rest = optional
-  const total = sorted.length;
-  return sorted.map((p, i): ScoredProduct => {
-    const position = i / Math.max(total, 1);
-    let tier: ScoredProduct['tier'] = 'optional';
-    if (position < 0.3) tier = 'main';
-    else if (position < 0.7) tier = 'complementary';
-    return { ...p, tier };
-  });
+  const maxScore = sorted.length > 0 ? sorted[0].score : 1;
+
+  return { products: sorted, categoryScores: catScores, maxScore };
 }
 
 /* ── Package generation ── */
@@ -196,33 +252,19 @@ export interface GeneratedPackage {
   config: PackageConfig;
   products: ScoredProduct[];
   totalValue: number;
-  /** Pre-work is always included */
   includesPreWork: true;
 }
 
-/** Min score threshold – products below this are excluded from all packages */
-const MIN_SCORE_THRESHOLD = 1;
-
-/**
- * Generate 3 packages from scored products.
- * Starter = main products only
- * Standard = main + complementary
- * Premium = all + betreuung
- */
 export function generatePackages(scored: ScoredProduct[]): GeneratedPackage[] {
-  const eligible = scored.filter((p) => p.score >= MIN_SCORE_THRESHOLD);
-
-  const main = eligible.filter((p) => p.tier === 'main');
-  const complementary = eligible.filter((p) => p.tier === 'complementary');
-  const optional = eligible.filter((p) => p.tier === 'optional');
-  const betreuung = eligible.filter((p) => p.category === 'betreuung');
-  const nonBetreuung = eligible.filter((p) => p.category !== 'betreuung');
+  const main = scored.filter((p) => p.tier === 'main');
+  const complementary = scored.filter((p) => p.tier === 'complementary');
+  const betreuung = scored.filter((p) => p.category === 'betreuung');
+  const nonBetreuung = scored.filter((p) => p.category !== 'betreuung');
 
   const starterProducts = main.filter((p) => p.category !== 'betreuung');
   const standardProducts = [...main, ...complementary].filter((p) => p.category !== 'betreuung');
   const premiumProducts = [...nonBetreuung, ...betreuung];
 
-  // Deduplicate
   const dedup = (arr: ScoredProduct[]) => {
     const seen = new Set<string>();
     return arr.filter((p) => { if (seen.has(p.id)) return false; seen.add(p.id); return true; });
@@ -231,7 +273,7 @@ export function generatePackages(scored: ScoredProduct[]): GeneratedPackage[] {
   const calc = (prods: ScoredProduct[]): GeneratedPackage => {
     const unique = dedup(prods);
     return {
-      config: packageConfigs[0], // placeholder, overridden below
+      config: packageConfigs[0],
       products: unique,
       totalValue: unique.reduce((s, p) => s + p.baseValue, 0) + preWork.value,
       includesPreWork: true,
@@ -251,9 +293,21 @@ export function formatCHF(value: number): string {
   return `CHF ${value.toLocaleString('de-CH')}`;
 }
 
-/** Risk reversal guarantees */
 export const riskReversalItems = [
   'Volle Transparenz über alle Kosten und Leistungen.',
   'Kein Mehrwert erkennbar? Geld zurück – ohne Diskussion.',
   'Du entscheidest in deinem Tempo – kein Verkaufsdruck.',
 ];
+
+/** Reset all scoring state to defaults */
+export function getDefaultOfferState() {
+  return {
+    overrides: {} as Record<string, number>,
+    disabledProducts: [] as string[],
+    categoryWeights: { ...defaultCategoryWeights },
+    priceOverrides: { starter: null, standard: null, premium: null } as Record<PackageTier, number | null>,
+    recommendedTier: 'standard' as PackageTier,
+    internalNote: '',
+    readiness: '',
+  };
+}
