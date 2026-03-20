@@ -830,6 +830,10 @@
     "zufallsRealitaetsCheck": {
       "name": "Zufalls-Realitäts-Check",
       "description": "Finde heraus, wie wahrscheinlich es ist, dass du das Thema Finanzen wirklich richtig angehst."
+    },
+    "recoveryAnalyse": {
+      "name": "Recovery-Analyse Weltaktienmarkt",
+      "description": "Wie lange brauchte der globale Aktienmarkt historisch, um sich nach grossen Krisen zu erholen?"
     }
   },
   "adminLeads": {
