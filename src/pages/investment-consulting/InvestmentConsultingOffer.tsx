@@ -2,50 +2,42 @@ import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Slider } from '@/components/ui/slider';
 import {
-  CheckCircle2, Shield, ArrowRight, Sparkles,
-  Target, Package, Star, Eye, EyeOff, Plus, Minus,
-  Save, MessageSquare, Crown,
+  CheckCircle2, Shield, ArrowRight, Sparkles, Target, Package, Star,
+  Eye, EyeOff, Crown, Gift, TrendingUp, Users, ChevronDown, ChevronUp,
 } from 'lucide-react';
 import { useInvestmentConsultationState } from '@/hooks/useInvestmentConsultationState';
-import { needsCategories } from '@/config/investmentNeedsConfig';
+import { useViewMode } from '@/hooks/useViewMode';
 import { useSectionBroadcast } from '@/hooks/useSectionBroadcast';
 import {
-  allOfferModules,
-  defaultOutcomeGoals,
-  riskReversalItems,
-  formatCHF,
-  packageConfigs,
-  type OfferModule,
-  type PackageTier,
-} from '@/config/investmentOfferConfig';
+  preWork, products, scoreProducts, generatePackages, formatCHF,
+  packageConfigs, riskReversalItems,
+  type ScoredProduct, type PackageTier, type GeneratedPackage,
+} from '@/config/investmentProductConfig';
 import { cn } from '@/lib/utils';
 
-/* ── Derive which categories are active from selected tiles ── */
-function getActiveCategoryIds(selectedTileIds: string[]): string[] {
-  const active = new Set<string>();
-  needsCategories.forEach((cat) => {
-    cat.tiles.forEach((tile) => {
-      if (selectedTileIds.includes(tile.id)) active.add(cat.id);
-    });
-  });
-  return Array.from(active);
-}
+/* ── Tier icons ── */
+const tierIcons: Record<PackageTier, typeof Star> = {
+  starter: Target,
+  standard: Star,
+  premium: Crown,
+};
 
 export default function InvestmentConsultingOffer() {
   const navigate = useNavigate();
   const { consultationData, updateData } = useInvestmentConsultationState();
+  const { isPresentation, isAdmin } = useViewMode();
 
-  /* ── Read needs data ── */
-  const needsData = (consultationData?.additionalData as any)?.needs as
-    | { tiles: Record<string, { selected: boolean; note: string }> }
+  /* ── Read selected tiles from needs data ── */
+  const needsData = (consultationData?.additionalData as Record<string, unknown>)?.needs as
+    | { tiles: Record<string, { selected: boolean }> }
     | undefined;
 
   const selectedTileIds = useMemo(() => {
@@ -55,140 +47,101 @@ export default function InvestmentConsultingOffer() {
       .map(([id]) => id);
   }, [needsData]);
 
-  /* ── Read module selections from answers ── */
-  const answersData = (consultationData?.additionalData as any)?.answers as
-    | Record<string, { selectedModuleIds?: string[] }>
-    | undefined;
+  /* ── Offer state from consultation data ── */
+  const offerData = (consultationData?.additionalData as Record<string, unknown>)?.offer as {
+    overrides?: Record<string, number>;
+    disabledProducts?: string[];
+    priceOverrides?: Record<PackageTier, number | null>;
+    recommendedTier?: PackageTier;
+    internalNote?: string;
+    readiness?: string;
+  } | undefined;
 
-  const answerSelectedModuleIds = useMemo(() => {
-    if (!answersData) return new Set<string>();
-    const ids = new Set<string>();
-    Object.values(answersData).forEach((a) => {
-      a.selectedModuleIds?.forEach((id) => ids.add(id));
-    });
-    return ids;
-  }, [answersData]);
+  const [overrides, setOverrides] = useState<Record<string, number>>(offerData?.overrides ?? {});
+  const [disabledProducts, setDisabledProducts] = useState<Set<string>>(new Set(offerData?.disabledProducts ?? []));
+  const [priceOverrides, setPriceOverrides] = useState<Record<PackageTier, number | null>>(
+    offerData?.priceOverrides ?? { starter: null, standard: null, premium: null }
+  );
+  const [recommendedTier, setRecommendedTier] = useState<PackageTier>(offerData?.recommendedTier ?? 'standard');
+  const [internalNote, setInternalNote] = useState(offerData?.internalNote ?? '');
+  const [readiness, setReadiness] = useState(offerData?.readiness ?? '');
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
 
-  /* ── Modules derived from answers ── */
-  const relevantModules = useMemo(() => {
-    if (answerSelectedModuleIds.size === 0) return [];
-    return allOfferModules.filter((m) => answerSelectedModuleIds.has(m.id));
-  }, [answerSelectedModuleIds]);
+  /* ── Scoring ── */
+  const scored = useMemo(
+    () => scoreProducts(selectedTileIds, overrides, disabledProducts),
+    [selectedTileIds, overrides, disabledProducts],
+  );
 
-  /* ── Advisor controls ── */
-  const [showAdvisorView, setShowAdvisorView] = useState(false);
-  const [priceOverrides, setPriceOverrides] = useState<Record<string, number>>({});
-  const [extraModules, setExtraModules] = useState<OfferModule[]>([]);
-  const [recommendedTier, setRecommendedTier] = useState<PackageTier>('standard');
+  const packages = useMemo(() => generatePackages(scored), [scored]);
 
-  // Package tier assignments: moduleId → set of tiers
-  const [tierAssignments, setTierAssignments] = useState<Record<string, Set<PackageTier>>>(() => {
-    // Default: all modules in standard + premium, subset in starter
-    const assignments: Record<string, Set<PackageTier>> = {};
-    relevantModules.forEach((mod, idx) => {
-      assignments[mod.id] = new Set(
-        idx < 3 ? ['starter', 'standard', 'premium'] : ['standard', 'premium']
-      );
-    });
-    return assignments;
-  });
+  /* ── Persist offer state ── */
+  const persistOffer = useCallback(
+    (partial: Partial<typeof offerData>) => {
+      updateData((prev) => ({
+        ...prev,
+        additionalData: {
+          ...(prev.additionalData as Record<string, unknown>),
+          offer: {
+            ...((prev.additionalData as Record<string, unknown>)?.offer as Record<string, unknown> ?? {}),
+            ...partial,
+          },
+        },
+      }));
+    },
+    [updateData],
+  );
 
-  // Package prices
-  const [packagePrices, setPackagePrices] = useState<Record<PackageTier, number | null>>({
-    starter: null,
-    standard: null,
-    premium: null,
-  });
+  const setOverrideAndPersist = (productId: string, bonus: number) => {
+    const next = { ...overrides, [productId]: bonus };
+    setOverrides(next);
+    persistOffer({ overrides: next });
+  };
 
-  /* ── All modules for display ── */
-  const allModules = useMemo(() => {
-    const mods = relevantModules.map((m) => ({
-      ...m,
-      value: priceOverrides[m.id] ?? m.value,
-    }));
-    return [...mods, ...extraModules];
-  }, [relevantModules, priceOverrides, extraModules]);
+  const toggleProduct = (productId: string) => {
+    const next = new Set(disabledProducts);
+    if (next.has(productId)) next.delete(productId);
+    else next.add(productId);
+    setDisabledProducts(next);
+    persistOffer({ disabledProducts: Array.from(next) });
+  };
 
-  /* ── Modules per tier ── */
-  const getModulesForTier = useCallback((tier: PackageTier) => {
-    return allModules.filter((m) => tierAssignments[m.id]?.has(tier));
-  }, [allModules, tierAssignments]);
+  const setPriceOverrideAndPersist = (tier: PackageTier, value: number | null) => {
+    const next = { ...priceOverrides, [tier]: value };
+    setPriceOverrides(next);
+    persistOffer({ priceOverrides: next });
+  };
 
-  const getTierValue = useCallback((tier: PackageTier) => {
-    return getModulesForTier(tier).reduce((sum, m) => sum + m.value, 0);
-  }, [getModulesForTier]);
+  const setRecommendedAndPersist = (tier: PackageTier) => {
+    setRecommendedTier(tier);
+    persistOffer({ recommendedTier: tier });
+  };
 
-  const getTierPrice = useCallback((tier: PackageTier) => {
-    if (packagePrices[tier] !== null) return packagePrices[tier]!;
-    const value = getTierValue(tier);
+  /* ── Package price calculation ── */
+  const getPackagePrice = (pkg: GeneratedPackage, tier: PackageTier): number => {
+    if (priceOverrides[tier] !== null && priceOverrides[tier] !== undefined) return priceOverrides[tier]!;
     const discounts: Record<PackageTier, number> = { starter: 0.5, standard: 0.35, premium: 0.25 };
-    return Math.round(value * (1 - discounts[tier]));
-  }, [packagePrices, getTierValue]);
-
-  /* ── Tier assignment toggle ── */
-  const toggleTierAssignment = useCallback((moduleId: string, tier: PackageTier) => {
-    setTierAssignments((prev) => {
-      const current = prev[moduleId] ?? new Set();
-      const next = new Set(current);
-      if (next.has(tier)) next.delete(tier);
-      else next.add(tier);
-      return { ...prev, [moduleId]: next };
-    });
-  }, []);
-
-  /* ── Ensure new modules get default tier assignments ── */
-  useMemo(() => {
-    allModules.forEach((mod) => {
-      if (!tierAssignments[mod.id]) {
-        setTierAssignments((prev) => ({
-          ...prev,
-          [mod.id]: new Set(['standard', 'premium'] as PackageTier[]),
-        }));
-      }
-    });
-  }, [allModules]);
+    return Math.round(pkg.totalValue * (1 - discounts[tier]));
+  };
 
   /* ── Broadcast ── */
   useSectionBroadcast({
     section: 'offer',
-    title: 'Dein individuelles Angebot',
-    subtitle: 'Basierend auf unserem Gespräch zusammengestellt',
-    items: defaultOutcomeGoals,
-    extra: {
-      offerModules: allModules.map((m) => ({ title: m.title, description: m.description })),
-      offerPrice: formatCHF(getTierPrice('standard')),
-      offerTotalValue: formatCHF(getTierValue('standard')),
-    },
+    title: 'Das ergibt sich aus unserem Gespräch',
+    subtitle: 'Deine individuelle Empfehlung',
+    items: scored.filter((p) => p.tier === 'main').map((p) => p.name),
+    extra: { recommendedTier },
   });
 
-  /* ── Advisor: add extra module ── */
-  const [newModuleTitle, setNewModuleTitle] = useState('');
-  const [newModuleValue, setNewModuleValue] = useState(500);
-  const addExtraModule = useCallback(() => {
-    if (!newModuleTitle.trim()) return;
-    const id = `custom-${Date.now()}`;
-    setExtraModules((prev) => [
-      ...prev,
-      { id, title: newModuleTitle.trim(), description: 'Individueller Baustein', value: newModuleValue },
-    ]);
-    setTierAssignments((prev) => ({ ...prev, [id]: new Set(['standard', 'premium'] as PackageTier[]) }));
-    setNewModuleTitle('');
-    setNewModuleValue(500);
-  }, [newModuleTitle, newModuleValue]);
-
-  const removeExtraModule = useCallback((id: string) => {
-    setExtraModules((prev) => prev.filter((m) => m.id !== id));
-  }, []);
-
-  /* ── No data state ── */
-  if (selectedTileIds.length === 0 && allModules.length === 0) {
+  /* ── Empty state ── */
+  if (selectedTileIds.length === 0) {
     return (
       <AppLayout>
         <div className="container py-12 max-w-3xl text-center space-y-4">
           <Package className="w-12 h-12 text-muted-foreground mx-auto" />
           <h1 className="text-2xl font-semibold">Noch kein Angebot verfügbar</h1>
           <p className="text-muted-foreground">
-            Wähle zuerst in der Vorsorgeoptimierung die relevanten Fragen aus, damit ein individuelles Angebot erstellt werden kann.
+            Wähle zuerst die relevanten Themen aus, damit sich ein individuelles Angebot ergeben kann.
           </p>
           <Button onClick={() => navigate('/app/investment-consulting/needs')}>
             Zur Vorsorgeoptimierung
@@ -198,305 +151,543 @@ export default function InvestmentConsultingOffer() {
     );
   }
 
+  /* ================================================================ */
+  /* PRESENTATION VIEW                                                 */
+  /* ================================================================ */
+  if (isPresentation) {
+    return (
+      <AppLayout>
+        <div className="min-h-screen bg-background">
+          <div className="container max-w-3xl py-12 space-y-10">
+            {/* Header */}
+            <div className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <h1 className="text-3xl font-bold tracking-tight text-foreground">
+                Das ergibt sich aus unserem Gespräch
+              </h1>
+              <p className="text-muted-foreground text-lg leading-relaxed">
+                Basierend auf deinen Themen und Fragen habe ich eine individuelle Empfehlung für dich zusammengestellt.
+              </p>
+            </div>
+
+            {/* Phase 1 – Pre-work (always shown) */}
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}>
+              <Card className="border-primary/20 bg-primary/[0.02]">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-primary/10 shrink-0">
+                      <Gift className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="flex-1 space-y-3">
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <h3 className="font-semibold text-foreground">{preWork.title}</h3>
+                        <Badge className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/10">
+                          Bereits für dich gemacht
+                        </Badge>
+                      </div>
+                      <ul className="space-y-1.5">
+                        {preWork.items.map((item) => (
+                          <li key={item.label} className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
+                            {item.label}
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="text-xs text-muted-foreground pt-1 border-t border-border/50">
+                        Diese Analyse hast du bereits im heutigen Gespräch erhalten.
+                        <span className="font-medium text-foreground ml-1">Wert: {formatCHF(preWork.value)}</span>
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Phase 2 – Recommendations */}
+            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: '300ms', animationFillMode: 'backwards' }}>
+              <h2 className="text-xl font-semibold text-foreground">Deine nächsten sinnvollen Schritte</h2>
+
+              {/* Main focus */}
+              {scored.filter((p) => p.tier === 'main').length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-primary uppercase tracking-wide flex items-center gap-1.5">
+                    <TrendingUp className="h-3.5 w-3.5" />
+                    Hauptfokus
+                  </p>
+                  {scored.filter((p) => p.tier === 'main').map((p) => (
+                    <ProductCard key={p.id} product={p} emphasis="high" />
+                  ))}
+                </div>
+              )}
+
+              {/* Complementary */}
+              {scored.filter((p) => p.tier === 'complementary').length > 0 && (
+                <div className="space-y-2 pt-2">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    Ergänzende Empfehlungen
+                  </p>
+                  {scored.filter((p) => p.tier === 'complementary').map((p) => (
+                    <ProductCard key={p.id} product={p} emphasis="medium" />
+                  ))}
+                </div>
+              )}
+
+              {/* Optional */}
+              {scored.filter((p) => p.tier === 'optional').length > 0 && (
+                <CollapsibleSection label="Weitere Optionen" defaultOpen={false}>
+                  {scored.filter((p) => p.tier === 'optional').map((p) => (
+                    <ProductCard key={p.id} product={p} emphasis="low" />
+                  ))}
+                </CollapsibleSection>
+              )}
+            </div>
+
+            {/* Packages */}
+            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: '450ms', animationFillMode: 'backwards' }}>
+              <h2 className="text-xl font-semibold text-foreground">Dein individuelles Konzept</h2>
+              <p className="text-sm text-muted-foreground">
+                Drei Varianten – passend zu deinen Prioritäten und deinem Tempo.
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {packages.map((pkg) => {
+                  const isRec = pkg.config.tier === recommendedTier;
+                  const price = getPackagePrice(pkg, pkg.config.tier);
+                  const TierIcon = tierIcons[pkg.config.tier];
+
+                  return (
+                    <Card
+                      key={pkg.config.tier}
+                      className={cn(
+                        'relative transition-all',
+                        isRec ? 'border-primary shadow-md ring-1 ring-primary/20' : 'border-border',
+                      )}
+                    >
+                      {isRec && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                          <Badge className="bg-primary text-primary-foreground gap-1">
+                            <Star className="w-3 h-3" /> Empfohlen
+                          </Badge>
+                        </div>
+                      )}
+                      <CardHeader className="pb-3 pt-5">
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <TierIcon className="w-4 h-4 text-primary" />
+                          {pkg.config.label}
+                        </CardTitle>
+                        <CardDescription className="text-xs">{pkg.config.description}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <ul className="space-y-1.5">
+                          <li className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
+                            {preWork.title}
+                          </li>
+                          {pkg.products.map((p) => (
+                            <li key={p.id} className="flex items-center gap-2 text-sm">
+                              <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
+                              {p.name}
+                            </li>
+                          ))}
+                        </ul>
+                        <Separator />
+                        <div className="text-center space-y-1">
+                          <p className="text-xs text-muted-foreground line-through">
+                            Wert: {formatCHF(pkg.totalValue)}
+                          </p>
+                          <p className={cn('text-2xl font-bold', isRec ? 'text-primary' : 'text-foreground')}>
+                            {formatCHF(price)}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Risk Reversal */}
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: '600ms', animationFillMode: 'backwards' }}>
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-3">
+                    <Shield className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <h3 className="font-semibold text-foreground mb-2">Deine Sicherheit</h3>
+                      <ul className="space-y-2">
+                        {riskReversalItems.map((item) => (
+                          <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
+                            <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  /* ================================================================ */
+  /* ADMIN VIEW                                                        */
+  /* ================================================================ */
   return (
     <AppLayout>
       <div className="container py-6 space-y-6 max-w-5xl">
-        {/* ── Header ── */}
+        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold">Dein individuelles Angebot</h1>
-            <p className="text-muted-foreground mt-1">
-              Basierend auf unserem Gespräch zusammengestellt
+            <h1 className="text-2xl font-semibold">Produkt- & Angebotslogik</h1>
+            <p className="text-muted-foreground mt-1 text-sm">
+              Automatisch aus {selectedTileIds.length} ausgewählten Themen generiert · {scored.length} Produkte aktiv
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              {showAdvisorView ? (
-                <Eye className="w-4 h-4 text-muted-foreground" />
-              ) : (
-                <EyeOff className="w-4 h-4 text-muted-foreground" />
-              )}
-              <Switch checked={showAdvisorView} onCheckedChange={setShowAdvisorView} />
-              <span className="text-xs text-muted-foreground">Berateransicht</span>
-            </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAdminPanel(!showAdminPanel)}
+            >
+              <Eye className="w-4 h-4 mr-1" />
+              {showAdminPanel ? 'Steuerung ausblenden' : 'Steuerung einblenden'}
+            </Button>
           </div>
         </div>
 
         <Separator />
 
-        {/* BLOCK 1 – Outcome Goals */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Target className="w-5 h-5 text-primary" />
-              Das Ziel
-            </CardTitle>
-            <CardDescription>Was du am Ende dieses Prozesses hast</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {defaultOutcomeGoals.map((goal) => (
-                <li key={goal} className="flex items-start gap-2.5 text-sm">
-                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                  <span>{goal}</span>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-
-        {/* BLOCK 2 – 3 Package Tiers (Customer View) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {packageConfigs.map((pkg) => {
-            const tierModules = getModulesForTier(pkg.tier);
-            const tierValue = getTierValue(pkg.tier);
-            const tierPrice = getTierPrice(pkg.tier);
-            const isRecommended = pkg.tier === recommendedTier;
-
-            return (
-              <Card
-                key={pkg.tier}
-                className={cn(
-                  'relative transition-all',
-                  isRecommended
-                    ? 'border-primary shadow-md ring-1 ring-primary/20'
-                    : 'border-border',
-                )}
-              >
-                {isRecommended && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-primary text-primary-foreground gap-1">
-                      <Star className="w-3 h-3" />
-                      Empfohlen
-                    </Badge>
-                  </div>
-                )}
-                <CardHeader className="pb-3 pt-5">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    {pkg.tier === 'premium' && <Crown className="w-4 h-4 text-primary" />}
-                    {pkg.label}
-                  </CardTitle>
-                  <CardDescription className="text-xs">{pkg.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Module list */}
-                  <ul className="space-y-2">
-                    {tierModules.map((mod) => (
-                      <li key={mod.id} className="flex items-start gap-2 text-sm">
-                        <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                        <span>{mod.title}</span>
-                      </li>
-                    ))}
-                    {tierModules.length === 0 && (
-                      <li className="text-xs text-muted-foreground">Keine Bausteine zugeordnet</li>
-                    )}
-                  </ul>
-
-                  <Separator />
-
-                  {/* Value + Price */}
-                  <div className="space-y-1 text-center">
-                    <p className="text-xs text-muted-foreground line-through">
-                      Wert: {formatCHF(tierValue)}
-                    </p>
-                    <p className={cn(
-                      'text-2xl font-bold',
-                      isRecommended ? 'text-primary' : 'text-foreground',
-                    )}>
-                      {formatCHF(tierPrice)}
-                    </p>
-                  </div>
-
-                  {showAdvisorView && (
-                    <div className="pt-2 border-t space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-xs">Preis</Label>
-                        <Input
-                          type="number"
-                          className="h-7 text-xs flex-1"
-                          placeholder="Auto"
-                          value={packagePrices[pkg.tier] ?? ''}
-                          onChange={(e) => {
-                            const v = e.target.value ? parseInt(e.target.value) : null;
-                            setPackagePrices((prev) => ({ ...prev, [pkg.tier]: v }));
-                          }}
-                        />
-                      </div>
-                      <Button
-                        variant={isRecommended ? 'default' : 'outline'}
-                        size="sm"
-                        className="w-full text-xs"
-                        onClick={() => setRecommendedTier(pkg.tier)}
-                      >
-                        {isRecommended ? '✓ Empfohlen' : 'Als Empfehlung setzen'}
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-
-        {/* BLOCK 3 – Advisor: Module ↔ Tier Assignment */}
-        {showAdvisorView && (
-          <Card className="border-dashed border-muted-foreground/30">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
-                <Eye className="w-4 h-4" />
-                Bausteine den Paketen zuordnen
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="grid grid-cols-[1fr_80px_80px_80px_80px] gap-2 text-xs font-semibold text-muted-foreground pb-1 border-b">
-                <span>Baustein</span>
-                <span className="text-center">Wert</span>
-                <span className="text-center">Einst.</span>
-                <span className="text-center">Stand.</span>
-                <span className="text-center">Prem.</span>
+        {/* Pre-work preview */}
+        <Card className="border-primary/20">
+          <CardContent className="p-5">
+            <div className="flex items-center gap-3">
+              <Gift className="h-5 w-5 text-primary" />
+              <div>
+                <p className="font-medium">{preWork.title}</p>
+                <p className="text-xs text-muted-foreground">
+                  Fixe Vorleistung · {formatCHF(preWork.value)} · Wird immer angezeigt
+                </p>
               </div>
-              {allModules.map((mod) => (
-                <div key={mod.id} className="grid grid-cols-[1fr_80px_80px_80px_80px] gap-2 items-center text-sm py-1.5 border-b border-border/50">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className="truncate text-xs">{mod.title}</span>
-                    {mod.id.startsWith('custom-') && (
-                      <Button variant="ghost" size="icon" className="h-5 w-5 shrink-0" onClick={() => removeExtraModule(mod.id)}>
-                        <Minus className="w-3 h-3" />
-                      </Button>
-                    )}
-                  </div>
-                  <div className="text-center">
-                    <Input
-                      type="number"
-                      className="h-6 text-[11px] text-center w-full"
-                      value={mod.value}
-                      onChange={(e) => {
-                        const v = parseInt(e.target.value) || 0;
-                        if (mod.id.startsWith('custom-')) {
-                          setExtraModules((prev) => prev.map((m) => (m.id === mod.id ? { ...m, value: v } : m)));
-                        } else {
-                          setPriceOverrides((prev) => ({ ...prev, [mod.id]: v }));
-                        }
-                      }}
-                    />
-                  </div>
-                  {(['starter', 'standard', 'premium'] as PackageTier[]).map((tier) => (
-                    <div key={tier} className="flex justify-center">
-                      <Checkbox
-                        checked={tierAssignments[mod.id]?.has(tier) ?? false}
-                        onCheckedChange={() => toggleTierAssignment(mod.id, tier)}
-                      />
-                    </div>
-                  ))}
-                </div>
-              ))}
-
-              {/* Add custom module */}
-              <div className="flex items-center gap-2 pt-2">
-                <Input
-                  placeholder="Baustein hinzufügen…"
-                  className="h-7 text-xs flex-1"
-                  value={newModuleTitle}
-                  onChange={(e) => setNewModuleTitle(e.target.value)}
-                />
-                <Input
-                  type="number"
-                  className="w-20 h-7 text-xs"
-                  value={newModuleValue}
-                  onChange={(e) => setNewModuleValue(parseInt(e.target.value) || 0)}
-                />
-                <Button variant="outline" size="sm" className="h-7 text-xs" onClick={addExtraModule}>
-                  <Plus className="w-3 h-3 mr-1" /> Hinzufügen
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* BLOCK 4 – Risk Reversal */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Shield className="w-5 h-5 text-primary" />
-              Deine Sicherheit
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2.5">
-              {riskReversalItems.map((item) => (
-                <li key={item} className="flex items-start gap-2.5 text-sm">
-                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-
-        {/* BLOCK 5 – Next Steps */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <ArrowRight className="w-5 h-5 text-primary" />
-              Nächste Schritte
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <Button className="w-full" size="lg">
-                <Star className="w-4 h-4 mr-2" />
-                Zusammenarbeit starten
-              </Button>
-              <Button variant="outline" className="w-full" size="lg">
-                <Save className="w-4 h-4 mr-2" />
-                Angebot speichern
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full"
-                size="lg"
-                onClick={() => navigate('/app/investment-consulting/answers')}
-              >
-                <MessageSquare className="w-4 h-4 mr-2" />
-                Fragen klären
-              </Button>
+              <Badge variant="secondary" className="ml-auto">Phase 1</Badge>
             </div>
           </CardContent>
         </Card>
 
-        {/* Advisor: Internal Assessment */}
-        {showAdvisorView && (
+        {/* Scored products overview */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-primary" />
+              Produkt-Scoring
+            </CardTitle>
+            <CardDescription>
+              Basierend auf ausgewählten Kundenfragen – höherer Score = stärkere Empfehlung
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-1">
+            {/* Header row */}
+            <div className="grid grid-cols-[1fr_80px_80px_80px_50px] gap-2 text-xs font-medium text-muted-foreground pb-2 border-b">
+              <span>Produkt</span>
+              <span className="text-center">Score</span>
+              <span className="text-center">Tier</span>
+              <span className="text-center">Wert</span>
+              <span className="text-center">An</span>
+            </div>
+            {products.filter((p) => p.active).map((product) => {
+              const sp = scored.find((s) => s.id === product.id);
+              const isDisabled = disabledProducts.has(product.id);
+              const score = sp?.score ?? 0;
+              const tier = sp?.tier;
+
+              return (
+                <div
+                  key={product.id}
+                  className={cn(
+                    'grid grid-cols-[1fr_80px_80px_80px_50px] gap-2 items-center py-2 border-b border-border/40 text-sm',
+                    isDisabled && 'opacity-40',
+                  )}
+                >
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-xs">{product.name}</p>
+                    <p className="truncate text-[11px] text-muted-foreground">{product.category}</p>
+                  </div>
+                  <div className="text-center">
+                    <Badge
+                      variant={score > 4 ? 'default' : score > 0 ? 'secondary' : 'outline'}
+                      className="text-[11px]"
+                    >
+                      {score}
+                    </Badge>
+                  </div>
+                  <div className="text-center">
+                    {tier && (
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          'text-[10px]',
+                          tier === 'main' && 'border-primary text-primary',
+                          tier === 'complementary' && 'border-amber-500 text-amber-600',
+                        )}
+                      >
+                        {tier === 'main' ? 'Haupt' : tier === 'complementary' ? 'Ergänz.' : 'Optional'}
+                      </Badge>
+                    )}
+                    {!tier && <span className="text-[10px] text-muted-foreground">—</span>}
+                  </div>
+                  <div className="text-center text-xs text-muted-foreground">
+                    {formatCHF(product.baseValue)}
+                  </div>
+                  <div className="flex justify-center">
+                    <Switch
+                      checked={!isDisabled}
+                      onCheckedChange={() => toggleProduct(product.id)}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+
+        {/* Admin controls panel */}
+        {showAdminPanel && (
           <Card className="border-dashed border-muted-foreground/30">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
                 <Eye className="w-4 h-4" />
-                Interne Berater-Einschätzung
+                Manuelle Steuerung
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="grid grid-cols-3 gap-2 text-center">
-                {(['bereit', 'unsicher', 'offen'] as const).map((status) => (
-                  <div
-                    key={status}
-                    className={cn(
-                      'p-2 rounded-lg border cursor-pointer transition-colors text-xs font-medium',
-                      'hover:bg-accent',
-                    )}
-                  >
-                    {status === 'bereit' && '✅ Bereit'}
-                    {status === 'unsicher' && '⚠️ Unsicher'}
-                    {status === 'offen' && '❓ Offen'}
+            <CardContent className="space-y-6">
+              {/* Score overrides */}
+              <div className="space-y-3">
+                <Label className="text-xs font-medium">Gewichtung anpassen (Bonus-Punkte)</Label>
+                {scored.slice(0, 8).map((p) => (
+                  <div key={p.id} className="flex items-center gap-3">
+                    <span className="text-xs w-40 truncate">{p.name}</span>
+                    <Slider
+                      className="flex-1"
+                      min={-5}
+                      max={10}
+                      step={1}
+                      value={[overrides[p.id] ?? 0]}
+                      onValueChange={([v]) => setOverrideAndPersist(p.id, v)}
+                    />
+                    <span className="text-xs w-8 text-right font-mono">
+                      {(overrides[p.id] ?? 0) > 0 ? '+' : ''}{overrides[p.id] ?? 0}
+                    </span>
                   </div>
                 ))}
               </div>
-              <Input
-                placeholder="z. B. Kunde bereit zur Entscheidung / hat letzte Unsicherheiten / braucht Bestätigung"
-                className="text-xs"
-              />
+
+              <Separator />
+
+              {/* Package price overrides */}
+              <div className="space-y-3">
+                <Label className="text-xs font-medium">Paketpreise überschreiben</Label>
+                <div className="grid grid-cols-3 gap-3">
+                  {packageConfigs.map((cfg) => (
+                    <div key={cfg.tier} className="space-y-1">
+                      <Label className="text-[11px] text-muted-foreground">{cfg.label}</Label>
+                      <Input
+                        type="number"
+                        placeholder="Auto"
+                        className="h-8 text-xs"
+                        value={priceOverrides[cfg.tier] ?? ''}
+                        onChange={(e) => {
+                          const v = e.target.value ? parseInt(e.target.value) : null;
+                          setPriceOverrideAndPersist(cfg.tier, v);
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Recommended tier */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium">Empfohlenes Paket</Label>
+                <div className="flex gap-2">
+                  {packageConfigs.map((cfg) => (
+                    <Button
+                      key={cfg.tier}
+                      variant={recommendedTier === cfg.tier ? 'default' : 'outline'}
+                      size="sm"
+                      className="text-xs"
+                      onClick={() => setRecommendedAndPersist(cfg.tier)}
+                    >
+                      {cfg.label}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Internal note & readiness */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Label className="text-xs">Interne Notiz</Label>
+                  <Input
+                    placeholder="z. B. Kunde offen für Premium…"
+                    className="text-xs h-8"
+                    value={internalNote}
+                    onChange={(e) => {
+                      setInternalNote(e.target.value);
+                      persistOffer({ internalNote: e.target.value });
+                    }}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Bereitschaft</Label>
+                  <div className="flex gap-1">
+                    {['bereit', 'unsicher', 'offen'].map((s) => (
+                      <Button
+                        key={s}
+                        variant={readiness === s ? 'default' : 'outline'}
+                        size="sm"
+                        className="text-xs flex-1"
+                        onClick={() => { setReadiness(s); persistOffer({ readiness: s }); }}
+                      >
+                        {s === 'bereit' ? '✅' : s === 'unsicher' ? '⚠️' : '❓'} {s}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         )}
+
+        {/* Package preview (admin sees same cards as customer) */}
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold">Paket-Vorschau (Kundenansicht)</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {packages.map((pkg) => {
+              const isRec = pkg.config.tier === recommendedTier;
+              const price = getPackagePrice(pkg, pkg.config.tier);
+              const TierIcon = tierIcons[pkg.config.tier];
+
+              return (
+                <Card
+                  key={pkg.config.tier}
+                  className={cn(
+                    'relative transition-all',
+                    isRec ? 'border-primary shadow-md ring-1 ring-primary/20' : 'border-border',
+                  )}
+                >
+                  {isRec && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <Badge className="bg-primary text-primary-foreground gap-1">
+                        <Star className="w-3 h-3" /> Empfohlen
+                      </Badge>
+                    </div>
+                  )}
+                  <CardHeader className="pb-3 pt-5">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <TierIcon className="w-4 h-4 text-primary" />
+                      {pkg.config.label}
+                    </CardTitle>
+                    <CardDescription className="text-xs">{pkg.config.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <ul className="space-y-1">
+                      <li className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <CheckCircle2 className="h-3 w-3 text-primary shrink-0" />
+                        {preWork.title}
+                      </li>
+                      {pkg.products.map((p) => (
+                        <li key={p.id} className="flex items-center gap-2 text-xs">
+                          <CheckCircle2 className="h-3 w-3 text-primary shrink-0" />
+                          {p.name}
+                        </li>
+                      ))}
+                    </ul>
+                    <Separator />
+                    <div className="text-center space-y-0.5">
+                      <p className="text-[11px] text-muted-foreground line-through">
+                        Wert: {formatCHF(pkg.totalValue)}
+                      </p>
+                      <p className={cn('text-xl font-bold', isRec ? 'text-primary' : 'text-foreground')}>
+                        {formatCHF(price)}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Nav */}
+        <div className="flex justify-between pt-4">
+          <Button variant="outline" onClick={() => navigate('/app/investment-consulting/answers')}>
+            Zurück zu Antworten
+          </Button>
+          <Button onClick={() => navigate('/app/investment-consulting/summary')}>
+            Weiter zur Zusammenfassung
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
+        </div>
       </div>
     </AppLayout>
+  );
+}
+
+/* ── Sub-components ── */
+
+function ProductCard({ product, emphasis }: { product: ScoredProduct; emphasis: 'high' | 'medium' | 'low' }) {
+  return (
+    <Card
+      className={cn(
+        'transition-all',
+        emphasis === 'high' && 'border-primary/30 bg-primary/[0.02]',
+        emphasis === 'low' && 'opacity-80',
+      )}
+    >
+      <CardContent className="p-4 flex items-start gap-3">
+        <CheckCircle2
+          className={cn(
+            'h-4 w-4 shrink-0 mt-0.5',
+            emphasis === 'high' ? 'text-primary' : 'text-muted-foreground',
+          )}
+        />
+        <div>
+          <p className={cn('text-sm font-medium', emphasis === 'high' && 'text-foreground')}>
+            {product.name}
+          </p>
+          <p className="text-xs text-muted-foreground mt-0.5">{product.description}</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function CollapsibleSection({
+  label,
+  defaultOpen = false,
+  children,
+}: {
+  label: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="space-y-2 pt-2">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+      >
+        {open ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+        {label}
+      </button>
+      {open && <div className="space-y-2">{children}</div>}
+    </div>
   );
 }
