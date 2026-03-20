@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -6,7 +7,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
-import { Upload } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Upload, X, FileText, Image as ImageIcon, AlertTriangle, Sparkles } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import type {
   CaseStudyData,
   CustomerType,
@@ -16,6 +21,7 @@ import type {
   Duration,
   PreviousSolution,
   MainProblem,
+  MediaItem,
 } from './types';
 import {
   CUSTOMER_TYPE_LABELS,
@@ -26,6 +32,8 @@ import {
   PREVIOUS_SOLUTION_LABELS,
   MAIN_PROBLEM_LABELS,
   BENEFIT_OPTIONS,
+  GLOBAL_CTA_LINK,
+  generateAutoTitle,
 } from './types';
 
 interface Props {
@@ -34,6 +42,9 @@ interface Props {
 }
 
 export function CaseStudyEditor({ data, onChange }: Props) {
+  const customerImageRef = useRef<HTMLInputElement>(null);
+  const mediaRef = useRef<HTMLInputElement>(null);
+
   const update = <K extends keyof CaseStudyData>(key: K, value: CaseStudyData[K]) => {
     onChange({ ...data, [key]: value });
   };
@@ -45,6 +56,73 @@ export function CaseStudyEditor({ data, onChange }: Props) {
       : [...current, benefit];
     update('benefits', next);
   };
+
+  const handleAutoTitle = () => {
+    const title = generateAutoTitle(data.customerType, data.feeSavings);
+    if (title) {
+      update('publicTitle', title);
+      toast.success('Titel automatisch generiert');
+    } else {
+      toast.error('Bitte zuerst Kundentyp und Ersparnis angeben');
+    }
+  };
+
+  const uploadFile = async (file: File, path: string): Promise<string | null> => {
+    const { data: uploadData, error } = await supabase.storage
+      .from('case-study-media')
+      .upload(path, file, { upsert: true });
+    if (error) {
+      toast.error(`Upload fehlgeschlagen: ${error.message}`);
+      return null;
+    }
+    const { data: urlData } = supabase.storage
+      .from('case-study-media')
+      .getPublicUrl(uploadData.path);
+    return urlData.publicUrl;
+  };
+
+  const handleCustomerImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      toast.error('Nur Bilddateien erlaubt');
+      return;
+    }
+    const path = `customers/${data.id}/${Date.now()}_${file.name}`;
+    const url = await uploadFile(file, path);
+    if (url) {
+      update('customerImageUrl', url);
+      toast.success('Kundenbild hochgeladen');
+    }
+  };
+
+  const handleMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    const newMedia: MediaItem[] = [...data.media];
+    for (const file of Array.from(files)) {
+      const isImage = file.type.startsWith('image/');
+      const isPdf = file.type === 'application/pdf';
+      if (!isImage && !isPdf) {
+        toast.error(`${file.name}: Nur JPG, PNG oder PDF erlaubt`);
+        continue;
+      }
+      const path = `media/${data.id}/${Date.now()}_${file.name}`;
+      const url = await uploadFile(file, path);
+      if (url) {
+        newMedia.push({ type: isImage ? 'image' : 'pdf', url, name: file.name });
+      }
+    }
+    update('media', newMedia);
+    if (mediaRef.current) mediaRef.current.value = '';
+  };
+
+  const removeMedia = (idx: number) => {
+    update('media', data.media.filter((_, i) => i !== idx));
+  };
+
+  const testimonialWordCount = data.testimonialText.trim().split(/\s+/).filter(Boolean).length;
+  const testimonialTooShort = data.showTestimonial && data.testimonialText.trim().length > 0 && testimonialWordCount < 10;
 
   return (
     <div className="space-y-6 overflow-y-auto max-h-[calc(100vh-12rem)] pr-2">
@@ -60,7 +138,12 @@ export function CaseStudyEditor({ data, onChange }: Props) {
           </div>
           <div>
             <Label className="text-xs text-muted-foreground">Öffentlicher Titel</Label>
-            <Input value={data.publicTitle} onChange={e => update('publicTitle', e.target.value)} placeholder="z. B. Wie eine junge Familie CHF 2'400 pro Jahr spart" />
+            <div className="flex gap-2">
+              <Input className="flex-1" value={data.publicTitle} onChange={e => update('publicTitle', e.target.value)} placeholder="z. B. Wie eine junge Familie CHF 2'400 pro Jahr spart" />
+              <Button variant="outline" size="sm" className="gap-1 shrink-0" onClick={handleAutoTitle}>
+                <Sparkles className="h-3.5 w-3.5" /> Auto
+              </Button>
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -238,14 +321,40 @@ export function CaseStudyEditor({ data, onChange }: Props) {
               <div>
                 <Label className="text-xs text-muted-foreground">Bewertungstext</Label>
                 <Textarea value={data.testimonialText} onChange={e => update('testimonialText', e.target.value)} rows={3} placeholder="Was sagt der Kunde?" />
+                {testimonialTooShort && (
+                  <div className="flex items-center gap-1.5 mt-1.5 text-amber-600 dark:text-amber-400">
+                    <AlertTriangle className="h-3.5 w-3.5" />
+                    <span className="text-xs">Aussagekräftiges Feedback erhöht Vertrauen (min. 10 Wörter empfohlen)</span>
+                  </div>
+                )}
               </div>
               <div>
                 <Label className="text-xs text-muted-foreground">Link zur Google Bewertung (optional)</Label>
                 <Input value={data.testimonialGoogleLink} onChange={e => update('testimonialGoogleLink', e.target.value)} placeholder="https://g.co/kgs/..." />
               </div>
-              <div className="border-2 border-dashed border-border rounded-xl p-6 text-center">
-                <Upload className="h-6 w-6 text-muted-foreground mx-auto mb-1.5" />
-                <p className="text-xs text-muted-foreground">Kundenbild hochladen (optional, noch nicht aktiv)</p>
+              {/* Customer Image Upload */}
+              <div>
+                <Label className="text-xs text-muted-foreground mb-1.5 block">Kundenbild (optional)</Label>
+                {data.customerImageUrl ? (
+                  <div className="relative inline-block">
+                    <img src={data.customerImageUrl} alt="Kunde" className="w-20 h-20 rounded-full object-cover border border-border" />
+                    <button
+                      onClick={() => update('customerImageUrl', '')}
+                      className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full p-0.5"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <div
+                    className="border-2 border-dashed border-border rounded-xl p-6 text-center cursor-pointer hover:border-primary/40 transition-colors"
+                    onClick={() => customerImageRef.current?.click()}
+                  >
+                    <Upload className="h-6 w-6 text-muted-foreground mx-auto mb-1.5" />
+                    <p className="text-xs text-muted-foreground">Kundenbild hochladen (JPG/PNG)</p>
+                  </div>
+                )}
+                <input ref={customerImageRef} type="file" accept="image/*" className="hidden" onChange={handleCustomerImageUpload} />
               </div>
             </>
           )}
@@ -257,12 +366,38 @@ export function CaseStudyEditor({ data, onChange }: Props) {
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Medien & Dokumente</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="border-2 border-dashed border-border rounded-xl p-8 text-center">
+        <CardContent className="space-y-4">
+          <div
+            className="border-2 border-dashed border-border rounded-xl p-8 text-center cursor-pointer hover:border-primary/40 transition-colors"
+            onClick={() => mediaRef.current?.click()}
+          >
             <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">Dateien hierher ziehen oder klicken</p>
-            <p className="text-xs text-muted-foreground mt-1">Vergleichsbilder, Screenshots, PDFs (noch nicht aktiv)</p>
+            <p className="text-sm text-muted-foreground">Dateien hochladen</p>
+            <p className="text-xs text-muted-foreground mt-1">JPG, PNG, PDF</p>
           </div>
+          <input ref={mediaRef} type="file" accept="image/*,.pdf" multiple className="hidden" onChange={handleMediaUpload} />
+          {data.media.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {data.media.map((item, idx) => (
+                <div key={idx} className="relative group border border-border rounded-lg p-3">
+                  <button
+                    onClick={() => removeMedia(idx)}
+                    className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                  {item.type === 'image' ? (
+                    <img src={item.url} alt={item.name} className="w-full h-20 object-cover rounded" />
+                  ) : (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <FileText className="h-5 w-5 shrink-0" />
+                      <span className="text-xs truncate">{item.name}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -289,10 +424,13 @@ export function CaseStudyEditor({ data, onChange }: Props) {
           <CardTitle className="text-base">Call-to-Action</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <p className="text-sm text-muted-foreground">Button: «15 Minuten Gespräch buchen»</p>
           <div>
-            <Label className="text-xs text-muted-foreground">Link (URL)</Label>
-            <Input value={data.ctaLink} onChange={e => update('ctaLink', e.target.value)} placeholder="https://calendly.com/..." />
+            <Label className="text-xs text-muted-foreground">Button-Text</Label>
+            <Input value={data.ctaButtonText} onChange={e => update('ctaButtonText', e.target.value)} placeholder="15 Minuten Gespräch buchen" />
+          </div>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Badge variant="outline" className="text-[10px]">Fix</Badge>
+            <span className="truncate">{GLOBAL_CTA_LINK}</span>
           </div>
         </CardContent>
       </Card>
