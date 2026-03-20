@@ -53,7 +53,7 @@ export function LinkCustomerDialog({ userId, currentCustomerId }: LinkCustomerDi
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" className="gap-1">
           <Link className="h-3 w-3" />
-          {t('userManagement.linkClient')}
+          {t('userManagement.linkCustomer', 'Kunde verknüpfen')}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
