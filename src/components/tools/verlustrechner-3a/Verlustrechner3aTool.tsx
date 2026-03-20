@@ -6,7 +6,8 @@ import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TrendingDown, ArrowRight, Info } from 'lucide-react';
-import { calculate, formatCHF, type VerlustInputs } from './calcLogic';
+import { calculate, formatCHF, MAX_CONTRIBUTION, type VerlustInputs } from './calcLogic';
+import { LifeImpactSection } from './LifeImpactSection';
 
 export function Verlustrechner3aTool() {
   const [inputs, setInputs] = useState<VerlustInputs>({
