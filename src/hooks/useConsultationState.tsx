@@ -450,6 +450,7 @@ export function ConsultationProvider({ children }: { children: ReactNode }) {
 
   const value: ConsultationContextValue = {
     consultationData,
+    updateData,
     currentConsultationId,
     currentTitle,
     isLoading,
