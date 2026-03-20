@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { HouseAffordabilityVisualization } from './HouseAffordabilityVisualization';
 import { Home, TrendingUp, AlertTriangle, CheckCircle, XCircle, Info } from 'lucide-react';
 import { calculate, formatCHF, formatPct, type MortgageInputs } from './calcLogic';
 
@@ -313,6 +314,22 @@ export function TragbarkeitsrechnerTool({ mode = 'internal' }: Props) {
           </Card>
         </div>
       </div>
+
+      {/* Haus-Visualisierung */}
+      <Card>
+        <CardHeader className="pb-4">
+          <CardTitle className="text-base">Deine Immobilie auf einen Blick</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <HouseAffordabilityVisualization
+            equityPct={result.equityPercent}
+            ltvPct={result.ltvPercent}
+            loanAmount={result.mortgage}
+            affordabilityPct={result.stressPercent}
+            status={result.status}
+          />
+        </CardContent>
+      </Card>
 
       {/* Info-Block */}
       <Card>
