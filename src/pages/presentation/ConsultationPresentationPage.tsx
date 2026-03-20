@@ -65,7 +65,7 @@ import InvestmentConsultingCustomerInfo from '@/pages/investment-consulting/Inve
 function getSectionComponent(type: string, section: string) {
   if (type === 'insurance') {
     switch (section) {
-      case 'topics': return <InsuranceConsultingTopics />;
+      case 'focus': return <InsuranceConsultingFocus />;
       case 'introduction': return <InsuranceConsultingIntroduction />;
       case 'company': return <InsuranceConsultingCompany />;
       case 'advisor-info': return <InsuranceConsultingAdvisorInfo />;
@@ -75,7 +75,7 @@ function getSectionComponent(type: string, section: string) {
   }
   if (type === 'investment') {
     switch (section) {
-      case 'topics': return <InvestmentConsultingTopics />;
+      case 'focus': return <InvestmentConsultingFocus />;
       case 'introduction': return <InvestmentConsultingIntroduction />;
       case 'company': return <InvestmentConsultingCompany />;
       case 'advisor-info': return <InvestmentConsultingAdvisorInfo />;
