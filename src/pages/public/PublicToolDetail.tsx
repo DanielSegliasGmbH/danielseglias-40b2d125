@@ -177,6 +177,10 @@ export default function PublicToolDetail() {
                 <div className="mb-8">
                   <SicherheitsvergleichTool mode="public" />
                 </div>
+              ) : slug === 'zeitverlust-simulator' ? (
+                <div className="mb-8">
+                  <ZeitverlustSimulatorTool mode="public" />
+                </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
                   <CardContent className="py-6 prose prose-neutral dark:prose-invert max-w-none">

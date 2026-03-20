@@ -96,6 +96,8 @@ export default function ClientPortalToolDetail() {
         return <RecoveryAnalyseTool mode="internal" />;
       case 'sicherheitsvergleich':
         return <SicherheitsvergleichTool mode="internal" />;
+      case 'zeitverlust-simulator':
+        return <ZeitverlustSimulatorTool mode="internal" />;
       default:
         return (
           <Card>
