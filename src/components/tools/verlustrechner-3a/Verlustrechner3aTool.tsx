@@ -263,6 +263,9 @@ export function Verlustrechner3aTool() {
         </div>
       </div>
 
+      {/* Emotionale Sektion */}
+      <LifeImpactSection loss={result.loss} />
+
       {/* Disclaimer */}
       <div className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-4">
         <p>
