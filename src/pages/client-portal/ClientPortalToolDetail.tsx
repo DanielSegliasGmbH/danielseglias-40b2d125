@@ -14,6 +14,7 @@ import { RenditeRisikoTool } from '@/components/tools/rendite-risiko/RenditeRisi
 import { CaseStudyGeneratorTool } from '@/components/tools/case-study-generator/CaseStudyGeneratorTool';
 import { Vergleichsrechner3aTool } from '@/components/tools/vergleichsrechner-3a/Vergleichsrechner3aTool';
 import { InflationsrechnerTool } from '@/components/tools/inflationsrechner/InflationsrechnerTool';
+import { TragbarkeitsrechnerTool } from '@/components/tools/tragbarkeitsrechner/TragbarkeitsrechnerTool';
 
 const iconMap: Record<string, LucideIcon> = {
   'calculator': Calculator,
@@ -22,6 +23,7 @@ const iconMap: Record<string, LucideIcon> = {
   'file-text': FileText,
   'wrench': Wrench,
   'Scale': Scale,
+  'home': Home,
 };
 
 export default function ClientPortalToolDetail() {
