@@ -18,6 +18,7 @@ import { RenditeRisikoTool } from '@/components/tools/rendite-risiko/RenditeRisi
 import { CaseStudyGeneratorTool } from '@/components/tools/case-study-generator/CaseStudyGeneratorTool';
 import { KostenaufschluesselungTool } from '@/components/tools/kostenaufschluesselung/KostenaufschluesselungTool';
 import { KostenImpactSimulatorTool } from '@/components/tools/kosten-impact-simulator/KostenImpactSimulatorTool';
+import { WahrscheinlichkeitsrechnerTool } from '@/components/tools/wahrscheinlichkeitsrechner/WahrscheinlichkeitsrechnerTool';
 
 // Icon mapping
 const iconMap: Record<string, LucideIcon> = {
@@ -112,6 +113,8 @@ export default function AdminToolDetail() {
         return <KostenaufschluesselungTool mode="internal" />;
       case 'kosten-impact-simulator':
         return <KostenImpactSimulatorTool mode="internal" />;
+      case 'wahrscheinlichkeitsrechner':
+        return <WahrscheinlichkeitsrechnerTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">

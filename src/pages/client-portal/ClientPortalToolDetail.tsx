@@ -19,6 +19,7 @@ import { Verlustrechner3aTool } from '@/components/tools/verlustrechner-3a/Verlu
 import { TransparenzCheckTool } from '@/components/tools/transparenz-check/TransparenzCheckTool';
 import { KostenaufschluesselungTool } from '@/components/tools/kostenaufschluesselung/KostenaufschluesselungTool';
 import { KostenImpactSimulatorTool } from '@/components/tools/kosten-impact-simulator/KostenImpactSimulatorTool';
+import { WahrscheinlichkeitsrechnerTool } from '@/components/tools/wahrscheinlichkeitsrechner/WahrscheinlichkeitsrechnerTool';
 
 const iconMap: Record<string, LucideIcon> = {
   'calculator': Calculator,
@@ -83,6 +84,8 @@ export default function ClientPortalToolDetail() {
         return <KostenaufschluesselungTool mode="internal" />;
       case 'kosten-impact-simulator':
         return <KostenImpactSimulatorTool mode="internal" />;
+      case 'wahrscheinlichkeitsrechner':
+        return <WahrscheinlichkeitsrechnerTool mode="internal" />;
       default:
         return (
           <Card>

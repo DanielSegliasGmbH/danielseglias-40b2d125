@@ -17,6 +17,7 @@ import { Verlustrechner3aTool } from '@/components/tools/verlustrechner-3a/Verlu
 import { TransparenzCheckTool } from '@/components/tools/transparenz-check/TransparenzCheckTool';
 import { KostenaufschluesselungTool } from '@/components/tools/kostenaufschluesselung/KostenaufschluesselungTool';
 import { KostenImpactSimulatorTool } from '@/components/tools/kosten-impact-simulator/KostenImpactSimulatorTool';
+import { WahrscheinlichkeitsrechnerTool } from '@/components/tools/wahrscheinlichkeitsrechner/WahrscheinlichkeitsrechnerTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -155,6 +156,10 @@ export default function PublicToolDetail() {
               ) : slug === 'kosten-impact-simulator' ? (
                 <div className="mb-8">
                   <KostenImpactSimulatorTool mode="public" />
+                </div>
+              ) : slug === 'wahrscheinlichkeitsrechner' ? (
+                <div className="mb-8">
+                  <WahrscheinlichkeitsrechnerTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
