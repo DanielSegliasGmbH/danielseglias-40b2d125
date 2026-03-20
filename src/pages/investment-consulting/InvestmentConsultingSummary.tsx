@@ -4,16 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import {
-  Save, FileText, Mail, Download, CheckCircle2, XCircle, AlertTriangle,
+  CheckCircle, FileText, Mail, Download, CheckCircle2, XCircle, AlertTriangle,
   Loader2, PenTool, MessageSquare, Lightbulb, ArrowRight, CircleDot,
 } from 'lucide-react';
 import { useInvestmentConsultationState } from '@/hooks/useInvestmentConsultationState';
+import { AutoSaveIndicator } from '@/components/consultation/AutoSaveIndicator';
 import { pyramidTopics } from '@/config/pyramidTopicsConfig';
 import { needsCategories } from '@/config/investmentNeedsConfig';
 import { cn } from '@/lib/utils';
