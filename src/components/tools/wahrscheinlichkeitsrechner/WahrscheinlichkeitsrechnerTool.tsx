@@ -1,3 +1,4 @@
+import { PdfExportWrapper } from '../PdfExportWrapper';
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -73,6 +74,7 @@ export function WahrscheinlichkeitsrechnerTool({ mode = 'internal' }: Props) {
   const occ = colorClasses[optColor];
 
   return (
+    <PdfExportWrapper toolName="Wahrscheinlichkeitsrechner" hideExport={mode === 'public'}>
     <div className="space-y-8">
       {/* Header */}
       <div className="space-y-2">
@@ -330,5 +332,6 @@ export function WahrscheinlichkeitsrechnerTool({ mode = 'internal' }: Props) {
         </p>
       </div>
     </div>
+    </PdfExportWrapper>
   );
 }

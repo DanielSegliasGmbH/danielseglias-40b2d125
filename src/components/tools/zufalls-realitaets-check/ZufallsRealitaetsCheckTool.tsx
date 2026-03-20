@@ -1,3 +1,4 @@
+import { PdfExportWrapper } from '../PdfExportWrapper';
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -71,6 +72,7 @@ export function ZufallsRealitaetsCheckTool({ mode = 'internal' }: Props) {
   };
 
   return (
+    <PdfExportWrapper toolName="Zufalls-Realitäts-Check" hideExport={mode === 'public'}>
     <div className="space-y-6">
       {/* Progress indicator */}
       {step > 0 && step < 4 && (
@@ -395,5 +397,6 @@ export function ZufallsRealitaetsCheckTool({ mode = 'internal' }: Props) {
         </div>
       )}
     </div>
+    </PdfExportWrapper>
   );
 }

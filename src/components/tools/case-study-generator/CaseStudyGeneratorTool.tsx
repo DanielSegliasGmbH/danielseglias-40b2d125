@@ -1,3 +1,4 @@
+import { PdfExportWrapper } from '../PdfExportWrapper';
 import { useState, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -28,6 +29,7 @@ export function CaseStudyGeneratorTool() {
   };
 
   return (
+    <PdfExportWrapper toolName="Case-Study-Generator">
     <div className="space-y-4">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="flex items-center justify-between">
@@ -76,5 +78,6 @@ export function CaseStudyGeneratorTool() {
         </TabsContent>
       </Tabs>
     </div>
+    </PdfExportWrapper>
   );
 }

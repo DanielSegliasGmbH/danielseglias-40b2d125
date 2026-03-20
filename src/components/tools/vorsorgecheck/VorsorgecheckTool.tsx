@@ -1,3 +1,4 @@
+import { PdfExportWrapper } from '../PdfExportWrapper';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -135,6 +136,7 @@ export default function VorsorgecheckTool() {
 
   // Question view
   return (
+    <PdfExportWrapper toolName="Vorsorgecheck-3a">
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="space-y-2">
         <div className="flex justify-between text-sm text-muted-foreground">
@@ -207,5 +209,6 @@ export default function VorsorgecheckTool() {
         </Button>
       </div>
     </div>
+    </PdfExportWrapper>
   );
 }

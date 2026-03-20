@@ -1,3 +1,4 @@
+import { PdfExportWrapper } from '../PdfExportWrapper';
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -36,6 +37,7 @@ export function InflationsrechnerTool() {
   const activeAmount = mode === 'future' ? amount : pastAmount;
 
   return (
+    <PdfExportWrapper toolName="Inflationsrechner">
     <div className="space-y-6">
       {/* Mode Tabs */}
       <Tabs value={mode} onValueChange={(v) => setMode(v as 'future' | 'past' | 'simulation')}>
@@ -212,5 +214,6 @@ export function InflationsrechnerTool() {
         </>
       )}
     </div>
+    </PdfExportWrapper>
   );
 }

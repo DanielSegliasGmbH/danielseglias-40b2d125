@@ -1,3 +1,4 @@
+import { PdfExportWrapper } from '../PdfExportWrapper';
 import { useFinanzcheckLogic } from './useFinanzcheckLogic';
 import { FinanzcheckStep0 } from './FinanzcheckStep0';
 import { FinanzcheckStep1 } from './FinanzcheckStep1';
@@ -28,6 +29,7 @@ export function FinanzcheckTool({ mode }: Props) {
   const steps = ['Start', 'Basisdaten', 'Themen', 'Ergebnis'];
 
   return (
+    <PdfExportWrapper toolName="Finanzcheck" hideExport={mode === 'public'}>
     <div className="max-w-3xl mx-auto">
       {/* Progress Steps */}
       {currentStep > 0 && currentStep < 3 && (
@@ -98,5 +100,6 @@ export function FinanzcheckTool({ mode }: Props) {
         <FinanzcheckStep3 result={result} onBack={goBack} onReset={reset} />
       )}
     </div>
+    </PdfExportWrapper>
   );
 }

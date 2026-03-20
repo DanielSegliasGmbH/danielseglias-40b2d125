@@ -1,3 +1,4 @@
+import { PdfExportWrapper } from '../PdfExportWrapper';
 import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,7 @@ export function RecoveryAnalyseTool({ mode = 'internal' }: Props) {
   const formatValue = (v: number) => v.toLocaleString('de-CH', { maximumFractionDigits: 0 });
 
   return (
+    <PdfExportWrapper toolName="Recovery-Analyse" hideExport={mode === 'public'}>
     <div className="space-y-8">
       {/* Header */}
       <div>
@@ -334,6 +336,7 @@ export function RecoveryAnalyseTool({ mode = 'internal' }: Props) {
         </AccordionItem>
       </Accordion>
     </div>
+    </PdfExportWrapper>
   );
 }
 

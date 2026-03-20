@@ -1,3 +1,4 @@
+import { PdfExportWrapper } from '../PdfExportWrapper';
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -34,6 +35,7 @@ export function KostenaufschluesselungTool({ mode = 'internal' }: Props) {
   const hiddenPct = totalCosts > 0 ? (result.hiddenCosts / totalCosts) * 100 : 50;
 
   return (
+    <PdfExportWrapper toolName="Kostenaufschlüsselung" hideExport={mode === 'public'}>
     <div className="space-y-8">
       {/* Header */}
       <div className="space-y-2">
@@ -293,5 +295,6 @@ export function KostenaufschluesselungTool({ mode = 'internal' }: Props) {
         </p>
       </div>
     </div>
+    </PdfExportWrapper>
   );
 }

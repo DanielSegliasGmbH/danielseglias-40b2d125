@@ -1,3 +1,4 @@
+import { PdfExportWrapper } from '../PdfExportWrapper';
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
@@ -34,6 +35,7 @@ export function RenditeRisikoTool({ mode }: Props) {
   const sim = useMonteCarloSimulation(years, scenarioKey);
 
   return (
+    <PdfExportWrapper toolName="Rendite-Risiko-Simulation" hideExport={mode === 'public'}>
     <div className="space-y-6">
       {/* Title + Private Mode Toggle */}
       <div className="flex items-start justify-between gap-4">
@@ -199,5 +201,6 @@ export function RenditeRisikoTool({ mode }: Props) {
       {/* Quellen – only in public mode */}
       {!isPrivateMode && <SourcesBlock />}
     </div>
+    </PdfExportWrapper>
   );
 }

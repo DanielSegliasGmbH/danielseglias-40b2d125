@@ -1,3 +1,4 @@
+import { PdfExportWrapper } from '../PdfExportWrapper';
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -131,6 +132,7 @@ export function TransparenzCheckTool({ mode = 'public' }: Props) {
   /* ══════════════════ ADMIN VIEW ══════════════════ */
   if (isAdmin) {
     return (
+      <PdfExportWrapper toolName="Transparenz-Check">
       <div className="space-y-6">
         {/* Registration links */}
         <Section icon={ShieldCheck} title="Offizielle Nachweise" delay={0}>
@@ -223,11 +225,13 @@ export function TransparenzCheckTool({ mode = 'public' }: Props) {
           </div>
         </Section>
       </div>
+      </PdfExportWrapper>
     );
   }
 
   /* ══════════════════ PUBLIC / PRESENTATION VIEW ══════════════════ */
   return (
+    <PdfExportWrapper toolName="Transparenz-Check" hideExport>
     <div className="space-y-6">
       {/* ── 1. Registration & Verification ── */}
       <Section icon={ShieldCheck} title="Offizielle Nachweise" delay={0}>
@@ -349,5 +353,6 @@ export function TransparenzCheckTool({ mode = 'public' }: Props) {
         </Collapsible>
       </Section>
     </div>
+    </PdfExportWrapper>
   );
 }

@@ -1,3 +1,4 @@
+import { PdfExportWrapper } from '../PdfExportWrapper';
 import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -816,6 +817,7 @@ export default function KvgPraemienvergleichTool() {
   }
 
   return (
+    <PdfExportWrapper toolName="KVG-Prämienvergleich">
     <div className="space-y-8">
       {/* Header */}
       <div>
@@ -1089,5 +1091,6 @@ export default function KvgPraemienvergleichTool() {
         </div>
       </section>
     </div>
+    </PdfExportWrapper>
   );
 }

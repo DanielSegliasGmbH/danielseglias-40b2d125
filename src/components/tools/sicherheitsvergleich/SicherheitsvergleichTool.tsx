@@ -1,3 +1,4 @@
+import { PdfExportWrapper } from '../PdfExportWrapper';
 import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
@@ -38,6 +39,7 @@ export function SicherheitsvergleichTool({ mode = 'internal' }: Props) {
   const fmt = (v: number) => v.toLocaleString('de-CH', { maximumFractionDigits: 0 });
 
   return (
+    <PdfExportWrapper toolName="Sicherheitsvergleich" hideExport={mode === 'public'}>
     <div className="space-y-8">
       {/* Header */}
       <div>
@@ -292,5 +294,6 @@ export function SicherheitsvergleichTool({ mode = 'internal' }: Props) {
         </Card>
       )}
     </div>
+    </PdfExportWrapper>
   );
 }

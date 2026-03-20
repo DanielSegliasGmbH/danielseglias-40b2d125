@@ -1,3 +1,4 @@
+import { PdfExportWrapper } from '../PdfExportWrapper';
 import { useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import {
@@ -108,6 +109,7 @@ export function BeratungsreiseTool({ mode = 'internal' }: BeratungsreiseToolProp
   const completedCount = activeStep - 1;
 
   return (
+    <PdfExportWrapper toolName="Beratungsreise" hideExport={mode === 'public'}>
     <div className="space-y-8">
       {/* Header */}
       <div className="text-center space-y-2">
@@ -254,5 +256,6 @@ export function BeratungsreiseTool({ mode = 'internal' }: BeratungsreiseToolProp
         </div>
       )}
     </div>
+    </PdfExportWrapper>
   );
 }

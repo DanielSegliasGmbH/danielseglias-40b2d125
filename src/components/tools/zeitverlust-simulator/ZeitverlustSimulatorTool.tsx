@@ -1,3 +1,4 @@
+import { PdfExportWrapper } from '../PdfExportWrapper';
 import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
@@ -33,6 +34,7 @@ export function ZeitverlustSimulatorTool({ mode = 'internal' }: Props) {
   const tooltipFormatter = (value: number) => formatCHF(value);
 
   return (
+    <PdfExportWrapper toolName="Zeitverlust-Simulator" hideExport={mode === 'public'}>
     <div className="space-y-8">
       {/* Header */}
       <div className="space-y-2">
@@ -256,6 +258,7 @@ export function ZeitverlustSimulatorTool({ mode = 'internal' }: Props) {
         </CardContent>
       </Card>
     </div>
+    </PdfExportWrapper>
   );
 }
 
