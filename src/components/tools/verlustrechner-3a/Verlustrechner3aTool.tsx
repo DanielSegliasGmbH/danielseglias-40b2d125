@@ -108,17 +108,22 @@ export function Verlustrechner3aTool() {
               <Input
                 type="number"
                 min={0}
-                max={14112}
+                max={MAX_CONTRIBUTION}
                 value={inputs.annualContribution}
-                onChange={e => update('annualContribution')(Math.max(0, parseInt(e.target.value) || 0))}
+                onChange={e => update('annualContribution')(Math.min(Math.max(0, parseInt(e.target.value) || 0), MAX_CONTRIBUTION))}
               />
               <Slider
                 min={0}
-                max={14112}
+                max={MAX_CONTRIBUTION}
                 step={100}
                 value={[inputs.annualContribution]}
                 onValueChange={v => update('annualContribution')(v[0])}
               />
+              {inputs.annualContribution >= MAX_CONTRIBUTION && (
+                <p className="text-xs text-muted-foreground">
+                  Maximaler steuerlich abzugsfähiger Betrag berücksichtigt.
+                </p>
+              )}
             </div>
 
             {/* Aktuelle Lösung */}
