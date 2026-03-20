@@ -315,6 +315,22 @@ export function TragbarkeitsrechnerTool({ mode = 'internal' }: Props) {
         </div>
       </div>
 
+      {/* Haus-Visualisierung */}
+      <Card>
+        <CardHeader className="pb-4">
+          <CardTitle className="text-base">Deine Immobilie auf einen Blick</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <HouseAffordabilityVisualization
+            equityPct={result.equityPercent}
+            ltvPct={result.ltvPercent}
+            loanAmount={result.mortgage}
+            affordabilityPct={result.stressPercent}
+            status={result.status}
+          />
+        </CardContent>
+      </Card>
+
       {/* Info-Block */}
       <Card>
         <CardHeader className="pb-3">
