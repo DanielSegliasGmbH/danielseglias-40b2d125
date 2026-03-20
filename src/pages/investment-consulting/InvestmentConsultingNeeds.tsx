@@ -125,6 +125,26 @@ export default function InvestmentConsultingNeeds() {
   };
 
   const selectedCount = selectedTileIds.length;
+  const totalCount = allTileIds.length;
+  const allSelected = selectedCount === totalCount;
+
+  const toggleAll = useCallback(() => {
+    setTiles((prev) => {
+      const nowSelect = !allSelected;
+      const updated = { ...prev };
+      for (const id of allTileIds) {
+        const current = updated[id] ?? { selected: false, note: '', usageCount: 0 };
+        updated[id] = {
+          ...current,
+          selected: nowSelect,
+          usageCount: nowSelect ? Math.max((current.usageCount || 0), 1) : current.usageCount,
+          lastUsedAt: nowSelect ? new Date().toISOString() : current.lastUsedAt,
+        };
+      }
+      persist(updated, freeText);
+      return updated;
+    });
+  }, [allSelected, freeText, persist]);
 
   const filteredCategories = activeCategory
     ? needsCategories.filter((c) => c.id === activeCategory)
