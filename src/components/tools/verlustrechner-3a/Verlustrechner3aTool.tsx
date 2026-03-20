@@ -275,5 +275,6 @@ export function Verlustrechner3aTool() {
         </p>
       </div>
     </div>
+    </PdfExportWrapper>
   );
 }

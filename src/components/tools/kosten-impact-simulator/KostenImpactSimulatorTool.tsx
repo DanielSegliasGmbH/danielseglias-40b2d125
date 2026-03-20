@@ -308,5 +308,6 @@ export function KostenImpactSimulatorTool({ mode = 'internal' }: Props) {
         </p>
       </div>
     </div>
+    </PdfExportWrapper>
   );
 }

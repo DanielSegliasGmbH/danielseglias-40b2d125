@@ -201,5 +201,6 @@ export function RenditeRisikoTool({ mode }: Props) {
       {/* Quellen – only in public mode */}
       {!isPrivateMode && <SourcesBlock />}
     </div>
+    </PdfExportWrapper>
   );
 }

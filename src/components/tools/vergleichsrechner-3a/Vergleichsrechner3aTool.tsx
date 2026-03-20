@@ -533,5 +533,6 @@ export function Vergleichsrechner3aTool() {
         </CollapsibleContent>
       </Collapsible>
     </div>
+    </PdfExportWrapper>
   );
 }

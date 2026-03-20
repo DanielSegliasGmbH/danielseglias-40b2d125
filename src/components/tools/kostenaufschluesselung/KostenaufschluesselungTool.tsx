@@ -295,5 +295,6 @@ export function KostenaufschluesselungTool({ mode = 'internal' }: Props) {
         </p>
       </div>
     </div>
+    </PdfExportWrapper>
   );
 }
