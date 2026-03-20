@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useRef, useEffect, ReactNode } from 'react';
 import { pyramidTopics, PyramidTopic } from '@/config/pyramidTopicsConfig';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -11,11 +11,8 @@ export interface TopicState {
   waiver: boolean;
   important: boolean;
   relatedTopicsDiscussed: Record<string, boolean>;
-  // Notes for related topics (b-ebene3)
   relatedTopicNotes: Record<string, string>;
-  // Checklist items for related topics (b-ebene3)
-  relatedTopicChecklist: Record<string, string[]>; // checked item IDs
-  // Extensible: add numeric values, selections, etc.
+  relatedTopicChecklist: Record<string, string[]>;
   numericValues?: Record<string, number>;
   selections?: Record<string, string>;
 }
@@ -29,7 +26,6 @@ export interface ConsultationData {
     lastModifiedAt: string | null;
     version: number;
   };
-  // Extensible fields for future use
   customerInfo?: {
     customerId?: string;
     customerName?: string;
@@ -42,6 +38,7 @@ export interface SavedConsultation {
   id: string;
   version_key: string;
   label: string | null;
+  title: string | null;
   customer_id: string | null;
   consultation_data: ConsultationData;
   status: string;
@@ -50,7 +47,9 @@ export interface SavedConsultation {
   created_by: string | null;
 }
 
-// Generate default topic states - ALL values set to false for reset
+export type AutoSaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+
+// Generate default topic states
 const generateDefaultTopicStates = (): Record<string, TopicState> => {
   const states: Record<string, TopicState> = {};
   pyramidTopics.forEach((topic) => {
@@ -58,13 +57,13 @@ const generateDefaultTopicStates = (): Record<string, TopicState> => {
       discussed: false,
       prioritized: false,
       waiver: false,
-      important: false, // Always false on reset/new consultation
+      important: false,
       relatedTopicsDiscussed: topic.relatedTopics.reduce((acc, rt) => {
-        acc[rt.id] = false; // Always false on reset/new consultation
+        acc[rt.id] = false;
         return acc;
       }, {} as Record<string, boolean>),
-      relatedTopicNotes: {}, // Empty notes on reset
-      relatedTopicChecklist: {}, // Empty checklist on reset
+      relatedTopicNotes: {},
+      relatedTopicChecklist: {},
       numericValues: {},
       selections: {},
     };
@@ -72,33 +71,25 @@ const generateDefaultTopicStates = (): Record<string, TopicState> => {
   return states;
 };
 
-// Generate default consultation data
 const generateDefaultConsultationData = (): ConsultationData => ({
   topicStates: generateDefaultTopicStates(),
   selectedTopicId: null,
-  metadata: {
-    startedAt: null,
-    lastModifiedAt: null,
-    version: 1,
-  },
+  metadata: { startedAt: null, lastModifiedAt: null, version: 1 },
   customerInfo: {},
   additionalData: {},
 });
 
 // Context interface
 interface ConsultationContextValue {
-  // State
   consultationData: ConsultationData;
   currentConsultationId: string | null;
+  currentTitle: string | null;
   isLoading: boolean;
   hasUnsavedChanges: boolean;
-  
-  // Topic state accessors
+  autoSaveStatus: AutoSaveStatus;
   topicStates: Record<string, TopicState>;
   selectedTopicId: string | null;
   selectedTopic: PyramidTopic | null;
-  
-  // Topic actions
   selectTopic: (topic: PyramidTopic) => void;
   clearSelection: () => void;
   toggleDiscussed: (topicId: string) => void;
@@ -109,13 +100,14 @@ interface ConsultationContextValue {
   setRelatedTopicNotes: (topicId: string, relatedTopicId: string, notes: string) => void;
   toggleChecklistItem: (topicId: string, relatedTopicId: string, itemId: string) => void;
   getCheckedItems: (topicId: string, relatedTopicId: string) => string[];
-  
-  // Consultation management
   resetConsultation: () => void;
-  startNewConsultation: () => void;
+  createAndStartConsultation: (title: string, customerId?: string) => Promise<string | null>;
   loadConsultation: (id: string) => Promise<void>;
-  saveConsultation: (label?: string, customerId?: string) => Promise<string | null>;
+  completeConsultation: () => Promise<void>;
   fetchSavedConsultations: () => Promise<SavedConsultation[]>;
+  // Legacy compat
+  startNewConsultation: () => void;
+  saveConsultation: (label?: string, customerId?: string) => Promise<string | null>;
 }
 
 const ConsultationContext = createContext<ConsultationContextValue | null>(null);
@@ -124,10 +116,45 @@ export function ConsultationProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [consultationData, setConsultationData] = useState<ConsultationData>(generateDefaultConsultationData);
   const [currentConsultationId, setCurrentConsultationId] = useState<string | null>(null);
+  const [currentTitle, setCurrentTitle] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [autoSaveStatus, setAutoSaveStatus] = useState<AutoSaveStatus>('idle');
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dataRef = useRef(consultationData);
+  dataRef.current = consultationData;
 
-  // Helper to update consultation data and mark as changed
+  // Auto-save effect: debounce 800ms after any change
+  useEffect(() => {
+    if (!currentConsultationId || !hasUnsavedChanges || !user) return;
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      setAutoSaveStatus('saving');
+      try {
+        const { error } = await (supabase
+          .from('insurance_consultations') as any)
+          .update({
+            consultation_data: dataRef.current,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', currentConsultationId);
+
+        if (error) throw error;
+        setHasUnsavedChanges(false);
+        setAutoSaveStatus('saved');
+        setTimeout(() => setAutoSaveStatus((s) => (s === 'saved' ? 'idle' : s)), 2000);
+      } catch (err) {
+        console.error('Auto-save failed:', err);
+        setAutoSaveStatus('error');
+      }
+    }, 800);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [consultationData, currentConsultationId, hasUnsavedChanges, user]);
+
   const updateData = useCallback((updater: (prev: ConsultationData) => ConsultationData) => {
     setConsultationData((prev) => {
       const updated = updater(prev);
@@ -137,79 +164,54 @@ export function ConsultationProvider({ children }: { children: ReactNode }) {
     setHasUnsavedChanges(true);
   }, []);
 
-  // Select topic
   const selectTopic = useCallback((topic: PyramidTopic) => {
-    updateData((prev) => ({
-      ...prev,
-      selectedTopicId: topic.id,
-    }));
+    updateData((prev) => ({ ...prev, selectedTopicId: topic.id }));
   }, [updateData]);
 
-  // Clear selection
   const clearSelection = useCallback(() => {
-    updateData((prev) => ({
-      ...prev,
-      selectedTopicId: null,
-    }));
+    updateData((prev) => ({ ...prev, selectedTopicId: null }));
   }, [updateData]);
 
-  // Toggle discussed
   const toggleDiscussed = useCallback((topicId: string) => {
     updateData((prev) => ({
       ...prev,
       topicStates: {
         ...prev.topicStates,
-        [topicId]: {
-          ...prev.topicStates[topicId],
-          discussed: !prev.topicStates[topicId]?.discussed,
-        },
+        [topicId]: { ...prev.topicStates[topicId], discussed: !prev.topicStates[topicId]?.discussed },
       },
     }));
   }, [updateData]);
 
-  // Toggle prioritized
   const togglePrioritized = useCallback((topicId: string) => {
     updateData((prev) => ({
       ...prev,
       topicStates: {
         ...prev.topicStates,
-        [topicId]: {
-          ...prev.topicStates[topicId],
-          prioritized: !prev.topicStates[topicId]?.prioritized,
-        },
+        [topicId]: { ...prev.topicStates[topicId], prioritized: !prev.topicStates[topicId]?.prioritized },
       },
     }));
   }, [updateData]);
 
-  // Toggle important
   const toggleImportant = useCallback((topicId: string) => {
     updateData((prev) => ({
       ...prev,
       topicStates: {
         ...prev.topicStates,
-        [topicId]: {
-          ...prev.topicStates[topicId],
-          important: !prev.topicStates[topicId]?.important,
-        },
+        [topicId]: { ...prev.topicStates[topicId], important: !prev.topicStates[topicId]?.important },
       },
     }));
   }, [updateData]);
 
-  // Toggle waiver
   const toggleWaiver = useCallback((topicId: string) => {
     updateData((prev) => ({
       ...prev,
       topicStates: {
         ...prev.topicStates,
-        [topicId]: {
-          ...prev.topicStates[topicId],
-          waiver: !prev.topicStates[topicId]?.waiver,
-        },
+        [topicId]: { ...prev.topicStates[topicId], waiver: !prev.topicStates[topicId]?.waiver },
       },
     }));
   }, [updateData]);
 
-  // Toggle related topic discussed
   const toggleRelatedTopicDiscussed = useCallback((topicId: string, relatedTopicId: string) => {
     updateData((prev) => ({
       ...prev,
@@ -226,7 +228,6 @@ export function ConsultationProvider({ children }: { children: ReactNode }) {
     }));
   }, [updateData]);
 
-  // Set related topic notes
   const setRelatedTopicNotes = useCallback((topicId: string, relatedTopicId: string, notes: string) => {
     updateData((prev) => ({
       ...prev,
@@ -243,15 +244,13 @@ export function ConsultationProvider({ children }: { children: ReactNode }) {
     }));
   }, [updateData]);
 
-  // Toggle checklist item
   const toggleChecklistItem = useCallback((topicId: string, relatedTopicId: string, itemId: string) => {
     updateData((prev) => {
       const currentChecked = prev.topicStates[topicId]?.relatedTopicChecklist?.[relatedTopicId] || [];
       const isChecked = currentChecked.includes(itemId);
-      const newChecked = isChecked 
+      const newChecked = isChecked
         ? currentChecked.filter(id => id !== itemId)
         : [...currentChecked, itemId];
-      
       return {
         ...prev,
         topicStates: {
@@ -268,7 +267,6 @@ export function ConsultationProvider({ children }: { children: ReactNode }) {
     });
   }, [updateData]);
 
-  // Get checked items for a related topic
   const getCheckedItems = useCallback((topicId: string, relatedTopicId: string): string[] => {
     return consultationData.topicStates[topicId]?.relatedTopicChecklist?.[relatedTopicId] || [];
   }, [consultationData.topicStates]);
@@ -276,19 +274,70 @@ export function ConsultationProvider({ children }: { children: ReactNode }) {
   const resetConsultation = useCallback(() => {
     setConsultationData(generateDefaultConsultationData());
     setCurrentConsultationId(null);
+    setCurrentTitle(null);
     setHasUnsavedChanges(false);
+    setAutoSaveStatus('idle');
   }, []);
 
-  // Start new consultation
+  // Legacy compat
   const startNewConsultation = useCallback(() => {
     const newData = generateDefaultConsultationData();
     newData.metadata.startedAt = new Date().toISOString();
     setConsultationData(newData);
     setCurrentConsultationId(null);
+    setCurrentTitle(null);
     setHasUnsavedChanges(false);
   }, []);
 
-  // Load consultation from database
+  // NEW: Create consultation in DB immediately and return ID
+  const createAndStartConsultation = useCallback(async (title: string, customerId?: string): Promise<string | null> => {
+    if (!user) {
+      toast.error('Du musst angemeldet sein');
+      return null;
+    }
+
+    setIsLoading(true);
+    try {
+      const now = new Date();
+      const datePrefix = now.toISOString().slice(0, 16).replace('T', '-').replace(':', '-');
+      const versionKey = `${datePrefix}-1`;
+
+      const newData = generateDefaultConsultationData();
+      newData.metadata.startedAt = now.toISOString();
+      if (customerId) {
+        newData.customerInfo = { customerId };
+      }
+
+      const { data, error } = await (supabase
+        .from('insurance_consultations') as any)
+        .insert({
+          version_key: versionKey,
+          title,
+          label: title,
+          customer_id: customerId || null,
+          consultation_data: newData,
+          created_by: user.id,
+          status: 'active',
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setConsultationData(newData);
+      setCurrentConsultationId(data.id);
+      setCurrentTitle(title);
+      setHasUnsavedChanges(false);
+      return data.id;
+    } catch (err) {
+      console.error('Error creating consultation:', err);
+      toast.error('Beratung konnte nicht erstellt werden');
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user]);
+
   const loadConsultation = useCallback(async (id: string) => {
     setIsLoading(true);
     try {
@@ -304,10 +353,10 @@ export function ConsultationProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // Parse consultation data from JSONB
       const loadedData = data.consultation_data as unknown as ConsultationData;
       setConsultationData(loadedData);
       setCurrentConsultationId(data.id);
+      setCurrentTitle(data.title || data.label || null);
       setHasUnsavedChanges(false);
       toast.success('Beratung geladen');
     } catch (error) {
@@ -318,83 +367,63 @@ export function ConsultationProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Generate version key: YYYY-MM-DD-HH-mm-X
-  const generateVersionKey = useCallback(async (): Promise<string> => {
-    const now = new Date();
-    const datePrefix = now.toISOString().slice(0, 16).replace('T', '-').replace(':', '-');
-    
-    // Check for existing versions on this day
-    const { data: existingVersions } = await (supabase
-      .from('insurance_consultations') as any)
-      .select('version_key')
-      .like('version_key', `${datePrefix.slice(0, 10)}%`)
-      .order('version_key', { ascending: false });
-
-    let sequence = 1;
-    if (existingVersions && existingVersions.length > 0) {
-      const lastVersion = existingVersions[0].version_key;
-      const lastSequence = parseInt(lastVersion.split('-').pop() || '0', 10);
-      sequence = lastSequence + 1;
-    }
-
-    return `${datePrefix}-${sequence}`;
-  }, []);
-
-  // Save consultation to database
-  const saveConsultation = useCallback(async (label?: string, customerId?: string): Promise<string | null> => {
-    if (!user) {
-      toast.error('Sie müssen angemeldet sein, um zu speichern');
-      return null;
-    }
-
-    setIsLoading(true);
+  // Complete consultation (set status to completed)
+  const completeConsultation = useCallback(async () => {
+    if (!currentConsultationId) return;
     try {
-      const versionKey = await generateVersionKey();
-      
-      // Update metadata before saving
-      const dataToSave: ConsultationData = {
-        ...consultationData,
-        metadata: {
-          ...consultationData.metadata,
-          lastModifiedAt: new Date().toISOString(),
-          version: (consultationData.metadata.version || 0) + 1,
-        },
-        customerInfo: {
-          ...consultationData.customerInfo,
-          customerId: customerId || consultationData.customerInfo?.customerId,
-        },
-      };
-
-      // Note: Using type assertion as the table types may not be updated yet
-      const { data, error } = await (supabase
+      const { error } = await (supabase
         .from('insurance_consultations') as any)
-        .insert({
-          version_key: versionKey,
-          label: label || null,
-          customer_id: customerId || null,
-          consultation_data: dataToSave,
-          created_by: user.id,
-          status: 'draft',
+        .update({
+          status: 'completed',
+          consultation_data: dataRef.current,
+          updated_at: new Date().toISOString(),
         })
-        .select()
-        .single();
+        .eq('id', currentConsultationId);
 
       if (error) throw error;
-
-      setCurrentConsultationId(data.id);
       setHasUnsavedChanges(false);
-      toast.success(`Beratung gespeichert (${versionKey})`);
-      return data.id;
-    } catch (error) {
-      console.error('Error saving consultation:', error);
-      toast.error('Fehler beim Speichern der Beratung');
-      return null;
-    } finally {
-      setIsLoading(false);
+      toast.success('Beratung abgeschlossen');
+    } catch (err) {
+      console.error('Error completing consultation:', err);
+      toast.error('Fehler beim Abschliessen');
     }
-  }, [user, consultationData, generateVersionKey]);
+  }, [currentConsultationId]);
 
-  // Fetch saved consultations
+  // Legacy save (still creates a new record if none exists)
+  const saveConsultation = useCallback(async (label?: string, customerId?: string): Promise<string | null> => {
+    if (!user) {
+      toast.error('Du musst angemeldet sein');
+      return null;
+    }
+
+    // If we already have an ID, just update
+    if (currentConsultationId) {
+      try {
+        const { error } = await (supabase
+          .from('insurance_consultations') as any)
+          .update({
+            consultation_data: consultationData,
+            label: label || currentTitle || null,
+            customer_id: customerId || null,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', currentConsultationId);
+
+        if (error) throw error;
+        setHasUnsavedChanges(false);
+        toast.success('Beratung gespeichert');
+        return currentConsultationId;
+      } catch (err) {
+        console.error('Error saving consultation:', err);
+        toast.error('Fehler beim Speichern');
+        return null;
+      }
+    }
+
+    // Fallback: create new
+    return createAndStartConsultation(label || 'Unbenannte Beratung', customerId);
+  }, [user, currentConsultationId, consultationData, currentTitle, createAndStartConsultation]);
+
   const fetchSavedConsultations = useCallback(async (): Promise<SavedConsultation[]> => {
     try {
       const { data, error } = await (supabase
@@ -403,19 +432,17 @@ export function ConsultationProvider({ children }: { children: ReactNode }) {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      
-      return (data || []).map((item) => ({
+      return (data || []).map((item: any) => ({
         ...item,
         consultation_data: item.consultation_data as unknown as ConsultationData,
       })) as SavedConsultation[];
     } catch (error) {
       console.error('Error fetching consultations:', error);
-      toast.error('Fehler beim Laden der gespeicherten Beratungen');
+      toast.error('Fehler beim Laden der Beratungen');
       return [];
     }
   }, []);
 
-  // Get selected topic
   const selectedTopic = consultationData.selectedTopicId
     ? pyramidTopics.find((t) => t.id === consultationData.selectedTopicId) ?? null
     : null;
@@ -423,8 +450,10 @@ export function ConsultationProvider({ children }: { children: ReactNode }) {
   const value: ConsultationContextValue = {
     consultationData,
     currentConsultationId,
+    currentTitle,
     isLoading,
     hasUnsavedChanges,
+    autoSaveStatus,
     topicStates: consultationData.topicStates,
     selectedTopicId: consultationData.selectedTopicId,
     selectedTopic,
@@ -439,10 +468,12 @@ export function ConsultationProvider({ children }: { children: ReactNode }) {
     toggleChecklistItem,
     getCheckedItems,
     resetConsultation,
-    startNewConsultation,
+    createAndStartConsultation,
     loadConsultation,
-    saveConsultation,
+    completeConsultation,
     fetchSavedConsultations,
+    startNewConsultation,
+    saveConsultation,
   };
 
   return (
@@ -455,9 +486,7 @@ export function ConsultationProvider({ children }: { children: ReactNode }) {
 export function useConsultationState() {
   const context = useContext(ConsultationContext);
   if (!context) {
-    throw new Error(
-      'useConsultationState must be used within a ConsultationProvider'
-    );
+    throw new Error('useConsultationState must be used within a ConsultationProvider');
   }
   return context;
 }

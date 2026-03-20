@@ -4,13 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Save, FileText, Mail, Download, CheckCircle2, XCircle, AlertTriangle, Loader2, PenTool } from 'lucide-react';
+import { CheckCircle, FileText, Mail, Download, CheckCircle2, XCircle, AlertTriangle, Loader2, PenTool } from 'lucide-react';
 import { useConsultationState } from '@/hooks/useConsultationState';
+import { AutoSaveIndicator } from '@/components/consultation/AutoSaveIndicator';
 import { pyramidTopics } from '@/config/pyramidTopicsConfig';
 
 export default function InsuranceConsultingSummary() {
@@ -18,15 +17,15 @@ export default function InsuranceConsultingSummary() {
   const navigate = useNavigate();
   const { 
     topicStates, 
-    saveConsultation, 
+    completeConsultation,
     isLoading, 
-    hasUnsavedChanges,
+    currentTitle,
+    autoSaveStatus,
     currentConsultationId 
   } = useConsultationState();
   
-  const [saveLabel, setSaveLabel] = useState('');
-  const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  const [isCompleteDialogOpen, setIsCompleteDialogOpen] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
 
   // Categorize topics
   const importantTopics = pyramidTopics.filter(t => topicStates[t.id]?.important);
@@ -39,7 +38,6 @@ export default function InsuranceConsultingSummary() {
     topicStates[t.id]?.important
   );
 
-  // Collect all notes from related topics for "Daten für Berater"
   const allNotes: { topicTitle: string; relatedTopicTitle: string; notes: string }[] = [];
   pyramidTopics.forEach((topic) => {
     const topicState = topicStates[topic.id];
@@ -57,15 +55,12 @@ export default function InsuranceConsultingSummary() {
     }
   });
 
-  // Handle save
-  const handleSave = async () => {
-    setIsSaving(true);
-    const id = await saveConsultation(saveLabel || undefined);
-    setIsSaving(false);
-    if (id) {
-      setIsSaveDialogOpen(false);
-      setSaveLabel('');
-    }
+  const handleComplete = async () => {
+    setIsCompleting(true);
+    await completeConsultation();
+    setIsCompleting(false);
+    setIsCompleteDialogOpen(false);
+    navigate('/app/insurance-consulting/start');
   };
 
   return (
@@ -82,52 +77,37 @@ export default function InsuranceConsultingSummary() {
             </p>
           </div>
           
-          <div className="flex items-center gap-2">
-            {hasUnsavedChanges && (
-              <Badge variant="outline" className="text-amber-600 border-amber-300">
-                <AlertTriangle className="w-3 h-3 mr-1" />
-                Ungespeichert
-              </Badge>
-            )}
+          <div className="flex items-center gap-3">
+            <AutoSaveIndicator status={autoSaveStatus} title={currentTitle || undefined} />
             
-            <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
+            <Dialog open={isCompleteDialogOpen} onOpenChange={setIsCompleteDialogOpen}>
               <DialogTrigger asChild>
                 <Button>
-                  <Save className="w-4 h-4 mr-2" />
-                  Beratung speichern
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Beratung abschliessen
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Beratung speichern</DialogTitle>
+                  <DialogTitle>Beratung abschliessen</DialogTitle>
                   <DialogDescription>
-                    Geben Sie optional eine Bezeichnung ein (z.B. Kundenname, Status).
+                    Das Gespräch wird als abgeschlossen markiert. Alle Daten wurden bereits automatisch gespeichert.
                   </DialogDescription>
                 </DialogHeader>
-                <div className="py-4">
-                  <Label htmlFor="label">Bezeichnung (optional)</Label>
-                  <Input
-                    id="label"
-                    value={saveLabel}
-                    onChange={(e) => setSaveLabel(e.target.value)}
-                    placeholder="z.B. Max Mustermann - Erstberatung"
-                    className="mt-2"
-                  />
-                </div>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsSaveDialogOpen(false)}>
+                  <Button variant="outline" onClick={() => setIsCompleteDialogOpen(false)}>
                     Abbrechen
                   </Button>
-                  <Button onClick={handleSave} disabled={isSaving}>
-                    {isSaving ? (
+                  <Button onClick={handleComplete} disabled={isCompleting}>
+                    {isCompleting ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Speichern...
+                        Abschliessen…
                       </>
                     ) : (
                       <>
-                        <Save className="w-4 h-4 mr-2" />
-                        Speichern
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Abschliessen
                       </>
                     )}
                   </Button>
