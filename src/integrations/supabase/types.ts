@@ -520,6 +520,7 @@ export type Database = {
           id: string
           label: string | null
           status: string
+          title: string | null
           updated_at: string
           version_key: string
         }
@@ -531,6 +532,7 @@ export type Database = {
           id?: string
           label?: string | null
           status?: string
+          title?: string | null
           updated_at?: string
           version_key: string
         }
@@ -542,6 +544,7 @@ export type Database = {
           id?: string
           label?: string | null
           status?: string
+          title?: string | null
           updated_at?: string
           version_key?: string
         }
@@ -571,6 +574,7 @@ export type Database = {
           id: string
           label: string | null
           status: string
+          title: string | null
           updated_at: string
           version_key: string
         }
@@ -582,6 +586,7 @@ export type Database = {
           id?: string
           label?: string | null
           status?: string
+          title?: string | null
           updated_at?: string
           version_key: string
         }
@@ -593,6 +598,7 @@ export type Database = {
           id?: string
           label?: string | null
           status?: string
+          title?: string | null
           updated_at?: string
           version_key?: string
         }
