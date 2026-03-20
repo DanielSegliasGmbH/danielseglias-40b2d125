@@ -68,6 +68,8 @@ export default function ClientPortalToolDetail() {
         return <Vergleichsrechner3aTool />;
       case 'inflationsrechner':
         return <InflationsrechnerTool />;
+      case 'tragbarkeitsrechner':
+        return <TragbarkeitsrechnerTool mode="internal" />;
       default:
         return (
           <Card>
