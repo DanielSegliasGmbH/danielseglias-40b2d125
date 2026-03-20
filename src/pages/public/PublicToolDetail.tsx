@@ -23,6 +23,7 @@ const iconMap: Record<string, LucideIcon> = {
   'file-text': FileText,
   'wrench': Wrench,
   'ClipboardCheck': ClipboardCheck,
+  'home': Home,
 };
 
 export default function PublicToolDetail() {

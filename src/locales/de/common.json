@@ -802,6 +802,10 @@
     "inflationsrechner": {
       "name": "Inflationsrechner Schweiz",
       "description": "Verstehe, wie Inflation deine Kaufkraft über die Zeit verändert – mit realen Schweizer Daten."
+    },
+    "tragbarkeitsrechner": {
+      "name": "Tragbarkeitsrechner Immobilie",
+      "description": "Prüfe, ob eine Immobilie in der Schweiz anhand von Kaufpreis, Eigenmitteln und Einkommen tragbar ist."
     }
   },
   "adminLeads": {
