@@ -834,6 +834,10 @@
     "recoveryAnalyse": {
       "name": "Recovery-Analyse Weltaktienmarkt",
       "description": "Wie lange brauchte der globale Aktienmarkt historisch, um sich nach grossen Krisen zu erholen?"
+    },
+    "sicherheitsvergleich": {
+      "name": "Sicherheitsvergleich",
+      "description": "Ist keine Schwankung wirklich sicherer? Vergleiche scheinbare und echte langfristige Sicherheit."
     }
   },
   "adminLeads": {
