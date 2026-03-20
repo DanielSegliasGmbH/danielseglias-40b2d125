@@ -26,6 +26,7 @@ const iconMap: Record<string, LucideIcon> = {
   'wrench': Wrench,
   'Scale': Scale,
   'home': Home,
+  'ShieldCheck': ShieldCheck,
 };
 
 export default function ClientPortalToolDetail() {

@@ -26,6 +26,7 @@ const iconMap: Record<string, LucideIcon> = {
   'wrench': Wrench,
   'ClipboardCheck': ClipboardCheck,
   'home': Home,
+  'ShieldCheck': ShieldCheck,
 };
 
 export default function PublicToolDetail() {
