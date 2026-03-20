@@ -122,6 +122,8 @@ export default function AdminToolDetail() {
         return <ZufallsRealitaetsCheckTool mode="internal" />;
       case 'recovery-analyse':
         return <RecoveryAnalyseTool mode="internal" />;
+      case 'sicherheitsvergleich':
+        return <SicherheitsvergleichTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">
