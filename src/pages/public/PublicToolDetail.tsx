@@ -6,7 +6,7 @@ import { PublicLayout } from '@/layouts/PublicLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LeadCaptureForm } from '@/components/public/LeadCaptureForm';
-import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, ClipboardCheck, Home, LucideIcon } from 'lucide-react';
+import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, ClipboardCheck, Home, ShieldCheck, LucideIcon } from 'lucide-react';
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
 import VorsorgecheckTool from '@/components/tools/vorsorgecheck/VorsorgecheckTool';
 import KvgPraemienvergleichTool from '@/components/tools/kvg-praemienvergleich/KvgPraemienvergleichTool';
@@ -14,6 +14,7 @@ import VvgLeistungsvergleichTool from '@/components/tools/vvg-leistungsvergleich
 import { RenditeRisikoTool } from '@/components/tools/rendite-risiko/RenditeRisikoTool';
 import { TragbarkeitsrechnerTool } from '@/components/tools/tragbarkeitsrechner/TragbarkeitsrechnerTool';
 import { Verlustrechner3aTool } from '@/components/tools/verlustrechner-3a/Verlustrechner3aTool';
+import { TransparenzCheckTool } from '@/components/tools/transparenz-check/TransparenzCheckTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -25,6 +26,7 @@ const iconMap: Record<string, LucideIcon> = {
   'wrench': Wrench,
   'ClipboardCheck': ClipboardCheck,
   'home': Home,
+  'ShieldCheck': ShieldCheck,
 };
 
 export default function PublicToolDetail() {
@@ -139,6 +141,10 @@ export default function PublicToolDetail() {
               ) : slug === 'verlustrechner-3a' ? (
                 <div className="mb-8">
                   <Verlustrechner3aTool />
+                </div>
+              ) : slug === 'transparenz-check' ? (
+                <div className="mb-8">
+                  <TransparenzCheckTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">

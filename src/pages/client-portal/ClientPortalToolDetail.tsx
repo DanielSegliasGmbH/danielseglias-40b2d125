@@ -6,7 +6,7 @@ import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Calculator, PieChart, TrendingUp, FileText, Wrench, Scale, Home, LucideIcon } from 'lucide-react';
+import { ArrowLeft, Calculator, PieChart, TrendingUp, FileText, Wrench, Scale, Home, ShieldCheck, LucideIcon } from 'lucide-react';
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
 import VorsorgecheckTool from '@/components/tools/vorsorgecheck/VorsorgecheckTool';
 import VvgLeistungsvergleichTool from '@/components/tools/vvg-leistungsvergleich/VvgLeistungsvergleichTool';
@@ -16,6 +16,7 @@ import { Vergleichsrechner3aTool } from '@/components/tools/vergleichsrechner-3a
 import { InflationsrechnerTool } from '@/components/tools/inflationsrechner/InflationsrechnerTool';
 import { TragbarkeitsrechnerTool } from '@/components/tools/tragbarkeitsrechner/TragbarkeitsrechnerTool';
 import { Verlustrechner3aTool } from '@/components/tools/verlustrechner-3a/Verlustrechner3aTool';
+import { TransparenzCheckTool } from '@/components/tools/transparenz-check/TransparenzCheckTool';
 
 const iconMap: Record<string, LucideIcon> = {
   'calculator': Calculator,
@@ -25,6 +26,7 @@ const iconMap: Record<string, LucideIcon> = {
   'wrench': Wrench,
   'Scale': Scale,
   'home': Home,
+  'ShieldCheck': ShieldCheck,
 };
 
 export default function ClientPortalToolDetail() {
@@ -73,6 +75,8 @@ export default function ClientPortalToolDetail() {
         return <TragbarkeitsrechnerTool mode="internal" />;
       case 'verlustrechner-3a':
         return <Verlustrechner3aTool />;
+      case 'transparenz-check':
+        return <TransparenzCheckTool mode="internal" />;
       default:
         return (
           <Card>
