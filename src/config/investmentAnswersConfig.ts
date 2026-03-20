@@ -482,59 +482,59 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
       {
         heading: 'Einstieg',
         lines: [
-          'Sicherheit ist für jeden wichtig – aber viele verstehen darunter etwas anderes.',
-          'Die Frage ist nicht nur, ob dein Geld sicher ist, sondern wovor es geschützt sein soll.',
+          'Sicherheit ist eines der wichtigsten Themen – aber viele verstehen darunter etwas Unterschiedliches.',
+          'Was bedeutet für dich eigentlich Sicherheit – keine Schwankung oder langfristige Stabilität?',
         ],
       },
       {
         heading: 'Kernbotschaft',
         lines: [
-          'Es gibt verschiedene Arten von Sicherheit: kurzfristige Stabilität, langfristige Kaufkraft, strukturelle Sicherheit.',
-          'Vermeintlich sichere Lösungen können langfristig riskant sein (Inflation, tiefe Rendite).',
-          'Sicherheit entsteht durch Struktur, nicht durch Stillstand.',
+          'Es gibt nicht die eine Sicherheit – sondern verschiedene Arten von Sicherheit.',
         ],
       },
       {
         heading: 'Erklärung',
         lines: [
-          'Geld auf dem Konto: stabil, aber Kaufkraftverlust durch Inflation (1–2 % p.a.).',
-          'Investition: schwankt kurzfristig, bietet aber langfristiges Wachstum.',
-          'Diversifikation und Struktur geben Stabilität, ohne auf Rendite zu verzichten.',
-          'Rolle der Inflation: CHF 100\'000 sind in 20 Jahren nur noch ca. CHF 67\'000 wert (bei 2 % Inflation).',
+          '1. Kurzfristige Sicherheit: kaum Schwankung, aber tiefe Rendite.',
+          '2. Langfristige Sicherheit: Wachstum und Kaufkraft erhalten.',
+          '3. System-Sicherheit: Struktur, Verwaltung, Zugriff.',
         ],
       },
       {
-        heading: 'Gesprächsfragen',
+        heading: 'Aha-Moment',
         lines: [
-          '«Was bedeutet für dich Sicherheit?»',
-          '«Ist dir wichtiger, dass es sich ruhig anfühlt oder dass es langfristig funktioniert?»',
-          '«Hast du schon einmal darüber nachgedacht, dass Stillstand auch ein Risiko sein kann?»',
+          'Das vermeintlich sicherste Geld ist oft das, das langfristig am meisten verliert.',
         ],
       },
       {
-        heading: 'Ziel des Gesprächs',
+        heading: 'Shift',
         lines: [
-          'Sicherheitsverständnis erweitern.',
-          'Perspektive verändern: Stillstand ≠ Sicherheit.',
-          'Vertrauen in langfristige Lösung schaffen.',
+          'Die entscheidende Frage ist nicht, ob es sicher ist – sondern welche Art von Sicherheit du möchtest.',
+        ],
+      },
+      {
+        heading: 'Interner Leitfaden',
+        lines: [
+          '🎯 Sicherheit nicht versprechen – sondern differenzieren.',
+          '📊 Unterschiede erklären: kurzfristig vs. langfristig vs. strukturell.',
+          '💡 Verständnis schaffen statt falsche Versprechen.',
         ],
       },
     ],
     recognition: {
       title: 'Was Sicherheit wirklich bedeutet',
       items: [
-        'Sicherheit ist nicht nur Stabilität.',
-        'Inflation kann Kaufkraft reduzieren.',
-        'Wachstum schützt langfristig besser.',
-        'Struktur und Diversifikation geben Stabilität.',
+        'Sicherheit ist mehrdimensional – nicht nur Stabilität.',
+        'Inflation kann Kaufkraft still und leise auffressen.',
+        'Wachstum schützt langfristig besser als Stillstand.',
+        'Struktur und Diversifikation geben echte Stabilität.',
       ],
     },
     resolvedConfirmation: 'Hat der Kunde ein erweitertes Verständnis von Sicherheit gewonnen?',
     steps: [
-      { label: 'Unterschied zwischen sicher und sinnvoll' },
-      { label: 'Einfluss von Inflation verstehen' },
-      { label: 'Vergleich: Konto vs. Investition' },
-      { label: 'Wie Struktur Sicherheit gibt' },
+      { label: 'Sicherheitsvergleich anschauen', toolSlug: 'sicherheitsvergleich' },
+      { label: 'Inflation berechnen', toolSlug: 'inflationsrechner' },
+      { label: 'Risiko simulieren', toolSlug: 'rendite-risiko-simulation' },
     ],
   },
 
