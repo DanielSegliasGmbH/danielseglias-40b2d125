@@ -93,6 +93,8 @@ export default function ClientPortalToolDetail() {
         return <ZufallsRealitaetsCheckTool mode="internal" />;
       case 'recovery-analyse':
         return <RecoveryAnalyseTool mode="internal" />;
+      case 'sicherheitsvergleich':
+        return <SicherheitsvergleichTool mode="internal" />;
       default:
         return (
           <Card>

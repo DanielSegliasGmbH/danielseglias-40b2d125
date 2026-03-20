@@ -172,6 +172,10 @@ export default function PublicToolDetail() {
                 <div className="mb-8">
                   <RecoveryAnalyseTool mode="public" />
                 </div>
+              ) : slug === 'sicherheitsvergleich' ? (
+                <div className="mb-8">
+                  <SicherheitsvergleichTool mode="public" />
+                </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
                   <CardContent className="py-6 prose prose-neutral dark:prose-invert max-w-none">
