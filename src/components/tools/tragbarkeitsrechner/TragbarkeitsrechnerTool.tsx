@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { HouseAffordabilityVisualization } from './HouseAffordabilityVisualization';
 import { Home, TrendingUp, AlertTriangle, CheckCircle, XCircle, Info } from 'lucide-react';
 import { calculate, formatCHF, formatPct, type MortgageInputs } from './calcLogic';
 
