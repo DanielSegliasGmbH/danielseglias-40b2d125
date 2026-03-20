@@ -532,6 +532,12 @@ function App() {
                 element={<InvestmentConsultingPresentation />}
               />
 
+              {/* Unified presentation mode – loads consultation by ID */}
+              <Route
+                path="/presentation/:type/:id"
+                element={<ConsultationPresentationPage />}
+              />
+
               {/* Old client route - redirect to new portal */}
               <Route
                 path="/client"
