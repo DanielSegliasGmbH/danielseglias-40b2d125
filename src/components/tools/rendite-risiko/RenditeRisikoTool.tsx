@@ -1,3 +1,4 @@
+import { PdfExportWrapper } from '../PdfExportWrapper';
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
