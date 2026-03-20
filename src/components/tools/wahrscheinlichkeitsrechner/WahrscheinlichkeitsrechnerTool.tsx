@@ -332,5 +332,6 @@ export function WahrscheinlichkeitsrechnerTool({ mode = 'internal' }: Props) {
         </p>
       </div>
     </div>
+    </PdfExportWrapper>
   );
 }

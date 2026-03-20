@@ -294,5 +294,6 @@ export function SicherheitsvergleichTool({ mode = 'internal' }: Props) {
         </Card>
       )}
     </div>
+    </PdfExportWrapper>
   );
 }
