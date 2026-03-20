@@ -35,6 +35,7 @@ export function Verlustrechner3aTool() {
   };
 
   return (
+    <PdfExportWrapper toolName="3a-Verlustrechner">
     <div className="space-y-8">
       {/* Header */}
       <div className="space-y-2">
