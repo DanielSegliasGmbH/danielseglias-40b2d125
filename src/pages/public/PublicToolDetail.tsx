@@ -12,6 +12,7 @@ import VorsorgecheckTool from '@/components/tools/vorsorgecheck/VorsorgecheckToo
 import KvgPraemienvergleichTool from '@/components/tools/kvg-praemienvergleich/KvgPraemienvergleichTool';
 import VvgLeistungsvergleichTool from '@/components/tools/vvg-leistungsvergleich/VvgLeistungsvergleichTool';
 import { RenditeRisikoTool } from '@/components/tools/rendite-risiko/RenditeRisikoTool';
+import { TragbarkeitsrechnerTool } from '@/components/tools/tragbarkeitsrechner/TragbarkeitsrechnerTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
