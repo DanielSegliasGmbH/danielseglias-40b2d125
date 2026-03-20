@@ -15,6 +15,7 @@ import { CaseStudyGeneratorTool } from '@/components/tools/case-study-generator/
 import { Vergleichsrechner3aTool } from '@/components/tools/vergleichsrechner-3a/Vergleichsrechner3aTool';
 import { InflationsrechnerTool } from '@/components/tools/inflationsrechner/InflationsrechnerTool';
 import { TragbarkeitsrechnerTool } from '@/components/tools/tragbarkeitsrechner/TragbarkeitsrechnerTool';
+import { Verlustrechner3aTool } from '@/components/tools/verlustrechner-3a/Verlustrechner3aTool';
 
 const iconMap: Record<string, LucideIcon> = {
   'calculator': Calculator,
