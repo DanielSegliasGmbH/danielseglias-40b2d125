@@ -842,6 +842,10 @@
     "zeitverlustSimulator": {
       "name": "Zeitverlust-Simulator",
       "description": "Was kostet es dich, wenn du mit dem Investieren wartest? Berechne den finanziellen Preis des Aufschiebens."
+    },
+    "beratungsreise": {
+      "name": "Beratungsreise",
+      "description": "Deine Finanz-Roadmap – sieh auf einen Blick, wo du stehst und was als Nächstes kommt."
     }
   },
   "adminLeads": {
