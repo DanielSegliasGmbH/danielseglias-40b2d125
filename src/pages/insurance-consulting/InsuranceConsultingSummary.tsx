@@ -77,52 +77,37 @@ export default function InsuranceConsultingSummary() {
             </p>
           </div>
           
-          <div className="flex items-center gap-2">
-            {hasUnsavedChanges && (
-              <Badge variant="outline" className="text-amber-600 border-amber-300">
-                <AlertTriangle className="w-3 h-3 mr-1" />
-                Ungespeichert
-              </Badge>
-            )}
+          <div className="flex items-center gap-3">
+            <AutoSaveIndicator status={autoSaveStatus} title={currentTitle || undefined} />
             
-            <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
+            <Dialog open={isCompleteDialogOpen} onOpenChange={setIsCompleteDialogOpen}>
               <DialogTrigger asChild>
                 <Button>
-                  <Save className="w-4 h-4 mr-2" />
-                  Beratung speichern
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Beratung abschliessen
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Beratung speichern</DialogTitle>
+                  <DialogTitle>Beratung abschliessen</DialogTitle>
                   <DialogDescription>
-                    Geben Sie optional eine Bezeichnung ein (z.B. Kundenname, Status).
+                    Das Gespräch wird als abgeschlossen markiert. Alle Daten wurden bereits automatisch gespeichert.
                   </DialogDescription>
                 </DialogHeader>
-                <div className="py-4">
-                  <Label htmlFor="label">Bezeichnung (optional)</Label>
-                  <Input
-                    id="label"
-                    value={saveLabel}
-                    onChange={(e) => setSaveLabel(e.target.value)}
-                    placeholder="z.B. Max Mustermann - Erstberatung"
-                    className="mt-2"
-                  />
-                </div>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsSaveDialogOpen(false)}>
+                  <Button variant="outline" onClick={() => setIsCompleteDialogOpen(false)}>
                     Abbrechen
                   </Button>
-                  <Button onClick={handleSave} disabled={isSaving}>
-                    {isSaving ? (
+                  <Button onClick={handleComplete} disabled={isCompleting}>
+                    {isCompleting ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Speichern...
+                        Abschliessen…
                       </>
                     ) : (
                       <>
-                        <Save className="w-4 h-4 mr-2" />
-                        Speichern
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Abschliessen
                       </>
                     )}
                   </Button>
