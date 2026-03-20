@@ -62,7 +62,7 @@ export const needsCategories: NeedsCategory[] = [
     title: 'Risiko & Sicherheit',
     tiles: [
       { id: 'risk-1', title: 'Kann ich Geld verlieren?', description: 'Angst vor Verlusten einordnen und Risiko verstehen', category: 'risiko', linkedTools: ['rendite-risiko-simulation', 'recovery-analyse'], linkedProducts: ['strategie', 'begleitung'] },
-      { id: 'risk-2', title: 'Was passiert bei einem Börsencrash?', description: 'Marktschwankungen und Worst-Case verstehen', category: 'risiko', linkedTools: ['rendite-risiko'], linkedProducts: ['strategie'] },
+      { id: 'risk-2', title: 'Was passiert bei einem Börsencrash?', description: 'Crashs einordnen und Angst durch Verständnis ersetzen', category: 'risiko', linkedTools: ['recovery-analyse', 'rendite-risiko-simulation'], linkedProducts: ['strategie', 'begleitung'] },
       { id: 'risk-4', title: 'Wie sicher ist mein Geld?', description: 'Sicherheitsverständnis und Kaufkraftschutz', category: 'risiko', linkedTools: ['inflationsrechner'], linkedProducts: ['strategie', 'analyse'] },
     ],
   },
