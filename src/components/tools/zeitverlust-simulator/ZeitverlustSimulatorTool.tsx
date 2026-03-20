@@ -34,6 +34,7 @@ export function ZeitverlustSimulatorTool({ mode = 'internal' }: Props) {
   const tooltipFormatter = (value: number) => formatCHF(value);
 
   return (
+    <PdfExportWrapper toolName="Zeitverlust-Simulator" hideExport={mode === 'public'}>
     <div className="space-y-8">
       {/* Header */}
       <div className="space-y-2">
