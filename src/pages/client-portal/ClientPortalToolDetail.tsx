@@ -13,6 +13,7 @@ import VvgLeistungsvergleichTool from '@/components/tools/vvg-leistungsvergleich
 import { RenditeRisikoTool } from '@/components/tools/rendite-risiko/RenditeRisikoTool';
 import { CaseStudyGeneratorTool } from '@/components/tools/case-study-generator/CaseStudyGeneratorTool';
 import { Vergleichsrechner3aTool } from '@/components/tools/vergleichsrechner-3a/Vergleichsrechner3aTool';
+import { InflationsrechnerTool } from '@/components/tools/inflationsrechner/InflationsrechnerTool';
 
 const iconMap: Record<string, LucideIcon> = {
   'calculator': Calculator,
