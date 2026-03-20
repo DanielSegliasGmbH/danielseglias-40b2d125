@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
 
 /* ── Section configs ── */
 const INSURANCE_SECTIONS = [
-  { key: 'topics', label: 'Themenauswahl' },
+  { key: 'focus', label: 'Gesprächsfokus' },
   { key: 'introduction', label: 'Vorstellung' },
   { key: 'company', label: 'Unternehmen' },
   { key: 'advisor-info', label: 'Beraterinformationen' },
@@ -29,7 +29,7 @@ const INSURANCE_SECTIONS = [
 ];
 
 const INVESTMENT_SECTIONS = [
-  { key: 'topics', label: 'Themenauswahl' },
+  { key: 'focus', label: 'Gesprächsfokus' },
   { key: 'introduction', label: 'Vorstellung' },
   { key: 'company', label: 'Unternehmen' },
   { key: 'advisor-info', label: 'Beraterinformationen' },

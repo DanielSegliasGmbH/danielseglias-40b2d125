@@ -13,9 +13,9 @@ export const investmentConsultingSections = [
     icon: PlayCircle,
   },
   {
-    key: 'topics',
-    path: '/app/investment-consulting/topics',
-    titleKey: 'investmentConsulting.topics',
+    key: 'focus',
+    path: '/app/investment-consulting/focus',
+    titleKey: 'investmentConsulting.focus',
     icon: MessageSquare,
   },
   {
