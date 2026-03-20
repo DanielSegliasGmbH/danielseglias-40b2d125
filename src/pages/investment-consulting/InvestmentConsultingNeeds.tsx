@@ -17,7 +17,7 @@ import { useInvestmentConsultationState } from '@/hooks/useInvestmentConsultatio
 import { usePresentationBroadcaster } from '@/hooks/usePresentationSync';
 import { useSectionBroadcast } from '@/hooks/useSectionBroadcast';
 import { useViewMode } from '@/hooks/useViewMode';
-import { CheckCircle2, MessageSquare, Wrench } from 'lucide-react';
+import { CheckCircle2, MessageSquare, Wrench, CheckCheck } from 'lucide-react';
 
 export default function InvestmentConsultingNeeds() {
   const { consultationData, updateData: ctxUpdate } = useInvestmentConsultationState();
