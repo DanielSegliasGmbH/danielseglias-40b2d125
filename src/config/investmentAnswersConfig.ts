@@ -297,6 +297,7 @@ export const tileAnswerMap: Record<string, TileAnswerConfig> = {
       'Visualisierung im Rendite-Risiko-Tool möglich.',
     ],
     steps: [
+      { label: 'Kosten-Impact simulieren', toolSlug: 'kosten-impact-simulator' },
       { label: 'Rendite- & Risikosimulation öffnen', toolSlug: 'rendite-risiko-simulation' },
     ],
     sources: [

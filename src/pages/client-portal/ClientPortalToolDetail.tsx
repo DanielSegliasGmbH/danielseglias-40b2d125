@@ -18,6 +18,7 @@ import { TragbarkeitsrechnerTool } from '@/components/tools/tragbarkeitsrechner/
 import { Verlustrechner3aTool } from '@/components/tools/verlustrechner-3a/Verlustrechner3aTool';
 import { TransparenzCheckTool } from '@/components/tools/transparenz-check/TransparenzCheckTool';
 import { KostenaufschluesselungTool } from '@/components/tools/kostenaufschluesselung/KostenaufschluesselungTool';
+import { KostenImpactSimulatorTool } from '@/components/tools/kosten-impact-simulator/KostenImpactSimulatorTool';
 
 const iconMap: Record<string, LucideIcon> = {
   'calculator': Calculator,
@@ -80,6 +81,8 @@ export default function ClientPortalToolDetail() {
         return <TransparenzCheckTool mode="internal" />;
       case 'kostenaufschluesselung':
         return <KostenaufschluesselungTool mode="internal" />;
+      case 'kosten-impact-simulator':
+        return <KostenImpactSimulatorTool mode="internal" />;
       default:
         return (
           <Card>

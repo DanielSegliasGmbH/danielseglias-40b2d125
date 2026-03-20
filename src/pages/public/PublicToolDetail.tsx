@@ -16,6 +16,7 @@ import { TragbarkeitsrechnerTool } from '@/components/tools/tragbarkeitsrechner/
 import { Verlustrechner3aTool } from '@/components/tools/verlustrechner-3a/Verlustrechner3aTool';
 import { TransparenzCheckTool } from '@/components/tools/transparenz-check/TransparenzCheckTool';
 import { KostenaufschluesselungTool } from '@/components/tools/kostenaufschluesselung/KostenaufschluesselungTool';
+import { KostenImpactSimulatorTool } from '@/components/tools/kosten-impact-simulator/KostenImpactSimulatorTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -150,6 +151,10 @@ export default function PublicToolDetail() {
               ) : slug === 'kostenaufschluesselung' ? (
                 <div className="mb-8">
                   <KostenaufschluesselungTool mode="public" />
+                </div>
+              ) : slug === 'kosten-impact-simulator' ? (
+                <div className="mb-8">
+                  <KostenImpactSimulatorTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
