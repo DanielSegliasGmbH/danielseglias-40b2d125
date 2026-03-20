@@ -181,6 +181,9 @@ export function InflationsrechnerTool() {
         </div>
       )}
 
+      {/* Walkway visualization */}
+      <InflationWalkway />
+
       {/* Insight */}
       <Card className="bg-muted/40 border-muted">
         <CardContent className="py-5 flex gap-3">
