@@ -336,6 +336,7 @@ export function RecoveryAnalyseTool({ mode = 'internal' }: Props) {
         </AccordionItem>
       </Accordion>
     </div>
+    </PdfExportWrapper>
   );
 }
 

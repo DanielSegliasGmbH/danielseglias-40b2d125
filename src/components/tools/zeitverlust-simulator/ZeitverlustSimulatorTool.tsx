@@ -258,6 +258,7 @@ export function ZeitverlustSimulatorTool({ mode = 'internal' }: Props) {
         </CardContent>
       </Card>
     </div>
+    </PdfExportWrapper>
   );
 }
 

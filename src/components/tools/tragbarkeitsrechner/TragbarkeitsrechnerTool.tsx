@@ -361,6 +361,7 @@ export function TragbarkeitsrechnerTool({ mode = 'internal' }: Props) {
         </p>
       </div>
     </div>
+    </PdfExportWrapper>
   );
 }
 
