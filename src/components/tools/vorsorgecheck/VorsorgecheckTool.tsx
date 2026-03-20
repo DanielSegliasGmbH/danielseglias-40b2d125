@@ -136,6 +136,7 @@ export default function VorsorgecheckTool() {
 
   // Question view
   return (
+    <PdfExportWrapper toolName="Vorsorgecheck-3a">
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="space-y-2">
         <div className="flex justify-between text-sm text-muted-foreground">
