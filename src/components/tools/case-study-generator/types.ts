@@ -6,6 +6,8 @@ export type Duration = '<3' | '3-6' | '6-12' | '12+';
 export type PreviousSolution = 'versicherung' | 'bank' | 'kombination' | 'unklar';
 export type MainProblem = 'hohe-gebuehren' | 'keine-strategie' | 'falsche-produkte' | 'keine-vorsorge' | 'steueroptimierung' | 'andere';
 
+export const GLOBAL_CTA_LINK = 'https://calendar.app.google/LrIPZDNzivnrfq9w7';
+
 export const BENEFIT_OPTIONS = [
   'Mehr Flexibilität',
   'Tiefere Gebührenstruktur',
@@ -20,6 +22,12 @@ export const BENEFIT_OPTIONS = [
   'Mehr Sicherheit im Entscheidungsprozess',
   'Transparenz über Kosten & Entwicklung',
 ] as const;
+
+export interface MediaItem {
+  type: 'image' | 'pdf';
+  url: string;
+  name: string;
+}
 
 export interface CaseStudyData {
   id: string;
@@ -51,12 +59,21 @@ export interface CaseStudyData {
   roundNumbers: boolean;
   publishingAllowed: boolean;
 
-  ctaLink: string;
+  ctaButtonText: string;
+  customerImageUrl: string;
+  media: MediaItem[];
 }
 
 let _counter = 0;
 export function generateId(): string {
   return `cs_${Date.now()}_${++_counter}`;
+}
+
+export function generateAutoTitle(customerType: CustomerType, feeSavings: number): string {
+  if (feeSavings <= 0) return '';
+  const label = CUSTOMER_TYPE_LABELS[customerType];
+  const formatted = `CHF ${Math.round(feeSavings).toLocaleString('de-CH')}`;
+  return `Wie ${label === 'Angestellt' ? 'ein Angestellter' : label === 'Selbstständig' ? 'eine Selbstständige' : label === 'Familie' ? 'eine Familie' : label === 'Paar' ? 'ein Paar' : label === 'Student/in' ? 'ein/e Student/in' : 'ein/e Rentner/in'} ${formatted} pro Jahr spart`;
 }
 
 export const EMPTY_CASE_STUDY: CaseStudyData = {
@@ -84,7 +101,9 @@ export const EMPTY_CASE_STUDY: CaseStudyData = {
   showTestimonial: false,
   roundNumbers: true,
   publishingAllowed: false,
-  ctaLink: '',
+  ctaButtonText: '15 Minuten Gespräch buchen',
+  customerImageUrl: '',
+  media: [],
 };
 
 export const CUSTOMER_TYPE_LABELS: Record<CustomerType, string> = {
@@ -169,7 +188,6 @@ export const MOCK_CASE_STUDIES: CaseStudyData[] = [
     testimonialName: 'Familie M., Zürich',
     testimonialGoogleLink: 'https://g.co/kgs/example1',
     publishingAllowed: true,
-    ctaLink: 'https://calendly.com/example',
   },
   {
     ...EMPTY_CASE_STUDY,
@@ -190,7 +208,6 @@ export const MOCK_CASE_STUDIES: CaseStudyData[] = [
     roiMonths: 4,
     expectedImprovement: 'Klare Struktur, automatisiertes Sparen, optimierte Vorsorge.',
     benefits: ['Klare Strategie & Verständnis', 'Strukturierte Vorsorgeplanung', '1:1 Betreuung'],
-    ctaLink: 'https://calendly.com/example',
   },
   {
     ...EMPTY_CASE_STUDY,
@@ -211,6 +228,5 @@ export const MOCK_CASE_STUDIES: CaseStudyData[] = [
     roiMonths: 3,
     expectedImprovement: 'Grundlegende Absicherung und strukturierter Vermögensaufbau.',
     benefits: ['Strukturierte Vorsorgeplanung', 'Mehr Sicherheit im Entscheidungsprozess'],
-    ctaLink: '',
   },
 ];

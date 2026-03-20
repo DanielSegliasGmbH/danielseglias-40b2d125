@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import { MOCK_CASE_STUDIES, EMPTY_CASE_STUDY, generateId, type CaseStudyData } from '@/components/tools/case-study-generator/types';
 import { toast } from 'sonner';
 
@@ -45,7 +45,9 @@ export function CaseStudyProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const getPublished = useCallback(() => {
-    return caseStudies.filter(cs => cs.status === 'veroeffentlicht');
+    const published = caseStudies.filter(cs => cs.status === 'veroeffentlicht');
+    console.log(`[CaseStudies] Veröffentlichte Case Studies: ${published.length}`);
+    return published;
   }, [caseStudies]);
 
   const getBySlug = useCallback((slug: string) => {
