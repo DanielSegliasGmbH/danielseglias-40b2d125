@@ -4,10 +4,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
-import { TrendingDown, Calendar, Info } from 'lucide-react';
+import { TrendingDown, Calendar, Activity, Info } from 'lucide-react';
 import { InflationChart } from './InflationChart';
 import { LifeExamples } from './LifeExamples';
-import { InflationWalkway } from './InflationWalkway';
+import { SimulationWalkway } from './SimulationWalkway';
 import {
   calcFutureProjection,
   calcPastProjection,
@@ -17,7 +17,7 @@ import {
 } from './inflationData';
 
 export function InflationsrechnerTool() {
-  const [mode, setMode] = useState<'future' | 'past'>('future');
+  const [mode, setMode] = useState<'future' | 'past' | 'simulation'>('future');
 
   // Future inputs
   const [amount, setAmount] = useState(100000);
@@ -38,15 +38,19 @@ export function InflationsrechnerTool() {
   return (
     <div className="space-y-6">
       {/* Mode Tabs */}
-      <Tabs value={mode} onValueChange={(v) => setMode(v as 'future' | 'past')}>
-        <TabsList className="w-full grid grid-cols-2">
+      <Tabs value={mode} onValueChange={(v) => setMode(v as 'future' | 'past' | 'simulation')}>
+        <TabsList className="w-full grid grid-cols-3">
           <TabsTrigger value="future" className="gap-2">
             <TrendingDown className="h-4 w-4" />
             Zukunftsprojektion
           </TabsTrigger>
           <TabsTrigger value="past" className="gap-2">
             <Calendar className="h-4 w-4" />
-            Vergangenheit (BFS)
+            Vergangenheit
+          </TabsTrigger>
+          <TabsTrigger value="simulation" className="gap-2">
+            <Activity className="h-4 w-4" />
+            Simulation
           </TabsTrigger>
         </TabsList>
 
