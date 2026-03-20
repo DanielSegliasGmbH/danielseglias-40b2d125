@@ -64,6 +64,8 @@ export default function ClientPortalToolDetail() {
         return <CaseStudyGeneratorTool />;
       case 'vergleichsrechner-3a':
         return <Vergleichsrechner3aTool />;
+      case 'inflationsrechner':
+        return <InflationsrechnerTool />;
       default:
         return (
           <Card>
