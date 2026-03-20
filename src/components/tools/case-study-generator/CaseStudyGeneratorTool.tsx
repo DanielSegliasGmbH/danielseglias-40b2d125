@@ -29,6 +29,7 @@ export function CaseStudyGeneratorTool() {
   };
 
   return (
+    <PdfExportWrapper toolName="Case-Study-Generator">
     <div className="space-y-4">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="flex items-center justify-between">
