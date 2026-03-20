@@ -83,7 +83,7 @@
   "roles": {
     "admin": "Administrator",
     "staff": "Mitarbeiter",
-    "client": "Mandant"
+    "client": "Benutzer"
   },
   "dashboard": {
     "title": "Dashboard",
