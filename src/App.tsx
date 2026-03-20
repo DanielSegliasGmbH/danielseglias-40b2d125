@@ -44,7 +44,7 @@ import ClientPortalToolDetail from "./pages/client-portal/ClientPortalToolDetail
 
 // Insurance Consulting Pages
 import InsuranceConsultingStart from "./pages/insurance-consulting/InsuranceConsultingStart";
-import InsuranceConsultingFocus from "./pages/insurance-consulting/InsuranceConsultingFocus";
+import InsuranceConsultingTopics from "./pages/insurance-consulting/InsuranceConsultingTopics";
 import InsuranceConsultingIntroduction from "./pages/insurance-consulting/InsuranceConsultingIntroduction";
 import InsuranceConsultingCompany from "./pages/insurance-consulting/InsuranceConsultingCompany";
 import InsuranceConsultingAdvisorInfo from "./pages/insurance-consulting/InsuranceConsultingAdvisorInfo";
@@ -340,18 +340,18 @@ function App() {
                 }
               />
               <Route
-                path="/app/insurance-consulting/focus"
+                path="/app/insurance-consulting/topics"
                 element={
                   <RouteGuard allowedRoles={['admin', 'staff']}>
                     <ConsultationProvider>
-                      <InsuranceConsultingFocus />
+                      <InsuranceConsultingTopics />
                     </ConsultationProvider>
                   </RouteGuard>
                 }
               />
               <Route
-                path="/app/insurance-consulting/topics"
-                element={<Navigate to="/app/insurance-consulting/focus" replace />}
+                path="/app/insurance-consulting/focus"
+                element={<Navigate to="/app/insurance-consulting/topics" replace />}
               />
               <Route
                 path="/app/insurance-consulting/introduction"
