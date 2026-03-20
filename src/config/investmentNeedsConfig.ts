@@ -91,7 +91,7 @@ export const needsCategories: NeedsCategory[] = [
     tiles: [
       { id: 'dec-1', title: 'Was passiert, wenn ich nichts mache?', description: 'Erkennen, dass Nicht-Handeln eine aktive Entscheidung mit Konsequenzen ist', category: 'dringlichkeit', linkedTools: ['kosten-impact-simulator', 'inflationsrechner', 'zeitverlust-simulator'], linkedProducts: ['strategie', 'begleitung'] },
       { id: 'dec-2', title: 'Was ist für mich die beste Lösung?', description: 'Erkennen, dass es keine Standardlösung gibt – individuelle Empfehlung vorbereiten', category: 'lösung', linkedTools: ['vergleichsrechner-3a', 'rendite-risiko-simulation'], linkedProducts: ['strategie', 'optimierung', 'begleitung'] },
-      { id: 'dec-3', title: 'Was würdest du an meiner Stelle tun?', description: 'Persönliche Perspektive des Beraters', category: 'entscheidung', linkedTools: [], linkedProducts: ['beratung'] },
+      { id: 'dec-3', title: 'Was würdest du an meiner Stelle tun?', description: 'Aktiv nach einer Empfehlung fragen – Abschlussmoment', category: 'abschluss', linkedTools: ['vergleichsrechner-3a'], linkedProducts: ['strategie', 'optimierung', 'begleitung'] },
     ],
   },
 ];
