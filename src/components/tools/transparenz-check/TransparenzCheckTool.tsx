@@ -230,7 +230,7 @@ export function TransparenzCheckTool({ mode = 'public' }: Props) {
   }
 
   /* ══════════════════ PUBLIC / PRESENTATION VIEW ══════════════════ */
-  return (
+    <PdfExportWrapper toolName="Transparenz-Check" hideExport>
     <div className="space-y-6">
       {/* ── 1. Registration & Verification ── */}
       <Section icon={ShieldCheck} title="Offizielle Nachweise" delay={0}>
