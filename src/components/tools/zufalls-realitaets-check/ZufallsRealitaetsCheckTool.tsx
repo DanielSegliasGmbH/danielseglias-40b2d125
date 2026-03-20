@@ -72,6 +72,7 @@ export function ZufallsRealitaetsCheckTool({ mode = 'internal' }: Props) {
   };
 
   return (
+    <PdfExportWrapper toolName="Zufalls-Realitäts-Check" hideExport={mode === 'public'}>
     <div className="space-y-6">
       {/* Progress indicator */}
       {step > 0 && step < 4 && (
