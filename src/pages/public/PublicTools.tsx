@@ -1,43 +1,18 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { PublicLayout } from '@/layouts/PublicLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Calculator, Wrench, ArrowRight, AlertCircle } from 'lucide-react';
-
-interface PublicPage {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string | null;
-  page_type: string;
-  is_published: boolean;
-  updated_at: string;
-}
+import { usePublicTools } from '@/hooks/useTools';
+import { groupToolsByCluster } from '@/config/toolClusters';
 
 export default function PublicTools() {
   const { t } = useTranslation();
+  const { data: tools, isLoading, error } = usePublicTools();
 
-  // Load from public_pages - only published tools
-  const { data: tools, isLoading, error } = useQuery({
-    queryKey: ['public-pages', 'tools'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('public_pages')
-        .select('*')
-        .eq('page_type', 'tool')
-        .eq('is_published', true)
-        .order('updated_at', { ascending: false });
-
-      if (error) throw error;
-      return data as PublicPage[];
-    },
-    staleTime: 60 * 1000, // 60 seconds
-    refetchOnWindowFocus: false,
-  });
+  const clusteredTools = tools && tools.length > 0 ? groupToolsByCluster(tools) : [];
 
   return (
     <PublicLayout title={t('public.tools.title')} description={t('public.tools.subtitle')}>
@@ -82,31 +57,34 @@ export default function PublicTools() {
             </Card>
           )}
 
-          {tools && tools.length > 0 && (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {tools.map((tool) => (
-                <Card key={tool.id} className="transition-shadow hover:shadow-lg">
-                  <CardHeader>
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
-                      <Wrench className="h-5 w-5 text-primary" />
-                    </div>
-                    <CardTitle className="text-lg">{tool.title}</CardTitle>
-                    {tool.excerpt && (
-                      <CardDescription>{tool.excerpt}</CardDescription>
-                    )}
-                  </CardHeader>
-                  <CardContent>
-                    <Link to={`/tools/${tool.slug}`}>
-                      <Button variant="outline" className="w-full">
-                        {t('public.tools.startTool')}
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              ))}
+          {clusteredTools.map(({ cluster, tools: clusterTools }) => (
+            <div key={cluster.key} className="mb-10">
+              <h2 className="text-xl font-semibold text-foreground mb-4">{t(cluster.i18nKey)}</h2>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {clusterTools.map((tool) => (
+                  <Card key={tool.id} className="transition-shadow hover:shadow-lg">
+                    <CardHeader>
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
+                        <Wrench className="h-5 w-5 text-primary" />
+                      </div>
+                      <CardTitle className="text-lg">{t(tool.name_key)}</CardTitle>
+                      {tool.description_key && (
+                        <CardDescription>{t(tool.description_key)}</CardDescription>
+                      )}
+                    </CardHeader>
+                    <CardContent>
+                      <Link to={`/tools/${tool.slug}`}>
+                        <Button variant="outline" className="w-full">
+                          {t('public.tools.startTool')}
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
-          )}
+          ))}
 
           {tools && tools.length === 0 && (
             <Card>
@@ -116,7 +94,6 @@ export default function PublicTools() {
             </Card>
           )}
 
-          {/* CTA Section */}
           <Card className="mt-12 bg-primary/5 border-primary/20">
             <CardContent className="py-8 text-center">
               <h3 className="text-xl font-bold text-foreground mb-2">
