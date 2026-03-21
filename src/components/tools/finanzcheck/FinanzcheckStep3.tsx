@@ -129,7 +129,7 @@ export function FinanzcheckStep3({ result, onBack, onReset }: Props) {
       {/* Reflection */}
       {result.overallScore < 75 && (
         <ToolReflection
-          question="Wenn du das so weiterlaufen lässt – wärst du in 10 Jahren zufrieden damit?"
+          question="Wenn Sie das so weiterlaufen lassen – wären Sie in 10 Jahren zufrieden damit?"
           context="Kleine Optimierungen heute können langfristig einen grossen Unterschied machen."
         />
       )}
