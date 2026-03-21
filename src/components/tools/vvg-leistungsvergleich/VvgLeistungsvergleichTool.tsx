@@ -1,4 +1,5 @@
 import { PdfExportWrapper } from '../PdfExportWrapper';
+import { ToolNextStep } from '../ToolNextStep';
 import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -812,6 +813,17 @@ export default function VvgLeistungsvergleichTool() {
           </TabsContent>
 
         </Tabs>
+
+        <ToolNextStep
+          insightText="Du hast jetzt Klarheit über deine Zusatzversicherungs-Leistungen. Willst du auch deine finanzielle Gesamtsituation prüfen?"
+          primary={{
+            question: 'Wie steht es um deine Finanzen insgesamt?',
+            description: 'Der Finanzcheck gibt dir in 5 Minuten eine ehrliche Standortbestimmung.',
+            targetSlug: 'finanzcheck',
+            buttonLabel: 'Finanzcheck starten',
+            recommended: true,
+          }}
+        />
       </div>
     );
   }
