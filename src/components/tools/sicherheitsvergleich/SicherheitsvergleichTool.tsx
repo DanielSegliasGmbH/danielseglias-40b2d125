@@ -313,4 +313,5 @@ export function SicherheitsvergleichTool({ mode = 'internal' }: Props) {
       />
     </div>
     </PdfExportWrapper>
+  );
 }
