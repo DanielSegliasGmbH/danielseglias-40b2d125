@@ -56,6 +56,14 @@ export function Mini3aKurzcheckTool({ mode = 'internal' }: Mini3aKurzcheckToolPr
       {/* Recommendation */}
       <RecommendationBlock text={result.empfehlung} />
 
+      {/* Reflection – only when score indicates room for improvement */}
+      {result.gesamtscore < 70 && (
+        <ToolReflection
+          question="Was würde es für dich bedeuten, wenn du mit einer besseren Lösung jedes Jahr mehr aus deiner Vorsorge herausholst?"
+          context="Ein unabhängiger Blick zeigt oft Potenzial, das man selbst übersieht."
+        />
+      )}
+
       {/* Links */}
       {mode === 'internal' && (
         <LinksSection links={links} onChange={setLinks} />
@@ -89,6 +97,33 @@ export function Mini3aKurzcheckTool({ mode = 'internal' }: Mini3aKurzcheckToolPr
           </CardContent>
         </Card>
       )}
+
+      {/* Trust Note */}
+      <ToolTrustNote text="Unabhängige Analyse · Keine Produktempfehlung · Deine Daten bleiben bei dir" />
+
+      {/* Next Step */}
+      <ToolNextStep
+        insightText={
+          result.gesamtscore < 50
+            ? "Dein aktuelles 3a-Produkt hat deutliches Verbesserungspotenzial. Es lohnt sich, die Kosten genauer anzuschauen."
+            : result.gesamtscore < 70
+            ? "Es gibt konkrete Stellschrauben. Lass uns anschauen, was dich die Gebühren wirklich kosten."
+            : "Deine 3a-Lösung ist solide. Willst du trotzdem sehen, ob du bei den Kosten noch optimieren kannst?"
+        }
+        primary={{
+          question: "Was kosten dich die Gebühren wirklich – über die gesamte Laufzeit?",
+          description: "Sieh konkret, wie sich deine aktuellen Gebühren auf dein Endvermögen auswirken.",
+          targetSlug: "kosten-impact-simulator",
+          buttonLabel: "Kosten-Impact berechnen",
+          recommended: true,
+        }}
+        secondary={{
+          question: "Wie schneidet dein Anbieter im direkten Vergleich ab?",
+          description: "Vergleiche Kosten, Rendite und Flexibilität verschiedener 3a-Anbieter.",
+          targetSlug: "vergleichsrechner-3a",
+          buttonLabel: "Anbieter vergleichen",
+        }}
+      />
     </div>
   );
 }

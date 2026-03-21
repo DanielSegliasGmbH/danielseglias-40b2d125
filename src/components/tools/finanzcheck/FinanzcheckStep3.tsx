@@ -126,6 +126,14 @@ export function FinanzcheckStep3({ result, onBack, onReset }: Props) {
         </Card>
       )}
 
+      {/* Reflection */}
+      {result.overallScore < 75 && (
+        <ToolReflection
+          question="Wenn du das so weiterlaufen lässt – wärst du in 10 Jahren zufrieden damit?"
+          context="Kleine Optimierungen heute können langfristig einen grossen Unterschied machen."
+        />
+      )}
+
       {/* Actions */}
       <Card>
         <CardContent className="pt-6">
@@ -148,6 +156,30 @@ export function FinanzcheckStep3({ result, onBack, onReset }: Props) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Next Step */}
+      <ToolNextStep
+        insightText={
+          result.overallScore < 50
+            ? "Dein Ergebnis zeigt klaren Handlungsbedarf. Lass uns gemeinsam anschauen, wo du am meisten herausholen kannst."
+            : result.overallScore < 75
+            ? "Es gibt konkretes Optimierungspotenzial. Der nächste Schritt hilft dir, die Hebel zu identifizieren."
+            : "Du bist gut aufgestellt. Trotzdem lohnt sich ein genauer Blick auf die Details."
+        }
+        primary={{
+          question: "Möchtest du deine 3a-Lösung im Detail prüfen?",
+          description: "Der Mini-3A-Kurzcheck zeigt dir konkret, wo deine Vorsorge stark ist und wo du optimieren kannst.",
+          targetSlug: "mini-3a-kurzcheck",
+          buttonLabel: "3a-Lösung prüfen",
+          recommended: true,
+        }}
+        secondary={{
+          question: "Interessiert dich, was versteckte Kosten langfristig ausmachen?",
+          description: "Sieh, wie sich kleine Gebührenunterschiede über Jahre summieren.",
+          targetSlug: "kostenaufschluesselung",
+          buttonLabel: "Kosten aufschlüsseln",
+        }}
+      />
     </div>
   );
 }
