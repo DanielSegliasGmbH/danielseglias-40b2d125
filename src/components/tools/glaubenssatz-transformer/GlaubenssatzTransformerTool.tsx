@@ -93,12 +93,12 @@ export function GlaubenssatzTransformerTool({ mode = 'internal' }: Props) {
 
           {/* Next Step */}
           <ToolNextStep
-            insightText="Du hast gerade einen Glaubenssatz hinterfragt. Willst du jetzt sehen, wo du finanziell wirklich stehst?"
+            insightText="Jetzt, wo du diesen Gedanken hinterfragt hast – lass uns anschauen, wie deine Situation wirklich aussieht."
             primary={{
-              question: 'Wie gut bist du finanziell aufgestellt – ehrlich und unabhängig?',
+              question: 'Wie stehst du finanziell da – ehrlich und unabhängig?',
               description: 'Der Finanzcheck gibt dir in 5 Minuten eine klare Standortbestimmung.',
               targetSlug: 'finanzcheck',
-              buttonLabel: 'Finanzcheck starten',
+              buttonLabel: 'Meine Situation prüfen',
               recommended: true,
             }}
             secondary={{
