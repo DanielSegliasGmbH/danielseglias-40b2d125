@@ -335,19 +335,19 @@ export function WahrscheinlichkeitsrechnerTool({ mode = 'internal' }: Props) {
       <ToolTrustNote text="Unabhängige Beratung · Keine Produktbindung · Du entscheidest" />
 
       <ToolNextStep
-        insightText="Du kennst jetzt deine Zielerreichungswahrscheinlichkeit. Lass uns schauen, ob sich eine Optimierung deiner Strategie lohnt."
+        insightText="Du kennst jetzt deine Zielerreichungswahrscheinlichkeit. Bereit, alle Erkenntnisse zusammenzuführen?"
         primary={{
-          question: "Lohnt sich ein Wechsel meiner 3a?",
-          description: "Vergleiche deine bestehende mit einer optimierten Lösung und sieh den konkreten Unterschied.",
-          targetSlug: "vergleichsrechner-3a",
-          buttonLabel: "Vergleich starten",
+          question: "Bereit für deine Entscheidung?",
+          description: "Führe alle Erkenntnisse zusammen und entscheide klar, was als Nächstes kommt.",
+          targetSlug: "finanz-entscheidung",
+          buttonLabel: "Zur Entscheidung",
           recommended: true,
         }}
         secondary={{
-          question: "Wie gut ist meine 3a insgesamt?",
-          description: "Lass deine Lösung in 2 Minuten bewerten.",
-          targetSlug: "mini-3a-kurzcheck",
-          buttonLabel: "Kurzcheck starten",
+          question: "Lohnt sich ein Wechsel meiner 3a?",
+          description: "Vergleiche deine bestehende mit einer optimierten Lösung.",
+          targetSlug: "vergleichsrechner-3a",
+          buttonLabel: "Vergleich starten",
         }}
       />
     </div>

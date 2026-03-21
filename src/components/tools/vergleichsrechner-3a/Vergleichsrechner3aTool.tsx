@@ -550,13 +550,19 @@ export function Vergleichsrechner3aTool() {
       <ToolTrustNote text="Unabhängige Analyse · Keine Produktbindung · Du entscheidest jederzeit selbst" />
 
       <ToolNextStep
-        insightText="Du siehst jetzt den konkreten Unterschied. Willst du verstehen, wie sich die Kosten langfristig auf dein Vermögen auswirken?"
+        insightText="Du siehst jetzt den konkreten Unterschied. Willst du alle Erkenntnisse zusammenführen?"
         primary={{
-          question: "Was kosten dich die Gebühren wirklich – über die gesamte Laufzeit?",
-          description: "Der Kosten-Impact-Simulator zeigt dir, wie sich Gebührenunterschiede auf dein Endvermögen auswirken.",
+          question: "Bereit für deine Entscheidung?",
+          description: "Führe alle Erkenntnisse zusammen und entscheide, was als Nächstes sinnvoll ist.",
+          targetSlug: "finanz-entscheidung",
+          buttonLabel: "Zur Entscheidung",
+          recommended: true,
+        }}
+        secondary={{
+          question: "Was kosten dich die Gebühren wirklich?",
+          description: "Der Kosten-Impact-Simulator zeigt den langfristigen Effekt.",
           targetSlug: "kosten-impact-simulator",
           buttonLabel: "Kosten-Impact berechnen",
-          recommended: true,
         }}
       />
     </div>
