@@ -1,4 +1,5 @@
 import { PdfExportWrapper } from '../PdfExportWrapper';
+import { ToolNextStep } from '../ToolNextStep';
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -331,6 +332,23 @@ export function WahrscheinlichkeitsrechnerTool({ mode = 'internal' }: Props) {
           Vereinfachte Berechnung basierend auf Durchschnittswerten. Die tatsächliche Entwicklung hängt von Marktbedingungen, persönlicher Situation und gewählter Strategie ab.
         </p>
       </div>
+
+      <ToolNextStep
+        insightText="Du kennst jetzt deine Zielerreichungswahrscheinlichkeit. Lass uns schauen, ob sich eine Optimierung deiner Strategie lohnt."
+        primary={{
+          question: "Lohnt sich ein Wechsel meiner 3a?",
+          description: "Vergleiche deine bestehende mit einer optimierten Lösung und sieh den konkreten Unterschied.",
+          targetSlug: "vergleichsrechner-3a",
+          buttonLabel: "Vergleich starten",
+          recommended: true,
+        }}
+        secondary={{
+          question: "Wie gut ist meine 3a insgesamt?",
+          description: "Lass deine Lösung in 2 Minuten bewerten.",
+          targetSlug: "mini-3a-kurzcheck",
+          buttonLabel: "Kurzcheck starten",
+        }}
+      />
     </div>
     </PdfExportWrapper>
   );

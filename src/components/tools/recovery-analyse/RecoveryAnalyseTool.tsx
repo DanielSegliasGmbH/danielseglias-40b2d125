@@ -1,4 +1,5 @@
 import { PdfExportWrapper } from '../PdfExportWrapper';
+import { ToolNextStep } from '../ToolNextStep';
 import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -334,7 +335,24 @@ export function RecoveryAnalyseTool({ mode = 'internal' }: Props) {
             )}
           </AccordionContent>
         </AccordionItem>
-      </Accordion>
+    </Accordion>
+
+      <ToolNextStep
+        insightText="Der Markt hat sich historisch immer erholt – aber die Erholungszeit variiert. Entscheidend ist: Wie wahrscheinlich erreichst du dein Ziel, wenn du investiert bleibst?"
+        primary={{
+          question: "Wie wahrscheinlich erreiche ich mein Ziel?",
+          description: "Berechne deine persönliche Erfolgswahrscheinlichkeit basierend auf deiner Strategie.",
+          targetSlug: "wahrscheinlichkeitsrechner",
+          buttonLabel: "Wahrscheinlichkeit berechnen",
+          recommended: true,
+        }}
+        secondary={{
+          question: "Was kostet mich jeder Monat Warten?",
+          description: "Berechne den finanziellen Preis des Aufschiebens.",
+          targetSlug: "zeitverlust-simulator",
+          buttonLabel: "Zeitverlust berechnen",
+        }}
+      />
     </div>
     </PdfExportWrapper>
   );

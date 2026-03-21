@@ -1,4 +1,5 @@
 import { PdfExportWrapper } from '../PdfExportWrapper';
+import { ToolNextStep } from '../ToolNextStep';
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -307,6 +308,23 @@ export function KostenImpactSimulatorTool({ mode = 'internal' }: Props) {
           Berechnung basiert auf vereinfachten Annahmen. Die tatsächliche Entwicklung hängt von Anlagestrategie, Marktentwicklung und effektiven Produktkosten ab.
         </p>
       </div>
+
+      <ToolNextStep
+        insightText="Du siehst jetzt den konkreten Preisunterschied. Aber wie wahrscheinlich ist es, dass du dein finanzielles Ziel mit diesen Kosten erreichst?"
+        primary={{
+          question: "Erreiche ich mein Ziel trotz dieser Kosten?",
+          description: "Berechne die Wahrscheinlichkeit, dein Sparziel zu erreichen.",
+          targetSlug: "wahrscheinlichkeitsrechner",
+          buttonLabel: "Wahrscheinlichkeit prüfen",
+          recommended: true,
+        }}
+        secondary={{
+          question: "Lohnt sich ein Wechsel meiner 3a-Lösung?",
+          description: "Vergleiche deine bestehende mit einer optimierten Lösung.",
+          targetSlug: "vergleichsrechner-3a",
+          buttonLabel: "Vergleich starten",
+        }}
+      />
     </div>
     </PdfExportWrapper>
   );

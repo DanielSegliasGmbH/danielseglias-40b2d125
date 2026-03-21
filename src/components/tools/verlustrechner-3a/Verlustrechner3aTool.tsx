@@ -1,4 +1,5 @@
 import { PdfExportWrapper } from '../PdfExportWrapper';
+import { ToolNextStep } from '../ToolNextStep';
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -274,6 +275,23 @@ export function Verlustrechner3aTool() {
           Berechnung basiert auf Durchschnittswerten. Die tatsächliche Entwicklung hängt von der gewählten Anlagestrategie, den effektiven Kosten und der Marktentwicklung ab.
         </p>
       </div>
+
+      <ToolNextStep
+        insightText="Du siehst jetzt, was dir mit deiner aktuellen 3a entgeht. Die gute Nachricht: Mit einer optimierten Lösung lässt sich ein Grossteil davon zurückholen."
+        primary={{
+          question: "Wie viel mehr könnte meine 3a bringen?",
+          description: "Vergleiche deine bestehende mit einer optimierten 3a-Lösung – in konkreten Franken.",
+          targetSlug: "vergleichsrechner-3a",
+          buttonLabel: "Vergleich starten",
+          recommended: true,
+        }}
+        secondary={{
+          question: "Wie gut ist meine 3a insgesamt aufgestellt?",
+          description: "Lass deine Lösung in 2 Minuten bewerten – mit Score und Empfehlung.",
+          targetSlug: "mini-3a-kurzcheck",
+          buttonLabel: "Kurzcheck starten",
+        }}
+      />
     </div>
     </PdfExportWrapper>
   );

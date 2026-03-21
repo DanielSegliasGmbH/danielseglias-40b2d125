@@ -1,4 +1,5 @@
 import { PdfExportWrapper } from '../PdfExportWrapper';
+import { ToolNextStep } from '../ToolNextStep';
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -352,6 +353,23 @@ export function TransparenzCheckTool({ mode = 'public' }: Props) {
           </CollapsibleContent>
         </Collapsible>
       </Section>
+
+      <ToolNextStep
+        insightText="Transparenz ist die Grundlage jeder guten Finanzentscheidung. Jetzt, wo du weisst, wie transparent deine Beratung ist, lass uns deine Kosten genauer anschauen."
+        primary={{
+          question: "Welche Kosten zahle ich wirklich?",
+          description: "Mach sichtbare und versteckte Kosten deiner Finanzprodukte transparent.",
+          targetSlug: "kostenaufschluesselung",
+          buttonLabel: "Kosten aufschlüsseln",
+          recommended: true,
+        }}
+        secondary={{
+          question: "Wie steht es insgesamt um meine Finanzen?",
+          description: "Mach einen schnellen Finanzcheck in wenigen Minuten.",
+          targetSlug: "finanzcheck",
+          buttonLabel: "Finanzcheck starten",
+        }}
+      />
     </div>
     </PdfExportWrapper>
   );
