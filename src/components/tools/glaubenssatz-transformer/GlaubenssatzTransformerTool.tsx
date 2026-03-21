@@ -32,8 +32,9 @@ export function GlaubenssatzTransformerTool({ mode = 'internal' }: Props) {
 
           {/* Title */}
           <div className="text-center space-y-2">
-            <span className="text-4xl">{selected.emoji}</span>
+            <span className="text-5xl">{selected.emoji}</span>
             <h2 className="text-xl font-bold text-foreground">{selected.title}</h2>
+            <p className="text-sm text-muted-foreground">Wenn du so denkst, bist du nicht allein. Viele Menschen stehen genau an diesem Punkt.</p>
           </div>
 
           {/* Why people believe this */}
