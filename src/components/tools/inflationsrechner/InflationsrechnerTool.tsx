@@ -223,6 +223,8 @@ export function InflationsrechnerTool() {
       />
 
       <ToolTrustNote text="Datenquelle: Bundesamt für Statistik (BFS) · Landesindex der Konsumentenpreise" />
+
+      <ToolNextStep
         insightText="Inflation ist der stille Gegenspieler jeder Sparstrategie. Nur wer sein Geld klug investiert, kann den Kaufkraftverlust ausgleichen."
         primary={{
           question: "Ist mein Sparkonto wirklich sicher?",
