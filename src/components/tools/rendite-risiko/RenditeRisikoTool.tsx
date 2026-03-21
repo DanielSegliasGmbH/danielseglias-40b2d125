@@ -1,4 +1,5 @@
 import { PdfExportWrapper } from '../PdfExportWrapper';
+import { ToolNextStep } from '../ToolNextStep';
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
