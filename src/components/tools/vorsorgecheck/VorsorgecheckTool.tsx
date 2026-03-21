@@ -6,6 +6,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle, AlertTriangle, XCircle, ArrowRight, ArrowLeft, Loader2 } from 'lucide-react';
+import { ToolNextStep } from '../ToolNextStep';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { 
@@ -130,6 +131,23 @@ export default function VorsorgecheckTool() {
             Nochmal starten
           </Button>
         </div>
+
+        <ToolNextStep
+          insightText={
+            result.level === 'rot'
+              ? "Dein Ergebnis zeigt deutlichen Handlungsbedarf. Es lohnt sich, deine aktuelle 3a-Lösung genauer unter die Lupe zu nehmen."
+              : result.level === 'gelb'
+              ? "Es gibt Optimierungspotenzial. Ein detaillierter Blick auf dein 3a-Produkt zeigt dir, wo du ansetzen kannst."
+              : "Du bist gut aufgestellt. Willst du trotzdem prüfen, ob bei deiner 3a-Lösung noch etwas rauszuholen ist?"
+          }
+          primary={{
+            question: "Wie gut ist deine aktuelle 3a-Lösung wirklich?",
+            description: "Der Mini-3A-Kurzcheck analysiert Struktur, Kosten, Rendite und Flexibilität deines Produkts.",
+            targetSlug: "mini-3a-kurzcheck",
+            buttonLabel: "3a-Lösung prüfen",
+            recommended: true,
+          }}
+        />
       </div>
     );
   }

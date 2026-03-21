@@ -1,4 +1,5 @@
 import { PdfExportWrapper } from '../PdfExportWrapper';
+import { ToolNextStep } from '../ToolNextStep';
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -394,6 +395,17 @@ export function ZufallsRealitaetsCheckTool({ mode = 'internal' }: Props) {
               Nochmals starten
             </Button>
           </div>
+
+          <ToolNextStep
+            insightText="Du weisst jetzt, wie selten Menschen ihre Finanzen proaktiv angehen. Willst du sehen, was das konkret in Franken bedeutet?"
+            primary={{
+              question: "Was kostet dich Abwarten wirklich?",
+              description: "Der Zeitverlust-Simulator zeigt dir, wie viel Geld jedes Jahr Verzögerung kostet.",
+              targetSlug: "zeitverlust-simulator",
+              buttonLabel: "Zeitverlust berechnen",
+              recommended: true,
+            }}
+          />
         </div>
       )}
     </div>

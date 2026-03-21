@@ -1,4 +1,5 @@
 import { PdfExportWrapper } from '../PdfExportWrapper';
+import { ToolNextStep } from '../ToolNextStep';
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -360,6 +361,17 @@ export function TragbarkeitsrechnerTool({ mode = 'internal' }: Props) {
           beurteilt werden.
         </p>
       </div>
+
+      <ToolNextStep
+        insightText="Du kennst jetzt deine Tragbarkeit. Willst du sehen, wie sich dein Vermögen mit der richtigen Anlagestrategie entwickeln kann?"
+        primary={{
+          question: "Wie entwickelt sich dein Vermögen mit verschiedenen Strategien?",
+          description: "Die Rendite-Risiko-Simulation zeigt dir, was realistisch möglich ist.",
+          targetSlug: "rendite-risiko",
+          buttonLabel: "Rendite simulieren",
+          recommended: true,
+        }}
+      />
     </div>
     </PdfExportWrapper>
   );
