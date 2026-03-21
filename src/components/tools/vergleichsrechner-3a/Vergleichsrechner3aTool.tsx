@@ -533,6 +533,16 @@ export function Vergleichsrechner3aTool() {
           </div>
         </CollapsibleContent>
       </Collapsible>
+      <ToolNextStep
+        insightText="Du siehst jetzt den konkreten Unterschied. Willst du verstehen, wie sich die Kosten langfristig auf dein Vermögen auswirken?"
+        primary={{
+          question: "Was kosten dich die Gebühren wirklich – über die gesamte Laufzeit?",
+          description: "Der Kosten-Impact-Simulator zeigt dir, wie sich Gebührenunterschiede auf dein Endvermögen auswirken.",
+          targetSlug: "kosten-impact-simulator",
+          buttonLabel: "Kosten-Impact berechnen",
+          recommended: true,
+        }}
+      />
     </div>
     </PdfExportWrapper>
   );
