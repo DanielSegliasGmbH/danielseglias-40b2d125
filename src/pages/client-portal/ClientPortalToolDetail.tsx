@@ -108,6 +108,8 @@ export default function ClientPortalToolDetail() {
         return <Mini3aKurzcheckTool mode="internal" />;
       case 'glaubenssatz-transformer':
         return <GlaubenssatzTransformerTool mode="internal" />;
+      case 'finanz-entscheidung':
+        return <FinanzEntscheidungTool mode="internal" />;
       default:
         return (
           <Card>
