@@ -813,6 +813,17 @@ export default function KvgPraemienvergleichTool() {
           </TabsContent>
 
         </Tabs>
+
+        <ToolNextStep
+          insightText="Du kennst jetzt deine Prämienoptionen. Willst du auch den Rest deiner Finanzen überprüfen?"
+          primary={{
+            question: 'Wie gut bist du insgesamt finanziell aufgestellt?',
+            description: 'Der Finanzcheck gibt dir in 5 Minuten eine klare Standortbestimmung – kostenlos und anonym.',
+            targetSlug: 'finanzcheck',
+            buttonLabel: 'Finanzcheck starten',
+            recommended: true,
+          }}
+        />
       </div>
     );
   }

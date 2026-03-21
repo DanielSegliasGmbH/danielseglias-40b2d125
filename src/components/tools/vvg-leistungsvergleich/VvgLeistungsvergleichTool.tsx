@@ -813,6 +813,17 @@ export default function VvgLeistungsvergleichTool() {
           </TabsContent>
 
         </Tabs>
+
+        <ToolNextStep
+          insightText="Du hast jetzt Klarheit über deine Zusatzversicherungs-Leistungen. Willst du auch deine finanzielle Gesamtsituation prüfen?"
+          primary={{
+            question: 'Wie steht es um deine Finanzen insgesamt?',
+            description: 'Der Finanzcheck gibt dir in 5 Minuten eine ehrliche Standortbestimmung.',
+            targetSlug: 'finanzcheck',
+            buttonLabel: 'Finanzcheck starten',
+            recommended: true,
+          }}
+        />
       </div>
     );
   }
