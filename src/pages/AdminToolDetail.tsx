@@ -134,6 +134,8 @@ export default function AdminToolDetail() {
         return <BeratungsreiseTool mode="internal" />;
       case 'mini-3a-kurzcheck':
         return <Mini3aKurzcheckTool mode="internal" />;
+      case 'glaubenssatz-transformer':
+        return <GlaubenssatzTransformerTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">

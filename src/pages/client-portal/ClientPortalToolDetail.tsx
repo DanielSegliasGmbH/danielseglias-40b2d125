@@ -105,6 +105,8 @@ export default function ClientPortalToolDetail() {
         return <BeratungsreiseTool mode="internal" />;
       case 'mini-3a-kurzcheck':
         return <Mini3aKurzcheckTool mode="internal" />;
+      case 'glaubenssatz-transformer':
+        return <GlaubenssatzTransformerTool mode="internal" />;
       default:
         return (
           <Card>

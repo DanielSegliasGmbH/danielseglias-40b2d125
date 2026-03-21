@@ -858,6 +858,10 @@
     "caseStudyGenerator": {
       "name": "Echte Erfolgsgeschichten erstellen",
       "description": "Erstelle strukturierte, anonymisierte Case Studies aus deiner Beratungspraxis."
+    },
+    "glaubenssatzTransformer": {
+      "name": "Welche Überzeugung hält mich zurück?",
+      "description": "Hinterfrage typische Glaubenssätze über Geld und entdecke neue Perspektiven – ohne Rechner, ohne Zahlen."
     }
   },
   "adminLeads": {

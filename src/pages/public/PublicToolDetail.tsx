@@ -182,6 +182,10 @@ export default function PublicToolDetail() {
                 <div className="mb-8">
                   <ZeitverlustSimulatorTool mode="public" />
                 </div>
+              ) : slug === 'glaubenssatz-transformer' ? (
+                <div className="mb-8">
+                  <GlaubenssatzTransformerTool mode="public" />
+                </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
                   <CardContent className="py-6 prose prose-neutral dark:prose-invert max-w-none">
