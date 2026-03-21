@@ -161,21 +161,21 @@ export function FinanzcheckStep3({ result, onBack, onReset }: Props) {
       <ToolNextStep
         insightText={
           result.overallScore < 50
-            ? "Dein Ergebnis zeigt klaren Handlungsbedarf. Lass uns gemeinsam anschauen, wo du am meisten herausholen kannst."
+            ? "Ihr Ergebnis zeigt klaren Handlungsbedarf. Lassen Sie uns gemeinsam anschauen, wo Sie am meisten herausholen können."
             : result.overallScore < 75
-            ? "Es gibt konkretes Optimierungspotenzial. Der nächste Schritt hilft dir, die Hebel zu identifizieren."
-            : "Du bist gut aufgestellt. Trotzdem lohnt sich ein genauer Blick auf die Details."
+            ? "Es gibt konkretes Optimierungspotenzial. Der nächste Schritt hilft Ihnen, die Hebel zu identifizieren."
+            : "Sie sind gut aufgestellt. Trotzdem lohnt sich ein genauer Blick auf die Details."
         }
         primary={{
-          question: "Möchtest du deine 3a-Lösung im Detail prüfen?",
-          description: "Der Mini-3A-Kurzcheck zeigt dir konkret, wo deine Vorsorge stark ist und wo du optimieren kannst.",
+          question: "Möchten Sie Ihre 3a-Lösung im Detail prüfen?",
+          description: "Der Mini-3A-Kurzcheck zeigt Ihnen konkret, wo Ihre Vorsorge stark ist und wo Sie optimieren können.",
           targetSlug: "mini-3a-kurzcheck",
           buttonLabel: "3a-Lösung prüfen",
           recommended: true,
         }}
         secondary={{
-          question: "Interessiert dich, was versteckte Kosten langfristig ausmachen?",
-          description: "Sieh, wie sich kleine Gebührenunterschiede über Jahre summieren.",
+          question: "Interessiert Sie, was versteckte Kosten langfristig ausmachen?",
+          description: "Sehen Sie, wie sich kleine Gebührenunterschiede über Jahre summieren.",
           targetSlug: "kostenaufschluesselung",
           buttonLabel: "Kosten aufschlüsseln",
         }}
