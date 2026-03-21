@@ -345,6 +345,8 @@ export function RecoveryAnalyseTool({ mode = 'internal' }: Props) {
       />
 
       <ToolTrustNote text="Historische Daten · Keine Prognose · Unabhängige Darstellung" />
+
+      <ToolNextStep
         insightText="Der Markt hat sich historisch immer erholt – aber die Erholungszeit variiert. Entscheidend ist: Wie wahrscheinlich erreichst du dein Ziel, wenn du investiert bleibst?"
         primary={{
           question: "Wie wahrscheinlich erreiche ich mein Ziel?",

@@ -303,6 +303,8 @@ export function SicherheitsvergleichTool({ mode = 'internal' }: Props) {
       />
 
       <ToolTrustNote text="Unabhängige Darstellung · Keine Produktempfehlung · Faktenbasiert" />
+
+      <ToolNextStep
         insightText="Echte Sicherheit bedeutet nicht «keine Schwankung», sondern Kaufkrafterhalt über die Zeit. Lass uns anschauen, wie sich der Markt historisch nach Krisen erholt hat."
         primary={{
           question: "Wie schnell erholt sich der Markt nach einer Krise?",
