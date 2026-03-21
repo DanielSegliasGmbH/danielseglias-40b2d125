@@ -23,6 +23,7 @@ import { RecoveryAnalyseTool } from '@/components/tools/recovery-analyse/Recover
 import { SicherheitsvergleichTool } from '@/components/tools/sicherheitsvergleich/SicherheitsvergleichTool';
 import { ZeitverlustSimulatorTool } from '@/components/tools/zeitverlust-simulator/ZeitverlustSimulatorTool';
 import { GlaubenssatzTransformerTool } from '@/components/tools/glaubenssatz-transformer/GlaubenssatzTransformerTool';
+import { FinanzEntscheidungTool } from '@/components/tools/finanz-entscheidung/FinanzEntscheidungTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -185,6 +186,10 @@ export default function PublicToolDetail() {
               ) : slug === 'glaubenssatz-transformer' ? (
                 <div className="mb-8">
                   <GlaubenssatzTransformerTool mode="public" />
+                </div>
+              ) : slug === 'finanz-entscheidung' ? (
+                <div className="mb-8">
+                  <FinanzEntscheidungTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">

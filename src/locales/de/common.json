@@ -862,6 +862,10 @@
     "glaubenssatzTransformer": {
       "name": "Welche Überzeugung hält mich zurück?",
       "description": "Hinterfrage typische Glaubenssätze über Geld und entdecke neue Perspektiven – ohne Rechner, ohne Zahlen."
+    },
+    "finanzEntscheidung": {
+      "name": "Bereit für den nächsten Schritt?",
+      "description": "Führe deine Erkenntnisse zusammen und triff eine klare Entscheidung – ohne Druck, mit voller Klarheit."
     }
   },
   "adminLeads": {
