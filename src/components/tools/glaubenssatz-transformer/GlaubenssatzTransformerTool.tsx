@@ -127,7 +127,10 @@ export function GlaubenssatzTransformerTool({ mode = 'internal' }: Props) {
             Welcher Gedanke hält dich zurück?
           </h2>
           <p className="text-sm text-muted-foreground max-w-md mx-auto">
-            Wähle einen Glaubenssatz, der dir bekannt vorkommt. Du bekommst eine klare, ehrliche Gegenperspektive.
+            Viele Menschen glauben, sie müssten zuerst alles verstehen oder genug Geld haben. Die Wahrheit ist: Oft sind es genau diese Gedanken, die sie zurückhalten.
+          </p>
+          <p className="text-sm font-medium text-foreground mt-2">
+            Wähle den Gedanken, der dich am ehesten widerspiegelt:
           </p>
         </div>
 
