@@ -762,94 +762,102 @@
     "updateSuccess": "Tool-Einstellung aktualisiert",
     "updateError": "Fehler beim Aktualisieren"
   },
+  "toolClusters": {
+    "standort": "Wo stehe ich?",
+    "kosten": "Was kosten mich meine Produkte?",
+    "risiko": "Wie sicher ist mein Geld?",
+    "dringlichkeit": "Warum jetzt handeln?",
+    "vertrauen": "Wie finde ich die richtige Lösung?",
+    "spezial": "Spezialbereiche"
+  },
   "tools": {
     "finanzcheck": {
-      "name": "Finanzcheck",
-      "description": "Kostenlose Selbsteinschätzung Ihrer Finanzsituation in wenigen Minuten."
+      "name": "Wie steht es um meine Finanzen?",
+      "description": "Finde in wenigen Minuten heraus, wie gut du finanziell aufgestellt bist – kostenlos und anonym."
     },
     "budgetCalculator": {
-      "name": "Budget-Rechner",
-      "description": "Hilft bei der Erstellung und Analyse des monatlichen Budgets."
+      "name": "Wo bleibt mein Geld jeden Monat?",
+      "description": "Verschaffe dir Klarheit über dein monatliches Budget und entdecke versteckte Sparpotenziale."
     },
     "retirementPlanner": {
-      "name": "Vorsorge-Planer",
-      "description": "Berechnung und Visualisierung der Altersvorsorge-Situation."
+      "name": "Reicht meine Vorsorge?",
+      "description": "Sieh auf einen Blick, ob deine Altersvorsorge ausreicht – oder ob eine Lücke droht."
     },
     "investmentSimulator": {
-      "name": "Anlage-Simulator",
-      "description": "Simulation verschiedener Anlagestrategien und deren Renditen."
+      "name": "Welche Strategie passt zu mir?",
+      "description": "Simuliere verschiedene Anlagestrategien und vergleiche die möglichen Ergebnisse."
     },
     "documentGenerator": {
-      "name": "Dokument-Generator",
-      "description": "Automatische Erstellung von Vorlagen und Dokumenten."
-    },
-    "vvgLeistungsvergleich": {
-      "name": "VVG-Leistungsvergleich",
-      "description": "Vergleichen Sie die Leistungen verschiedener VVG-Zusatzversicherungen."
-    },
-    "renditeRisikoSimulation": {
-      "name": "Rendite- & Risikosimulation",
-      "description": "Interaktive Visualisierung von Risiko und Renditechancen über verschiedene Anlagehorizonte."
-    },
-    "caseStudyGenerator": {
-      "name": "Case Study Generator",
-      "description": "Erstelle strukturierte, anonymisierte Case Studies für deine Finanzberatung."
-    },
-    "vergleichsrechner3a": {
-      "name": "3a-Vergleichsrechner",
-      "description": "Vergleich zwischen bestehender und optimierter 3a-Lösung – Aktuell vs. Optimiert."
-    },
-    "inflationsrechner": {
-      "name": "Inflationsrechner Schweiz",
-      "description": "Verstehe, wie Inflation deine Kaufkraft über die Zeit verändert – mit realen Schweizer Daten."
-    },
-    "tragbarkeitsrechner": {
-      "name": "Tragbarkeitsrechner Immobilie",
-      "description": "Prüfe, ob eine Immobilie in der Schweiz anhand von Kaufpreis, Eigenmitteln und Einkommen tragbar ist."
-    },
-    "verlustrechner3a": {
-      "name": "3a-Verlustrechner",
-      "description": "Finde heraus, wie viel Kapital dir mit deiner aktuellen Säule 3a entgeht."
-    },
-    "transparenzCheck": {
-      "name": "Transparenz-Check",
-      "description": "Überprüfe selbst, wie transparent und nachvollziehbar deine Beratung ist."
-    },
-    "kostenaufschluesselung": {
-      "name": "Kostenaufschlüsselung",
-      "description": "Finde heraus, wo deine Kosten wirklich entstehen – sichtbar und unsichtbar."
-    },
-    "kostenImpactSimulator": {
-      "name": "Kosten-Impact-Simulator",
-      "description": "Vergleiche zwei Szenarien und erkenne, wie sich Kostenunterschiede langfristig auswirken."
-    },
-    "wahrscheinlichkeitsrechner": {
-      "name": "Wahrscheinlichkeits-Rechner",
-      "description": "Finde heraus, wie wahrscheinlich es ist, dass du dein finanzielles Ziel erreichst."
-    },
-    "zufallsRealitaetsCheck": {
-      "name": "Zufalls-Realitäts-Check",
-      "description": "Finde heraus, wie wahrscheinlich es ist, dass du das Thema Finanzen wirklich richtig angehst."
-    },
-    "recoveryAnalyse": {
-      "name": "Recovery-Analyse Weltaktienmarkt",
-      "description": "Wie lange brauchte der globale Aktienmarkt historisch, um sich nach grossen Krisen zu erholen?"
-    },
-    "sicherheitsvergleich": {
-      "name": "Sicherheitsvergleich",
-      "description": "Ist keine Schwankung wirklich sicherer? Vergleiche scheinbare und echte langfristige Sicherheit."
-    },
-    "zeitverlustSimulator": {
-      "name": "Zeitverlust-Simulator",
-      "description": "Was kostet es dich, wenn du mit dem Investieren wartest? Berechne den finanziellen Preis des Aufschiebens."
+      "name": "Dokumente automatisch erstellen",
+      "description": "Erstelle professionelle Vorlagen und Dokumente auf Knopfdruck."
     },
     "beratungsreise": {
-      "name": "Beratungsreise",
-      "description": "Deine Finanz-Roadmap – sieh auf einen Blick, wo du stehst und was als Nächstes kommt."
+      "name": "Wo stehe ich auf meiner Finanzreise?",
+      "description": "Deine persönliche Roadmap – sieh auf einen Blick, wo du stehst und was als Nächstes kommt."
     },
     "mini3aKurzcheck": {
-      "name": "Mini-3A-Kurzcheck",
-      "description": "Schnelle qualitative Analyse deiner bestehenden Säule-3a-Lösung mit Bewertung, Visualisierung und Empfehlung."
+      "name": "Wie gut ist meine Säule 3a wirklich?",
+      "description": "Lass deine bestehende 3a-Lösung in 2 Minuten bewerten – mit Score, Visualisierung und klarer Empfehlung."
+    },
+    "transparenzCheck": {
+      "name": "Kann ich meiner Beratung vertrauen?",
+      "description": "Prüfe selbst, wie transparent und nachvollziehbar deine aktuelle Finanzberatung wirklich ist."
+    },
+    "kostenaufschluesselung": {
+      "name": "Welche Kosten zahle ich wirklich?",
+      "description": "Mach sichtbare und versteckte Kosten deiner Finanzprodukte auf einen Blick transparent."
+    },
+    "kostenImpactSimulator": {
+      "name": "Was kosten mich Gebühren wirklich?",
+      "description": "Vergleiche zwei Szenarien und erkenne, wie sich kleine Kostenunterschiede über Jahre auswirken."
+    },
+    "verlustrechner3a": {
+      "name": "Wie viel Geld verliere ich mit meiner 3a?",
+      "description": "Berechne, wie viel Kapital dir mit deiner aktuellen Säule-3a-Lösung entgeht – in Franken und Lebenszeit."
+    },
+    "sicherheitsvergleich": {
+      "name": "Ist keine Schwankung wirklich sicherer?",
+      "description": "Vergleiche, ob scheinbare Sicherheit dich langfristig tatsächlich mehr kostet als kontrolliertes Risiko."
+    },
+    "recoveryAnalyse": {
+      "name": "Wie schnell erholt sich der Markt nach einer Krise?",
+      "description": "Sieh anhand historischer Daten, wie lange der Weltaktienmarkt brauchte, um sich nach grossen Krisen zu erholen."
+    },
+    "wahrscheinlichkeitsrechner": {
+      "name": "Wie wahrscheinlich erreiche ich mein Ziel?",
+      "description": "Berechne, mit welcher Wahrscheinlichkeit du dein finanzielles Ziel tatsächlich erreichst."
+    },
+    "zufallsRealitaetsCheck": {
+      "name": "Gehe ich das Thema Finanzen richtig an?",
+      "description": "Ein kurzer Reality-Check – finde heraus, ob deine Finanzstrategie auf dem richtigen Weg ist."
+    },
+    "zeitverlustSimulator": {
+      "name": "Was kostet mich jeder Monat Warten?",
+      "description": "Berechne den finanziellen Preis des Aufschiebens – in Franken, Monaten und verlorener Rendite."
+    },
+    "inflationsrechner": {
+      "name": "Wie frisst die Inflation mein Geld?",
+      "description": "Verstehe mit echten Schweizer Daten, wie Inflation deine Kaufkraft über die Jahre schmälert."
+    },
+    "renditeRisikoSimulation": {
+      "name": "Welches Risiko kann ich mir leisten?",
+      "description": "Simuliere interaktiv verschiedene Szenarien und finde die Balance zwischen Rendite und Risiko."
+    },
+    "vergleichsrechner3a": {
+      "name": "Lohnt sich ein Wechsel meiner 3a?",
+      "description": "Vergleiche deine bestehende mit einer optimierten 3a-Lösung – und sieh den Unterschied in Franken."
+    },
+    "tragbarkeitsrechner": {
+      "name": "Kann ich mir diese Immobilie leisten?",
+      "description": "Prüfe anhand von Kaufpreis, Eigenmitteln und Einkommen, ob dein Traum vom Eigenheim tragbar ist."
+    },
+    "vvgLeistungsvergleich": {
+      "name": "Was leistet meine Zusatzversicherung wirklich?",
+      "description": "Vergleiche die Leistungen verschiedener VVG-Zusatzversicherungen – klar und übersichtlich."
+    },
+    "caseStudyGenerator": {
+      "name": "Echte Erfolgsgeschichten erstellen",
+      "description": "Erstelle strukturierte, anonymisierte Case Studies aus deiner Beratungspraxis."
     }
   },
   "adminLeads": {
