@@ -25,6 +25,7 @@ import { SicherheitsvergleichTool } from '@/components/tools/sicherheitsvergleic
 import { ZeitverlustSimulatorTool } from '@/components/tools/zeitverlust-simulator/ZeitverlustSimulatorTool';
 import { BeratungsreiseTool } from '@/components/tools/beratungsreise/BeratungsreiseTool';
 import { Mini3aKurzcheckTool } from '@/components/tools/mini-3a-kurzcheck/Mini3aKurzcheckTool';
+import { GlaubenssatzTransformerTool } from '@/components/tools/glaubenssatz-transformer/GlaubenssatzTransformerTool';
 
 // Icon mapping
 const iconMap: Record<string, LucideIcon> = {
