@@ -32,8 +32,9 @@ export function GlaubenssatzTransformerTool({ mode = 'internal' }: Props) {
 
           {/* Title */}
           <div className="text-center space-y-2">
-            <span className="text-4xl">{selected.emoji}</span>
+            <span className="text-5xl">{selected.emoji}</span>
             <h2 className="text-xl font-bold text-foreground">{selected.title}</h2>
+            <p className="text-sm text-muted-foreground">Wenn du so denkst, bist du nicht allein. Viele Menschen stehen genau an diesem Punkt.</p>
           </div>
 
           {/* Why people believe this */}
@@ -92,12 +93,12 @@ export function GlaubenssatzTransformerTool({ mode = 'internal' }: Props) {
 
           {/* Next Step */}
           <ToolNextStep
-            insightText="Du hast gerade einen Glaubenssatz hinterfragt. Willst du jetzt sehen, wo du finanziell wirklich stehst?"
+            insightText="Jetzt, wo du diesen Gedanken hinterfragt hast – lass uns anschauen, wie deine Situation wirklich aussieht."
             primary={{
-              question: 'Wie gut bist du finanziell aufgestellt – ehrlich und unabhängig?',
+              question: 'Wie stehst du finanziell da – ehrlich und unabhängig?',
               description: 'Der Finanzcheck gibt dir in 5 Minuten eine klare Standortbestimmung.',
               targetSlug: 'finanzcheck',
-              buttonLabel: 'Finanzcheck starten',
+              buttonLabel: 'Meine Situation prüfen',
               recommended: true,
             }}
             secondary={{
@@ -126,7 +127,10 @@ export function GlaubenssatzTransformerTool({ mode = 'internal' }: Props) {
             Welcher Gedanke hält dich zurück?
           </h2>
           <p className="text-sm text-muted-foreground max-w-md mx-auto">
-            Wähle einen Glaubenssatz, der dir bekannt vorkommt. Du bekommst eine klare, ehrliche Gegenperspektive.
+            Viele Menschen glauben, sie müssten zuerst alles verstehen oder genug Geld haben. Die Wahrheit ist: Oft sind es genau diese Gedanken, die sie zurückhalten.
+          </p>
+          <p className="text-sm font-medium text-foreground mt-2">
+            Wähle den Gedanken, der dich am ehesten widerspiegelt:
           </p>
         </div>
 
