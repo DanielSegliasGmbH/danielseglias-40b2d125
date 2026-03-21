@@ -13,6 +13,8 @@ import { CostBreakdownChart } from './CostBreakdownChart';
 import { RecommendationBlock } from './RecommendationBlock';
 import { LinksSection } from './LinksSection';
 import { generateOnePager, generateReport } from './pdfExport';
+import { ToolReflection, ToolTrustNote } from '../ToolConversionElements';
+import { ToolNextStep } from '../ToolNextStep';
 
 interface Mini3aKurzcheckToolProps {
   mode?: 'internal' | 'public';
