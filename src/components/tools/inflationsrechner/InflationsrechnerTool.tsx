@@ -1,5 +1,6 @@
 import { PdfExportWrapper } from '../PdfExportWrapper';
 import { ToolNextStep } from '../ToolNextStep';
+import { ToolReflection, ToolTrustNote } from '../ToolConversionElements';
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -214,6 +215,14 @@ export function InflationsrechnerTool() {
           </Card>
         </>
       )}
+
+      {/* Reflection */}
+      <ToolReflection
+        question="Dein Geld verliert jeden Tag an Wert – was tust du, damit es zumindest mitwächst?"
+        context="Inflation ist kein Zufall, sondern eine Konstante. Die Frage ist, ob deine Strategie darauf reagiert."
+      />
+
+      <ToolTrustNote text="Datenquelle: Bundesamt für Statistik (BFS) · Landesindex der Konsumentenpreise" />
 
       <ToolNextStep
         insightText="Inflation ist der stille Gegenspieler jeder Sparstrategie. Nur wer sein Geld klug investiert, kann den Kaufkraftverlust ausgleichen."

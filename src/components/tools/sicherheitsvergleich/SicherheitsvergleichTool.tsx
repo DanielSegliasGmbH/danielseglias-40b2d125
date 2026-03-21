@@ -1,5 +1,6 @@
 import { PdfExportWrapper } from '../PdfExportWrapper';
 import { ToolNextStep } from '../ToolNextStep';
+import { ToolReflection, ToolTrustNote } from '../ToolConversionElements';
 import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
@@ -294,6 +295,14 @@ export function SicherheitsvergleichTool({ mode = 'internal' }: Props) {
           </CardContent>
         </Card>
       )}
+
+      {/* Reflection */}
+      <ToolReflection
+        question="Ist es wirklich Sicherheit, wenn dein Geld jedes Jahr an Wert verliert?"
+        context="Echte Sicherheit bedeutet Kaufkrafterhalt – nicht Vermeidung jeder Schwankung."
+      />
+
+      <ToolTrustNote text="Unabhängige Darstellung · Keine Produktempfehlung · Faktenbasiert" />
 
       <ToolNextStep
         insightText="Echte Sicherheit bedeutet nicht «keine Schwankung», sondern Kaufkrafterhalt über die Zeit. Lass uns anschauen, wie sich der Markt historisch nach Krisen erholt hat."

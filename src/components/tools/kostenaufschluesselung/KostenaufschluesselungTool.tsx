@@ -1,5 +1,6 @@
 import { PdfExportWrapper } from '../PdfExportWrapper';
 import { ToolNextStep } from '../ToolNextStep';
+import { ToolReflection, ToolTrustNote, ToolSoftCta } from '../ToolConversionElements';
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -256,6 +257,12 @@ export function KostenaufschluesselungTool({ mode = 'internal' }: Props) {
         </CardContent>
       </Card>
 
+      {/* Reflection */}
+      <ToolReflection
+        question="Wenn du wüsstest, dass ein grosser Teil deiner Kosten unsichtbar ist – würdest du trotzdem nichts ändern?"
+        context="Die meisten merken erst nach Jahren, wie viel Rendite ihnen durch versteckte Kosten entgangen ist."
+      />
+
       {/* ─── Admin: Annahmen ─── */}
       {mode === 'internal' && (
         <Card className="border-dashed">
@@ -277,17 +284,13 @@ export function KostenaufschluesselungTool({ mode = 'internal' }: Props) {
         </Card>
       )}
 
-      {/* ─── CTA ─── */}
-      <Button size="lg" className="w-full gap-2" asChild>
-        <a
-          href="https://calendar.app.google/LrIPZDNzivnrfq9w7"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Unterschied verstehen
-          <ArrowRight className="h-4 w-4" />
-        </a>
-      </Button>
+      {/* Soft CTA */}
+      <ToolSoftCta
+        text="Möchtest du gemeinsam herausfinden, ob sich eine Optimierung bei dir lohnt?"
+        note="In einem kurzen Gespräch schauen wir deine konkrete Situation an – ohne Verpflichtung."
+      />
+
+      <ToolTrustNote text="Unabhängige Analyse · Keine Produktbindung · Transparente Beratung" />
 
       {/* Disclaimer */}
       <div className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-4">

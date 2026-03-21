@@ -1,5 +1,6 @@
 import { PdfExportWrapper } from '../PdfExportWrapper';
 import { ToolNextStep } from '../ToolNextStep';
+import { ToolReflection, ToolTrustNote, ToolSoftCta } from '../ToolConversionElements';
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -318,20 +319,20 @@ export function WahrscheinlichkeitsrechnerTool({ mode = 'internal' }: Props) {
         </Card>
       )}
 
-      {/* ─── CTA ─── */}
-      <Button size="lg" className="w-full gap-2" asChild>
-        <a href="https://calendar.app.google/LrIPZDNzivnrfq9w7" target="_blank" rel="noopener noreferrer">
-          Strategie optimieren
-          <ArrowRight className="h-4 w-4" />
-        </a>
-      </Button>
+      {/* ─── Reflection ─── */}
+      <ToolReflection
+        question="Wenn die Wahrscheinlichkeit nicht bei deinem Ziel liegt – was willst du konkret daran ändern?"
+        context="Oft reichen kleine Anpassungen an Beitrag, Laufzeit oder Strategie, um die Zielerreichung deutlich zu verbessern."
+      />
 
-      {/* Disclaimer */}
-      <div className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-4">
-        <p>
-          Vereinfachte Berechnung basierend auf Durchschnittswerten. Die tatsächliche Entwicklung hängt von Marktbedingungen, persönlicher Situation und gewählter Strategie ab.
-        </p>
-      </div>
+      {/* ─── Soft CTA ─── */}
+      <ToolSoftCta
+        text="Gemeinsam optimieren wir deine Strategie, damit dein Ziel erreichbar wird."
+        note="Basierend auf deinen Zahlen zeige ich dir, welche Stellschrauben den grössten Effekt haben."
+        buttonLabel="Strategie besprechen"
+      />
+
+      <ToolTrustNote text="Unabhängige Beratung · Keine Produktbindung · Du entscheidest" />
 
       <ToolNextStep
         insightText="Du kennst jetzt deine Zielerreichungswahrscheinlichkeit. Lass uns schauen, ob sich eine Optimierung deiner Strategie lohnt."

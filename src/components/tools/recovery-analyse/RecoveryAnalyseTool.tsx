@@ -1,5 +1,6 @@
 import { PdfExportWrapper } from '../PdfExportWrapper';
 import { ToolNextStep } from '../ToolNextStep';
+import { ToolReflection, ToolTrustNote } from '../ToolConversionElements';
 import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -336,6 +337,14 @@ export function RecoveryAnalyseTool({ mode = 'internal' }: Props) {
           </AccordionContent>
         </AccordionItem>
     </Accordion>
+
+      {/* Reflection */}
+      <ToolReflection
+        question="Der Markt hat sich bisher immer erholt – die Frage ist nur, ob du dabei bist oder zuschaust."
+        context="Historisch gesehen war die grösste Gefahr nie die Krise selbst, sondern das Verkaufen während der Krise."
+      />
+
+      <ToolTrustNote text="Historische Daten · Keine Prognose · Unabhängige Darstellung" />
 
       <ToolNextStep
         insightText="Der Markt hat sich historisch immer erholt – aber die Erholungszeit variiert. Entscheidend ist: Wie wahrscheinlich erreichst du dein Ziel, wenn du investiert bleibst?"
