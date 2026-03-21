@@ -1,6 +1,6 @@
 import { PdfExportWrapper } from '../PdfExportWrapper';
 import { ToolNextStep } from '../ToolNextStep';
-import { ToolReflection, ToolTrustNote } from '../ToolConversionElements';
+import { ToolReflection, ToolTrustNote, ToolSoftCta } from '../ToolConversionElements';
 import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -345,6 +345,13 @@ export function RecoveryAnalyseTool({ mode = 'internal' }: Props) {
       />
 
       <ToolTrustNote text="Historische Daten · Keine Prognose · Unabhängige Darstellung" />
+
+      {/* Soft CTA */}
+      <ToolSoftCta
+        text="Du hast gesehen, dass sich der Markt immer erholt hat. Lass uns schauen, wie du davon profitieren kannst."
+        note="Gemeinsam prüfen wir, ob deine aktuelle Strategie zu deinem Zeithorizont passt."
+        buttonLabel="Strategie prüfen"
+      />
 
       <ToolNextStep
         insightText="Der Markt hat sich historisch immer erholt – aber die Erholungszeit variiert. Entscheidend ist: Wie wahrscheinlich erreichst du dein Ziel, wenn du investiert bleibst?"
