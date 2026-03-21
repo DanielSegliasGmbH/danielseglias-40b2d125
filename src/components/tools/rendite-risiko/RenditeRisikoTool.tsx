@@ -201,6 +201,23 @@ export function RenditeRisikoTool({ mode }: Props) {
 
       {/* Quellen – only in public mode */}
       {!isPrivateMode && <SourcesBlock />}
+
+      <ToolNextStep
+        insightText="Du hast jetzt ein Gefühl für die Bandbreite möglicher Ergebnisse. Der nächste Schritt: Prüfe, ob ein Wechsel deiner bestehenden Lösung sich konkret lohnt."
+        primary={{
+          question: "Lohnt sich ein Wechsel meiner 3a?",
+          description: "Vergleiche deine aktuelle 3a-Lösung mit einer optimierten Variante – in konkreten Franken.",
+          targetSlug: "vergleichsrechner-3a",
+          buttonLabel: "Vergleich starten",
+          recommended: true,
+        }}
+        secondary={{
+          question: "Wie wahrscheinlich erreiche ich mein Ziel?",
+          description: "Berechne deine Erfolgswahrscheinlichkeit basierend auf deiner Strategie.",
+          targetSlug: "wahrscheinlichkeitsrechner",
+          buttonLabel: "Wahrscheinlichkeit prüfen",
+        }}
+      />
     </div>
     </PdfExportWrapper>
   );

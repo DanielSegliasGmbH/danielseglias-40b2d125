@@ -294,7 +294,23 @@ export function SicherheitsvergleichTool({ mode = 'internal' }: Props) {
           </CardContent>
         </Card>
       )}
+
+      <ToolNextStep
+        insightText="Echte Sicherheit bedeutet nicht «keine Schwankung», sondern Kaufkrafterhalt über die Zeit. Lass uns anschauen, wie sich der Markt historisch nach Krisen erholt hat."
+        primary={{
+          question: "Wie schnell erholt sich der Markt nach einer Krise?",
+          description: "Historische Daten zeigen: Der Markt hat sich bisher immer erholt – die Frage ist nur wie lange.",
+          targetSlug: "recovery-analyse",
+          buttonLabel: "Erholungszeiten anschauen",
+          recommended: true,
+        }}
+        secondary={{
+          question: "Welches Risiko kann ich mir leisten?",
+          description: "Simuliere verschiedene Szenarien und finde deine Balance.",
+          targetSlug: "rendite-risiko-simulation",
+          buttonLabel: "Simulation starten",
+        }}
+      />
     </div>
     </PdfExportWrapper>
-  );
 }

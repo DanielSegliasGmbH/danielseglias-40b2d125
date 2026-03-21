@@ -214,6 +214,23 @@ export function InflationsrechnerTool() {
           </Card>
         </>
       )}
+
+      <ToolNextStep
+        insightText="Inflation ist der stille Gegenspieler jeder Sparstrategie. Nur wer sein Geld klug investiert, kann den Kaufkraftverlust ausgleichen."
+        primary={{
+          question: "Ist mein Sparkonto wirklich sicher?",
+          description: "Vergleiche scheinbare Sicherheit mit echtem langfristigem Vermögensschutz.",
+          targetSlug: "sicherheitsvergleich",
+          buttonLabel: "Sicherheit vergleichen",
+          recommended: true,
+        }}
+        secondary={{
+          question: "Was kostet mich jeder Monat Warten?",
+          description: "Berechne, was Aufschieben dich wirklich kostet.",
+          targetSlug: "zeitverlust-simulator",
+          buttonLabel: "Zeitverlust berechnen",
+        }}
+      />
     </div>
     </PdfExportWrapper>
   );

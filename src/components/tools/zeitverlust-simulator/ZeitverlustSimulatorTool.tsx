@@ -258,6 +258,23 @@ export function ZeitverlustSimulatorTool({ mode = 'internal' }: Props) {
           </p>
         </CardContent>
       </Card>
+
+      <ToolNextStep
+        insightText="Jeder Monat Warten kostet dich bares Geld. Die Frage ist nicht ob, sondern wie du jetzt am besten startest."
+        primary={{
+          question: "Welches Risiko kann ich mir leisten?",
+          description: "Simuliere verschiedene Szenarien und finde die richtige Balance zwischen Sicherheit und Rendite.",
+          targetSlug: "rendite-risiko-simulation",
+          buttonLabel: "Szenarien simulieren",
+          recommended: true,
+        }}
+        secondary={{
+          question: "Wie frisst die Inflation mein Geld?",
+          description: "Sieh, wie Warten und Inflation zusammen wirken.",
+          targetSlug: "inflationsrechner",
+          buttonLabel: "Inflation berechnen",
+        }}
+      />
     </div>
     </PdfExportWrapper>
   );

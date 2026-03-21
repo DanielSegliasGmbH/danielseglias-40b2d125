@@ -295,6 +295,23 @@ export function KostenaufschluesselungTool({ mode = 'internal' }: Props) {
           Berechnung basiert auf vereinfachten Durchschnittswerten. Die tatsächlichen Kosten hängen von der konkreten Produktwahl, Anbieter und Marktentwicklung ab.
         </p>
       </div>
+
+      <ToolNextStep
+        insightText="Du siehst jetzt, welche Kosten in deiner Lösung stecken. Aber wie stark wirken sich diese Kosten langfristig auf dein Vermögen aus?"
+        primary={{
+          question: "Was kosten mich diese Gebühren über die gesamte Laufzeit?",
+          description: "Vergleiche zwei Szenarien und sieh den Unterschied in Franken.",
+          targetSlug: "kosten-impact-simulator",
+          buttonLabel: "Impact berechnen",
+          recommended: true,
+        }}
+        secondary={{
+          question: "Wie viel Kapital verliere ich dadurch bei meiner 3a?",
+          description: "Berechne deinen konkreten Verlust mit dem 3a-Verlustrechner.",
+          targetSlug: "verlustrechner-3a",
+          buttonLabel: "Verlust berechnen",
+        }}
+      />
     </div>
     </PdfExportWrapper>
   );
