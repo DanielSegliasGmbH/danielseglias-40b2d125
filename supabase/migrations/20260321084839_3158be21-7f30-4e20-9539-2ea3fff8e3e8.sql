@@ -1,0 +1,23 @@
+
+UPDATE public.tools SET sort_order = 100 WHERE key = 'beratungsreise';
+UPDATE public.tools SET sort_order = 110 WHERE key = 'finanzcheck';
+UPDATE public.tools SET sort_order = 120 WHERE key = 'mini-3a-kurzcheck';
+UPDATE public.tools SET sort_order = 130 WHERE key = 'transparenz-check';
+UPDATE public.tools SET sort_order = 200 WHERE key = 'kostenaufschluesselung';
+UPDATE public.tools SET sort_order = 210 WHERE key = 'kosten-impact-simulator';
+UPDATE public.tools SET sort_order = 220 WHERE key = 'verlustrechner-3a';
+UPDATE public.tools SET sort_order = 300 WHERE key = 'sicherheitsvergleich';
+UPDATE public.tools SET sort_order = 310 WHERE key = 'recovery-analyse';
+UPDATE public.tools SET sort_order = 320 WHERE key = 'wahrscheinlichkeitsrechner';
+UPDATE public.tools SET sort_order = 330 WHERE key = 'zufalls-realitaets-check';
+UPDATE public.tools SET sort_order = 400 WHERE key = 'zeitverlust-simulator';
+UPDATE public.tools SET sort_order = 410 WHERE key = 'inflationsrechner';
+UPDATE public.tools SET sort_order = 500 WHERE key = 'rendite-risiko-simulation';
+UPDATE public.tools SET sort_order = 510 WHERE key = 'vergleichsrechner-3a';
+UPDATE public.tools SET sort_order = 520 WHERE key = 'tragbarkeitsrechner';
+UPDATE public.tools SET sort_order = 600 WHERE key = 'vvg-leistungsvergleich';
+UPDATE public.tools SET sort_order = 610 WHERE key = 'case-study-generator';
+UPDATE public.tools SET sort_order = 900 WHERE key = 'budget-calculator';
+UPDATE public.tools SET sort_order = 910 WHERE key = 'retirement-planner';
+UPDATE public.tools SET sort_order = 920 WHERE key = 'investment-simulator';
+UPDATE public.tools SET sort_order = 930 WHERE key = 'document-generator';
