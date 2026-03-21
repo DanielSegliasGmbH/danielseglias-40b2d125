@@ -3,6 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, Calendar, RotateCcw, AlertTriangle, CheckCircle, AlertCircle } from 'lucide-react';
 import { TERMIN_URL, getScoreText } from './constants';
+import { ToolReflection, ToolSoftCta } from '../ToolConversionElements';
+import { ToolNextStep } from '../ToolNextStep';
 import type { FinanzcheckResult } from './types';
 
 interface Props {
