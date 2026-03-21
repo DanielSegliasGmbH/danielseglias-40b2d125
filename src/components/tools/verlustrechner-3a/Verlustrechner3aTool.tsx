@@ -243,39 +243,30 @@ export function Verlustrechner3aTool() {
           <Card className="border-primary/20 bg-primary/5">
             <CardContent className="py-4 flex gap-3">
               <Info className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-              <p className="text-sm text-foreground/80 leading-relaxed">
+          <p className="text-sm text-foreground/80 leading-relaxed">
                 Dieser Unterschied entsteht nicht durch mehr Risiko, sondern durch bessere Struktur und tiefere Kosten.
               </p>
             </CardContent>
           </Card>
 
-          {/* CTA */}
-          <Button
-            size="lg"
-            className="w-full gap-2"
-            asChild
-          >
-            <a
-              href="https://calendar.app.google/LrIPZDNzivnrfq9w7"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Kostenlose Analyse buchen
-              <ArrowRight className="h-4 w-4" />
-            </a>
-          </Button>
+          {/* Reflection */}
+          <ToolReflection
+            question="Wenn du das über 20, 30 Jahre weiterlaufen lässt – bist du damit wirklich zufrieden?"
+            context="Die gute Nachricht: Eine Optimierung ist meist unkompliziert und lohnt sich schon ab dem ersten Jahr."
+          />
+
+          {/* Soft CTA */}
+          <ToolSoftCta
+            text="Lass uns gemeinsam schauen, ob sich ein Wechsel bei dir konkret lohnt."
+            note="Ich analysiere deine aktuelle Lösung und zeige dir die beste Alternative – transparent und unverbindlich."
+          />
         </div>
       </div>
 
       {/* Emotionale Sektion */}
       <LifeImpactSection loss={result.loss} />
 
-      {/* Disclaimer */}
-      <div className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-4">
-        <p>
-          Berechnung basiert auf Durchschnittswerten. Die tatsächliche Entwicklung hängt von der gewählten Anlagestrategie, den effektiven Kosten und der Marktentwicklung ab.
-        </p>
-      </div>
+      <ToolTrustNote text="Unabhängige Analyse · Keine Produktbindung · Deine Entscheidung" />
 
       <ToolNextStep
         insightText="Du siehst jetzt, was dir mit deiner aktuellen 3a entgeht. Die gute Nachricht: Mit einer optimierten Lösung lässt sich ein Grossteil davon zurückholen."

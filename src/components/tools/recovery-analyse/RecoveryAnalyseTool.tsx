@@ -338,7 +338,13 @@ export function RecoveryAnalyseTool({ mode = 'internal' }: Props) {
         </AccordionItem>
     </Accordion>
 
-      <ToolNextStep
+      {/* Reflection */}
+      <ToolReflection
+        question="Der Markt hat sich bisher immer erholt – die Frage ist nur, ob du dabei bist oder zuschaust."
+        context="Historisch gesehen war die grösste Gefahr nie die Krise selbst, sondern das Verkaufen während der Krise."
+      />
+
+      <ToolTrustNote text="Historische Daten · Keine Prognose · Unabhängige Darstellung" />
         insightText="Der Markt hat sich historisch immer erholt – aber die Erholungszeit variiert. Entscheidend ist: Wie wahrscheinlich erreichst du dein Ziel, wenn du investiert bleibst?"
         primary={{
           question: "Wie wahrscheinlich erreiche ich mein Ziel?",

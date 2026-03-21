@@ -216,7 +216,13 @@ export function InflationsrechnerTool() {
         </>
       )}
 
-      <ToolNextStep
+      {/* Reflection */}
+      <ToolReflection
+        question="Dein Geld verliert jeden Tag an Wert – was tust du, damit es zumindest mitwächst?"
+        context="Inflation ist kein Zufall, sondern eine Konstante. Die Frage ist, ob deine Strategie darauf reagiert."
+      />
+
+      <ToolTrustNote text="Datenquelle: Bundesamt für Statistik (BFS) · Landesindex der Konsumentenpreise" />
         insightText="Inflation ist der stille Gegenspieler jeder Sparstrategie. Nur wer sein Geld klug investiert, kann den Kaufkraftverlust ausgleichen."
         primary={{
           question: "Ist mein Sparkonto wirklich sicher?",

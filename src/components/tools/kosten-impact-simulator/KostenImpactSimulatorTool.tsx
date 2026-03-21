@@ -273,6 +273,12 @@ export function KostenImpactSimulatorTool({ mode = 'internal' }: Props) {
         </CardContent>
       </Card>
 
+      {/* Reflection */}
+      <ToolReflection
+        question="Bist du bereit, diesen Betrag über die nächsten Jahre zu verlieren – oder möchtest du das ändern?"
+        context="Der Unterschied entsteht nicht durch mehr Risiko, sondern durch klügere Strukturierung."
+      />
+
       {/* ─── Admin: Annahmen ─── */}
       {mode === 'internal' && (
         <Card className="border-dashed">
@@ -291,24 +297,13 @@ export function KostenImpactSimulatorTool({ mode = 'internal' }: Props) {
         </Card>
       )}
 
-      {/* ─── CTA ─── */}
-      <Button size="lg" className="w-full gap-2" asChild>
-        <a
-          href="https://calendar.app.google/LrIPZDNzivnrfq9w7"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Unterschied verstehen
-          <ArrowRight className="h-4 w-4" />
-        </a>
-      </Button>
+      {/* Soft CTA */}
+      <ToolSoftCta
+        text="Ich zeige dir gerne, wie du diese Differenz für dich zurückholst."
+        note="Basierend auf deinen Zahlen schauen wir, wo der grösste Hebel liegt."
+      />
 
-      {/* Disclaimer */}
-      <div className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-4">
-        <p>
-          Berechnung basiert auf vereinfachten Annahmen. Die tatsächliche Entwicklung hängt von Anlagestrategie, Marktentwicklung und effektiven Produktkosten ab.
-        </p>
-      </div>
+      <ToolTrustNote text="Unabhängige Beratung · Keine versteckten Kosten · Du entscheidest" />
 
       <ToolNextStep
         insightText="Du siehst jetzt den konkreten Preisunterschied. Aber wie wahrscheinlich ist es, dass du dein finanzielles Ziel mit diesen Kosten erreichst?"

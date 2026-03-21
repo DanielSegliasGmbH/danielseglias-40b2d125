@@ -296,7 +296,13 @@ export function SicherheitsvergleichTool({ mode = 'internal' }: Props) {
         </Card>
       )}
 
-      <ToolNextStep
+      {/* Reflection */}
+      <ToolReflection
+        question="Ist es wirklich Sicherheit, wenn dein Geld jedes Jahr an Wert verliert?"
+        context="Echte Sicherheit bedeutet Kaufkrafterhalt – nicht Vermeidung jeder Schwankung."
+      />
+
+      <ToolTrustNote text="Unabhängige Darstellung · Keine Produktempfehlung · Faktenbasiert" />
         insightText="Echte Sicherheit bedeutet nicht «keine Schwankung», sondern Kaufkrafterhalt über die Zeit. Lass uns anschauen, wie sich der Markt historisch nach Krisen erholt hat."
         primary={{
           question: "Wie schnell erholt sich der Markt nach einer Krise?",

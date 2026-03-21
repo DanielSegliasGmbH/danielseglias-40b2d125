@@ -260,6 +260,20 @@ export function ZeitverlustSimulatorTool({ mode = 'internal' }: Props) {
         </CardContent>
       </Card>
 
+      {/* Reflection */}
+      <ToolReflection
+        question="Was wäre dir lieber: Jetzt starten und profitieren – oder in 5 Jahren bereuen, dass du gewartet hast?"
+        context={`Jeder weitere Monat Warten kostet dich rund ${formatCHF(Math.round(result.lostWealth / (inputs.delayYears * 12)))} an potenziellem Vermögen.`}
+      />
+
+      {/* Soft CTA */}
+      <ToolSoftCta
+        text="Lass uns gemeinsam den besten Einstieg für dich finden – ohne Druck, ohne Verpflichtung."
+        note="Ein kurzes Gespräch reicht oft, um den ersten konkreten Schritt zu machen."
+      />
+
+      <ToolTrustNote text="Unabhängig · Transparent · Dein Tempo" />
+
       <ToolNextStep
         insightText="Jeder Monat Warten kostet dich bares Geld. Die Frage ist nicht ob, sondern wie du jetzt am besten startest."
         primary={{
