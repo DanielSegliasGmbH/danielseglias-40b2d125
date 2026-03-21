@@ -534,6 +534,21 @@ export function Vergleichsrechner3aTool() {
           </div>
         </CollapsibleContent>
       </Collapsible>
+      {/* ═══ REFLECTION ═══ */}
+      <ToolReflection
+        question="Du siehst jetzt schwarz auf weiss, was der Unterschied ausmacht. Die Frage ist: Möchtest du das so laufen lassen – oder aktiv verbessern?"
+        context="Die meisten Optimierungen sind unkompliziert und lohnen sich schon im ersten Jahr."
+      />
+
+      {/* ═══ SOFT CTA ═══ */}
+      <ToolSoftCta
+        text="Lass uns gemeinsam anschauen, ob sich ein Wechsel für dich konkret lohnt – transparent und unverbindlich."
+        note="Ich zeige dir genau, was sich ändert, was es kostet und was du davon hast."
+        buttonLabel="Gespräch vereinbaren"
+      />
+
+      <ToolTrustNote text="Unabhängige Analyse · Keine Produktbindung · Du entscheidest jederzeit selbst" />
+
       <ToolNextStep
         insightText="Du siehst jetzt den konkreten Unterschied. Willst du verstehen, wie sich die Kosten langfristig auf dein Vermögen auswirken?"
         primary={{

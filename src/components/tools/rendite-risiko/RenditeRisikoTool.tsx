@@ -203,6 +203,21 @@ export function RenditeRisikoTool({ mode }: Props) {
       {/* Quellen – only in public mode */}
       {!isPrivateMode && <SourcesBlock />}
 
+      {/* ─── Reflection ─── */}
+      <ToolReflection
+        question="Jetzt weisst du, was möglich ist. Die Frage ist nicht ob – sondern wie du das für dich nutzt."
+        context="Eine passende Strategie berücksichtigt dein Alter, deine Ziele und dein Sicherheitsbedürfnis."
+      />
+
+      {/* ─── Soft CTA ─── */}
+      <ToolSoftCta
+        text="Lass uns gemeinsam die Strategie finden, die zu dir passt – basierend auf deinen Zahlen, nicht auf Vermutungen."
+        note="Ein kurzes Gespräch reicht, um Klarheit zu schaffen."
+        buttonLabel="Strategie besprechen"
+      />
+
+      <ToolTrustNote text="Unabhängig · Transparent · Dein Tempo" />
+
       <ToolNextStep
         insightText="Du hast jetzt ein Gefühl für die Bandbreite möglicher Ergebnisse. Der nächste Schritt: Prüfe, ob ein Wechsel deiner bestehenden Lösung sich konkret lohnt."
         primary={{
