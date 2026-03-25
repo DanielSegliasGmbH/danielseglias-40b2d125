@@ -36,6 +36,13 @@ export function CustomerPortalSettingsCard({ customerId }: CustomerPortalSetting
   const { t } = useTranslation();
   const { data: settings, isLoading } = useCustomerPortalSettingsForCustomer(customerId);
   const updateSettings = useUpdateCustomerPortalSettings();
+  const [strategyPassword, setStrategyPassword] = useState('');
+
+  useEffect(() => {
+    if (settings) {
+      setStrategyPassword((settings as any)?.strategy_access_password || '');
+    }
+  }, [settings]);
 
   const handleToggle = async (key: string, value: boolean) => {
     try {
