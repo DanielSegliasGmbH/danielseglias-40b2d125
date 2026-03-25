@@ -24,6 +24,7 @@ import { SicherheitsvergleichTool } from '@/components/tools/sicherheitsvergleic
 import { ZeitverlustSimulatorTool } from '@/components/tools/zeitverlust-simulator/ZeitverlustSimulatorTool';
 import { GlaubenssatzTransformerTool } from '@/components/tools/glaubenssatz-transformer/GlaubenssatzTransformerTool';
 import { FinanzEntscheidungTool } from '@/components/tools/finanz-entscheidung/FinanzEntscheidungTool';
+import { LebenzeitRechnerTool } from '@/components/tools/lebenzeit-rechner/LebenzeitRechnerTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -190,6 +191,10 @@ export default function PublicToolDetail() {
               ) : slug === 'finanz-entscheidung' ? (
                 <div className="mb-8">
                   <FinanzEntscheidungTool mode="public" />
+                </div>
+              ) : slug === 'lebenzeit-rechner' ? (
+                <div className="mb-8">
+                  <LebenzeitRechnerTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">

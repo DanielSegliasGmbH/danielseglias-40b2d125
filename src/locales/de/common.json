@@ -866,6 +866,10 @@
     "finanzEntscheidung": {
       "name": "Bereit für den nächsten Schritt?",
       "description": "Führe deine Erkenntnisse zusammen und triff eine klare Entscheidung – ohne Druck, mit voller Klarheit."
+    },
+    "lebenzeitRechner": {
+      "name": "Was kostet dich dein Leben wirklich?",
+      "description": "Finde heraus, wie viele Arbeitsstunden ein Kauf dich wirklich kostet – und ob er dir das wert ist."
     }
   },
   "adminLeads": {
