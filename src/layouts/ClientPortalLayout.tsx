@@ -213,6 +213,19 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
           <div className="flex items-center justify-between px-4 h-14">
             <h1 className="text-lg font-semibold">{t('clientPortal.title')}</h1>
             <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative h-9 w-9"
+                onClick={() => setChatOpen(true)}
+              >
+                <MessageCircle className="h-5 w-5" />
+                {unreadCount > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-4 min-w-[16px] px-1 text-[10px] flex items-center justify-center">
+                    {unreadCount}
+                  </Badge>
+                )}
+              </Button>
               <ThemeSwitcher />
               <LanguageSwitcher />
             </div>
@@ -226,6 +239,19 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
           isAdminPreview && "lg:pt-10"
         )}>
           <div className="hidden lg:flex items-center justify-end gap-4 p-4 border-b border-border bg-card">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative h-9 w-9"
+              onClick={() => setChatOpen(true)}
+            >
+              <MessageCircle className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-4 min-w-[16px] px-1 text-[10px] flex items-center justify-center">
+                  {unreadCount}
+                </Badge>
+              )}
+            </Button>
             <ThemeSwitcher />
             <LanguageSwitcher />
             <span className="text-sm text-muted-foreground">{firstName}</span>
@@ -249,6 +275,9 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
           onLogout={handleLogout}
           visibleSections={visibleSections}
         />
+
+        {/* Chat Drawer */}
+        <ChatDrawer open={chatOpen} onOpenChange={setChatOpen} />
       </div>
     </TooltipProvider>
   );

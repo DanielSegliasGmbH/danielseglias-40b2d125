@@ -71,6 +71,7 @@ export function AppSidebar() {
 
   const adminNavItems = [
     { title: t('userManagement.title'), url: '/app/users', icon: Settings },
+    { title: 'Nachrichten', url: '/app/chat', icon: MessageCircle },
     { title: t('systemMap.title'), url: '/app/system-map', icon: Network },
     { title: t('nav.tools'), url: '/app/tools', icon: Wrench },
     { title: t('adminLeads.title', 'Leads'), url: '/app/leads', icon: UserPlus },
