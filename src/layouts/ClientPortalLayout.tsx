@@ -9,8 +9,11 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
 import { BottomNavigation } from '@/components/client-portal/BottomNavigation';
 import { MoreSheet } from '@/components/client-portal/MoreSheet';
+import { ChatDrawer } from '@/components/client-portal/ChatDrawer';
+import { useUnreadCount } from '@/hooks/useChat';
 import {
   Shield,
   Target,
@@ -23,6 +26,7 @@ import {
   Eye,
   ChevronLeft,
   ChevronRight,
+  MessageCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
