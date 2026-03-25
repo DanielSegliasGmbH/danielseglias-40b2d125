@@ -198,6 +198,16 @@ function App() {
                 }
               />
 
+              {/* Protected: Admin only - Chat */}
+              <Route
+                path="/app/chat"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminChat />
+                  </RouteGuard>
+                }
+              />
+
               {/* Legacy: Redirect old client routes to customers - preserve ID */}
               <Route
                 path="/app/clients"
