@@ -129,6 +129,36 @@ export function CustomerPortalSettingsCard({ customerId }: CustomerPortalSetting
               </p>
             )}
           </div>
+
+          {/* Strategy password protection */}
+          <div className="border-t pt-4 mt-4 space-y-3">
+            <div className="flex items-center gap-3">
+              <Lock className="h-5 w-5 text-primary" />
+              <Label className="font-medium">Passwortschutz Anlagestrategien</Label>
+            </div>
+            <div className="pl-8 space-y-2">
+              <Input
+                type="text"
+                placeholder="Passwort festlegen (leer = kein Schutz)"
+                value={strategyPassword}
+                onChange={(e) => setStrategyPassword(e.target.value)}
+                onBlur={async () => {
+                  try {
+                    await updateSettings.mutateAsync({
+                      customerId,
+                      settings: { strategy_access_password: strategyPassword.trim() || null } as any,
+                    });
+                    toast.success('Passwortschutz aktualisiert');
+                  } catch {
+                    toast.error(t('app.error'));
+                  }
+                }}
+              />
+              <p className="text-xs text-muted-foreground">
+                Leer lassen = kein Passwortschutz. Der Kunde muss das Passwort eingeben, um auf Anlagestrategien zuzugreifen.
+              </p>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>
