@@ -73,7 +73,9 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
   const location = useLocation();
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
   const { data: settings } = useCustomerPortalSettings();
+  const { data: unreadCount = 0 } = useUnreadCount();
   
   const previewCustomerId = usePreviewCustomerId();
   const isAdminPreview = role === 'admin' && !!previewCustomerId;
