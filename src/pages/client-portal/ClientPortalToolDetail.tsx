@@ -114,6 +114,8 @@ export default function ClientPortalToolDetail() {
         return <FinanzEntscheidungTool mode="internal" />;
       case 'lebenzeit-rechner':
         return <LebenzeitRechnerTool mode="internal" />;
+      case 'rolex-rechner':
+        return <RolexRechnerTool mode="internal" />;
       default:
         return (
           <Card>
