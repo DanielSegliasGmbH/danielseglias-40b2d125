@@ -1,8 +1,10 @@
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCustomerPortalSettingsForCustomer, useUpdateCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import {
@@ -14,6 +16,7 @@ import {
   Wrench,
   Settings,
   EyeOff,
+  Lock,
 } from 'lucide-react';
 
 interface CustomerPortalSettingsCardProps {
