@@ -192,6 +192,10 @@ export default function PublicToolDetail() {
                 <div className="mb-8">
                   <FinanzEntscheidungTool mode="public" />
                 </div>
+              ) : slug === 'lebenzeit-rechner' ? (
+                <div className="mb-8">
+                  <LebenzeitRechnerTool mode="public" />
+                </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
                   <CardContent className="py-6 prose prose-neutral dark:prose-invert max-w-none">

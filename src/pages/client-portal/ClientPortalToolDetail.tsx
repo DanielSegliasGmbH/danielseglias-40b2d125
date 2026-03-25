@@ -110,6 +110,8 @@ export default function ClientPortalToolDetail() {
         return <GlaubenssatzTransformerTool mode="internal" />;
       case 'finanz-entscheidung':
         return <FinanzEntscheidungTool mode="internal" />;
+      case 'lebenzeit-rechner':
+        return <LebenzeitRechnerTool mode="internal" />;
       default:
         return (
           <Card>
