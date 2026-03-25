@@ -81,6 +81,33 @@ export type Database = {
           },
         ]
       }
+      client_feedback: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          user_email: string | null
+          user_id: string
+          user_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          user_email?: string | null
+          user_id: string
+          user_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          user_email?: string | null
+          user_id?: string
+          user_name?: string | null
+        }
+        Relationships: []
+      }
       customer_control: {
         Row: {
           created_at: string
@@ -263,6 +290,7 @@ export type Database = {
           show_strategy_privacy: boolean
           show_tasks: boolean
           show_tools: boolean
+          strategy_access_password: string | null
           updated_at: string
         }
         Insert: {
@@ -276,6 +304,7 @@ export type Database = {
           show_strategy_privacy?: boolean
           show_tasks?: boolean
           show_tools?: boolean
+          strategy_access_password?: string | null
           updated_at?: string
         }
         Update: {
@@ -289,6 +318,7 @@ export type Database = {
           show_strategy_privacy?: boolean
           show_tasks?: boolean
           show_tools?: boolean
+          strategy_access_password?: string | null
           updated_at?: string
         }
         Relationships: [
