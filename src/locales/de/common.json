@@ -870,6 +870,10 @@
     "lebenzeitRechner": {
       "name": "Was kostet dich dein Leben wirklich?",
       "description": "Finde heraus, wie viele Arbeitsstunden ein Kauf dich wirklich kostet – und ob er dir das wert ist."
+    },
+    "rolexRechner": {
+      "name": "Wann zahlen dir deine Zinsen deinen Lifestyle?",
+      "description": "Finde heraus, wie viel Vermögen du brauchst, damit deine Zinsen deinen Luxus dauerhaft finanzieren."
     }
   },
   "adminLeads": {
