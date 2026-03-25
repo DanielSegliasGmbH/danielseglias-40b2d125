@@ -24,6 +24,7 @@ import { SicherheitsvergleichTool } from '@/components/tools/sicherheitsvergleic
 import { ZeitverlustSimulatorTool } from '@/components/tools/zeitverlust-simulator/ZeitverlustSimulatorTool';
 import { GlaubenssatzTransformerTool } from '@/components/tools/glaubenssatz-transformer/GlaubenssatzTransformerTool';
 import { FinanzEntscheidungTool } from '@/components/tools/finanz-entscheidung/FinanzEntscheidungTool';
+import { LebenzeitRechnerTool } from '@/components/tools/lebenzeit-rechner/LebenzeitRechnerTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
