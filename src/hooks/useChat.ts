@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
@@ -21,21 +21,34 @@ export interface ChatConversation {
   unread_count: number;
 }
 
+async function fetchCustomerIdForUser(userId: string) {
+  const { data, error } = await supabase.rpc('get_customer_id_for_user', {
+    _user_id: userId,
+  });
+
+  if (error) throw error;
+  return data ?? null;
+}
+
+function appendUniqueMessage(messages: ChatMessage[] | undefined, message: ChatMessage) {
+  if (!messages) return [message];
+  if (messages.some((entry) => entry.id === message.id)) return messages;
+  return [...messages, message].sort(
+    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  );
+}
+
 // Get customer_id for the current client user
 export function useClientCustomerId() {
-  const { user, role } = useAuth();
+  const { user, loading } = useAuth();
+
   return useQuery({
     queryKey: ['client-customer-id', user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('customer_users')
-        .select('customer_id')
-        .eq('user_id', user!.id)
-        .maybeSingle();
-      if (error || !data) return null;
-      return data.customer_id;
+      if (!user) return null;
+      return fetchCustomerIdForUser(user.id);
     },
-    enabled: !!user && role === 'client',
+    enabled: !!user && !loading,
   });
 }
 
@@ -58,7 +71,7 @@ export function useChatMessages(customerId: string | null) {
         (payload) => {
           queryClient.setQueryData<ChatMessage[]>(
             ['chat-messages', customerId],
-            (old) => [...(old || []), payload.new as ChatMessage]
+            (old) => appendUniqueMessage(old, payload.new as ChatMessage)
           );
         }
       )
@@ -103,15 +116,37 @@ export function useSendMessage() {
 
   return useMutation({
     mutationFn: async ({ customerId, message }: { customerId: string; message: string }) => {
-      const { error } = await supabase.from('chat_messages').insert({
+      if (!user) {
+        throw new Error('Du bist nicht angemeldet. Bitte melde dich erneut an.');
+      }
+
+      if (!role) {
+        throw new Error('Dein Benutzerstatus wird noch geladen. Bitte versuche es gleich erneut.');
+      }
+
+      const normalizedMessage = message.trim();
+      if (!normalizedMessage) {
+        throw new Error('Bitte gib eine Nachricht ein.');
+      }
+
+      const { data, error } = await supabase
+        .from('chat_messages')
+        .insert({
         customer_id: customerId,
-        sender_id: user!.id,
+        sender_id: user.id,
         sender_role: role === 'admin' ? 'admin' : 'client',
-        message: message.trim(),
-      });
+        message: normalizedMessage,
+      })
+        .select('*')
+        .single();
+
       if (error) throw error;
+      return data as ChatMessage;
     },
-    onSuccess: (_, { customerId }) => {
+    onSuccess: (createdMessage, { customerId }) => {
+      queryClient.setQueryData<ChatMessage[]>(['chat-messages', customerId], (old) =>
+        appendUniqueMessage(old, createdMessage)
+      );
       queryClient.invalidateQueries({ queryKey: ['chat-conversations'] });
       queryClient.invalidateQueries({ queryKey: ['chat-unread-count'] });
     },
@@ -125,6 +160,8 @@ export function useMarkAsRead() {
 
   return useMutation({
     mutationFn: async (customerId: string) => {
+      if (!role) return;
+
       // Clients mark admin messages as read; admins mark client messages as read
       const targetRole = role === 'admin' ? 'client' : 'admin';
       const { error } = await supabase
@@ -135,7 +172,16 @@ export function useMarkAsRead() {
         .eq('is_read', false);
       if (error) throw error;
     },
-    onSuccess: () => {
+    onSuccess: (_, customerId) => {
+      if (!role) return;
+
+      const targetRole = role === 'admin' ? 'client' : 'admin';
+
+      queryClient.setQueryData<ChatMessage[]>(['chat-messages', customerId], (old) =>
+        old?.map((message) =>
+          message.sender_role === targetRole ? { ...message, is_read: true } : message
+        ) || old
+      );
       queryClient.invalidateQueries({ queryKey: ['chat-unread-count'] });
       queryClient.invalidateQueries({ queryKey: ['chat-conversations'] });
     },
@@ -167,6 +213,8 @@ export function useUnreadCount() {
   return useQuery({
     queryKey: ['chat-unread-count', user?.id, role],
     queryFn: async () => {
+      if (!user || !role) return 0;
+
       if (role === 'admin') {
         // Admin: count unread client messages across all customers
         const { count, error } = await supabase
@@ -178,23 +226,20 @@ export function useUnreadCount() {
         return count || 0;
       } else {
         // Client: count unread admin messages for own customer
-        const { data: cu } = await supabase
-          .from('customer_users')
-          .select('customer_id')
-          .eq('user_id', user!.id)
-          .maybeSingle();
-        if (!cu) return 0;
+        const customerId = await fetchCustomerIdForUser(user.id);
+        if (!customerId) return 0;
+
         const { count, error } = await supabase
           .from('chat_messages')
           .select('*', { count: 'exact', head: true })
-          .eq('customer_id', cu.customer_id)
+          .eq('customer_id', customerId)
           .eq('sender_role', 'admin')
           .eq('is_read', false);
         if (error) return 0;
         return count || 0;
       }
     },
-    enabled: !!user,
+    enabled: !!user && !!role,
     refetchInterval: 30000,
   });
 }

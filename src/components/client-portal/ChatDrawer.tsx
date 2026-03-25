@@ -1,9 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Send, MessageCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -16,6 +14,7 @@ import {
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
+import { toast } from 'sonner';
 
 interface ChatDrawerProps {
   open: boolean;
@@ -24,19 +23,20 @@ interface ChatDrawerProps {
 
 export function ChatDrawer({ open, onOpenChange }: ChatDrawerProps) {
   const { user } = useAuth();
-  const { data: customerId } = useClientCustomerId();
+  const { data: customerId, isLoading: isCustomerLoading } = useClientCustomerId();
   const { data: messages = [], isLoading } = useChatMessages(customerId ?? null);
   const sendMessage = useSendMessage();
   const markAsRead = useMarkAsRead();
   const [text, setText] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
+  const isChatUnavailable = !isCustomerLoading && !customerId;
 
   // Mark messages as read when opening
   useEffect(() => {
     if (open && customerId) {
       markAsRead.mutate(customerId);
     }
-  }, [open, customerId]);
+  }, [open, customerId, markAsRead]);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -45,16 +45,28 @@ export function ChatDrawer({ open, onOpenChange }: ChatDrawerProps) {
     }
   }, [messages]);
 
-  const handleSend = () => {
-    if (!text.trim() || !customerId) return;
-    sendMessage.mutate({ customerId, message: text });
-    setText('');
+  const handleSend = async () => {
+    if (!text.trim()) return;
+
+    if (!customerId) {
+      toast.error('Dein Portalzugang ist noch keinem Kundenprofil zugeordnet.');
+      return;
+    }
+
+    try {
+      await sendMessage.mutateAsync({ customerId, message: text });
+      setText('');
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Nachricht konnte nicht gesendet werden.'
+      );
+    }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = async (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      await handleSend();
     }
   };
 
@@ -70,9 +82,17 @@ export function ChatDrawer({ open, onOpenChange }: ChatDrawerProps) {
 
         {/* Messages area */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
-          {isLoading ? (
+          {isCustomerLoading || isLoading ? (
             <div className="flex items-center justify-center h-full">
               <p className="text-sm text-muted-foreground">Laden…</p>
+            </div>
+          ) : isChatUnavailable ? (
+            <div className="flex flex-col items-center justify-center h-full gap-3 text-center px-6">
+              <MessageCircle className="h-12 w-12 text-muted-foreground/30" />
+              <p className="text-sm text-muted-foreground">
+                Dein Login ist noch keinem Kundenprofil zugeordnet. Bitte melde dich kurz bei mir,
+                damit ich den Chat für dich aktiviere.
+              </p>
             </div>
           ) : messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full gap-3 text-center px-6">
@@ -98,16 +118,22 @@ export function ChatDrawer({ open, onOpenChange }: ChatDrawerProps) {
               placeholder="Nachricht schreiben…"
               className="min-h-[40px] max-h-[120px] resize-none text-sm"
               rows={1}
+              disabled={isChatUnavailable || sendMessage.isPending}
             />
             <Button
               size="icon"
               onClick={handleSend}
-              disabled={!text.trim() || sendMessage.isPending}
+              disabled={isChatUnavailable || !text.trim() || sendMessage.isPending}
               className="shrink-0 h-10 w-10"
             >
               <Send className="h-4 w-4" />
             </Button>
           </div>
+          {isChatUnavailable && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              Senden ist erst möglich, sobald dein Portalzugang korrekt verknüpft ist.
+            </p>
+          )}
         </div>
       </SheetContent>
     </Sheet>

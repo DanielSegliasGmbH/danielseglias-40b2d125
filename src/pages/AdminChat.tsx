@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { AppLayout } from '@/components/AppLayout';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +19,7 @@ import { cn } from '@/lib/utils';
 import { format, formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { toast } from 'sonner';
 
 export default function AdminChat() {
   const { user } = useAuth();
@@ -133,7 +133,7 @@ function AdminChatDetail({
   userId: string;
   onBack?: () => void;
 }) {
-  const { data: messages = [] } = useChatMessages(customerId);
+  const { data: messages = [], isLoading } = useChatMessages(customerId);
   const sendMessage = useSendMessage();
   const markAsRead = useMarkAsRead();
   const [text, setText] = useState('');
@@ -141,7 +141,7 @@ function AdminChatDetail({
 
   useEffect(() => {
     markAsRead.mutate(customerId);
-  }, [customerId]);
+  }, [customerId, markAsRead]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -149,16 +149,23 @@ function AdminChatDetail({
     }
   }, [messages]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!text.trim()) return;
-    sendMessage.mutate({ customerId, message: text });
-    setText('');
+
+    try {
+      await sendMessage.mutateAsync({ customerId, message: text });
+      setText('');
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Nachricht konnte nicht gesendet werden.'
+      );
+    }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = async (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      await handleSend();
     }
   };
 
@@ -176,7 +183,11 @@ function AdminChatDetail({
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
-        {messages.length === 0 ? (
+        {isLoading ? (
+          <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
+            Laden…
+          </div>
+        ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-2 text-center">
             <MessageCircle className="h-10 w-10 text-muted-foreground/20" />
             <p className="text-sm text-muted-foreground">Noch keine Nachrichten</p>
@@ -221,6 +232,7 @@ function AdminChatDetail({
             placeholder="Nachricht schreiben…"
             className="min-h-[40px] max-h-[120px] resize-none text-sm"
             rows={1}
+            disabled={sendMessage.isPending}
           />
           <Button
             size="icon"
