@@ -9,8 +9,11 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
 import { BottomNavigation } from '@/components/client-portal/BottomNavigation';
 import { MoreSheet } from '@/components/client-portal/MoreSheet';
+import { ChatDrawer } from '@/components/client-portal/ChatDrawer';
+import { useUnreadCount } from '@/hooks/useChat';
 import {
   Shield,
   Target,
@@ -23,6 +26,7 @@ import {
   Eye,
   ChevronLeft,
   ChevronRight,
+  MessageCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -69,7 +73,9 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
   const location = useLocation();
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
   const { data: settings } = useCustomerPortalSettings();
+  const { data: unreadCount = 0 } = useUnreadCount();
   
   const previewCustomerId = usePreviewCustomerId();
   const isAdminPreview = role === 'admin' && !!previewCustomerId;
@@ -207,6 +213,19 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
           <div className="flex items-center justify-between px-4 h-14">
             <h1 className="text-lg font-semibold">{t('clientPortal.title')}</h1>
             <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative h-9 w-9"
+                onClick={() => setChatOpen(true)}
+              >
+                <MessageCircle className="h-5 w-5" />
+                {unreadCount > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-4 min-w-[16px] px-1 text-[10px] flex items-center justify-center">
+                    {unreadCount}
+                  </Badge>
+                )}
+              </Button>
               <ThemeSwitcher />
               <LanguageSwitcher />
             </div>
@@ -220,6 +239,19 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
           isAdminPreview && "lg:pt-10"
         )}>
           <div className="hidden lg:flex items-center justify-end gap-4 p-4 border-b border-border bg-card">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative h-9 w-9"
+              onClick={() => setChatOpen(true)}
+            >
+              <MessageCircle className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-4 min-w-[16px] px-1 text-[10px] flex items-center justify-center">
+                  {unreadCount}
+                </Badge>
+              )}
+            </Button>
             <ThemeSwitcher />
             <LanguageSwitcher />
             <span className="text-sm text-muted-foreground">{firstName}</span>
@@ -243,6 +275,9 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
           onLogout={handleLogout}
           visibleSections={visibleSections}
         />
+
+        {/* Chat Drawer */}
+        <ChatDrawer open={chatOpen} onOpenChange={setChatOpen} />
       </div>
     </TooltipProvider>
   );

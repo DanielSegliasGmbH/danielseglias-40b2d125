@@ -28,6 +28,7 @@ import AdminTools from "./pages/AdminTools";
 import AdminToolDetail from "./pages/AdminToolDetail";
 import AdminLeads from "./pages/AdminLeads";
 import AdminPublicPages from "./pages/AdminPublicPages";
+import AdminChat from "./pages/AdminChat";
 import NotFound from "./pages/NotFound";
 import PublicBlogDetail from "./pages/public/PublicBlogDetail";
 import PublicToolDetail from "./pages/public/PublicToolDetail";
@@ -193,6 +194,16 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['admin']}>
                     <AdminPublicPages />
+                  </RouteGuard>
+                }
+              />
+
+              {/* Protected: Admin only - Chat */}
+              <Route
+                path="/app/chat"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminChat />
                   </RouteGuard>
                 }
               />

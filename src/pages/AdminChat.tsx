@@ -1,0 +1,237 @@
+import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { AppLayout } from '@/components/AppLayout';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Send, MessageCircle, ArrowLeft } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import {
+  useChatConversations,
+  useChatMessages,
+  useSendMessage,
+  useMarkAsRead,
+  type ChatMessage,
+  type ChatConversation,
+} from '@/hooks/useChat';
+import { cn } from '@/lib/utils';
+import { format, formatDistanceToNow } from 'date-fns';
+import { de } from 'date-fns/locale';
+import { useIsMobile } from '@/hooks/use-mobile';
+
+export default function AdminChat() {
+  const { user } = useAuth();
+  const { data: conversations = [], isLoading } = useChatConversations();
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
+  const isMobile = useIsMobile();
+
+  const selectedConversation = conversations.find((c) => c.customer_id === selectedCustomerId);
+
+  // On mobile, show either list or chat
+  const showList = isMobile ? !selectedCustomerId : true;
+  const showChat = isMobile ? !!selectedCustomerId : true;
+
+  return (
+    <AppLayout>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-foreground">Nachrichten</h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          Direkte Kommunikation mit deinen Klienten
+        </p>
+      </div>
+
+      <div className="flex gap-4 h-[calc(100vh-220px)] min-h-[400px]">
+        {/* Conversation List */}
+        {showList && (
+          <Card className={cn('flex flex-col', isMobile ? 'w-full' : 'w-80 shrink-0')}>
+            <div className="p-3 border-b border-border">
+              <h2 className="font-semibold text-sm text-foreground">Chats</h2>
+            </div>
+            <ScrollArea className="flex-1">
+              {isLoading ? (
+                <div className="p-4 text-sm text-muted-foreground text-center">Laden…</div>
+              ) : conversations.length === 0 ? (
+                <div className="p-6 text-sm text-muted-foreground text-center">
+                  <MessageCircle className="h-8 w-8 mx-auto mb-2 text-muted-foreground/30" />
+                  Noch keine Nachrichten
+                </div>
+              ) : (
+                conversations.map((conv) => (
+                  <button
+                    key={conv.customer_id}
+                    onClick={() => setSelectedCustomerId(conv.customer_id)}
+                    className={cn(
+                      'w-full text-left px-4 py-3 border-b border-border/50 hover:bg-accent transition-colors',
+                      selectedCustomerId === conv.customer_id && 'bg-accent'
+                    )}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-medium text-sm text-foreground truncate">
+                        {conv.customer_name}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground shrink-0 ml-2">
+                        {formatDistanceToNow(new Date(conv.last_message_at), {
+                          addSuffix: true,
+                          locale: de,
+                        })}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-muted-foreground truncate pr-2">
+                        {conv.last_message}
+                      </p>
+                      {conv.unread_count > 0 && (
+                        <Badge className="h-5 min-w-[20px] px-1.5 text-[10px] shrink-0">
+                          {conv.unread_count}
+                        </Badge>
+                      )}
+                    </div>
+                  </button>
+                ))
+              )}
+            </ScrollArea>
+          </Card>
+        )}
+
+        {/* Chat Detail */}
+        {showChat && (
+          <Card className="flex-1 flex flex-col">
+            {selectedCustomerId ? (
+              <AdminChatDetail
+                customerId={selectedCustomerId}
+                customerName={selectedConversation?.customer_name || ''}
+                userId={user!.id}
+                onBack={isMobile ? () => setSelectedCustomerId(null) : undefined}
+              />
+            ) : (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="text-center">
+                  <MessageCircle className="h-12 w-12 mx-auto mb-3 text-muted-foreground/20" />
+                  <p className="text-sm text-muted-foreground">
+                    Wähle einen Chat aus der Liste
+                  </p>
+                </div>
+              </div>
+            )}
+          </Card>
+        )}
+      </div>
+    </AppLayout>
+  );
+}
+
+function AdminChatDetail({
+  customerId,
+  customerName,
+  userId,
+  onBack,
+}: {
+  customerId: string;
+  customerName: string;
+  userId: string;
+  onBack?: () => void;
+}) {
+  const { data: messages = [] } = useChatMessages(customerId);
+  const sendMessage = useSendMessage();
+  const markAsRead = useMarkAsRead();
+  const [text, setText] = useState('');
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    markAsRead.mutate(customerId);
+  }, [customerId]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const handleSend = () => {
+    if (!text.trim()) return;
+    sendMessage.mutate({ customerId, message: text });
+    setText('');
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  return (
+    <>
+      <div className="px-4 py-3 border-b border-border flex items-center gap-3">
+        {onBack && (
+          <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={onBack}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        )}
+        <div>
+          <h3 className="font-semibold text-sm text-foreground">{customerName}</h3>
+        </div>
+      </div>
+
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+        {messages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full gap-2 text-center">
+            <MessageCircle className="h-10 w-10 text-muted-foreground/20" />
+            <p className="text-sm text-muted-foreground">Noch keine Nachrichten</p>
+          </div>
+        ) : (
+          messages.map((msg) => (
+            <div
+              key={msg.id}
+              className={cn('flex', msg.sender_id === userId ? 'justify-end' : 'justify-start')}
+            >
+              <div
+                className={cn(
+                  'max-w-[75%] rounded-2xl px-4 py-2.5 text-sm',
+                  msg.sender_id === userId
+                    ? 'bg-primary text-primary-foreground rounded-br-md'
+                    : 'bg-muted text-foreground rounded-bl-md'
+                )}
+              >
+                <p className="whitespace-pre-wrap break-words">{msg.message}</p>
+                <p
+                  className={cn(
+                    'text-[10px] mt-1',
+                    msg.sender_id === userId
+                      ? 'text-primary-foreground/60'
+                      : 'text-muted-foreground'
+                  )}
+                >
+                  {format(new Date(msg.created_at), 'dd.MM. HH:mm', { locale: de })}
+                </p>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="border-t border-border p-3">
+        <div className="flex gap-2">
+          <Textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Nachricht schreiben…"
+            className="min-h-[40px] max-h-[120px] resize-none text-sm"
+            rows={1}
+          />
+          <Button
+            size="icon"
+            onClick={handleSend}
+            disabled={!text.trim() || sendMessage.isPending}
+            className="shrink-0 h-10 w-10"
+          >
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </>
+  );
+}
