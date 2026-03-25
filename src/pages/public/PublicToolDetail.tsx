@@ -25,6 +25,7 @@ import { ZeitverlustSimulatorTool } from '@/components/tools/zeitverlust-simulat
 import { GlaubenssatzTransformerTool } from '@/components/tools/glaubenssatz-transformer/GlaubenssatzTransformerTool';
 import { FinanzEntscheidungTool } from '@/components/tools/finanz-entscheidung/FinanzEntscheidungTool';
 import { LebenzeitRechnerTool } from '@/components/tools/lebenzeit-rechner/LebenzeitRechnerTool';
+import { RolexRechnerTool } from '@/components/tools/rolex-rechner/RolexRechnerTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
