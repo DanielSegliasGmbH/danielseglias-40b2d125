@@ -40,6 +40,7 @@ import {
   Shield,
   KeyRound,
   MessageCircle,
+  GraduationCap,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

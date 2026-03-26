@@ -71,6 +71,14 @@ const portalSections = [
     descKey: 'clientPortal.toolsDesc',
     protected: false,
   },
+  { 
+    key: 'courses', 
+    path: '/app/client-portal/courses', 
+    icon: GraduationCap, 
+    titleKey: 'clientPortal.courses',
+    descKey: 'clientPortal.coursesDesc',
+    protected: false,
+  },
 ] as const;
 
 export default function ClientPortalHome() {
