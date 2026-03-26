@@ -23,7 +23,8 @@ export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationPro
     '/app/client-portal/insurances',
     '/app/client-portal/strategies',
     '/app/client-portal/tools',
-  ].includes(location.pathname);
+    '/app/client-portal/courses',
+  ].some(p => location.pathname.startsWith(p));
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border lg:hidden safe-area-pb">
