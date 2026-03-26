@@ -1,0 +1,1 @@
+INSERT INTO public.customer_users (customer_id, user_id) VALUES ('101576df-85af-4fec-8317-f458ee51bfac', '2c90ddd0-4d17-49b4-a91d-90df53d2a966') ON CONFLICT DO NOTHING;
