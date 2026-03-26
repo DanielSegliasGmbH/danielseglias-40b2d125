@@ -146,6 +146,127 @@ export type Database = {
         }
         Relationships: []
       }
+      course_feedback: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          lesson_id: string
+          message: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          lesson_id: string
+          message: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          lesson_id?: string
+          message?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_feedback_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "course_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_lessons: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration_text: string | null
+          id: string
+          is_active: boolean
+          module_id: string
+          sort_order: number
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          video_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration_text?: string | null
+          id?: string
+          is_active?: boolean
+          module_id: string
+          sort_order?: number
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration_text?: string | null
+          id?: string
+          is_active?: boolean
+          module_id?: string
+          sort_order?: number
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_lessons_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "course_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_modules: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          icon_emoji: string | null
+          id: string
+          is_active: boolean
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon_emoji?: string | null
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon_emoji?: string | null
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       customer_control: {
         Row: {
           created_at: string
@@ -316,11 +437,90 @@ export type Database = {
           },
         ]
       }
+      customer_lesson_access: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          is_unlocked: boolean
+          lesson_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          is_unlocked?: boolean
+          lesson_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          is_unlocked?: boolean
+          lesson_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_lesson_access_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_lesson_access_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "course_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_module_access: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          is_unlocked: boolean
+          module_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          is_unlocked?: boolean
+          module_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          is_unlocked?: boolean
+          module_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_module_access_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_module_access_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "course_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_portal_settings: {
         Row: {
           created_at: string
           customer_id: string
           id: string
+          show_courses: boolean
           show_goals: boolean
           show_insurances: boolean
           show_library: boolean
@@ -335,6 +535,7 @@ export type Database = {
           created_at?: string
           customer_id: string
           id?: string
+          show_courses?: boolean
           show_goals?: boolean
           show_insurances?: boolean
           show_library?: boolean
@@ -349,6 +550,7 @@ export type Database = {
           created_at?: string
           customer_id?: string
           id?: string
+          show_courses?: boolean
           show_goals?: boolean
           show_insurances?: boolean
           show_library?: boolean
