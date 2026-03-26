@@ -15,6 +15,7 @@ import {
   TrendingUp,
   BookOpen,
   Wrench,
+  GraduationCap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
@@ -68,6 +69,14 @@ const portalSections = [
     icon: Wrench, 
     titleKey: 'clientPortal.tools',
     descKey: 'clientPortal.toolsDesc',
+    protected: false,
+  },
+  { 
+    key: 'courses', 
+    path: '/app/client-portal/courses', 
+    icon: GraduationCap, 
+    titleKey: 'clientPortal.courses',
+    descKey: 'clientPortal.coursesDesc',
     protected: false,
   },
 ] as const;

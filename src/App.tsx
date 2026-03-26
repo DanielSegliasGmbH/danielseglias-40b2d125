@@ -42,6 +42,9 @@ import ClientPortalStrategies from "./pages/client-portal/ClientPortalStrategies
 import ClientPortalLibrary from "./pages/client-portal/ClientPortalLibrary";
 import ClientPortalTools from "./pages/client-portal/ClientPortalTools";
 import ClientPortalToolDetail from "./pages/client-portal/ClientPortalToolDetail";
+import ClientPortalCourses from "./pages/client-portal/ClientPortalCourses";
+import ClientPortalCourseModule from "./pages/client-portal/ClientPortalCourseModule";
+import AdminCourses from "./pages/AdminCourses";
 
 // Insurance Consulting Pages
 import InsuranceConsultingStart from "./pages/insurance-consulting/InsuranceConsultingStart";
@@ -331,6 +334,32 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['client', 'admin']}>
                     <ClientPortalToolDetail />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/courses"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalCourses />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/courses/:moduleId"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalCourseModule />
+                  </RouteGuard>
+                }
+              />
+
+              {/* Protected: Admin only - Courses */}
+              <Route
+                path="/app/courses"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminCourses />
                   </RouteGuard>
                 }
               />

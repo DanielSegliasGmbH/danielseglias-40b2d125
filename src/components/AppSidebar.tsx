@@ -40,6 +40,7 @@ import {
   Shield,
   KeyRound,
   MessageCircle,
+  GraduationCap,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -72,6 +73,7 @@ export function AppSidebar() {
   const adminNavItems = [
     { title: t('userManagement.title'), url: '/app/users', icon: Settings },
     { title: 'Nachrichten', url: '/app/chat', icon: MessageCircle },
+    { title: 'Videokurs', url: '/app/courses', icon: GraduationCap },
     { title: t('systemMap.title'), url: '/app/system-map', icon: Network },
     { title: t('nav.tools'), url: '/app/tools', icon: Wrench },
     { title: t('adminLeads.title', 'Leads'), url: '/app/leads', icon: UserPlus },

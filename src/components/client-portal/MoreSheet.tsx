@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Shield, TrendingUp, Wrench, LogOut, ChevronRight } from 'lucide-react';
+import { Shield, TrendingUp, Wrench, LogOut, ChevronRight, GraduationCap } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -27,6 +27,7 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
     { key: 'insurances', path: '/app/client-portal/insurances', icon: Shield, label: t('clientPortal.insurances') },
     { key: 'strategies', path: '/app/client-portal/strategies', icon: TrendingUp, label: t('clientPortal.strategies') },
     { key: 'tools', path: '/app/client-portal/tools', icon: Wrench, label: t('clientPortal.tools') },
+    { key: 'courses', path: '/app/client-portal/courses', icon: GraduationCap, label: t('clientPortal.courses') },
   ];
 
   const visibleMoreItems = moreItems.filter(item => 
