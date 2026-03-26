@@ -337,6 +337,32 @@ function App() {
                   </RouteGuard>
                 }
               />
+              <Route
+                path="/app/client-portal/courses"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalCourses />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/courses/:moduleId"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalCourseModule />
+                  </RouteGuard>
+                }
+              />
+
+              {/* Protected: Admin only - Courses */}
+              <Route
+                path="/app/courses"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminCourses />
+                  </RouteGuard>
+                }
+              />
 
               {/* Insurance Consulting Routes - wrapped in ConsultationProvider */}
               <Route
