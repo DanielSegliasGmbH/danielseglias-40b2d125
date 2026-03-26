@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Shield, TrendingUp, Wrench, LogOut, ChevronRight } from 'lucide-react';
+import { Shield, TrendingUp, Wrench, LogOut, ChevronRight, GraduationCap } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
