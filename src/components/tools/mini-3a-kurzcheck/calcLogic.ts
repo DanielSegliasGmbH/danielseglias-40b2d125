@@ -59,16 +59,20 @@ function calcKosten(inputs: Mini3aInputs): number {
 
 function calcRenditechancen(inputs: Mini3aInputs): number {
   const rendite = estimateRendite(inputs);
-  let score = 30;
-  if (rendite >= 5) score = 90;
-  else if (rendite >= 4) score = 75;
-  else if (rendite >= 3) score = 60;
-  else if (rendite >= 2) score = 45;
-  else score = 25;
-  // Netto nach Kosten
+  const aktienquote = inputs.inAktienInvestiert ? inputs.aktienquote : 0;
+
+  // Aktienquote-Score: 100% = 50 Punkte, linear runter
+  const aktienScore = (aktienquote / 100) * 50;
+
+  // Rendite-Score: 8.5%+ = 50 Punkte, linear runter bis 0% = 0
+  const renditeScore = Math.min(50, (rendite / 8.5) * 50);
+
+  let score = aktienScore + renditeScore;
+
+  // Netto-Abzug: hohe Kosten fressen Rendite
   const nettoRendite = rendite - inputs.verwaltungsgebuehren;
-  if (nettoRendite < 1) score -= 15;
-  if (inputs.inAktienInvestiert && inputs.aktienquote >= 60) score += 5;
+  if (nettoRendite < 1) score -= 10;
+
   return clamp(score);
 }
 
