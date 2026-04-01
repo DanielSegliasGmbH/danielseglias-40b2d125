@@ -77,7 +77,7 @@
     "signupSuccess": "Registrierung erfolgreich! Bitte warte auf die Rollenzuweisung durch einen Admin.",
     "invalidCredentials": "Ungültige Anmeldedaten",
     "accessDenied": "Kein Zugriff",
-    "accessDeniedMessage": "Sie haben keine Rolle zugewiesen. Bitte kontaktieren Sie einen Administrator.",
+    "accessDeniedMessage": "Du hast keine Rolle zugewiesen. Bitte kontaktiere einen Administrator.",
     "backToLogin": "Zurück zum Login"
   },
   "roles": {
