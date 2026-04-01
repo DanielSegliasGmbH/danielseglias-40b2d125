@@ -88,7 +88,7 @@
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Willkommen, {{name}}!",
-    "loggedInAs": "Sie sind angemeldet als:",
+    "loggedInAs": "Du bist angemeldet als:",
     "activeClients": "Aktive Kunden",
     "activeCases": "Aktive Projekte",
     "openTasks": "Offene Aufgaben",
