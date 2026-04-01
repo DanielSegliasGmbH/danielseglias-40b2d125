@@ -516,8 +516,8 @@
     "clientAlreadyLinked": "Dieser Kunde ist bereits mit einem Benutzer verknüpft",
     "linkError": "Fehler beim Verknüpfen",
     "unlinkError": "Fehler beim Entfernen der Verknüpfung",
-    "unlinkConfirm": "Sind Sie sicher? Der Benutzer verliert den Zugang zum Kundenbereich.",
-    "userIdHint": "Finden Sie die User ID in der Benutzerverwaltung oder kopieren Sie sie aus dem Auth-System.",
+    "unlinkConfirm": "Bist du sicher? Der Benutzer verliert den Zugang zum Kundenbereich.",
+    "userIdHint": "Du findest die User ID in der Benutzerverwaltung oder kopiere sie aus dem Auth-System.",
     "insuranceFeatures": {
       "feature1": "Übersicht aller Versicherungspolicen",
       "feature2": "Leistungsdetails und Deckungssummen",
