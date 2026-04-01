@@ -74,7 +74,7 @@
     "hasAccount": "Bereits ein Account?",
     "loginError": "Anmeldung fehlgeschlagen",
     "signupError": "Registrierung fehlgeschlagen",
-    "signupSuccess": "Registrierung erfolgreich! Bitte warten Sie auf die Rollenzuweisung durch einen Admin.",
+    "signupSuccess": "Registrierung erfolgreich! Bitte warte auf die Rollenzuweisung durch einen Admin.",
     "invalidCredentials": "Ungültige Anmeldedaten",
     "accessDenied": "Kein Zugriff",
     "accessDeniedMessage": "Sie haben keine Rolle zugewiesen. Bitte kontaktieren Sie einen Administrator.",
