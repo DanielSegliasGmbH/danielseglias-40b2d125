@@ -1368,6 +1368,229 @@ export type Database = {
           },
         ]
       }
+      three_a_analyses: {
+        Row: {
+          contract_end: string | null
+          contract_start: string | null
+          contribution_amount: number | null
+          contribution_frequency: string | null
+          costs: Json | null
+          created_at: string
+          current_value: number | null
+          equity_quota: number | null
+          flexibility: Json | null
+          funds: Json | null
+          guaranteed_value: number | null
+          id: string
+          initial_assessment: string | null
+          issues: Json | null
+          paid_contributions: number | null
+          product_name: string | null
+          product_type: string | null
+          provider: string | null
+          raw_extraction: Json | null
+          remaining_years: number | null
+          session_id: string
+          status: string
+          strategy_classification: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          contract_end?: string | null
+          contract_start?: string | null
+          contribution_amount?: number | null
+          contribution_frequency?: string | null
+          costs?: Json | null
+          created_at?: string
+          current_value?: number | null
+          equity_quota?: number | null
+          flexibility?: Json | null
+          funds?: Json | null
+          guaranteed_value?: number | null
+          id?: string
+          initial_assessment?: string | null
+          issues?: Json | null
+          paid_contributions?: number | null
+          product_name?: string | null
+          product_type?: string | null
+          provider?: string | null
+          raw_extraction?: Json | null
+          remaining_years?: number | null
+          session_id?: string
+          status?: string
+          strategy_classification?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          contract_end?: string | null
+          contract_start?: string | null
+          contribution_amount?: number | null
+          contribution_frequency?: string | null
+          costs?: Json | null
+          created_at?: string
+          current_value?: number | null
+          equity_quota?: number | null
+          flexibility?: Json | null
+          funds?: Json | null
+          guaranteed_value?: number | null
+          id?: string
+          initial_assessment?: string | null
+          issues?: Json | null
+          paid_contributions?: number | null
+          product_name?: string | null
+          product_type?: string | null
+          provider?: string | null
+          raw_extraction?: Json | null
+          remaining_years?: number | null
+          session_id?: string
+          status?: string
+          strategy_classification?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      three_a_documents: {
+        Row: {
+          analysis_id: string
+          created_at: string
+          document_type: string | null
+          file_name: string
+          file_path: string
+          file_size: number | null
+          id: string
+          processing_status: string
+        }
+        Insert: {
+          analysis_id: string
+          created_at?: string
+          document_type?: string | null
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          id?: string
+          processing_status?: string
+        }
+        Update: {
+          analysis_id?: string
+          created_at?: string
+          document_type?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          processing_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "three_a_documents_analysis_id_fkey"
+            columns: ["analysis_id"]
+            isOneToOne: false
+            referencedRelation: "three_a_analyses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      three_a_extracted_fields: {
+        Row: {
+          analysis_id: string
+          confidence: string | null
+          created_at: string
+          field_key: string
+          field_value: string | null
+          id: string
+          is_verified: boolean | null
+          source_document_id: string | null
+        }
+        Insert: {
+          analysis_id: string
+          confidence?: string | null
+          created_at?: string
+          field_key: string
+          field_value?: string | null
+          id?: string
+          is_verified?: boolean | null
+          source_document_id?: string | null
+        }
+        Update: {
+          analysis_id?: string
+          confidence?: string | null
+          created_at?: string
+          field_key?: string
+          field_value?: string | null
+          id?: string
+          is_verified?: boolean | null
+          source_document_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "three_a_extracted_fields_analysis_id_fkey"
+            columns: ["analysis_id"]
+            isOneToOne: false
+            referencedRelation: "three_a_analyses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "three_a_extracted_fields_source_document_id_fkey"
+            columns: ["source_document_id"]
+            isOneToOne: false
+            referencedRelation: "three_a_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      three_a_review_requests: {
+        Row: {
+          analysis_id: string | null
+          consent_given: boolean
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          message: string | null
+          phone: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          analysis_id?: string | null
+          consent_given?: boolean
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          last_name: string
+          message?: string | null
+          phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          analysis_id?: string | null
+          consent_given?: boolean
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          message?: string | null
+          phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "three_a_review_requests_analysis_id_fkey"
+            columns: ["analysis_id"]
+            isOneToOne: false
+            referencedRelation: "three_a_analyses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tools: {
         Row: {
           created_at: string
