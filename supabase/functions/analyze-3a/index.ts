@@ -244,33 +244,81 @@ const extractionTool = {
   },
 };
 
+const scorecardItemSchema = {
+  type: "object",
+  properties: {
+    wert: { type: ["string", "null"], description: "Bewertung: sehr tief, eher tief, mittel, eher hoch, hoch" },
+    begruendung: { type: ["string", "null"], description: "Kurze Begründung" },
+  },
+  required: ["wert", "begruendung"],
+};
+
+const sectionSchema = {
+  type: "object",
+  properties: {
+    titel: { type: "string" },
+    inhalt: { type: "array", items: { type: "string" }, description: "Liste von verständlichen Punkten" },
+  },
+  required: ["titel", "inhalt"],
+};
+
 const analysisTool = {
   type: "function",
   function: {
     name: "save_analysis",
-    description: "Speichere die Ersteinschätzung der 3a-Lösung",
+    description: "Speichere die strukturierte Ersteinschätzung der 3a-Lösung",
     parameters: {
       type: "object",
       properties: {
-        initialAssessment: {
-          type: "string",
-          description: "Zusammenfassende Ersteinschätzung in 4-8 Sätzen, verständlich formuliert",
-        },
-        additionalIssues: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              severity: { type: "string", enum: ["info", "warning", "critical"] },
-              title: { type: "string" },
-              description: { type: "string" },
-            },
-            required: ["severity", "title", "description"],
+        einordnung: {
+          type: "object",
+          properties: {
+            produkttyp: { type: ["string", "null"] },
+            struktur: { type: ["string", "null"] },
+            kurzbewertung: { type: ["string", "null"] },
           },
-          description: "Zusätzliche Auffälligkeiten oder Hinweise aus der Analyse",
+        },
+        scorecard: {
+          type: "object",
+          properties: {
+            transparenz: scorecardItemSchema,
+            flexibilitaet: scorecardItemSchema,
+            kostenklarheit: scorecardItemSchema,
+            anlageklarheit: scorecardItemSchema,
+            gesamt_einordnung: {
+              type: "object",
+              properties: {
+                wert: { type: ["string", "null"], description: "eher unklar und prüfenswert, gemischt, eher solide strukturiert, aktuell nur begrenzt beurteilbar" },
+                begruendung: { type: ["string", "null"] },
+              },
+              required: ["wert", "begruendung"],
+            },
+          },
+        },
+        zusammenfassung: {
+          type: "object",
+          properties: {
+            titel: { type: ["string", "null"] },
+            kurztext: { type: ["string", "null"] },
+          },
+        },
+        struktur_analyse: sectionSchema,
+        beitrags_und_laufzeit_analyse: sectionSchema,
+        anlage_analyse: sectionSchema,
+        kosten_analyse: sectionSchema,
+        auffaelligkeiten: sectionSchema,
+        fehlende_daten_hinweise: sectionSchema,
+        ersteinschaetzung: sectionSchema,
+        naechste_schritte: sectionSchema,
+        cta_hinweis: {
+          type: "object",
+          properties: {
+            titel: { type: ["string", "null"] },
+            text: { type: ["string", "null"] },
+          },
         },
       },
-      required: ["initialAssessment"],
+      required: ["einordnung", "scorecard", "zusammenfassung", "ersteinschaetzung"],
     },
   },
 };
