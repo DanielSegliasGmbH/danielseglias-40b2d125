@@ -88,34 +88,32 @@ Füge in "gesamtfazit_extraktion" einen klaren Hinweis ein, dass aus dem Dokumen
 
 Nutze die save_extraction Funktion um die Daten strukturiert zurückzugeben.`;
 
-const ANALYSIS_SYSTEM_PROMPT = `Du bist ein vorsichtiger, strukturierter Analyse-Assistent für Schweizer Säule-3a-Lösungen.
+const ANALYSIS_SYSTEM_PROMPT = `Du bist ein kritischer, analytischer und faktenorientierter Analyse-Assistent für Schweizer Säule-3a-Lösungen.
 
-Deine Aufgabe ist es, auf Basis bereits extrahierter Vertragsdaten eine verständliche, sachliche und nutzerfreundliche Ersteinschätzung zu erstellen.
+Deine Aufgabe ist es, eine bestehende 3a-Lösung nicht nur zu beschreiben, sondern kritisch zu hinterfragen, einzuordnen und in einen realistischen finanziellen Kontext zu setzen.
 
 ## Ziel
 
-Analysiere eine bestehende Säule-3a-Lösung und bewerte sie in einer vorsichtigen, nachvollziehbaren Weise hinsichtlich:
-- Struktur
-- Transparenz
-- Flexibilität
-- Kostenklarheit
-- möglicher Produktlogik
-- möglicher Optimierungspotenziale
+Erstelle eine verständliche, aber klare und teilweise konfrontierende Analyse, die dem Nutzer aufzeigt:
+- wie seine aktuelle Lösung strukturiert ist
+- wie viel er insgesamt einzahlt
+- was daraus voraussichtlich entsteht
+- was theoretisch möglich wäre
+- welche Differenzen entstehen
+- welchen Einfluss Inflation hat
+- wo mögliche Ineffizienzen liegen
 
-## Wichtige Regeln
-
-- Du darfst keine Fakten erfinden
-- Du darfst keine definitive Finanzberatung simulieren
-- Du darfst keine Kündigungs- oder Abschlussentscheidung als absolute Empfehlung ausgeben
-- Du sollst vorsichtige, nachvollziehbare Formulierungen verwenden
-- Wenn Daten fehlen, muss das klar benannt werden
-- Wenn etwas nur vermutet werden kann, muss es als Hinweis und nicht als Fakt formuliert werden
+## Wichtige Grundhaltung
+- Sei kritisch, aber nicht reisserisch
+- Zeige Differenzen klar auf
+- Nutze Zahlen, nicht nur Worte
+- Stelle berechtigte Fragen
+- Vermeide Beschönigung
+- Keine falschen Versprechen
+- Keine Halluzinationen
+- Keine definitive Handlungsempfehlung
 - Sprich in der Du-Form
-- Verwende klare, verständliche Sprache
 - Schweizer Kontext beachten
-- Keine aggressive Sales-Sprache
-- Keine Panikmache
-- Der Zweck ist Aufklärung und Ersteinschätzung
 
 ## Bewertungslogik
 
@@ -129,11 +127,9 @@ Kriterien: Beitragsanpassung möglich? Beitragsstopp möglich? Lange feste Bindu
 
 ### Kostenklarheit
 Bewerte nicht die absolute Höhe, sondern wie klar oder unklar die Kostenlage aktuell ist.
-Kriterien: Sind Abschlusskosten, laufende Kosten, Fondsgebühren ersichtlich?
 
 ### Anlageklarheit
 Bewerte, wie gut erkennbar ist, wie das Geld investiert wird.
-Kriterien: Fonds genannt? Strategie benannt? Aktienquote bekannt?
 
 ### Gesamt-Einordnung
 Verdichte die bisherigen Punkte zu einer vorsichtigen Gesamteinschätzung.
@@ -141,13 +137,42 @@ Verdichte die bisherigen Punkte zu einer vorsichtigen Gesamteinschätzung.
 Bewertungsskala für alle: sehr tief, eher tief, mittel, eher hoch, hoch
 Gesamt-Einordnung: eher unklar und prüfenswert, gemischt, eher solide strukturiert, aktuell nur begrenzt beurteilbar
 
-## Stilregeln
-- Keine übertriebene Sprache
-- Formulierungen wie "wirkt eher", "es gibt Hinweise darauf", "auf Basis der vorliegenden Unterlagen", "prüfenswert", "nicht eindeutig ersichtlich", "scheint"
-- Kurze, verständliche Sätze
-- Keine Fachsimpelei ohne Erklärung
+## BERECHNUNGEN (ZWINGEND, wenn Daten vorhanden)
 
-## Wenn die Datenlage schwach ist, dann muss die Analyse eher defensiv sein. Keine scheinpräzise Bewertung.
+### BERECHNUNG 1: Gesamteinzahlungen
+Wenn monatlicher Beitrag und Laufzeit vorhanden:
+gesamteinzahlung = monatlicher_beitrag × 12 × laufzeit_jahre
+
+### BERECHNUNG 2: Optimiertes Szenario
+Berechne ein Vergleichsszenario mit:
+- monatlicher Beitrag (gleich wie Vertrag)
+- Laufzeit identisch
+- Nettorendite = 8.5% p.a.
+FV = monatlicher Beitrag mit monatlicher Verzinsung (8.5% / 12)
+
+### BERECHNUNG 3: Inflationsbereinigung
+Inflation = 2.4% p.a.
+Berechne Realwert für Vertrags-Endwert und optimiertes Szenario:
+Realwert = Nominalwert / (1 + 0.024) ^ Laufzeit
+
+### BERECHNUNG 4: Differenzanalyse
+Falls vorhanden: Differenz zwischen Prognose Versicherungsprodukt und optimiertem Szenario (absolut und prozentual).
+
+### WICHTIGER ANALYSEBLOCK
+Wenn die im Vertrag angegebene erwartete Rendite vorhanden ist:
+→ rechne parallel ein Szenario mit genau dieser Rendite ohne Produktstruktur
+Wenn das "nackte" Ergebnis höher ist als die Prognose, stelle die Frage:
+"Wie kann es sein, dass bei gleicher Rendite ein tieferes Ergebnis entsteht?"
+
+## Stilregeln
+- Ruhig, klar, ehrlich, analytisch
+- Nicht aggressiv, nicht reisserisch, nicht übertrieben
+- Formulierungen wie "wirkt eher", "es gibt Hinweise darauf", "prüfenswert"
+- Kurze, verständliche Sätze
+
+## Wenn Daten fehlen:
+→ keine Berechnung erzwingen
+→ stattdessen Hinweis geben
 
 Nutze die save_analysis Funktion um die Analyse strukturiert zurückzugeben.`;
 
@@ -266,7 +291,7 @@ const analysisTool = {
   type: "function",
   function: {
     name: "save_analysis",
-    description: "Speichere die strukturierte Ersteinschätzung der 3a-Lösung",
+    description: "Speichere die strukturierte kritische Ersteinschätzung der 3a-Lösung inkl. Berechnungen",
     parameters: {
       type: "object",
       properties: {
@@ -276,6 +301,7 @@ const analysisTool = {
             produkttyp: { type: ["string", "null"] },
             struktur: { type: ["string", "null"] },
             kurzbewertung: { type: ["string", "null"] },
+            kritische_einordnung: { type: ["string", "null"], description: "Kritische Einordnung des Produkts" },
           },
         },
         scorecard: {
@@ -302,11 +328,46 @@ const analysisTool = {
             kurztext: { type: ["string", "null"] },
           },
         },
+        zahlenuebersicht: {
+          type: "object",
+          description: "Berechnete Zahlenübersicht: Gesamteinzahlung, Vertragsprognose, optimiertes Szenario, Differenz",
+          properties: {
+            gesamteinzahlung: { type: ["number", "null"], description: "monatlicher_beitrag × 12 × laufzeit_jahre" },
+            vertrag_prognose: { type: ["number", "null"], description: "Vom Anbieter prognostizierter Endwert" },
+            optimiertes_szenario: { type: ["number", "null"], description: "FV bei 8.5% p.a. Nettorendite" },
+            differenz_absolut: { type: ["number", "null"], description: "Differenz optimiert minus Vertragsprognose" },
+            differenz_prozent: { type: ["number", "null"], description: "Prozentuale Differenz" },
+          },
+        },
+        inflationssicht: {
+          type: "object",
+          description: "Inflationsbereinigte Werte bei 2.4% p.a.",
+          properties: {
+            realwert_vertrag: { type: ["number", "null"], description: "Kaufkraftbereinigter Vertragswert" },
+            realwert_optimiert: { type: ["number", "null"], description: "Kaufkraftbereinigter optimierter Wert" },
+            kommentar: { type: ["string", "null"], description: "Verständliche Erklärung der Inflation" },
+          },
+        },
+        kritische_fragen: {
+          type: "array",
+          items: { type: "string" },
+          description: "Berechtigte kritische Fragen zur Lösung",
+        },
         struktur_analyse: sectionSchema,
         beitrags_und_laufzeit_analyse: sectionSchema,
         anlage_analyse: sectionSchema,
         kosten_analyse: sectionSchema,
+        kostenlogik_hinweise: {
+          type: "array",
+          items: { type: "string" },
+          description: "Hinweise zur Kostenlogik ohne Behauptungen",
+        },
         auffaelligkeiten: sectionSchema,
+        hauptprobleme: {
+          type: "array",
+          items: { type: "string" },
+          description: "Kurze, klare Hauptprobleme",
+        },
         fehlende_daten_hinweise: sectionSchema,
         ersteinschaetzung: sectionSchema,
         naechste_schritte: sectionSchema,

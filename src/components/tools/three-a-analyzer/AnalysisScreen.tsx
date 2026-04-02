@@ -4,7 +4,8 @@ import { Separator } from '@/components/ui/separator';
 import {
   AlertTriangle, Building2, FileText, TrendingUp, Wallet,
   Info, CheckCircle2, HelpCircle, ArrowLeft,
-  BarChart3, Shield, Lightbulb, ListChecks, CircleAlert
+  BarChart3, Lightbulb, CircleAlert, Calculator, TrendingDown,
+  MessageCircleQuestion, ShieldAlert
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AnalysisData, AnalysisResult, AnalysisSection, ScorecardItem, CostPosition } from './types';
@@ -27,6 +28,11 @@ function ValueOrUnknown({ value, suffix }: { value: string | number | null; suff
     );
   }
   return <span className="font-medium text-foreground">{value}{suffix || ''}</span>;
+}
+
+function formatCHF(value: number | null): string {
+  if (value === null) return '–';
+  return `CHF ${Math.round(value).toLocaleString('de-CH')}`;
 }
 
 function CostRow({ position }: { position: CostPosition }) {
@@ -108,6 +114,172 @@ function SectionCard({ section, icon }: { section?: AnalysisSection; icon: React
   );
 }
 
+// ── Zahlenübersicht ──
+
+function ZahlenCard({ ar }: { ar: AnalysisResult }) {
+  const z = ar.zahlenuebersicht;
+  if (!z || (z.gesamteinzahlung === null && z.optimiertes_szenario === null)) return null;
+
+  return (
+    <Card className="border-primary/20">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Calculator className="h-4 w-4 text-primary" />
+          Zahlenübersicht
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {z.gesamteinzahlung !== null && (
+            <div className="p-3 rounded-lg bg-muted/50">
+              <p className="text-xs text-muted-foreground mb-1">Gesamteinzahlung</p>
+              <p className="text-lg font-bold text-foreground">{formatCHF(z.gesamteinzahlung)}</p>
+            </div>
+          )}
+          {z.vertrag_prognose !== null && (
+            <div className="p-3 rounded-lg bg-muted/50">
+              <p className="text-xs text-muted-foreground mb-1">Vertragsprognose</p>
+              <p className="text-lg font-bold text-foreground">{formatCHF(z.vertrag_prognose)}</p>
+            </div>
+          )}
+          {z.optimiertes_szenario !== null && (
+            <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/30">
+              <p className="text-xs text-muted-foreground mb-1">Optimiertes Szenario (8.5% p.a.)</p>
+              <p className="text-lg font-bold text-emerald-700 dark:text-emerald-400">{formatCHF(z.optimiertes_szenario)}</p>
+            </div>
+          )}
+          {z.differenz_absolut !== null && (
+            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/30">
+              <p className="text-xs text-muted-foreground mb-1">Differenz</p>
+              <p className="text-lg font-bold text-red-700 dark:text-red-400">
+                {formatCHF(z.differenz_absolut)}
+                {z.differenz_prozent !== null && (
+                  <span className="text-sm font-normal ml-2">({z.differenz_prozent.toFixed(1)}%)</span>
+                )}
+              </p>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ── Inflationssicht ──
+
+function InflationCard({ ar }: { ar: AnalysisResult }) {
+  const inf = ar.inflationssicht;
+  if (!inf || (inf.realwert_vertrag === null && inf.realwert_optimiert === null)) return null;
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-base">
+          <TrendingDown className="h-4 w-4 text-amber-600" />
+          Kaufkraft nach Inflation (2.4% p.a.)
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {inf.realwert_vertrag !== null && (
+            <div className="p-3 rounded-lg bg-muted/50">
+              <p className="text-xs text-muted-foreground mb-1">Realer Vertragswert</p>
+              <p className="text-lg font-bold text-foreground">{formatCHF(inf.realwert_vertrag)}</p>
+            </div>
+          )}
+          {inf.realwert_optimiert !== null && (
+            <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/30">
+              <p className="text-xs text-muted-foreground mb-1">Realer optimierter Wert</p>
+              <p className="text-lg font-bold text-emerald-700 dark:text-emerald-400">{formatCHF(inf.realwert_optimiert)}</p>
+            </div>
+          )}
+        </div>
+        {inf.kommentar && (
+          <p className="text-sm text-muted-foreground leading-relaxed">{inf.kommentar}</p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+// ── Kritische Fragen ──
+
+function KritischeFragen({ fragen }: { fragen: string[] | null | undefined }) {
+  if (!fragen?.length) return null;
+  return (
+    <Card className="border-amber-200 dark:border-amber-800">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-base">
+          <MessageCircleQuestion className="h-4 w-4 text-amber-600" />
+          Kritische Fragen
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <ul className="space-y-3">
+          {fragen.map((frage, idx) => (
+            <li key={idx} className="flex items-start gap-3 text-sm text-foreground leading-relaxed p-2 rounded-lg bg-amber-50/50 dark:bg-amber-950/20">
+              <span className="text-amber-600 mt-0.5 shrink-0 font-bold">?</span>
+              {frage}
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ── Hauptprobleme ──
+
+function Hauptprobleme({ probleme }: { probleme: string[] | null | undefined }) {
+  if (!probleme?.length) return null;
+  return (
+    <Card className="border-red-200 dark:border-red-800">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-base">
+          <ShieldAlert className="h-4 w-4 text-red-600" />
+          Hauptprobleme
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <ul className="space-y-2">
+          {probleme.map((p, idx) => (
+            <li key={idx} className="flex items-start gap-2 text-sm text-foreground leading-relaxed">
+              <span className="text-red-500 mt-1.5 shrink-0">•</span>
+              {p}
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ── Kostenlogik ──
+
+function KostenlogikHinweise({ hinweise }: { hinweise: string[] | null | undefined }) {
+  if (!hinweise?.length) return null;
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Info className="h-4 w-4 text-primary" />
+          Hinweise zur Kostenlogik
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <ul className="space-y-2">
+          {hinweise.map((h, idx) => (
+            <li key={idx} className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
+              <span className="mt-1.5 shrink-0">•</span>
+              {h}
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
+  );
+}
+
 const PRODUCT_TYPE_LABELS: Record<string, string> = {
   versicherung: 'Versicherungsgebundene Säule 3a',
   bank: 'Banklösung',
@@ -147,7 +319,7 @@ export function AnalysisScreen({ data, analysisId, onBack, onReset }: AnalysisSc
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Produkttyp</p>
                 <ValueOrUnknown value={ar.einordnung.produkttyp} />
@@ -156,10 +328,12 @@ export function AnalysisScreen({ data, analysisId, onBack, onReset }: AnalysisSc
                 <p className="text-xs text-muted-foreground mb-1">Struktur</p>
                 <ValueOrUnknown value={ar.einordnung.struktur} />
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Kurzbewertung</p>
-                <ValueOrUnknown value={ar.einordnung.kurzbewertung} />
-              </div>
+              {ar.einordnung.kritische_einordnung && (
+                <div className="sm:col-span-2">
+                  <p className="text-xs text-muted-foreground mb-1">Kritische Einordnung</p>
+                  <p className="text-sm text-foreground leading-relaxed">{ar.einordnung.kritische_einordnung}</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -187,6 +361,15 @@ export function AnalysisScreen({ data, analysisId, onBack, onReset }: AnalysisSc
           </CardContent>
         </Card>
       )}
+
+      {/* Zahlenübersicht */}
+      {ar && <ZahlenCard ar={ar} />}
+
+      {/* Inflationssicht */}
+      {ar && <InflationCard ar={ar} />}
+
+      {/* Kritische Fragen */}
+      {ar && <KritischeFragen fragen={ar.kritische_fragen} />}
 
       {/* Overview (extracted data) */}
       <Card>
@@ -270,6 +453,12 @@ export function AnalysisScreen({ data, analysisId, onBack, onReset }: AnalysisSc
         </CardContent>
       </Card>
 
+      {/* Kostenlogik-Hinweise */}
+      {ar && <KostenlogikHinweise hinweise={ar.kostenlogik_hinweise} />}
+
+      {/* Hauptprobleme */}
+      {ar && <Hauptprobleme probleme={ar.hauptprobleme} />}
+
       {/* Auffälligkeiten */}
       <SectionCard section={ar?.auffaelligkeiten} icon={<AlertTriangle className="h-4 w-4 text-amber-600" />} />
 
@@ -319,10 +508,10 @@ export function AnalysisScreen({ data, analysisId, onBack, onReset }: AnalysisSc
       <Card>
         <CardContent className="pt-6 pb-6 text-center space-y-4">
           <h3 className="text-lg font-semibold text-foreground">
-            {ar?.cta_hinweis?.titel || 'Vertiefte Prüfung möglich'}
+            {ar?.cta_hinweis?.titel || 'Vertiefte Analyse möglich'}
           </h3>
           <p className="text-sm text-muted-foreground max-w-xl mx-auto">
-            {ar?.cta_hinweis?.text || 'Wenn du genauer verstehen willst, wie deine heutige 3a im Vergleich zu einer transparenteren und flexibleren Lösung einzuordnen ist, kann eine vertiefte manuelle Analyse sinnvoll sein.'}
+            {ar?.cta_hinweis?.text || 'Wenn du genau verstehen willst, was in deinem konkreten Fall passiert und wo mögliche Unterschiede entstehen, kann eine persönliche vertiefte Analyse sinnvoll sein.'}
           </p>
         </CardContent>
       </Card>
