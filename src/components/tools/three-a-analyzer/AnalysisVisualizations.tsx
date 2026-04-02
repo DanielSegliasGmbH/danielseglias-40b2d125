@@ -135,7 +135,9 @@ interface DifferenceHighlightProps {
 
 export function DifferenceHighlight({ zahlenuebersicht }: DifferenceHighlightProps) {
   const z = zahlenuebersicht;
-  if (!z || z.differenz_absolut === null) return null;
+  const diffAbs = safeNum(z?.differenz_absolut);
+  const diffPct = safeNum(z?.differenz_prozent);
+  if (!z || diffAbs === null) return null;
 
   return (
     <Card className="border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20">
