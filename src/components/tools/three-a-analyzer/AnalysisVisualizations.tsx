@@ -4,6 +4,18 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, L
 import { TrendingUp, ArrowUpDown, Info } from 'lucide-react';
 import { AnalysisResult } from './types';
 
+// Safely parse a value that might be string or number
+function safeNum(val: unknown): number | null {
+  if (val === null || val === undefined) return null;
+  if (typeof val === 'number') return isNaN(val) ? null : val;
+  if (typeof val === 'string') {
+    const cleaned = val.replace(/['']/g, '').replace(',', '.').replace(/[^\d.\-]/g, '');
+    const n = parseFloat(cleaned);
+    return isNaN(n) ? null : n;
+  }
+  return null;
+}
+
 function formatCHF(value: number): string {
   return `CHF ${Math.round(value).toLocaleString('de-CH')}`;
 }
@@ -43,16 +55,28 @@ export function MainComparisonChart({ zahlenuebersicht }: MainComparisonProps) {
   const z = zahlenuebersicht;
   if (!z) return null;
 
-  const hasData = z.gesamteinzahlung !== null || z.vertrag_prognose !== null || z.optimiertes_szenario !== null;
-  if (!hasData) return null;
+  const einzahlung = safeNum(z.gesamteinzahlung);
+  const prognose = safeNum(z.vertrag_prognose);
+  const optimiert = safeNum(z.optimiertes_szenario);
 
   const chartData = [
-    z.gesamteinzahlung !== null ? { name: 'Einzahlung', value: z.gesamteinzahlung, color: BAR_COLORS.einzahlung } : null,
-    z.vertrag_prognose !== null ? { name: 'Vertragsprognose', value: z.vertrag_prognose, color: BAR_COLORS.vertrag } : null,
-    z.optimiertes_szenario !== null ? { name: 'Optimiert (8.5%)', value: z.optimiertes_szenario, color: BAR_COLORS.optimiert } : null,
+    einzahlung !== null ? { name: 'Einzahlung', value: einzahlung, color: BAR_COLORS.einzahlung } : null,
+    prognose !== null ? { name: 'Vertragsprognose', value: prognose, color: BAR_COLORS.vertrag } : null,
+    optimiert !== null ? { name: 'Optimiert (8.5%)', value: optimiert, color: BAR_COLORS.optimiert } : null,
   ].filter(Boolean) as Array<{ name: string; value: number; color: string }>;
 
-  if (chartData.length < 2) return null;
+  if (chartData.length < 2) {
+    return (
+      <Card>
+        <CardContent className="py-8 text-center">
+          <Info className="h-5 w-5 text-muted-foreground mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground">
+            Für den Hauptvergleich fehlen aktuell noch belastbare Daten.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
@@ -111,7 +135,9 @@ interface DifferenceHighlightProps {
 
 export function DifferenceHighlight({ zahlenuebersicht }: DifferenceHighlightProps) {
   const z = zahlenuebersicht;
-  if (!z || z.differenz_absolut === null) return null;
+  const diffAbs = safeNum(z?.differenz_absolut);
+  const diffPct = safeNum(z?.differenz_prozent);
+  if (!z || diffAbs === null) return null;
 
   return (
     <Card className="border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20">
@@ -120,12 +146,12 @@ export function DifferenceHighlight({ zahlenuebersicht }: DifferenceHighlightPro
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Mögliche Differenz</p>
             <p className="text-3xl sm:text-4xl font-bold text-emerald-700 dark:text-emerald-400">
-              +{formatCHF(z.differenz_absolut)}
+              +{formatCHF(diffAbs)}
             </p>
           </div>
-          {z.differenz_prozent !== null && (
+          {diffPct !== null && (
             <Badge className="bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900 dark:text-emerald-300 dark:border-emerald-700 text-sm px-3 py-1">
-              +{z.differenz_prozent.toFixed(1)}% mehr
+              +{diffPct.toFixed(1)}% mehr
             </Badge>
           )}
         </div>
@@ -147,11 +173,16 @@ interface InflationComparisonProps {
 
 export function InflationComparisonChart({ inflationssicht }: InflationComparisonProps) {
   const inf = inflationssicht;
-  if (!inf || (inf.realwert_vertrag === null && inf.realwert_optimiert === null)) return null;
+  if (!inf) return null;
+
+  const realVertrag = safeNum(inf.realwert_vertrag);
+  const realOptimiert = safeNum(inf.realwert_optimiert);
+
+  if (realVertrag === null && realOptimiert === null) return null;
 
   const chartData = [
-    inf.realwert_vertrag !== null ? { name: 'Vertrag (real)', value: inf.realwert_vertrag, color: BAR_COLORS.vertrag } : null,
-    inf.realwert_optimiert !== null ? { name: 'Optimiert (real)', value: inf.realwert_optimiert, color: BAR_COLORS.optimiert } : null,
+    realVertrag !== null ? { name: 'Vertrag (real)', value: realVertrag, color: BAR_COLORS.vertrag } : null,
+    realOptimiert !== null ? { name: 'Optimiert (real)', value: realOptimiert, color: BAR_COLORS.optimiert } : null,
   ].filter(Boolean) as Array<{ name: string; value: number; color: string }>;
 
   if (chartData.length === 0) return null;

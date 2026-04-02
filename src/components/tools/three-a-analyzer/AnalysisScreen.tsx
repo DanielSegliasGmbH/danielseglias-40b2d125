@@ -364,25 +364,32 @@ export function AnalysisScreen({ data, analysisId, onBack, onReset }: AnalysisSc
       )}
 
       {/* ── Visualisierungen ── */}
-      {ar?.zahlenuebersicht && (
+      {ar && (
         <>
-          <MainComparisonChart zahlenuebersicht={ar.zahlenuebersicht} />
-          <DifferenceHighlight zahlenuebersicht={ar.zahlenuebersicht} />
-          <GrowthCurveChart
-            zahlenuebersicht={ar.zahlenuebersicht}
-            laufzeitJahre={data.remainingYears}
-            monatlichBeitrag={data.contributionFrequency === 'monatlich' ? data.contributionAmount : data.contributionAmount ? data.contributionAmount / 12 : null}
-          />
+          <Separator />
+          <h3 className="text-lg font-semibold text-foreground">Visualisierung</h3>
+          
+          {ar.zahlenuebersicht ? (
+            <>
+              <MainComparisonChart zahlenuebersicht={ar.zahlenuebersicht} />
+              <DifferenceHighlight zahlenuebersicht={ar.zahlenuebersicht} />
+              <GrowthCurveChart
+                zahlenuebersicht={ar.zahlenuebersicht}
+                laufzeitJahre={data.remainingYears}
+                monatlichBeitrag={data.contributionFrequency === 'monatlich' ? data.contributionAmount : data.contributionAmount ? data.contributionAmount / 12 : null}
+              />
+            </>
+          ) : (
+            <ZahlenCard ar={ar} />
+          )}
+
+          {ar.inflationssicht ? (
+            <InflationComparisonChart inflationssicht={ar.inflationssicht} />
+          ) : (
+            <InflationCard ar={ar} />
+          )}
         </>
       )}
-
-      {ar?.inflationssicht && <InflationComparisonChart inflationssicht={ar.inflationssicht} />}
-
-      {/* Zahlenübersicht (Fallback-Karten) */}
-      {ar && !ar.zahlenuebersicht && <ZahlenCard ar={ar} />}
-
-      {/* Inflationssicht (Fallback-Karten) */}
-      {ar && !ar.inflationssicht && <InflationCard ar={ar} />}
 
       {/* Kritische Fragen */}
       {ar && <KritischeFragen fragen={ar.kritische_fragen} />}

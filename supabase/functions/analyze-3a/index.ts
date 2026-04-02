@@ -568,6 +568,29 @@ serve(async (req) => {
       return field ?? null;
     };
 
+    // Helper to parse a value as number (handles strings like "573.50")
+    const toNum = (val: unknown): number | null => {
+      if (val === null || val === undefined) return null;
+      if (typeof val === "number") return val;
+      if (typeof val === "string") {
+        const cleaned = val.replace(/['']/g, "").replace(",", ".").replace(/[^\d.\-]/g, "");
+        const n = parseFloat(cleaned);
+        return isNaN(n) ? null : n;
+      }
+      return null;
+    };
+
+    // Helper to parse date string to a Date
+    const toDate = (val: unknown): Date | null => {
+      if (!val || typeof val !== "string") return null;
+      // Try DD.MM.YYYY
+      const parts = val.match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+      if (parts) return new Date(parseInt(parts[3]), parseInt(parts[2]) - 1, parseInt(parts[1]));
+      // Try YYYY-MM-DD or ISO
+      const d = new Date(val);
+      return isNaN(d.getTime()) ? null : d;
+    };
+
     // Map new prompt structure to DB columns
     const provider = v(extractedData.anbieter) as string | null;
     const produkttyp = v(extractedData.produkttyp) as string | null;
@@ -580,10 +603,23 @@ serve(async (req) => {
     };
     const productType = (produkttyp && productTypeMap[produkttyp]) || produkttyp || null;
 
-    const monatlich = v(extractedData.monatlicher_beitrag) as number | null;
-    const jaehrlich = v(extractedData.jaehrlicher_beitrag) as number | null;
+    const monatlich = toNum(v(extractedData.monatlicher_beitrag));
+    const jaehrlich = toNum(v(extractedData.jaehrlicher_beitrag));
     const contributionAmount = monatlich ?? jaehrlich ?? null;
     const contributionFrequency = monatlich ? "monatlich" : jaehrlich ? "jaehrlich" : null;
+
+    // Calculate remaining years from contract dates
+    const contractStartDate = toDate(v(extractedData.vertragsbeginn));
+    const contractEndDate = toDate(v(extractedData.vertragsende));
+    let remainingYears: number | null = null;
+    let totalYears: number | null = null;
+    if (contractStartDate && contractEndDate) {
+      totalYears = (contractEndDate.getTime() - contractStartDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000);
+      const now = new Date();
+      remainingYears = Math.max(0, (contractEndDate.getTime() - now.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+      remainingYears = Math.round(remainingYears * 10) / 10;
+      totalYears = Math.round(totalYears * 10) / 10;
+    }
 
     const fonds = v(extractedData.fonds_oder_strategien);
     const fundsArray = Array.isArray(fonds) ? fonds : [];
@@ -591,9 +627,10 @@ serve(async (req) => {
     // Build costs object from new fields
     const makeCost = (field: unknown) => {
       const val = v(field);
+      const numVal = toNum(val);
       const src = field && typeof field === "object" ? (field as Record<string, unknown>).quelle : null;
       const conf = field && typeof field === "object" ? (field as Record<string, unknown>).sicherheit : null;
-      return { value: typeof val === "number" ? val : null, isVerified: conf === "hoch", source: src as string | null };
+      return { value: numVal, isVerified: conf === "hoch", source: src as string | null };
     };
     const costs = {
       acquisition: makeCost(extractedData.abschlusskosten),
@@ -629,10 +666,10 @@ serve(async (req) => {
         contribution_frequency: contributionFrequency,
         contract_start: v(extractedData.vertragsbeginn) as string | null,
         contract_end: v(extractedData.vertragsende) as string | null,
-        remaining_years: null,
-        paid_contributions: v(extractedData.bisher_einbezahlt) as number | null,
-        current_value: v(extractedData.aktueller_vertragswert) as number | null,
-        guaranteed_value: v(extractedData.garantierter_wert) as number | null,
+        remaining_years: remainingYears,
+        paid_contributions: toNum(v(extractedData.bisher_einbezahlt)),
+        current_value: toNum(v(extractedData.aktueller_vertragswert)),
+        guaranteed_value: toNum(v(extractedData.garantierter_wert)),
         funds: fundsArray,
         equity_quota: v(extractedData.aktienquote) as number | null,
         strategy_classification: v(extractedData.strategie_einordnung) as string | null,
@@ -706,6 +743,50 @@ serve(async (req) => {
         } catch {
           analysisData = { zusammenfassung: { titel: "Ersteinschätzung", kurztext: content } };
         }
+      }
+
+      // ── Fallback calculations if AI didn't compute them ──
+      const monatlich_fuer_berechnung = contributionFrequency === "monatlich" ? contributionAmount : (contributionAmount ? contributionAmount / 12 : null);
+      const laufzeit = totalYears ?? remainingYears;
+
+      const z = (analysisData.zahlenuebersicht || {}) as Record<string, unknown>;
+
+      // Gesamteinzahlung
+      if (z.gesamteinzahlung == null && monatlich_fuer_berechnung && laufzeit) {
+        z.gesamteinzahlung = Math.round(monatlich_fuer_berechnung * 12 * laufzeit * 100) / 100;
+      }
+
+      // Optimiertes Szenario (FV at 8.5% p.a.)
+      if (z.optimiertes_szenario == null && monatlich_fuer_berechnung && laufzeit && laufzeit > 0) {
+        const r = 0.085 / 12;
+        const n = Math.round(laufzeit * 12);
+        let fv = 0;
+        for (let i = 0; i < n; i++) fv = (fv + monatlich_fuer_berechnung) * (1 + r);
+        z.optimiertes_szenario = Math.round(fv * 100) / 100;
+      }
+
+      // Differenz
+      if (z.differenz_absolut == null && z.optimiertes_szenario != null && z.vertrag_prognose != null) {
+        z.differenz_absolut = Math.round(((z.optimiertes_szenario as number) - (z.vertrag_prognose as number)) * 100) / 100;
+        z.differenz_prozent = Math.round(((z.differenz_absolut as number) / (z.vertrag_prognose as number)) * 10000) / 100;
+      }
+
+      analysisData.zahlenuebersicht = z;
+
+      // Inflationssicht
+      const inf = (analysisData.inflationssicht || {}) as Record<string, unknown>;
+      if (laufzeit && laufzeit > 0) {
+        const deflator = Math.pow(1.024, laufzeit);
+        if (inf.realwert_vertrag == null && z.vertrag_prognose != null) {
+          inf.realwert_vertrag = Math.round((z.vertrag_prognose as number) / deflator * 100) / 100;
+        }
+        if (inf.realwert_optimiert == null && z.optimiertes_szenario != null) {
+          inf.realwert_optimiert = Math.round((z.optimiertes_szenario as number) / deflator * 100) / 100;
+        }
+        if (!inf.kommentar) {
+          inf.kommentar = `Die angezeigten Realwerte berücksichtigen eine angenommene Inflation von 2.4% pro Jahr über ${Math.round(laufzeit)} Jahre.`;
+        }
+        analysisData.inflationssicht = inf;
       }
 
       // Extract summary text for initial_assessment column
