@@ -745,6 +745,50 @@ serve(async (req) => {
         }
       }
 
+      // ── Fallback calculations if AI didn't compute them ──
+      const monatlich_fuer_berechnung = contributionFrequency === "monatlich" ? contributionAmount : (contributionAmount ? contributionAmount / 12 : null);
+      const laufzeit = totalYears ?? remainingYears;
+
+      const z = (analysisData.zahlenuebersicht || {}) as Record<string, unknown>;
+
+      // Gesamteinzahlung
+      if (z.gesamteinzahlung == null && monatlich_fuer_berechnung && laufzeit) {
+        z.gesamteinzahlung = Math.round(monatlich_fuer_berechnung * 12 * laufzeit * 100) / 100;
+      }
+
+      // Optimiertes Szenario (FV at 8.5% p.a.)
+      if (z.optimiertes_szenario == null && monatlich_fuer_berechnung && laufzeit && laufzeit > 0) {
+        const r = 0.085 / 12;
+        const n = Math.round(laufzeit * 12);
+        let fv = 0;
+        for (let i = 0; i < n; i++) fv = (fv + monatlich_fuer_berechnung) * (1 + r);
+        z.optimiertes_szenario = Math.round(fv * 100) / 100;
+      }
+
+      // Differenz
+      if (z.differenz_absolut == null && z.optimiertes_szenario != null && z.vertrag_prognose != null) {
+        z.differenz_absolut = Math.round(((z.optimiertes_szenario as number) - (z.vertrag_prognose as number)) * 100) / 100;
+        z.differenz_prozent = Math.round(((z.differenz_absolut as number) / (z.vertrag_prognose as number)) * 10000) / 100;
+      }
+
+      analysisData.zahlenuebersicht = z;
+
+      // Inflationssicht
+      const inf = (analysisData.inflationssicht || {}) as Record<string, unknown>;
+      if (laufzeit && laufzeit > 0) {
+        const deflator = Math.pow(1.024, laufzeit);
+        if (inf.realwert_vertrag == null && z.vertrag_prognose != null) {
+          inf.realwert_vertrag = Math.round((z.vertrag_prognose as number) / deflator * 100) / 100;
+        }
+        if (inf.realwert_optimiert == null && z.optimiertes_szenario != null) {
+          inf.realwert_optimiert = Math.round((z.optimiertes_szenario as number) / deflator * 100) / 100;
+        }
+        if (!inf.kommentar) {
+          inf.kommentar = `Die angezeigten Realwerte berücksichtigen eine angenommene Inflation von 2.4% pro Jahr über ${Math.round(laufzeit)} Jahre.`;
+        }
+        analysisData.inflationssicht = inf;
+      }
+
       // Extract summary text for initial_assessment column
       const zusammenfassung = analysisData.zusammenfassung as Record<string, unknown> | undefined;
       const ersteinschaetzung = analysisData.ersteinschaetzung as Record<string, unknown> | undefined;
