@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { AnalysisData, AnalysisResult, AnalysisSection, ScorecardItem, CostPosition } from './types';
 import { ReviewRequestForm } from './ReviewRequestForm';
+import { MainComparisonChart, DifferenceHighlight, InflationComparisonChart, GrowthCurveChart } from './AnalysisVisualizations';
 
 interface AnalysisScreenProps {
   data: AnalysisData;
