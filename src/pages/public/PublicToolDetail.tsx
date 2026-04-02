@@ -202,6 +202,10 @@ export default function PublicToolDetail() {
                 <div className="mb-8">
                   <RolexRechnerTool mode="public" />
                 </div>
+              ) : slug === 'three-a-analyzer' ? (
+                <div className="mb-8">
+                  <ThreeAAnalyzerTool mode="public" />
+                </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
                   <CardContent className="py-6 prose prose-neutral dark:prose-invert max-w-none">
