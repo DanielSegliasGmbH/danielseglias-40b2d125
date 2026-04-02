@@ -52,6 +52,7 @@ export interface AnalysisResult {
     produkttyp: string | null;
     struktur: string | null;
     kurzbewertung: string | null;
+    kritische_einordnung: string | null;
   };
   scorecard: {
     transparenz: ScorecardItem;
@@ -64,11 +65,26 @@ export interface AnalysisResult {
     titel: string | null;
     kurztext: string | null;
   };
+  zahlenuebersicht: {
+    gesamteinzahlung: number | null;
+    vertrag_prognose: number | null;
+    optimiertes_szenario: number | null;
+    differenz_absolut: number | null;
+    differenz_prozent: number | null;
+  } | null;
+  inflationssicht: {
+    realwert_vertrag: number | null;
+    realwert_optimiert: number | null;
+    kommentar: string | null;
+  } | null;
+  kritische_fragen: string[] | null;
   struktur_analyse: AnalysisSection;
   beitrags_und_laufzeit_analyse: AnalysisSection;
   anlage_analyse: AnalysisSection;
   kosten_analyse: AnalysisSection;
+  kostenlogik_hinweise: string[] | null;
   auffaelligkeiten: AnalysisSection;
+  hauptprobleme: string[] | null;
   fehlende_daten_hinweise: AnalysisSection;
   ersteinschaetzung: AnalysisSection;
   naechste_schritte: AnalysisSection;
