@@ -363,11 +363,26 @@ export function AnalysisScreen({ data, analysisId, onBack, onReset }: AnalysisSc
         </Card>
       )}
 
-      {/* Zahlenübersicht */}
-      {ar && <ZahlenCard ar={ar} />}
+      {/* ── Visualisierungen ── */}
+      {ar?.zahlenuebersicht && (
+        <>
+          <MainComparisonChart zahlenuebersicht={ar.zahlenuebersicht} />
+          <DifferenceHighlight zahlenuebersicht={ar.zahlenuebersicht} />
+          <GrowthCurveChart
+            zahlenuebersicht={ar.zahlenuebersicht}
+            laufzeitJahre={data.remainingYears}
+            monatlichBeitrag={data.contributionFrequency === 'monatlich' ? data.contributionAmount : data.contributionAmount ? data.contributionAmount / 12 : null}
+          />
+        </>
+      )}
 
-      {/* Inflationssicht */}
-      {ar && <InflationCard ar={ar} />}
+      {ar?.inflationssicht && <InflationComparisonChart inflationssicht={ar.inflationssicht} />}
+
+      {/* Zahlenübersicht (Fallback-Karten) */}
+      {ar && !ar.zahlenuebersicht && <ZahlenCard ar={ar} />}
+
+      {/* Inflationssicht (Fallback-Karten) */}
+      {ar && !ar.inflationssicht && <InflationCard ar={ar} />}
 
       {/* Kritische Fragen */}
       {ar && <KritischeFragen fragen={ar.kritische_fragen} />}
