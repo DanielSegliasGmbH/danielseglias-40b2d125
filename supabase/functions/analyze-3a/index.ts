@@ -12,14 +12,81 @@ const AI_GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 // ──────────────────────────────────────────────
 // PLACEHOLDER PROMPTS – will be replaced with the user's actual Prompt 2 & Prompt 3
 // ──────────────────────────────────────────────
-const EXTRACTION_SYSTEM_PROMPT = `Du bist ein Schweizer Finanzexperte, spezialisiert auf Säule-3a-Vorsorgelösungen.
-Analysiere die hochgeladenen PDF-Dokumente und extrahiere alle relevanten Vertragsdaten.
+const EXTRACTION_SYSTEM_PROMPT = `Du bist ein präziser Dokumenten-Analyst für Schweizer Säule-3a-Unterlagen.
 
-Wichtige Regeln:
-- Wenn eine Information nicht klar erkennbar ist, gib null zurück.
-- Erfinde niemals Werte.
-- Markiere unsichere Daten entsprechend.
-- Extrahiere alle erkennbaren Kostenpositionen, Fonds, Laufzeiten und Vertragsbedingungen.`;
+Deine Aufgabe ist es, hochgeladene Dokumente zu einer bestehenden Säule-3a-Lösung sorgfältig zu lesen und die darin enthaltenen Informationen strukturiert zu extrahieren.
+
+## Ziel
+
+Extrahiere alle erkennbaren Informationen aus Policen, Verträgen, Produktblättern, Jahresauszügen, Gebührenübersichten und fondsbezogenen Unterlagen zu einer Schweizer Säule-3a-Lösung.
+
+## Wichtige Regeln
+
+- Arbeite nur mit Informationen, die im Dokument tatsächlich erkennbar sind
+- Erfinde keine Werte
+- Wenn etwas unklar oder nicht ersichtlich ist, markiere es sauber als unbekannt
+- Vermutungen dürfen nicht als Fakten dargestellt werden
+- Wenn mehrere Dokumente vorhanden sind, kombiniere Informationen nur dann, wenn sie klar zusammenpassen
+- Gib die Ergebnisse immer in sauberem JSON zurück
+- Falls möglich, gib pro extrahiertem Feld auch die Textstelle oder den Dokumentenkontext mit an
+- Wenn verschiedene Werte im Dokument vorkommen, gib an, welcher Wert wofür steht und markiere Unklarheiten
+- Verwende deutsche Feldnamen
+- Schweizer Kontext beachten
+- Ziel ist eine strukturierte Erfassung, keine Beratung
+
+## Dokumenttypen, die vorkommen können
+
+- Versicherungspolice Säule 3a
+- Vorsorgevertrag
+- Produktinformationsblatt
+- Fondsübersicht
+- Jahresauszug
+- Gebührenübersicht
+- Rückkaufswert-Mitteilung
+- Allgemeine Versicherungsbedingungen
+- Factsheet
+- Offerte
+
+## Produkttyp-Klassifikation
+
+Ordne das Produkt, falls möglich, einer der folgenden Kategorien zu:
+- Versicherungsgebundene Säule 3a
+- Banklösung Säule 3a
+- Fondsbasierte Säule 3a
+- Gemischte Lösung
+- Unklar
+
+## Vertragstyp-Einordnung
+
+Falls möglich, klassifiziere die Struktur zusätzlich in:
+- eher starr
+- eher flexibel
+- gemischt
+- unklar
+
+## Extraktionslogik
+
+Beachte insbesondere:
+- Manche Dokumente enthalten Prämien, aber keine vollständige Gebührenstruktur
+- Manche Dokumente enthalten garantierte Leistungen, aber keine realistische Nettorendite
+- Manche Dokumente nennen Fondsnamen, aber keine klare Aktienquote
+- Manche Dokumente zeigen Rückkaufswerte, aber keine Aussage über effektive Gesamtkosten
+- Allgemeine Versicherungsbedingungen enthalten oft Hinweise zu Flexibilität, Unterbruch, Kündigung und Nachteilen
+- Produktblätter oder Factsheets enthalten eher Fonds- und Gebührenangaben
+- Jahresauszüge enthalten eher Vertragswert, Stand, Einzahlungen und evtl. Rückkaufswerte
+
+## Wichtige Felddefinitionen
+
+- "wert": nur extrahierter Wert
+- "quelle": möglichst kurzer relevanter Auszug oder Dokumenthinweis
+- "sicherheit": hoch = direkt klar im Dokument, mittel = gut ableitbar aber nicht ganz eindeutig, niedrig = nur schwach ableitbar
+
+## Falls nichts Sinnvolles extrahiert werden kann
+
+Markiere die Felder mit null oder leeren Listen.
+Füge in "gesamtfazit_extraktion" einen klaren Hinweis ein, dass aus dem Dokument kaum verlässliche Daten extrahiert werden konnten.
+
+Nutze die save_extraction Funktion um die Daten strukturiert zurückzugeben.`;
 
 const ANALYSIS_SYSTEM_PROMPT = `Du bist ein erfahrener, unabhängiger Schweizer Finanzberater.
 Erstelle basierend auf den extrahierten Vertragsdaten einer Säule-3a-Lösung eine verständliche Ersteinschätzung.
@@ -35,130 +102,92 @@ Wichtige Regeln:
 // ──────────────────────────────────────────────
 // Tool schemas for structured output
 // ──────────────────────────────────────────────
+const fieldSchema = {
+  type: "object",
+  properties: {
+    wert: { description: "Extrahierter Wert" },
+    waehrung: { type: ["string", "null"], description: "Währung (CHF)" },
+    einheit: { type: ["string", "null"], description: "Einheit (% oder CHF)" },
+    quelle: { type: ["string", "null"], description: "Textstelle oder Dokumenthinweis" },
+    sicherheit: { type: "string", enum: ["hoch", "mittel", "niedrig"], description: "Confidence" },
+  },
+  required: ["sicherheit"],
+};
+
 const extractionTool = {
   type: "function",
   function: {
     name: "save_extraction",
-    description: "Speichere die extrahierten 3a-Vertragsdaten strukturiert",
+    description: "Speichere die extrahierten 3a-Vertragsdaten strukturiert gemäss Schweizer Dokumentenanalyse",
     parameters: {
       type: "object",
       properties: {
-        provider: { type: ["string", "null"], description: "Anbieter / Versicherungsgesellschaft" },
-        productName: { type: ["string", "null"], description: "Produktname" },
-        productType: {
-          type: ["string", "null"],
-          enum: ["versicherung", "bank", "fonds", "gemischt", "unbekannt", null],
-          description: "Produkttyp",
-        },
-        contributionAmount: { type: ["number", "null"], description: "Beitragshöhe in CHF" },
-        contributionFrequency: {
-          type: ["string", "null"],
-          enum: ["monatlich", "jaehrlich", null],
-          description: "Zahlungsfrequenz",
-        },
-        contractStart: { type: ["string", "null"], description: "Vertragsbeginn (YYYY-MM-DD)" },
-        contractEnd: { type: ["string", "null"], description: "Vertragsende (YYYY-MM-DD)" },
-        remainingYears: { type: ["number", "null"], description: "Verbleibende Laufzeit in Jahren" },
-        paidContributions: { type: ["number", "null"], description: "Bisher einbezahlte Beiträge in CHF" },
-        currentValue: { type: ["number", "null"], description: "Aktueller Wert / Rückkaufswert in CHF" },
-        guaranteedValue: { type: ["number", "null"], description: "Garantierter Wert in CHF" },
-        funds: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              name: { type: "string" },
-              allocation: { type: ["number", "null"] },
-              category: { type: ["string", "null"] },
-            },
-            required: ["name"],
-          },
-          description: "Fonds und Anlagestrategien",
-        },
-        equityQuota: { type: ["number", "null"], description: "Aktienquote in Prozent" },
-        strategyClassification: {
-          type: ["string", "null"],
-          enum: ["defensiv", "ausgewogen", "chancenorientiert", null],
-          description: "Strategie-Einordnung",
-        },
-        costs: {
+        anbieter: fieldSchema,
+        produktname: fieldSchema,
+        produkttyp: fieldSchema,
+        vertragstyp_einordnung: fieldSchema,
+        vertragsbeginn: fieldSchema,
+        vertragsende: fieldSchema,
+        laufzeit_hinweis: fieldSchema,
+        monatlicher_beitrag: fieldSchema,
+        jaehrlicher_beitrag: fieldSchema,
+        bisher_einbezahlt: fieldSchema,
+        aktueller_vertragswert: fieldSchema,
+        rueckkaufswert: fieldSchema,
+        garantierter_wert: fieldSchema,
+        todesfallleistung: fieldSchema,
+        praemienbefreiung: fieldSchema,
+        erwerbsunfaehigkeitselement: fieldSchema,
+        anlagekomponente_vorhanden: fieldSchema,
+        fonds_oder_strategien: {
           type: "object",
           properties: {
-            acquisition: {
-              type: "object",
-              properties: {
-                value: { type: ["number", "null"] },
-                isVerified: { type: "boolean" },
-                source: { type: ["string", "null"] },
-              },
-              required: ["isVerified"],
-            },
-            ongoing: {
-              type: "object",
-              properties: {
-                value: { type: ["number", "null"] },
-                isVerified: { type: "boolean" },
-                source: { type: ["string", "null"] },
-              },
-              required: ["isVerified"],
-            },
-            management: {
-              type: "object",
-              properties: {
-                value: { type: ["number", "null"] },
-                isVerified: { type: "boolean" },
-                source: { type: ["string", "null"] },
-              },
-              required: ["isVerified"],
-            },
-            fundFees: {
-              type: "object",
-              properties: {
-                value: { type: ["number", "null"] },
-                isVerified: { type: "boolean" },
-                source: { type: ["string", "null"] },
-              },
-              required: ["isVerified"],
-            },
-            other: {
-              type: "object",
-              properties: {
-                value: { type: ["number", "null"] },
-                isVerified: { type: "boolean" },
-                source: { type: ["string", "null"] },
-              },
-              required: ["isVerified"],
-            },
+            wert: { type: "array", items: { type: "object", properties: { name: { type: "string" }, allocation: { type: ["number", "null"] }, category: { type: ["string", "null"] } }, required: ["name"] } },
+            quelle: { type: ["string", "null"] },
+            sicherheit: { type: "string", enum: ["hoch", "mittel", "niedrig"] },
           },
+          required: ["sicherheit"],
         },
-        flexibility: {
+        aktienquote: fieldSchema,
+        strategie_einordnung: fieldSchema,
+        abschlusskosten: fieldSchema,
+        laufende_produktkosten: fieldSchema,
+        verwaltungsgebuehren: fieldSchema,
+        fondsgebuehren_ter: fieldSchema,
+        sonstige_kosten: {
           type: "object",
           properties: {
-            contributionAdjustment: {
-              type: ["string", "null"],
-              enum: ["flexibel", "eingeschraenkt", "starr", null],
-            },
-            pause: {
-              type: ["string", "null"],
-              enum: ["moeglich", "eingeschraenkt", "nicht_moeglich", null],
-            },
-            cancellationDisadvantages: { type: ["string", "null"] },
+            wert: { type: "array", items: { type: "string" } },
+            quelle: { type: ["string", "null"] },
+            sicherheit: { type: "string", enum: ["hoch", "mittel", "niedrig"] },
           },
+          required: ["sicherheit"],
         },
-        issues: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              severity: { type: "string", enum: ["info", "warning", "critical"] },
-              title: { type: "string" },
-              description: { type: "string" },
-            },
-            required: ["severity", "title", "description"],
+        flexibilitaet_beitragsanpassung: fieldSchema,
+        flexibilitaet_beitragsstopp: fieldSchema,
+        kuendigungsnachteile: fieldSchema,
+        transparenz_hinweis: fieldSchema,
+        auffaelligkeiten: {
+          type: "object",
+          properties: {
+            wert: { type: "array", items: { type: "string" } },
+            quelle: { type: ["string", "null"] },
+            sicherheit: { type: "string", enum: ["hoch", "mittel", "niedrig"] },
           },
+          required: ["sicherheit"],
         },
+        fehlende_informationen: {
+          type: "object",
+          properties: {
+            wert: { type: "array", items: { type: "string" } },
+            quelle: { type: ["string", "null"] },
+            sicherheit: { type: "string", enum: ["hoch", "mittel", "niedrig"] },
+          },
+          required: ["sicherheit"],
+        },
+        gesamtfazit_extraktion: fieldSchema,
       },
-      required: ["provider", "productType", "issues"],
+      required: ["anbieter", "produkttyp", "gesamtfazit_extraktion"],
     },
   },
 };
@@ -370,29 +399,85 @@ serve(async (req) => {
 
     console.log("[analyze-3a] Extraction complete, saving results…");
 
+    // Helper to extract "wert" from the new field structure
+    const v = (field: unknown) => {
+      if (field && typeof field === "object" && "wert" in (field as Record<string, unknown>)) {
+        return (field as Record<string, unknown>).wert;
+      }
+      return field ?? null;
+    };
+
+    // Map new prompt structure to DB columns
+    const provider = v(extractedData.anbieter) as string | null;
+    const produkttyp = v(extractedData.produkttyp) as string | null;
+    // Map produkttyp text to DB enum
+    const productTypeMap: Record<string, string> = {
+      "Versicherungsgebundene Säule 3a": "versicherung",
+      "Banklösung Säule 3a": "bank",
+      "Fondsbasierte Säule 3a": "fonds",
+      "Gemischte Lösung": "gemischt",
+    };
+    const productType = (produkttyp && productTypeMap[produkttyp]) || produkttyp || null;
+
+    const monatlich = v(extractedData.monatlicher_beitrag) as number | null;
+    const jaehrlich = v(extractedData.jaehrlicher_beitrag) as number | null;
+    const contributionAmount = monatlich ?? jaehrlich ?? null;
+    const contributionFrequency = monatlich ? "monatlich" : jaehrlich ? "jaehrlich" : null;
+
+    const fonds = v(extractedData.fonds_oder_strategien);
+    const fundsArray = Array.isArray(fonds) ? fonds : [];
+
+    // Build costs object from new fields
+    const makeCost = (field: unknown) => {
+      const val = v(field);
+      const src = field && typeof field === "object" ? (field as Record<string, unknown>).quelle : null;
+      const conf = field && typeof field === "object" ? (field as Record<string, unknown>).sicherheit : null;
+      return { value: typeof val === "number" ? val : null, isVerified: conf === "hoch", source: src as string | null };
+    };
+    const costs = {
+      acquisition: makeCost(extractedData.abschlusskosten),
+      ongoing: makeCost(extractedData.laufende_produktkosten),
+      management: makeCost(extractedData.verwaltungsgebuehren),
+      fundFees: makeCost(extractedData.fondsgebuehren_ter),
+      other: makeCost(extractedData.sonstige_kosten),
+    };
+
+    // Build flexibility
+    const flexibility = {
+      contributionAdjustment: v(extractedData.flexibilitaet_beitragsanpassung) as string | null,
+      pause: v(extractedData.flexibilitaet_beitragsstopp) as string | null,
+      cancellationDisadvantages: v(extractedData.kuendigungsnachteile) as string | null,
+    };
+
+    // Build issues from auffaelligkeiten
+    const auff = v(extractedData.auffaelligkeiten);
+    const issues = Array.isArray(auff)
+      ? auff.map((a: string) => ({ severity: "warning", title: a, description: a }))
+      : [];
+
     // Save extraction results
     await supabaseAdmin
       .from("three_a_analyses")
       .update({
         status: "extracted",
         raw_extraction: extractedData,
-        provider: (extractedData.provider as string) || null,
-        product_name: (extractedData.productName as string) || null,
-        product_type: (extractedData.productType as string) || null,
-        contribution_amount: (extractedData.contributionAmount as number) || null,
-        contribution_frequency: (extractedData.contributionFrequency as string) || null,
-        contract_start: (extractedData.contractStart as string) || null,
-        contract_end: (extractedData.contractEnd as string) || null,
-        remaining_years: (extractedData.remainingYears as number) || null,
-        paid_contributions: (extractedData.paidContributions as number) || null,
-        current_value: (extractedData.currentValue as number) || null,
-        guaranteed_value: (extractedData.guaranteedValue as number) || null,
-        funds: extractedData.funds || [],
-        equity_quota: (extractedData.equityQuota as number) || null,
-        strategy_classification: (extractedData.strategyClassification as string) || null,
-        costs: extractedData.costs || {},
-        flexibility: extractedData.flexibility || {},
-        issues: extractedData.issues || [],
+        provider,
+        product_name: v(extractedData.produktname) as string | null,
+        product_type: productType,
+        contribution_amount: contributionAmount,
+        contribution_frequency: contributionFrequency,
+        contract_start: v(extractedData.vertragsbeginn) as string | null,
+        contract_end: v(extractedData.vertragsende) as string | null,
+        remaining_years: null,
+        paid_contributions: v(extractedData.bisher_einbezahlt) as number | null,
+        current_value: v(extractedData.aktueller_vertragswert) as number | null,
+        guaranteed_value: v(extractedData.garantierter_wert) as number | null,
+        funds: fundsArray,
+        equity_quota: v(extractedData.aktienquote) as number | null,
+        strategy_classification: v(extractedData.strategie_einordnung) as string | null,
+        costs,
+        flexibility,
+        issues,
       })
       .eq("id", analysisId);
 
