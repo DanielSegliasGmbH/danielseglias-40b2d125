@@ -55,16 +55,28 @@ export function MainComparisonChart({ zahlenuebersicht }: MainComparisonProps) {
   const z = zahlenuebersicht;
   if (!z) return null;
 
-  const hasData = z.gesamteinzahlung !== null || z.vertrag_prognose !== null || z.optimiertes_szenario !== null;
-  if (!hasData) return null;
+  const einzahlung = safeNum(z.gesamteinzahlung);
+  const prognose = safeNum(z.vertrag_prognose);
+  const optimiert = safeNum(z.optimiertes_szenario);
 
   const chartData = [
-    z.gesamteinzahlung !== null ? { name: 'Einzahlung', value: z.gesamteinzahlung, color: BAR_COLORS.einzahlung } : null,
-    z.vertrag_prognose !== null ? { name: 'Vertragsprognose', value: z.vertrag_prognose, color: BAR_COLORS.vertrag } : null,
-    z.optimiertes_szenario !== null ? { name: 'Optimiert (8.5%)', value: z.optimiertes_szenario, color: BAR_COLORS.optimiert } : null,
+    einzahlung !== null ? { name: 'Einzahlung', value: einzahlung, color: BAR_COLORS.einzahlung } : null,
+    prognose !== null ? { name: 'Vertragsprognose', value: prognose, color: BAR_COLORS.vertrag } : null,
+    optimiert !== null ? { name: 'Optimiert (8.5%)', value: optimiert, color: BAR_COLORS.optimiert } : null,
   ].filter(Boolean) as Array<{ name: string; value: number; color: string }>;
 
-  if (chartData.length < 2) return null;
+  if (chartData.length < 2) {
+    return (
+      <Card>
+        <CardContent className="py-8 text-center">
+          <Info className="h-5 w-5 text-muted-foreground mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground">
+            Für den Hauptvergleich fehlen aktuell noch belastbare Daten.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
