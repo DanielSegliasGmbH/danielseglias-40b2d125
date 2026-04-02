@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import {
   AlertTriangle, Building2, FileText, TrendingUp, Wallet,
-  Info, CheckCircle2, HelpCircle, ArrowLeft,
+  Info, CheckCircle2, HelpCircle, ArrowLeft, Download, Loader2,
   BarChart3, Lightbulb, CircleAlert, Calculator, TrendingDown,
   MessageCircleQuestion, ShieldAlert
 } from 'lucide-react';
@@ -11,6 +11,9 @@ import { Button } from '@/components/ui/button';
 import { AnalysisData, AnalysisResult, AnalysisSection, ScorecardItem, CostPosition } from './types';
 import { ReviewRequestForm } from './ReviewRequestForm';
 import { MainComparisonChart, DifferenceHighlight, InflationComparisonChart, GrowthCurveChart } from './AnalysisVisualizations';
+import { exportAnalysisPdf } from './pdfExport';
+import { toast } from 'sonner';
+import { useState } from 'react';
 
 interface AnalysisScreenProps {
   data: AnalysisData;
@@ -291,14 +294,44 @@ const PRODUCT_TYPE_LABELS: Record<string, string> = {
 
 export function AnalysisScreen({ data, analysisId, onBack, onReset }: AnalysisScreenProps) {
   const ar = data.analysisResult;
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handlePdfExport = async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+    try {
+      exportAnalysisPdf(data);
+      toast.success('PDF erfolgreich erstellt');
+    } catch (err) {
+      console.error('PDF export error:', err);
+      toast.error('PDF-Export fehlgeschlagen');
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
-      {/* Back button */}
-      <Button variant="ghost" onClick={onBack} className="gap-2 -ml-2">
-        <ArrowLeft className="h-4 w-4" />
-        Zurück zum Upload
-      </Button>
+      {/* Back button + PDF export */}
+      <div className="flex items-center justify-between">
+        <Button variant="ghost" onClick={onBack} className="gap-2 -ml-2">
+          <ArrowLeft className="h-4 w-4" />
+          Zurück zum Upload
+        </Button>
+        <Button variant="outline" size="sm" onClick={handlePdfExport} disabled={isExporting} className="gap-2">
+          {isExporting ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              PDF wird erstellt…
+            </>
+          ) : (
+            <>
+              <Download className="h-4 w-4" />
+              PDF herunterladen
+            </>
+          )}
+        </Button>
+      </div>
 
       {/* Header */}
       <div className="space-y-2">
