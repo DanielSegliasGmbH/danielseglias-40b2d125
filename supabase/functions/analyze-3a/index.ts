@@ -627,9 +627,10 @@ serve(async (req) => {
     // Build costs object from new fields
     const makeCost = (field: unknown) => {
       const val = v(field);
+      const numVal = toNum(val);
       const src = field && typeof field === "object" ? (field as Record<string, unknown>).quelle : null;
       const conf = field && typeof field === "object" ? (field as Record<string, unknown>).sicherheit : null;
-      return { value: typeof val === "number" ? val : null, isVerified: conf === "hoch", source: src as string | null };
+      return { value: numVal, isVerified: conf === "hoch", source: src as string | null };
     };
     const costs = {
       acquisition: makeCost(extractedData.abschlusskosten),
