@@ -568,6 +568,29 @@ serve(async (req) => {
       return field ?? null;
     };
 
+    // Helper to parse a value as number (handles strings like "573.50")
+    const toNum = (val: unknown): number | null => {
+      if (val === null || val === undefined) return null;
+      if (typeof val === "number") return val;
+      if (typeof val === "string") {
+        const cleaned = val.replace(/['']/g, "").replace(",", ".").replace(/[^\d.\-]/g, "");
+        const n = parseFloat(cleaned);
+        return isNaN(n) ? null : n;
+      }
+      return null;
+    };
+
+    // Helper to parse date string to a Date
+    const toDate = (val: unknown): Date | null => {
+      if (!val || typeof val !== "string") return null;
+      // Try DD.MM.YYYY
+      const parts = val.match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+      if (parts) return new Date(parseInt(parts[3]), parseInt(parts[2]) - 1, parseInt(parts[1]));
+      // Try YYYY-MM-DD or ISO
+      const d = new Date(val);
+      return isNaN(d.getTime()) ? null : d;
+    };
+
     // Map new prompt structure to DB columns
     const provider = v(extractedData.anbieter) as string | null;
     const produkttyp = v(extractedData.produkttyp) as string | null;
