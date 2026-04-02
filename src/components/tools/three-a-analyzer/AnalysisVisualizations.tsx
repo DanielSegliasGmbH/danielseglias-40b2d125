@@ -4,6 +4,18 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, L
 import { TrendingUp, ArrowUpDown, Info } from 'lucide-react';
 import { AnalysisResult } from './types';
 
+// Safely parse a value that might be string or number
+function safeNum(val: unknown): number | null {
+  if (val === null || val === undefined) return null;
+  if (typeof val === 'number') return isNaN(val) ? null : val;
+  if (typeof val === 'string') {
+    const cleaned = val.replace(/['']/g, '').replace(',', '.').replace(/[^\d.\-]/g, '');
+    const n = parseFloat(cleaned);
+    return isNaN(n) ? null : n;
+  }
+  return null;
+}
+
 function formatCHF(value: number): string {
   return `CHF ${Math.round(value).toLocaleString('de-CH')}`;
 }
