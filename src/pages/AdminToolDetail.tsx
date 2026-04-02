@@ -29,6 +29,7 @@ import { GlaubenssatzTransformerTool } from '@/components/tools/glaubenssatz-tra
 import { FinanzEntscheidungTool } from '@/components/tools/finanz-entscheidung/FinanzEntscheidungTool';
 import { LebenzeitRechnerTool } from '@/components/tools/lebenzeit-rechner/LebenzeitRechnerTool';
 import { RolexRechnerTool } from '@/components/tools/rolex-rechner/RolexRechnerTool';
+import { ThreeAAnalyzerTool } from '@/components/tools/three-a-analyzer/ThreeAAnalyzerTool';
 
 // Icon mapping
 const iconMap: Record<string, LucideIcon> = {
@@ -145,6 +146,8 @@ export default function AdminToolDetail() {
         return <LebenzeitRechnerTool mode="internal" />;
       case 'rolex-rechner':
         return <RolexRechnerTool mode="internal" />;
+      case 'three-a-analyzer':
+        return <ThreeAAnalyzerTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">
