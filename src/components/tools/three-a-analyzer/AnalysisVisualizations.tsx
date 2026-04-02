@@ -173,11 +173,16 @@ interface InflationComparisonProps {
 
 export function InflationComparisonChart({ inflationssicht }: InflationComparisonProps) {
   const inf = inflationssicht;
-  if (!inf || (inf.realwert_vertrag === null && inf.realwert_optimiert === null)) return null;
+  if (!inf) return null;
+
+  const realVertrag = safeNum(inf.realwert_vertrag);
+  const realOptimiert = safeNum(inf.realwert_optimiert);
+
+  if (realVertrag === null && realOptimiert === null) return null;
 
   const chartData = [
-    inf.realwert_vertrag !== null ? { name: 'Vertrag (real)', value: inf.realwert_vertrag, color: BAR_COLORS.vertrag } : null,
-    inf.realwert_optimiert !== null ? { name: 'Optimiert (real)', value: inf.realwert_optimiert, color: BAR_COLORS.optimiert } : null,
+    realVertrag !== null ? { name: 'Vertrag (real)', value: realVertrag, color: BAR_COLORS.vertrag } : null,
+    realOptimiert !== null ? { name: 'Optimiert (real)', value: realOptimiert, color: BAR_COLORS.optimiert } : null,
   ].filter(Boolean) as Array<{ name: string; value: number; color: string }>;
 
   if (chartData.length === 0) return null;
