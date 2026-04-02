@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import {
   AlertTriangle, Building2, FileText, TrendingUp, Wallet,
-  Info, CheckCircle2, HelpCircle, ArrowLeft,
+  Info, CheckCircle2, HelpCircle, ArrowLeft, Download, Loader2,
   BarChart3, Lightbulb, CircleAlert, Calculator, TrendingDown,
   MessageCircleQuestion, ShieldAlert
 } from 'lucide-react';
