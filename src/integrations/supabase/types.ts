@@ -1370,6 +1370,7 @@ export type Database = {
       }
       three_a_analyses: {
         Row: {
+          analysis_result: Json | null
           contract_end: string | null
           contract_start: string | null
           contribution_amount: number | null
@@ -1397,6 +1398,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          analysis_result?: Json | null
           contract_end?: string | null
           contract_start?: string | null
           contribution_amount?: number | null
@@ -1424,6 +1426,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          analysis_result?: Json | null
           contract_end?: string | null
           contract_start?: string | null
           contribution_amount?: number | null
