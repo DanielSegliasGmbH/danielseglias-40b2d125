@@ -117,6 +117,8 @@ export default function ClientPortalToolDetail() {
         return <LebenzeitRechnerTool mode="internal" />;
       case 'rolex-rechner':
         return <RolexRechnerTool mode="internal" />;
+      case 'three-a-analyzer':
+        return <ThreeAAnalyzerTool mode="internal" />;
       default:
         return (
           <Card>

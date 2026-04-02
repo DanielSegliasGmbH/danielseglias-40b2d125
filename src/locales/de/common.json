@@ -801,6 +801,10 @@
       "name": "Wie gut ist meine Säule 3a wirklich?",
       "description": "Lass deine bestehende 3a-Lösung in 2 Minuten bewerten – mit Score, Visualisierung und klarer Empfehlung."
     },
+    "threeAAnalyzer": {
+      "name": "3a Analyzer",
+      "description": "Lade deine 3a-Unterlagen hoch und erhalte eine verständliche Ersteinschätzung zu Struktur, Kosten und Optimierungspotenzial."
+    },
     "transparenzCheck": {
       "name": "Kann ich meiner Beratung vertrauen?",
       "description": "Prüfe selbst, wie transparent und nachvollziehbar deine aktuelle Finanzberatung wirklich ist."
