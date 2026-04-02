@@ -291,7 +291,7 @@ const analysisTool = {
   type: "function",
   function: {
     name: "save_analysis",
-    description: "Speichere die strukturierte Ersteinschätzung der 3a-Lösung",
+    description: "Speichere die strukturierte kritische Ersteinschätzung der 3a-Lösung inkl. Berechnungen",
     parameters: {
       type: "object",
       properties: {
@@ -301,6 +301,7 @@ const analysisTool = {
             produkttyp: { type: ["string", "null"] },
             struktur: { type: ["string", "null"] },
             kurzbewertung: { type: ["string", "null"] },
+            kritische_einordnung: { type: ["string", "null"], description: "Kritische Einordnung des Produkts" },
           },
         },
         scorecard: {
@@ -327,11 +328,46 @@ const analysisTool = {
             kurztext: { type: ["string", "null"] },
           },
         },
+        zahlenuebersicht: {
+          type: "object",
+          description: "Berechnete Zahlenübersicht: Gesamteinzahlung, Vertragsprognose, optimiertes Szenario, Differenz",
+          properties: {
+            gesamteinzahlung: { type: ["number", "null"], description: "monatlicher_beitrag × 12 × laufzeit_jahre" },
+            vertrag_prognose: { type: ["number", "null"], description: "Vom Anbieter prognostizierter Endwert" },
+            optimiertes_szenario: { type: ["number", "null"], description: "FV bei 8.5% p.a. Nettorendite" },
+            differenz_absolut: { type: ["number", "null"], description: "Differenz optimiert minus Vertragsprognose" },
+            differenz_prozent: { type: ["number", "null"], description: "Prozentuale Differenz" },
+          },
+        },
+        inflationssicht: {
+          type: "object",
+          description: "Inflationsbereinigte Werte bei 2.4% p.a.",
+          properties: {
+            realwert_vertrag: { type: ["number", "null"], description: "Kaufkraftbereinigter Vertragswert" },
+            realwert_optimiert: { type: ["number", "null"], description: "Kaufkraftbereinigter optimierter Wert" },
+            kommentar: { type: ["string", "null"], description: "Verständliche Erklärung der Inflation" },
+          },
+        },
+        kritische_fragen: {
+          type: "array",
+          items: { type: "string" },
+          description: "Berechtigte kritische Fragen zur Lösung",
+        },
         struktur_analyse: sectionSchema,
         beitrags_und_laufzeit_analyse: sectionSchema,
         anlage_analyse: sectionSchema,
         kosten_analyse: sectionSchema,
+        kostenlogik_hinweise: {
+          type: "array",
+          items: { type: "string" },
+          description: "Hinweise zur Kostenlogik ohne Behauptungen",
+        },
         auffaelligkeiten: sectionSchema,
+        hauptprobleme: {
+          type: "array",
+          items: { type: "string" },
+          description: "Kurze, klare Hauptprobleme",
+        },
         fehlende_daten_hinweise: sectionSchema,
         ersteinschaetzung: sectionSchema,
         naechste_schritte: sectionSchema,
