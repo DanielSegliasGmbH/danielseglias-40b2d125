@@ -603,10 +603,23 @@ serve(async (req) => {
     };
     const productType = (produkttyp && productTypeMap[produkttyp]) || produkttyp || null;
 
-    const monatlich = v(extractedData.monatlicher_beitrag) as number | null;
-    const jaehrlich = v(extractedData.jaehrlicher_beitrag) as number | null;
+    const monatlich = toNum(v(extractedData.monatlicher_beitrag));
+    const jaehrlich = toNum(v(extractedData.jaehrlicher_beitrag));
     const contributionAmount = monatlich ?? jaehrlich ?? null;
     const contributionFrequency = monatlich ? "monatlich" : jaehrlich ? "jaehrlich" : null;
+
+    // Calculate remaining years from contract dates
+    const contractStartDate = toDate(v(extractedData.vertragsbeginn));
+    const contractEndDate = toDate(v(extractedData.vertragsende));
+    let remainingYears: number | null = null;
+    let totalYears: number | null = null;
+    if (contractStartDate && contractEndDate) {
+      totalYears = (contractEndDate.getTime() - contractStartDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000);
+      const now = new Date();
+      remainingYears = Math.max(0, (contractEndDate.getTime() - now.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+      remainingYears = Math.round(remainingYears * 10) / 10;
+      totalYears = Math.round(totalYears * 10) / 10;
+    }
 
     const fonds = v(extractedData.fonds_oder_strategien);
     const fundsArray = Array.isArray(fonds) ? fonds : [];
