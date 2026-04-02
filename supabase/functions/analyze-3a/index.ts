@@ -399,29 +399,85 @@ serve(async (req) => {
 
     console.log("[analyze-3a] Extraction complete, saving results…");
 
+    // Helper to extract "wert" from the new field structure
+    const v = (field: unknown) => {
+      if (field && typeof field === "object" && "wert" in (field as Record<string, unknown>)) {
+        return (field as Record<string, unknown>).wert;
+      }
+      return field ?? null;
+    };
+
+    // Map new prompt structure to DB columns
+    const provider = v(extractedData.anbieter) as string | null;
+    const produkttyp = v(extractedData.produkttyp) as string | null;
+    // Map produkttyp text to DB enum
+    const productTypeMap: Record<string, string> = {
+      "Versicherungsgebundene Säule 3a": "versicherung",
+      "Banklösung Säule 3a": "bank",
+      "Fondsbasierte Säule 3a": "fonds",
+      "Gemischte Lösung": "gemischt",
+    };
+    const productType = (produkttyp && productTypeMap[produkttyp]) || produkttyp || null;
+
+    const monatlich = v(extractedData.monatlicher_beitrag) as number | null;
+    const jaehrlich = v(extractedData.jaehrlicher_beitrag) as number | null;
+    const contributionAmount = monatlich ?? jaehrlich ?? null;
+    const contributionFrequency = monatlich ? "monatlich" : jaehrlich ? "jaehrlich" : null;
+
+    const fonds = v(extractedData.fonds_oder_strategien);
+    const fundsArray = Array.isArray(fonds) ? fonds : [];
+
+    // Build costs object from new fields
+    const makeCost = (field: unknown) => {
+      const val = v(field);
+      const src = field && typeof field === "object" ? (field as Record<string, unknown>).quelle : null;
+      const conf = field && typeof field === "object" ? (field as Record<string, unknown>).sicherheit : null;
+      return { value: typeof val === "number" ? val : null, isVerified: conf === "hoch", source: src as string | null };
+    };
+    const costs = {
+      acquisition: makeCost(extractedData.abschlusskosten),
+      ongoing: makeCost(extractedData.laufende_produktkosten),
+      management: makeCost(extractedData.verwaltungsgebuehren),
+      fundFees: makeCost(extractedData.fondsgebuehren_ter),
+      other: makeCost(extractedData.sonstige_kosten),
+    };
+
+    // Build flexibility
+    const flexibility = {
+      contributionAdjustment: v(extractedData.flexibilitaet_beitragsanpassung) as string | null,
+      pause: v(extractedData.flexibilitaet_beitragsstopp) as string | null,
+      cancellationDisadvantages: v(extractedData.kuendigungsnachteile) as string | null,
+    };
+
+    // Build issues from auffaelligkeiten
+    const auff = v(extractedData.auffaelligkeiten);
+    const issues = Array.isArray(auff)
+      ? auff.map((a: string) => ({ severity: "warning", title: a, description: a }))
+      : [];
+
     // Save extraction results
     await supabaseAdmin
       .from("three_a_analyses")
       .update({
         status: "extracted",
         raw_extraction: extractedData,
-        provider: (extractedData.provider as string) || null,
-        product_name: (extractedData.productName as string) || null,
-        product_type: (extractedData.productType as string) || null,
-        contribution_amount: (extractedData.contributionAmount as number) || null,
-        contribution_frequency: (extractedData.contributionFrequency as string) || null,
-        contract_start: (extractedData.contractStart as string) || null,
-        contract_end: (extractedData.contractEnd as string) || null,
-        remaining_years: (extractedData.remainingYears as number) || null,
-        paid_contributions: (extractedData.paidContributions as number) || null,
-        current_value: (extractedData.currentValue as number) || null,
-        guaranteed_value: (extractedData.guaranteedValue as number) || null,
-        funds: extractedData.funds || [],
-        equity_quota: (extractedData.equityQuota as number) || null,
-        strategy_classification: (extractedData.strategyClassification as string) || null,
-        costs: extractedData.costs || {},
-        flexibility: extractedData.flexibility || {},
-        issues: extractedData.issues || [],
+        provider,
+        product_name: v(extractedData.produktname) as string | null,
+        product_type: productType,
+        contribution_amount: contributionAmount,
+        contribution_frequency: contributionFrequency,
+        contract_start: v(extractedData.vertragsbeginn) as string | null,
+        contract_end: v(extractedData.vertragsende) as string | null,
+        remaining_years: null,
+        paid_contributions: v(extractedData.bisher_einbezahlt) as number | null,
+        current_value: v(extractedData.aktueller_vertragswert) as number | null,
+        guaranteed_value: v(extractedData.garantierter_wert) as number | null,
+        funds: fundsArray,
+        equity_quota: v(extractedData.aktienquote) as number | null,
+        strategy_classification: v(extractedData.strategie_einordnung) as string | null,
+        costs,
+        flexibility,
+        issues,
       })
       .eq("id", analysisId);
 
