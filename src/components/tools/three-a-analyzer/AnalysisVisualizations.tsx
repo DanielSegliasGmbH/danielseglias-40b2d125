@@ -146,12 +146,12 @@ export function DifferenceHighlight({ zahlenuebersicht }: DifferenceHighlightPro
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Mögliche Differenz</p>
             <p className="text-3xl sm:text-4xl font-bold text-emerald-700 dark:text-emerald-400">
-              +{formatCHF(z.differenz_absolut)}
+              +{formatCHF(diffAbs)}
             </p>
           </div>
-          {z.differenz_prozent !== null && (
+          {diffPct !== null && (
             <Badge className="bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900 dark:text-emerald-300 dark:border-emerald-700 text-sm px-3 py-1">
-              +{z.differenz_prozent.toFixed(1)}% mehr
+              +{diffPct.toFixed(1)}% mehr
             </Badge>
           )}
         </div>
