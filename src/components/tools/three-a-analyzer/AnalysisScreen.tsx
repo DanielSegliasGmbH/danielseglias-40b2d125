@@ -11,6 +11,9 @@ import { Button } from '@/components/ui/button';
 import { AnalysisData, AnalysisResult, AnalysisSection, ScorecardItem, CostPosition } from './types';
 import { ReviewRequestForm } from './ReviewRequestForm';
 import { MainComparisonChart, DifferenceHighlight, InflationComparisonChart, GrowthCurveChart } from './AnalysisVisualizations';
+import { exportAnalysisPdf } from './pdfExport';
+import { toast } from 'sonner';
+import { useState } from 'react';
 
 interface AnalysisScreenProps {
   data: AnalysisData;
