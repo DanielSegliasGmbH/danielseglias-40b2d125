@@ -35,12 +35,55 @@ export interface AnalysisIssue {
   description: string;
 }
 
+// ── New structured analysis result from Prompt 3 ──
+
+export interface ScorecardItem {
+  wert: string | null;
+  begruendung: string | null;
+}
+
+export interface AnalysisSection {
+  titel: string;
+  inhalt: string[];
+}
+
+export interface AnalysisResult {
+  einordnung: {
+    produkttyp: string | null;
+    struktur: string | null;
+    kurzbewertung: string | null;
+  };
+  scorecard: {
+    transparenz: ScorecardItem;
+    flexibilitaet: ScorecardItem;
+    kostenklarheit: ScorecardItem;
+    anlageklarheit: ScorecardItem;
+    gesamt_einordnung: ScorecardItem;
+  };
+  zusammenfassung: {
+    titel: string | null;
+    kurztext: string | null;
+  };
+  struktur_analyse: AnalysisSection;
+  beitrags_und_laufzeit_analyse: AnalysisSection;
+  anlage_analyse: AnalysisSection;
+  kosten_analyse: AnalysisSection;
+  auffaelligkeiten: AnalysisSection;
+  fehlende_daten_hinweise: AnalysisSection;
+  ersteinschaetzung: AnalysisSection;
+  naechste_schritte: AnalysisSection;
+  cta_hinweis: {
+    titel: string | null;
+    text: string | null;
+  };
+}
+
 export interface AnalysisData {
   // Overview
   provider: string | null;
   productName: string | null;
   productType: 'versicherung' | 'bank' | 'fonds' | 'gemischt' | 'unbekannt' | null;
-  
+
   // Contributions & Duration
   contributionAmount: number | null;
   contributionFrequency: 'monatlich' | 'jaehrlich' | null;
@@ -48,16 +91,16 @@ export interface AnalysisData {
   contractEnd: string | null;
   remainingYears: number | null;
   paidContributions: number | null;
-  
+
   // Values
   currentValue: number | null;
   guaranteedValue: number | null;
-  
+
   // Funds & Strategy
   funds: FundInfo[];
   equityQuota: number | null;
   strategyClassification: 'defensiv' | 'ausgewogen' | 'chancenorientiert' | null;
-  
+
   // Costs
   costs: {
     acquisition: CostPosition;
@@ -66,19 +109,22 @@ export interface AnalysisData {
     fundFees: CostPosition;
     other: CostPosition;
   };
-  
+
   // Flexibility
   flexibility: {
     contributionAdjustment: 'flexibel' | 'eingeschraenkt' | 'starr' | null;
     pause: 'moeglich' | 'eingeschraenkt' | 'nicht_moeglich' | null;
     cancellationDisadvantages: string | null;
   };
-  
+
   // Issues
   issues: AnalysisIssue[];
-  
+
   // Assessment
   initialAssessment: string | null;
+
+  // Structured analysis result from Prompt 3
+  analysisResult: AnalysisResult | null;
 }
 
 export interface ReviewRequest {
@@ -89,6 +135,9 @@ export interface ReviewRequest {
   message?: string;
   consentGiven: boolean;
 }
+
+const EMPTY_SCORECARD_ITEM: ScorecardItem = { wert: null, begruendung: null };
+const EMPTY_SECTION: AnalysisSection = { titel: '', inhalt: [] };
 
 export const EMPTY_ANALYSIS: AnalysisData = {
   provider: null,
@@ -119,6 +168,7 @@ export const EMPTY_ANALYSIS: AnalysisData = {
   },
   issues: [],
   initialAssessment: null,
+  analysisResult: null,
 };
 
 export type AnalyzerStep = 'start' | 'upload' | 'analysis';

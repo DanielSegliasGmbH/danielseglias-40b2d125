@@ -1,0 +1,1 @@
+ALTER TABLE public.three_a_analyses ADD COLUMN IF NOT EXISTS analysis_result jsonb DEFAULT '{}'::jsonb;

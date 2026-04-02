@@ -55,6 +55,7 @@ function mapDbToAnalysisData(row: Record<string, unknown>): AnalysisData {
     },
     issues: (row.issues as AnalysisData['issues']) || [],
     initialAssessment: (row.initial_assessment as string) || null,
+    analysisResult: (row.analysis_result as AnalysisData['analysisResult']) || null,
   };
 }
 
