@@ -640,20 +640,26 @@ serve(async (req) => {
         analysisData = JSON.parse(analysisToolCall.function.arguments);
       } else {
         const content = analysisResult.choices?.[0]?.message?.content || "";
-        analysisData = { initialAssessment: content };
+        try {
+          analysisData = JSON.parse(content);
+        } catch {
+          analysisData = { zusammenfassung: { titel: "Ersteinschätzung", kurztext: content } };
+        }
       }
 
-      // Merge issues from extraction and analysis
-      const existingIssues = (extractedData.issues as unknown[]) || [];
-      const additionalIssues = (analysisData.additionalIssues as unknown[]) || [];
-      const allIssues = [...existingIssues, ...additionalIssues];
+      // Extract summary text for initial_assessment column
+      const zusammenfassung = analysisData.zusammenfassung as Record<string, unknown> | undefined;
+      const ersteinschaetzung = analysisData.ersteinschaetzung as Record<string, unknown> | undefined;
+      const summaryText = (zusammenfassung?.kurztext as string) ||
+        ((ersteinschaetzung?.inhalt as string[]) || []).join(" ") ||
+        "Analyse abgeschlossen.";
 
       await supabaseAdmin
         .from("three_a_analyses")
         .update({
           status: "completed",
-          initial_assessment: analysisData.initialAssessment as string,
-          issues: allIssues,
+          initial_assessment: summaryText,
+          analysis_result: analysisData,
         })
         .eq("id", analysisId);
     }
