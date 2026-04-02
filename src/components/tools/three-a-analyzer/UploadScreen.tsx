@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 
 interface UploadScreenProps {
   files: UploadedFile[];
-  onFilesChange: (files: UploadedFile[]) => void;
+  onFilesChange: (files: UploadedFile[] | ((prev: UploadedFile[]) => UploadedFile[])) => void;
   onAnalyze: () => void;
   onBack: () => void;
   analysisId: string | null;
