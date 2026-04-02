@@ -102,130 +102,92 @@ Wichtige Regeln:
 // ──────────────────────────────────────────────
 // Tool schemas for structured output
 // ──────────────────────────────────────────────
+const fieldSchema = {
+  type: "object",
+  properties: {
+    wert: { description: "Extrahierter Wert" },
+    waehrung: { type: ["string", "null"], description: "Währung (CHF)" },
+    einheit: { type: ["string", "null"], description: "Einheit (% oder CHF)" },
+    quelle: { type: ["string", "null"], description: "Textstelle oder Dokumenthinweis" },
+    sicherheit: { type: "string", enum: ["hoch", "mittel", "niedrig"], description: "Confidence" },
+  },
+  required: ["sicherheit"],
+};
+
 const extractionTool = {
   type: "function",
   function: {
     name: "save_extraction",
-    description: "Speichere die extrahierten 3a-Vertragsdaten strukturiert",
+    description: "Speichere die extrahierten 3a-Vertragsdaten strukturiert gemäss Schweizer Dokumentenanalyse",
     parameters: {
       type: "object",
       properties: {
-        provider: { type: ["string", "null"], description: "Anbieter / Versicherungsgesellschaft" },
-        productName: { type: ["string", "null"], description: "Produktname" },
-        productType: {
-          type: ["string", "null"],
-          enum: ["versicherung", "bank", "fonds", "gemischt", "unbekannt", null],
-          description: "Produkttyp",
-        },
-        contributionAmount: { type: ["number", "null"], description: "Beitragshöhe in CHF" },
-        contributionFrequency: {
-          type: ["string", "null"],
-          enum: ["monatlich", "jaehrlich", null],
-          description: "Zahlungsfrequenz",
-        },
-        contractStart: { type: ["string", "null"], description: "Vertragsbeginn (YYYY-MM-DD)" },
-        contractEnd: { type: ["string", "null"], description: "Vertragsende (YYYY-MM-DD)" },
-        remainingYears: { type: ["number", "null"], description: "Verbleibende Laufzeit in Jahren" },
-        paidContributions: { type: ["number", "null"], description: "Bisher einbezahlte Beiträge in CHF" },
-        currentValue: { type: ["number", "null"], description: "Aktueller Wert / Rückkaufswert in CHF" },
-        guaranteedValue: { type: ["number", "null"], description: "Garantierter Wert in CHF" },
-        funds: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              name: { type: "string" },
-              allocation: { type: ["number", "null"] },
-              category: { type: ["string", "null"] },
-            },
-            required: ["name"],
-          },
-          description: "Fonds und Anlagestrategien",
-        },
-        equityQuota: { type: ["number", "null"], description: "Aktienquote in Prozent" },
-        strategyClassification: {
-          type: ["string", "null"],
-          enum: ["defensiv", "ausgewogen", "chancenorientiert", null],
-          description: "Strategie-Einordnung",
-        },
-        costs: {
+        anbieter: fieldSchema,
+        produktname: fieldSchema,
+        produkttyp: fieldSchema,
+        vertragstyp_einordnung: fieldSchema,
+        vertragsbeginn: fieldSchema,
+        vertragsende: fieldSchema,
+        laufzeit_hinweis: fieldSchema,
+        monatlicher_beitrag: fieldSchema,
+        jaehrlicher_beitrag: fieldSchema,
+        bisher_einbezahlt: fieldSchema,
+        aktueller_vertragswert: fieldSchema,
+        rueckkaufswert: fieldSchema,
+        garantierter_wert: fieldSchema,
+        todesfallleistung: fieldSchema,
+        praemienbefreiung: fieldSchema,
+        erwerbsunfaehigkeitselement: fieldSchema,
+        anlagekomponente_vorhanden: fieldSchema,
+        fonds_oder_strategien: {
           type: "object",
           properties: {
-            acquisition: {
-              type: "object",
-              properties: {
-                value: { type: ["number", "null"] },
-                isVerified: { type: "boolean" },
-                source: { type: ["string", "null"] },
-              },
-              required: ["isVerified"],
-            },
-            ongoing: {
-              type: "object",
-              properties: {
-                value: { type: ["number", "null"] },
-                isVerified: { type: "boolean" },
-                source: { type: ["string", "null"] },
-              },
-              required: ["isVerified"],
-            },
-            management: {
-              type: "object",
-              properties: {
-                value: { type: ["number", "null"] },
-                isVerified: { type: "boolean" },
-                source: { type: ["string", "null"] },
-              },
-              required: ["isVerified"],
-            },
-            fundFees: {
-              type: "object",
-              properties: {
-                value: { type: ["number", "null"] },
-                isVerified: { type: "boolean" },
-                source: { type: ["string", "null"] },
-              },
-              required: ["isVerified"],
-            },
-            other: {
-              type: "object",
-              properties: {
-                value: { type: ["number", "null"] },
-                isVerified: { type: "boolean" },
-                source: { type: ["string", "null"] },
-              },
-              required: ["isVerified"],
-            },
+            wert: { type: "array", items: { type: "object", properties: { name: { type: "string" }, allocation: { type: ["number", "null"] }, category: { type: ["string", "null"] } }, required: ["name"] } },
+            quelle: { type: ["string", "null"] },
+            sicherheit: { type: "string", enum: ["hoch", "mittel", "niedrig"] },
           },
+          required: ["sicherheit"],
         },
-        flexibility: {
+        aktienquote: fieldSchema,
+        strategie_einordnung: fieldSchema,
+        abschlusskosten: fieldSchema,
+        laufende_produktkosten: fieldSchema,
+        verwaltungsgebuehren: fieldSchema,
+        fondsgebuehren_ter: fieldSchema,
+        sonstige_kosten: {
           type: "object",
           properties: {
-            contributionAdjustment: {
-              type: ["string", "null"],
-              enum: ["flexibel", "eingeschraenkt", "starr", null],
-            },
-            pause: {
-              type: ["string", "null"],
-              enum: ["moeglich", "eingeschraenkt", "nicht_moeglich", null],
-            },
-            cancellationDisadvantages: { type: ["string", "null"] },
+            wert: { type: "array", items: { type: "string" } },
+            quelle: { type: ["string", "null"] },
+            sicherheit: { type: "string", enum: ["hoch", "mittel", "niedrig"] },
           },
+          required: ["sicherheit"],
         },
-        issues: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              severity: { type: "string", enum: ["info", "warning", "critical"] },
-              title: { type: "string" },
-              description: { type: "string" },
-            },
-            required: ["severity", "title", "description"],
+        flexibilitaet_beitragsanpassung: fieldSchema,
+        flexibilitaet_beitragsstopp: fieldSchema,
+        kuendigungsnachteile: fieldSchema,
+        transparenz_hinweis: fieldSchema,
+        auffaelligkeiten: {
+          type: "object",
+          properties: {
+            wert: { type: "array", items: { type: "string" } },
+            quelle: { type: ["string", "null"] },
+            sicherheit: { type: "string", enum: ["hoch", "mittel", "niedrig"] },
           },
+          required: ["sicherheit"],
         },
+        fehlende_informationen: {
+          type: "object",
+          properties: {
+            wert: { type: "array", items: { type: "string" } },
+            quelle: { type: ["string", "null"] },
+            sicherheit: { type: "string", enum: ["hoch", "mittel", "niedrig"] },
+          },
+          required: ["sicherheit"],
+        },
+        gesamtfazit_extraktion: fieldSchema,
       },
-      required: ["provider", "productType", "issues"],
+      required: ["anbieter", "produkttyp", "gesamtfazit_extraktion"],
     },
   },
 };
