@@ -127,25 +127,6 @@ export default function ClientPortalLibrary() {
               </p>
             </div>
           </div>
-
-          {/* Private Mode Toggle */}
-          <div className="flex items-center gap-2 shrink-0 pt-1">
-            <Label
-              htmlFor="library-private-mode"
-              className="text-xs text-muted-foreground flex items-center gap-1.5 cursor-pointer"
-            >
-              {isPrivateMode ? (
-                <><EyeOff className="h-3.5 w-3.5" /> Privatmodus</>
-              ) : (
-                <><Eye className="h-3.5 w-3.5" /> Öffentlich</>
-              )}
-            </Label>
-            <Switch
-              id="library-private-mode"
-              checked={isPrivateMode}
-              onCheckedChange={setIsPrivateMode}
-            />
-          </div>
         </div>
 
         {/* Search */}
@@ -176,7 +157,7 @@ export default function ClientPortalLibrary() {
             {filteredArticles.length === 0 && (
               <Card>
                 <CardContent className="p-8 text-center text-muted-foreground">
-                  Keine Ergebnisse gefunden. Versuchen Sie einen anderen Begriff.
+                  Keine Ergebnisse gefunden. Versuche einen anderen Begriff.
                 </CardContent>
               </Card>
             )}
@@ -370,7 +351,7 @@ function ArticleDetail({ article, isPrivateMode }: { article: KnowledgeArticle; 
       {/* Relevanz für den Kunden */}
       <Card className="border-primary/20 bg-primary/5">
         <CardContent className="p-5">
-          <h3 className="font-semibold text-foreground text-sm mb-1">Was bedeutet das für Sie?</h3>
+          <h3 className="font-semibold text-foreground text-sm mb-1">Was bedeutet das für dich?</h3>
           <p className="text-sm text-foreground/80 leading-relaxed">{article.customerRelevance}</p>
         </CardContent>
       </Card>
@@ -391,7 +372,7 @@ function ArticleDetail({ article, isPrivateMode }: { article: KnowledgeArticle; 
           <CardContent className="p-5 flex items-center justify-between">
             <div>
               <h3 className="font-semibold text-foreground text-sm">Passendes Tool</h3>
-              <p className="text-xs text-muted-foreground">Vertiefen Sie dieses Thema interaktiv</p>
+              <p className="text-xs text-muted-foreground">Vertiefe dieses Thema interaktiv</p>
             </div>
             <Button size="sm" className="gap-1.5">
               <ExternalLink className="h-3.5 w-3.5" />

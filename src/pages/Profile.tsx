@@ -8,11 +8,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
-import { KeyRound, Bell, Shield, LogOut, ChevronRight, User, Info } from 'lucide-react';
+import { KeyRound, LogOut, ChevronRight, User } from 'lucide-react';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { PasswordStrengthChecker } from '@/components/PasswordStrengthChecker';
 
 export default function Profile() {
   const { t } = useTranslation();
@@ -24,91 +24,76 @@ export default function Profile() {
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPassword.length < 6) { toast.error(t('userManagement.passwordTooShort')); return; }
-    if (newPassword !== confirmPassword) { toast.error(t('userManagement.passwordMismatch')); return; }
+    if (newPassword.length < 8) { toast.error('Passwort muss mindestens 8 Zeichen lang sein.'); return; }
+    if (newPassword !== confirmPassword) { toast.error('Passwörter stimmen nicht überein.'); return; }
     setLoading(true);
     try {
       const { error } = await supabase.auth.updateUser({ password: newPassword });
-      if (error) throw error;
-      toast.success(t('userManagement.passwordChanged'));
-      setNewPassword('');
-      setConfirmPassword('');
-      setShowPasswordSection(false);
+      if (error) {
+        if (error.message.includes('same')) {
+          toast.error('Das neue Passwort darf nicht mit dem alten identisch sein.');
+        } else {
+          throw error;
+        }
+      } else {
+        toast.success('Passwort erfolgreich geändert.');
+        setNewPassword('');
+        setConfirmPassword('');
+        setShowPasswordSection(false);
+      }
     } catch (error: any) {
-      toast.error(`${t('userManagement.passwordChangeError')} ${error.message}`);
+      toast.error(`Fehler beim Ändern: ${error.message}`);
     } finally {
       setLoading(false);
     }
   };
 
-  const menuItems = [
-    {
-      icon: User,
-      label: 'Konto',
-      description: user?.email || '',
-      onClick: () => {},
-    },
-    {
-      icon: KeyRound,
-      label: t('userManagement.passwordChange'),
-      description: 'Passwort aktualisieren',
-      onClick: () => setShowPasswordSection(!showPasswordSection),
-    },
-    {
-      icon: Bell,
-      label: 'Benachrichtigungen',
-      description: 'Push-Mitteilungen verwalten',
-      onClick: () => {},
-    },
-    {
-      icon: Shield,
-      label: 'Datenschutz',
-      description: 'Datenverarbeitung & Rechte',
-      onClick: () => {},
-    },
-    {
-      icon: Info,
-      label: 'Über die App',
-      description: 'Version & Informationen',
-      onClick: () => {},
-    },
-  ];
+  const firstName = user?.user_metadata?.first_name;
+  const lastName = user?.user_metadata?.last_name;
+  const displayName = firstName && lastName ? `${firstName} ${lastName}` : user?.email || '';
 
   return (
     <AppLayout>
       <div className="min-h-screen bg-background page-transition">
-        <ScreenHeader title={t('userManagement.profile')} />
+        <ScreenHeader title="Profil" />
 
         <div className="px-4 py-6 max-w-lg mx-auto space-y-6 pb-24">
           {/* Profile Avatar */}
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex flex-col items-center gap-2">
             <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
               <span className="text-2xl font-bold text-primary">
-                {user?.email?.charAt(0).toUpperCase() || 'U'}
+                {(firstName?.charAt(0) || user?.email?.charAt(0) || 'U').toUpperCase()}
               </span>
             </div>
-            <p className="text-sm text-muted-foreground">{user?.email}</p>
+            {displayName && <p className="text-sm font-medium text-foreground">{displayName}</p>}
+            <p className="text-xs text-muted-foreground">{user?.email}</p>
           </div>
 
-          {/* Settings List */}
-          <Card className="overflow-hidden">
+          {/* Account info */}
+          <Card>
             <CardContent className="p-0 divide-y divide-border">
-              {menuItems.map((item, i) => (
-                <button
-                  key={i}
-                  onClick={item.onClick}
-                  className="w-full flex items-center gap-3 px-4 py-4 text-left hover:bg-accent/50 transition-colors active:bg-accent min-h-[56px]"
-                >
-                  <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center shrink-0">
-                    <item.icon className="h-4 w-4 text-foreground" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground">{item.label}</p>
-                    <p className="text-xs text-muted-foreground truncate">{item.description}</p>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
-                </button>
-              ))}
+              <div className="flex items-center gap-3 px-4 py-4 min-h-[56px]">
+                <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center shrink-0">
+                  <User className="h-4 w-4 text-foreground" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground">Konto</p>
+                  <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowPasswordSection(!showPasswordSection)}
+                className="w-full flex items-center gap-3 px-4 py-4 text-left hover:bg-accent/50 transition-colors active:bg-accent min-h-[56px]"
+              >
+                <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center shrink-0">
+                  <KeyRound className="h-4 w-4 text-foreground" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground">Passwort ändern</p>
+                  <p className="text-xs text-muted-foreground">Neues Passwort setzen</p>
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+              </button>
             </CardContent>
           </Card>
 
@@ -118,15 +103,41 @@ export default function Profile() {
               <CardContent className="p-4">
                 <form onSubmit={handlePasswordChange} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="newPassword">{t('userManagement.newPassword')}</Label>
-                    <Input id="newPassword" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={6} className="h-14 rounded-2xl" />
+                    <Label htmlFor="newPassword">Neues Passwort</Label>
+                    <Input
+                      id="newPassword"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      required
+                      minLength={8}
+                      placeholder="Mindestens 8 Zeichen"
+                      className="h-14 rounded-2xl"
+                    />
+                    {newPassword.length > 0 && <PasswordStrengthChecker password={newPassword} />}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">{t('userManagement.confirmPassword')}</Label>
-                    <Input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} className="h-14 rounded-2xl" />
+                    <Label htmlFor="confirmPassword">Passwort bestätigen</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      minLength={8}
+                      placeholder="Passwort wiederholen"
+                      className="h-14 rounded-2xl"
+                    />
+                    {confirmPassword && newPassword !== confirmPassword && (
+                      <p className="text-xs text-destructive">Passwörter stimmen nicht überein</p>
+                    )}
                   </div>
-                  <Button type="submit" disabled={loading} className="w-full h-14 rounded-2xl">
-                    {loading ? t('app.loading') : t('userManagement.passwordChange')}
+                  <Button
+                    type="submit"
+                    disabled={loading || newPassword.length < 8 || newPassword !== confirmPassword}
+                    className="w-full h-14 rounded-2xl"
+                  >
+                    {loading ? 'Wird gespeichert…' : 'Passwort ändern'}
                   </Button>
                 </form>
               </CardContent>
@@ -154,7 +165,7 @@ export default function Profile() {
             onClick={signOut}
           >
             <LogOut className="h-5 w-5 mr-2" />
-            {t('auth.logout')}
+            Abmelden
           </Button>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { PlatformSelector } from '@/components/client-portal/strategy/PlatformSe
 import { StrategySection } from '@/components/client-portal/strategy/StrategySection';
 import { GlidepathSection } from '@/components/client-portal/strategy/GlidepathSection';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, ArrowRight } from 'lucide-react';
+import { TrendingUp, MessageCircle } from 'lucide-react';
 import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { StrategyPasswordGate } from '@/components/client-portal/StrategyPasswordGate';
 import { useAuth } from '@/hooks/useAuth';
@@ -105,10 +105,9 @@ export default function ClientPortalStrategies() {
               Lass uns gemeinsam prüfen, welche Kombination aus Plattform, Strategie und
               Ablaufmanagement optimal zu deiner Situation passt.
             </p>
-            <Button size="lg" className="mt-2">
-              Kostenlose Analyse starten
-              <ArrowRight className="h-4 w-4 ml-1" />
-            </Button>
+            <p className="text-sm text-muted-foreground">
+              Kontaktiere deinen Berater direkt über den Chat.
+            </p>
           </div>
         </section>
       </div>
