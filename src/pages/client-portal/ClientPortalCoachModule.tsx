@@ -1365,6 +1365,68 @@ export default function ClientPortalCoachModule() {
           <SkalierungFields data={skalierungFields} onChange={setSkalierungFields} />
         )}
 
+        {/* Review: Progress Summary */}
+        {currentModuleKey === 'review' && (
+          <Card>
+            <CardContent className="p-4 space-y-4">
+              <div className="flex items-center gap-2">
+                <RotateCcw className="h-4 w-4 text-primary" />
+                <h3 className="font-semibold text-sm text-foreground">Dein bisheriger Fortschritt</h3>
+              </div>
+              {reviewHasData ? (
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-primary/5 rounded-lg p-3 text-center">
+                    <p className="text-2xl font-bold text-primary">{reviewDoneTasks.length}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">Aufgaben erledigt</p>
+                  </div>
+                  <div className="bg-primary/5 rounded-lg p-3 text-center">
+                    <p className="text-2xl font-bold text-primary">{reviewOpenTasks.length}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">Aufgaben offen</p>
+                  </div>
+                  <div className="bg-primary/5 rounded-lg p-3 text-center">
+                    <p className="text-2xl font-bold text-primary">{reviewInsights.length}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">Erkenntnisse</p>
+                  </div>
+                  <div className="bg-primary/5 rounded-lg p-3 text-center">
+                    <p className="text-2xl font-bold text-primary">{reviewAchievements.length}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">Erfolge</p>
+                  </div>
+                  {reviewGoals.length > 0 && (
+                    <div className="bg-primary/5 rounded-lg p-3 text-center col-span-2">
+                      <p className="text-2xl font-bold text-primary">{reviewGoals.length}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Definierte Ziele</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">Noch keine Daten vorhanden. Durchlaufe zuerst die Module, um deinen Fortschritt hier zu sehen.</p>
+              )}
+              {reviewAchievements.length > 0 && (
+                <div className="space-y-2 pt-2">
+                  <p className="text-xs font-medium text-muted-foreground">Deine Erfolge</p>
+                  {reviewAchievements.slice(0, 5).map((a: any) => (
+                    <div key={a.id} className="flex items-start gap-2 text-sm">
+                      <Trophy className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+                      <span className="text-foreground/80">{a.title}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {reviewInsights.length > 0 && (
+                <div className="space-y-2 pt-2">
+                  <p className="text-xs font-medium text-muted-foreground">Deine Erkenntnisse</p>
+                  {reviewInsights.slice(0, 5).map((i: any) => (
+                    <div key={i.id} className="flex items-start gap-2 text-sm">
+                      <BookOpen className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+                      <span className="text-foreground/80">{i.title}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Questions */}
         <Card>
           <CardContent className="p-4 space-y-4">
