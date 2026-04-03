@@ -40,6 +40,7 @@ const moduleIcons: Record<string, React.ElementType> = {
   optimierung: Settings2,
   investment: TrendingUp,
   skalierung: Rocket,
+  freiheit: Trophy,
 };
 
 function useLocalList<T>(key: string) {

@@ -783,6 +783,14 @@ ANTWORTSTRUKTUR (verwende exakt diese Markdown-Überschriften):
 // ─── Prompt selector ────────────────────────────────────────────
 
 function getPrompts(moduleKey: string, type: string) {
+  if (moduleKey === 'freiheit') {
+    return {
+      system: type === 'reflection' ? FREIHEIT_REFLECTION_SYSTEM : FREIHEIT_ANALYSIS_SYSTEM,
+      userPrefix: type === 'reflection'
+        ? 'Der Nutzer beschreibt, was sich durch das Modul Freiheit in seiner Sicht auf sein Leben verändert hat:\n\n'
+        : 'Der Nutzer hat folgende Gedanken zu Freiheit und seinem Leben geteilt:\n\n',
+    };
+  }
   if (moduleKey === 'skalierung') {
     return {
       system: type === 'reflection' ? SKALIERUNG_REFLECTION_SYSTEM : SKALIERUNG_ANALYSIS_SYSTEM,
