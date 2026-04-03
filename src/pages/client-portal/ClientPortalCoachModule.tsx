@@ -169,7 +169,40 @@ const moduleData: Record<string, ModuleConfig> = {
       'Was sich jetzt verändert': TrendingUp,
     },
   },
-  absicherung: { title: 'Absicherung', desc: 'Stelle sicher, dass die wichtigsten Risiken richtig abgesichert sind.', icon: Shield, implemented: false },
+  absicherung: {
+    title: 'Absicherung',
+    desc: 'In diesem Modul erkennst du, welche Risiken dein Leben finanziell beeinflussen können – und wie gut du darauf vorbereitet bist.\n\nZiel ist nicht, alles abzusichern, sondern die wirklich wichtigen Dinge bewusst zu entscheiden.',
+    icon: Shield,
+    implemented: true,
+    questions: [
+      'Welche Versicherungen hast du aktuell?',
+      'Weisst du, was genau diese Versicherungen abdecken?',
+      'Hast du schon einmal geprüft, ob du über- oder unterversichert bist?',
+      'Was würde finanziell passieren, wenn du morgen nicht mehr arbeiten könntest?',
+      'Was würde passieren, wenn ein grösserer Schaden entsteht (z. B. Krankheit, Unfall, Haftpflichtfall)?',
+      'Fühlst du dich aktuell gut abgesichert oder eher unsicher?',
+      'Was ist deine grösste Sorge im Bereich Sicherheit?',
+    ],
+    questionsTitle: 'Deine aktuelle Absicherung',
+    questionsSubtitle: 'Beschreibe deine aktuelle Absicherungssituation so ehrlich wie möglich. Es geht um Verständnis, nicht um Perfektion.',
+    analyzeLabel: 'Absicherung analysieren',
+    reflectionQuestion: 'Was hast du geprüft oder erkannt – und wie hat sich dein Sicherheitsgefühl verändert?',
+    cathedralMoment: [
+      'Du schützt nicht einfach dein Geld.',
+      'Du schützt deine Stabilität.',
+      'Absicherung ist nicht Angst – sondern Verantwortung.',
+    ],
+    structuredFields: true,
+    sectionIcons: {
+      'Deine aktuelle Absicherung': Shield,
+      'Wo du gut aufgestellt bist': Star,
+      'Wo Risiken bestehen': Eye,
+      'Deine nächsten Schritte': CheckSquare,
+      'Das hast du erkannt': Star,
+      'Warum das wichtig ist': Target,
+      'Was sich jetzt verändert': TrendingUp,
+    },
+  },
   optimierung: { title: 'Optimierung', desc: 'Prüfe bestehende Verträge, Gebühren und Kosten – und verbessere sie gezielt.', icon: Settings2, implemented: false },
   investment: { title: 'Investment', desc: 'Lerne, dein Geld strategisch und langfristig für dich arbeiten zu lassen.', icon: TrendingUp, implemented: false },
   skalierung: { title: 'Skalierung', desc: 'Bringe deinen Vermögensaufbau auf die nächste Stufe mit fortgeschrittenen Strategien.', icon: Rocket, implemented: false },
@@ -501,6 +534,74 @@ function StrukturFields({
   );
 }
 
+// ─── Structured Fields for Absicherung ───────────────────────────
+
+interface AbsicherungData {
+  hasHealth: string;
+  hasDisability: string;
+  hasLiability: string;
+  hasAdditional: string;
+  feeling: string;
+}
+
+function AbsicherungFields({
+  data,
+  onChange,
+}: {
+  data: AbsicherungData;
+  onChange: (d: AbsicherungData) => void;
+}) {
+  const update = (key: keyof AbsicherungData, val: string) => onChange({ ...data, [key]: val });
+  const selectClass = "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
+  return (
+    <Card>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Shield className="h-4 w-4 text-primary" />
+          <h3 className="font-semibold text-sm text-foreground">Schnellübersicht (optional)</h3>
+        </div>
+        <p className="text-xs text-muted-foreground">Diese Angaben helfen der Auswertung, sind aber nicht zwingend.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Krankenversicherung?</label>
+            <select value={data.hasHealth} onChange={e => update('hasHealth', e.target.value)} className={selectClass}>
+              <option value="">—</option><option value="Ja">Ja</option><option value="Nein">Nein</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Berufs-/Erwerbsunfähigkeit?</label>
+            <select value={data.hasDisability} onChange={e => update('hasDisability', e.target.value)} className={selectClass}>
+              <option value="">—</option><option value="Ja">Ja</option><option value="Nein">Nein</option><option value="Weiss nicht">Weiss nicht</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Haftpflichtversicherung?</label>
+            <select value={data.hasLiability} onChange={e => update('hasLiability', e.target.value)} className={selectClass}>
+              <option value="">—</option><option value="Ja">Ja</option><option value="Nein">Nein</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Zusatzversicherungen?</label>
+            <select value={data.hasAdditional} onChange={e => update('hasAdditional', e.target.value)} className={selectClass}>
+              <option value="">—</option><option value="Ja">Ja</option><option value="Nein">Nein</option><option value="Weiss nicht">Weiss nicht</option>
+            </select>
+          </div>
+          <div className="space-y-1 sm:col-span-2">
+            <label className="text-xs font-medium text-foreground/80">Wie fühlst du dich aktuell abgesichert?</label>
+            <select value={data.feeling} onChange={e => update('feeling', e.target.value)} className={selectClass}>
+              <option value="">—</option>
+              <option value="unsicher">Unsicher</option>
+              <option value="teilweise abgesichert">Teilweise abgesichert</option>
+              <option value="gut abgesichert">Gut abgesichert</option>
+            </select>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // ─── Module Score ────────────────────────────────────────────────
 
 function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasReflection, tasksCreated, goalsSaved }: {
@@ -524,6 +625,7 @@ function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasRef
     klarheit: { title: 'Dein Klarheitsgrad', icon: Eye, levels: ['Niedrig', 'Mittel', 'Hoch'], hint: 'Je mehr du beantwortest und umsetzt, desto klarer wird dein Bild.' },
     ziele: { title: 'Dein Zielfokus', icon: Target, levels: ['Unklar', 'Teilweise klar', 'Klar'], hint: 'Je klarer deine Ziele, desto leichter werden deine Entscheidungen.' },
     struktur: { title: 'Dein Struktur-Level', icon: LayoutGrid, levels: ['Chaotisch', 'Teilweise strukturiert', 'Klar organisiert'], hint: 'Einfache Systeme schaffen langfristig Kontrolle.' },
+    absicherung: { title: 'Dein Sicherheitsgefühl', icon: Shield, levels: ['Unsicher', 'Teilweise abgesichert', 'Klar abgesichert'], hint: 'Klarheit über deine Risiken gibt dir Sicherheit.' },
   };
   const cfg = scoreConfig[moduleKey] || scoreConfig.klarheit;
   const SIcon = cfg.icon;
@@ -574,6 +676,9 @@ export default function ClientPortalCoachModule() {
   });
   const [strukturFields, setStrukturFields] = useState<StrukturData>({
     accountCount: '', hasBudget: '', hasSavingsRate: '', hasClearSplit: '', feeling: '',
+  });
+  const [absicherungFields, setAbsicherungFields] = useState<AbsicherungData>({
+    hasHealth: '', hasDisability: '', hasLiability: '', hasAdditional: '', feeling: '',
   });
 
   if (!mod) {
@@ -639,6 +744,10 @@ export default function ClientPortalCoachModule() {
       if (mod.structuredFields && currentModuleKey === 'struktur') {
         const hasAny = Object.values(strukturFields).some(v => v !== '');
         if (hasAny) body.structuredData = strukturFields;
+      }
+      if (mod.structuredFields && currentModuleKey === 'absicherung') {
+        const hasAny = Object.values(absicherungFields).some(v => v !== '');
+        if (hasAny) body.structuredData = absicherungFields;
       }
       const { data, error } = await supabase.functions.invoke('coach-analyze', { body });
       if (error) throw error;
@@ -745,6 +854,7 @@ export default function ClientPortalCoachModule() {
   const hasStructuredData = Object.values(structured).some(v => v !== '');
   const hasGoalFieldData = Object.values(goalFields).some(v => v !== '');
   const hasStrukturFieldData = Object.values(strukturFields).some(v => v !== '');
+  const hasAbsicherungFieldData = Object.values(absicherungFields).some(v => v !== '');
 
   const saveGoals = () => {
     if (!analysisResult) return;
@@ -815,11 +925,11 @@ export default function ClientPortalCoachModule() {
         </Card>
 
         {/* Module Score */}
-        {(currentModuleKey === 'klarheit' || currentModuleKey === 'ziele' || currentModuleKey === 'struktur') && (
+        {(['klarheit', 'ziele', 'struktur', 'absicherung'].includes(currentModuleKey)) && (
           <ModuleScore
             moduleKey={currentModuleKey}
             hasAnswers={answers.trim().length >= 20}
-            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : currentModuleKey === 'ziele' ? hasGoalFieldData : hasStrukturFieldData}
+            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : currentModuleKey === 'ziele' ? hasGoalFieldData : currentModuleKey === 'absicherung' ? hasAbsicherungFieldData : hasStrukturFieldData}
             hasAnalysis={!!analysisResult}
             hasReflection={!!reflectionResult}
             tasksCreated={tasksCreated}
@@ -840,6 +950,11 @@ export default function ClientPortalCoachModule() {
         {/* Structured fields for struktur */}
         {mod.structuredFields && currentModuleKey === 'struktur' && (
           <StrukturFields data={strukturFields} onChange={setStrukturFields} />
+        )}
+
+        {/* Structured fields for absicherung */}
+        {mod.structuredFields && currentModuleKey === 'absicherung' && (
+          <AbsicherungFields data={absicherungFields} onChange={setAbsicherungFields} />
         )}
 
         {/* Questions */}
