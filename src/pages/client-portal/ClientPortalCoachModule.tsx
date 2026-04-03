@@ -527,9 +527,13 @@ export default function ClientPortalCoachModule() {
     setTasksCreated(false);
     try {
       const body: any = { type: 'analysis', userInput: answers, moduleKey: currentModuleKey };
-      if (mod.structuredFields) {
+      if (mod.structuredFields && currentModuleKey === 'klarheit') {
         const hasAny = Object.values(structured).some(v => v !== '');
         if (hasAny) body.structuredData = structured;
+      }
+      if (mod.structuredFields && currentModuleKey === 'ziele') {
+        const hasAny = Object.values(goalFields).some(v => v !== '');
+        if (hasAny) body.structuredData = goalFields;
       }
       const { data, error } = await supabase.functions.invoke('coach-analyze', { body });
       if (error) throw error;
