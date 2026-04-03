@@ -88,11 +88,11 @@ export default function AppDashboard() {
     <AppLayout>
       <div className="min-h-screen bg-muted/30">
         <header className="bg-background border-b">
-          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <h1 className="text-xl font-bold text-foreground">{t('dashboard.title')}</h1>
+          <div className="px-4 sm:px-6 lg:container lg:mx-auto py-3 sm:py-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <h1 className="text-lg sm:text-xl font-bold text-foreground">{t('dashboard.title')}</h1>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <GlobalSearch />
               <ThemeSwitcher />
               <LanguageSwitcher />
@@ -101,19 +101,19 @@ export default function AppDashboard() {
           </div>
         </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="px-4 sm:px-6 lg:container lg:mx-auto py-6 sm:py-8 page-transition">
         {/* Greeting */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-foreground mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-1 sm:mb-2">
             {t('dashboard.welcome', { name: user?.user_metadata?.first_name || 'User' })}
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground">
             {t('dashboard.loggedInAs')} <strong>{roleLabel}</strong>
           </p>
         </div>
 
         {/* KPI Tiles */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{t('dashboard.activeClients')}</CardTitle>
@@ -123,7 +123,7 @@ export default function AppDashboard() {
               {loadingCustomers ? (
                 <Skeleton className="h-8 w-16" />
               ) : (
-                <div className="text-3xl font-bold">{activeCustomersCount}</div>
+                <div className="text-2xl sm:text-3xl font-bold">{activeCustomersCount}</div>
               )}
               <p className="text-xs text-muted-foreground mt-1">{t('dashboard.statusActive')}</p>
             </CardContent>
@@ -138,7 +138,7 @@ export default function AppDashboard() {
               {loadingCasesCount ? (
                 <Skeleton className="h-8 w-16" />
               ) : (
-                <div className="text-3xl font-bold">{activeCasesCount}</div>
+                <div className="text-2xl sm:text-3xl font-bold">{activeCasesCount}</div>
               )}
               <p className="text-xs text-muted-foreground mt-1">{t('dashboard.statusNotClosed')}</p>
             </CardContent>
@@ -153,7 +153,7 @@ export default function AppDashboard() {
               {loadingTasksCount ? (
                 <Skeleton className="h-8 w-16" />
               ) : (
-                <div className="text-3xl font-bold">{openTasksCount}</div>
+                <div className="text-2xl sm:text-3xl font-bold">{openTasksCount}</div>
               )}
               <p className="text-xs text-muted-foreground mt-1">{t('dashboard.statusNotDone')}</p>
             </CardContent>
@@ -161,8 +161,8 @@ export default function AppDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="flex flex-wrap gap-3 mb-8">
-          <Button onClick={() => setCreateCustomerOpen(true)}>
+        <div className="flex flex-wrap gap-2 sm:gap-3 mb-6 sm:mb-8">
+          <Button onClick={() => setCreateCustomerOpen(true)} className="flex-1 sm:flex-none">
             {t('customer.createTitle', 'Neuen Kunden anlegen')}
           </Button>
           <CreateCustomerDialog open={createCustomerOpen} onOpenChange={setCreateCustomerOpen} />
@@ -171,7 +171,7 @@ export default function AppDashboard() {
         </div>
 
         {/* Open Tasks */}
-        <Card className="mb-8">
+        <Card className="mb-6 sm:mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ClipboardList className="h-5 w-5" />
@@ -188,6 +188,7 @@ export default function AppDashboard() {
             ) : openTasks?.length === 0 ? (
               <p className="text-muted-foreground py-4">{t('dashboard.noOpenTasks')}</p>
             ) : (
+              <div className="overflow-x-auto -mx-6 px-6">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -225,6 +226,7 @@ export default function AppDashboard() {
                   ))}
                 </TableBody>
               </Table>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -247,6 +249,7 @@ export default function AppDashboard() {
             ) : activeCases?.length === 0 ? (
               <p className="text-muted-foreground py-4">{t('dashboard.noActiveCases')}</p>
             ) : (
+              <div className="overflow-x-auto -mx-6 px-6">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -277,6 +280,7 @@ export default function AppDashboard() {
                   ))}
                 </TableBody>
               </Table>
+              </div>
             )}
           </CardContent>
         </Card>
