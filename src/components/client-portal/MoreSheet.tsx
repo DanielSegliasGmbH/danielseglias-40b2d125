@@ -26,6 +26,7 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
 
   // Secondary content sections (only if visible via permissions)
   const contentItems = [
+    { key: 'strategies', path: '/app/client-portal/strategies', icon: TrendingUp, label: t('clientPortal.strategies') },
     { key: 'insurances', path: '/app/client-portal/insurances', icon: Shield, label: t('clientPortal.insurances') },
     { key: 'goals', path: '/app/client-portal/goals', icon: Target, label: t('clientPortal.goals') },
     { key: 'tasks', path: '/app/client-portal/tasks', icon: ClipboardList, label: t('clientPortal.tasks') },
