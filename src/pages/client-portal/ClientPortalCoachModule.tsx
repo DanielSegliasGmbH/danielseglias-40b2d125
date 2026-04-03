@@ -809,12 +809,12 @@ export default function ClientPortalCoachModule() {
           </CardContent>
         </Card>
 
-        {/* Module Score (klarheit + ziele) */}
-        {(currentModuleKey === 'klarheit' || currentModuleKey === 'ziele') && (
+        {/* Module Score */}
+        {(currentModuleKey === 'klarheit' || currentModuleKey === 'ziele' || currentModuleKey === 'struktur') && (
           <ModuleScore
             moduleKey={currentModuleKey}
             hasAnswers={answers.trim().length >= 20}
-            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : hasGoalFieldData}
+            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : currentModuleKey === 'ziele' ? hasGoalFieldData : hasStrukturFieldData}
             hasAnalysis={!!analysisResult}
             hasReflection={!!reflectionResult}
             tasksCreated={tasksCreated}
@@ -830,6 +830,11 @@ export default function ClientPortalCoachModule() {
         {/* Structured fields for ziele */}
         {mod.structuredFields && currentModuleKey === 'ziele' && (
           <GoalFields data={goalFields} onChange={setGoalFields} />
+        )}
+
+        {/* Structured fields for struktur */}
+        {mod.structuredFields && currentModuleKey === 'struktur' && (
+          <StrukturFields data={strukturFields} onChange={setStrukturFields} />
         )}
 
         {/* Questions */}
