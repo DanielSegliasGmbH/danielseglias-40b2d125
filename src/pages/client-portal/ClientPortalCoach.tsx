@@ -53,7 +53,7 @@ export default function ClientPortalCoach() {
           </p>
           <p className="text-sm text-muted-foreground leading-relaxed">
             Hier wirst du Schritt für Schritt durch deine finanzielle Entwicklung geführt.
-            Nicht durch Theorie, sondern durch klare Entscheidungen und konkrete Umsetzung.
+            Nicht durch Theorie, sondern durch klare Entscheidungen, persönliche Reflexion und konkrete Umsetzung.
           </p>
         </div>
 
