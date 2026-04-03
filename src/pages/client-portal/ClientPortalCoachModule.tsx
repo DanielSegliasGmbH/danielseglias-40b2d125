@@ -321,14 +321,99 @@ function StructuredFields({
   );
 }
 
-// ─── Clarity Score ───────────────────────────────────────────────
+// ─── Structured Fields for Ziele ─────────────────────────────────
 
-function ClarityScore({ hasAnswers, hasStructured, hasAnalysis, hasReflection, tasksCreated }: {
+interface GoalStructuredData {
+  shortTerm: string;
+  midTerm: string;
+  longTerm: string;
+  targetAmount: string;
+  targetDate: string;
+  priority: string;
+  category: string;
+}
+
+function GoalFields({
+  data,
+  onChange,
+}: {
+  data: GoalStructuredData;
+  onChange: (d: GoalStructuredData) => void;
+}) {
+  const update = (key: keyof GoalStructuredData, val: string) => onChange({ ...data, [key]: val });
+
+  return (
+    <Card>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Target className="h-4 w-4 text-primary" />
+          <h3 className="font-semibold text-sm text-foreground">Ziele konkretisieren (optional)</h3>
+        </div>
+        <p className="text-xs text-muted-foreground">Diese Angaben helfen, deine Ziele greifbarer zu machen.</p>
+        <div className="space-y-3">
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Kurzfristiges Ziel (0–12 Monate)</label>
+            <Input value={data.shortTerm} onChange={e => update('shortTerm', e.target.value)} placeholder="z. B. Notgroschen aufbauen" className="text-sm" />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Mittelfristiges Ziel (1–5 Jahre)</label>
+            <Input value={data.midTerm} onChange={e => update('midTerm', e.target.value)} placeholder="z. B. Eigenkapital für Wohneigentum" className="text-sm" />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Langfristiges Ziel (5+ Jahre)</label>
+            <Input value={data.longTerm} onChange={e => update('longTerm', e.target.value)} placeholder="z. B. Finanzielle Unabhängigkeit" className="text-sm" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-foreground/80">Wunschbetrag (optional)</label>
+              <Input value={data.targetAmount} onChange={e => update('targetAmount', e.target.value)} placeholder="z. B. 50'000" className="text-sm" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-foreground/80">Zeithorizont (optional)</label>
+              <Input value={data.targetDate} onChange={e => update('targetDate', e.target.value)} placeholder="z. B. 2027" className="text-sm" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-foreground/80">Priorität</label>
+              <select value={data.priority} onChange={e => update('priority', e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <option value="">—</option>
+                <option value="niedrig">Niedrig</option>
+                <option value="mittel">Mittel</option>
+                <option value="hoch">Hoch</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-foreground/80">Kategorie</label>
+              <select value={data.category} onChange={e => update('category', e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <option value="">—</option>
+                <option value="Sicherheit">Sicherheit</option>
+                <option value="Vermögensaufbau">Vermögensaufbau</option>
+                <option value="Wohnen">Wohnen</option>
+                <option value="Familie">Familie</option>
+                <option value="Freiheit">Freiheit</option>
+                <option value="Reisen / Erlebnisse">Reisen / Erlebnisse</option>
+                <option value="Business">Business</option>
+                <option value="Sonstiges">Sonstiges</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ─── Module Score (Klarheit / Ziele) ────────────────────────────
+
+function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasReflection, tasksCreated, goalsSaved }: {
+  moduleKey: string;
   hasAnswers: boolean;
   hasStructured: boolean;
   hasAnalysis: boolean;
   hasReflection: boolean;
   tasksCreated: boolean;
+  goalsSaved?: boolean;
 }) {
   let score = 0;
   if (hasAnswers) score += 20;
@@ -336,22 +421,29 @@ function ClarityScore({ hasAnswers, hasStructured, hasAnalysis, hasReflection, t
   if (hasAnalysis) score += 25;
   if (hasReflection) score += 25;
   if (tasksCreated) score += 15;
+  if (goalsSaved) score = Math.min(100, score + 10);
 
-  const level = score >= 80 ? 'Hoch' : score >= 40 ? 'Mittel' : 'Niedrig';
+  const isZiele = moduleKey === 'ziele';
+  const title = isZiele ? 'Dein Zielfokus' : 'Dein Klarheitsgrad';
+  const SIcon = isZiele ? Target : Eye;
+  const level = score >= 80 ? (isZiele ? 'Klar' : 'Hoch') : score >= 40 ? (isZiele ? 'Teilweise klar' : 'Mittel') : (isZiele ? 'Unklar' : 'Niedrig');
   const levelColor = score >= 80 ? 'text-green-600' : score >= 40 ? 'text-amber-600' : 'text-muted-foreground';
+  const hint = isZiele
+    ? 'Je klarer deine Ziele, desto leichter werden deine Entscheidungen.'
+    : 'Je mehr du beantwortest und umsetzt, desto klarer wird dein Bild.';
 
   return (
     <Card>
       <CardContent className="p-4 space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Eye className="h-4 w-4 text-primary" />
-            <h3 className="font-semibold text-sm text-foreground">Dein Klarheitsgrad</h3>
+            <SIcon className="h-4 w-4 text-primary" />
+            <h3 className="font-semibold text-sm text-foreground">{title}</h3>
           </div>
           <span className={cn('text-sm font-semibold', levelColor)}>{level}</span>
         </div>
         <Progress value={score} className="h-2" />
-        <p className="text-xs text-muted-foreground">{score}% – Je mehr du beantwortest und umsetzt, desto klarer wird dein Bild.</p>
+        <p className="text-xs text-muted-foreground">{score}% – {hint}</p>
       </CardContent>
     </Card>
   );
