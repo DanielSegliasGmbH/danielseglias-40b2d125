@@ -677,6 +677,9 @@ export default function ClientPortalCoachModule() {
   const [strukturFields, setStrukturFields] = useState<StrukturData>({
     accountCount: '', hasBudget: '', hasSavingsRate: '', hasClearSplit: '', feeling: '',
   });
+  const [absicherungFields, setAbsicherungFields] = useState<AbsicherungData>({
+    hasHealth: '', hasDisability: '', hasLiability: '', hasAdditional: '', feeling: '',
+  });
 
   if (!mod) {
     return (
