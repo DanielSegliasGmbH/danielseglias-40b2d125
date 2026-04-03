@@ -117,20 +117,9 @@ export function CreateUserDialog() {
               required
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Passwort *</Label>
-            <Input
-              id="password"
-              type="password"
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              required
-              minLength={6}
-            />
-            <p className="text-xs text-muted-foreground">
-              {t('userManagement.passwordHint')}
-            </p>
-          </div>
+          <p className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-lg">
+            Der Benutzer erhält eine Einladungsmail und kann anschliessend sein Passwort selbst setzen.
+          </p>
           <div className="space-y-2">
             <Label htmlFor="role">{t('table.role')} *</Label>
             <Select
