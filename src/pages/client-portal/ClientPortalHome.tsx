@@ -143,9 +143,10 @@ export default function ClientPortalHome() {
       <StrategyPasswordGate
         open={passwordGateOpen}
         onOpenChange={setPasswordGateOpen}
-      onSuccess={() => {
+        onSuccess={() => {
           setStrategyUnlocked(true);
           setPasswordGateOpen(false);
+          navigate('/app/client-portal/strategies');
         }}
       />
     </ClientPortalLayout>
