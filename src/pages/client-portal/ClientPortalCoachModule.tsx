@@ -975,6 +975,9 @@ export default function ClientPortalCoachModule() {
   const [investmentFields, setInvestmentFields] = useState<InvestmentData>({
     investsAlready: '', investmentType: '', horizon: '', riskFeeling: '',
   });
+  const [skalierungFields, setSkalierungFields] = useState<SkalierungData>({
+    incomeType: '', growthPotential: '', additionalSources: '',
+  });
 
   if (!mod) {
     return (
