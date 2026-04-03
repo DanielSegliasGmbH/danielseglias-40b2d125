@@ -34,7 +34,6 @@ export function CreateUserDialog() {
 
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
     firstName: '',
     lastName: '',
     role: '' as AppRole | '',
