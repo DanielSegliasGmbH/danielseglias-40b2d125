@@ -241,6 +241,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
           isAdminPreview && "lg:pt-10"
         )}>
           <div className="hidden lg:flex items-center justify-end gap-4 p-4 border-b border-border bg-card">
+            <NotificationBell />
             <Button
               variant="ghost"
               size="icon"
