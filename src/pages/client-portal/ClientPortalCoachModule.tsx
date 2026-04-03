@@ -572,6 +572,9 @@ export default function ClientPortalCoachModule() {
   const [goalFields, setGoalFields] = useState<GoalStructuredData>({
     shortTerm: '', midTerm: '', longTerm: '', targetAmount: '', targetDate: '', priority: '', category: '',
   });
+  const [strukturFields, setStrukturFields] = useState<StrukturData>({
+    accountCount: '', hasBudget: '', hasSavingsRate: '', hasClearSplit: '', feeling: '',
+  });
 
   if (!mod) {
     return (
