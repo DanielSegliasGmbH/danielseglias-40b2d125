@@ -43,7 +43,7 @@ export function CreateUserDialog() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.email || !formData.password || !formData.firstName || !formData.lastName || !formData.role) {
+    if (!formData.email || !formData.firstName || !formData.lastName || !formData.role) {
       toast.error(t('userManagement.requiredFields'));
       return;
     }
