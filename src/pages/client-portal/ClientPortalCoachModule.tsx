@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -14,10 +15,11 @@ import { useSpeechToText } from '@/hooks/useSpeechToText';
 import {
   Brain, Eye, Target, LayoutGrid, Shield, Settings2, TrendingUp, Rocket, Star, RotateCcw,
   MessageSquare, BarChart3, CheckSquare, Lightbulb, Info, Mic, MicOff, Loader2, Copy, Share2,
-  Sparkles,
+  Sparkles, Play, BookOpen, Trophy, Calendar,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+// ─── Module definitions ───────────────────────────────────────────
 const moduleData: Record<string, { title: string; desc: string; icon: React.ElementType; implemented: boolean }> = {
   mindset: {
     title: 'Mindset',
@@ -44,7 +46,7 @@ const mindsetQuestions = [
   'Wenn du ehrlich bist: Was hält dich aktuell am meisten zurück?',
 ];
 
-// Speech input component
+// ─── Speech Input ─────────────────────────────────────────────────
 function SpeechInput({
   value,
   onChange,
@@ -56,20 +58,26 @@ function SpeechInput({
   placeholder: string;
   minHeight?: string;
 }) {
-  const { isListening, isSupported, transcript, startListening, stopListening, resetTranscript } = useSpeechToText();
+  const { isListening, isSupported, finalText, interimText, startListening, stopListening, resetTranscript } = useSpeechToText();
+  const prevFinalRef = useRef('');
 
+  // Only append truly new final text (avoids double insertions)
   useEffect(() => {
-    if (transcript) {
-      onChange(value ? value + ' ' + transcript : transcript);
+    if (finalText && finalText !== prevFinalRef.current) {
+      const newPart = finalText.slice(prevFinalRef.current.length).trim();
+      if (newPart) {
+        onChange(value ? value.trimEnd() + ' ' + newPart : newPart);
+      }
+      prevFinalRef.current = finalText;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [transcript]);
+  }, [finalText]);
 
   const handleToggle = () => {
     if (isListening) {
       stopListening();
-      resetTranscript();
     } else {
+      prevFinalRef.current = '';
       resetTranscript();
       startListening();
     }
@@ -102,17 +110,18 @@ function SpeechInput({
       {isListening && (
         <div className="flex items-center gap-2 mt-2 px-1">
           <div className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
-          <span className="text-xs text-muted-foreground">Aufnahme läuft... Sprich jetzt.</span>
+          <span className="text-xs text-muted-foreground">
+            Aufnahme läuft...{interimText ? ` "${interimText}"` : ' Sprich jetzt.'}
+          </span>
         </div>
       )}
     </div>
   );
 }
 
-// Markdown result section
+// ─── Analysis result renderer ────────────────────────────────────
 function AnalysisResult({ content }: { content: string }) {
   const sections = content.split(/(?=## )/).filter(Boolean);
-
   const sectionIcons: Record<string, React.ElementType> = {
     'Deine aktuelle Denkweise': Brain,
     'Was dich aktuell bremst': Shield,
@@ -130,7 +139,6 @@ function AnalysisResult({ content }: { content: string }) {
         const title = titleMatch ? titleMatch[1].trim() : '';
         const body = section.replace(/^## .+\n?/, '').trim();
         const SIcon = sectionIcons[title] || BarChart3;
-
         return (
           <Card key={idx} className="overflow-hidden">
             <CardContent className="p-4">
@@ -149,6 +157,7 @@ function AnalysisResult({ content }: { content: string }) {
   );
 }
 
+// ─── Main component ──────────────────────────────────────────────
 export default function ClientPortalCoachModule() {
   const { moduleKey } = useParams<{ moduleKey: string }>();
   const { user } = useAuth();
@@ -197,12 +206,8 @@ export default function ClientPortalCoachModule() {
           <Card>
             <CardContent className="p-6 flex flex-col items-center justify-center text-center">
               <Badge variant="muted" className="mb-3 text-[10px]">Kommt bald</Badge>
-              <p className="text-sm text-muted-foreground">
-                Dieses Modul wird in einer späteren Version freigeschaltet.
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Starte zuerst mit dem Modul «Mindset», um dein Fundament zu legen.
-              </p>
+              <p className="text-sm text-muted-foreground">Dieses Modul wird in einer späteren Version freigeschaltet.</p>
+              <p className="text-xs text-muted-foreground mt-1">Starte zuerst mit dem Modul «Mindset», um dein Fundament zu legen.</p>
             </CardContent>
           </Card>
         </div>
@@ -210,31 +215,24 @@ export default function ClientPortalCoachModule() {
     );
   }
 
-  // --- MINDSET MODULE ---
-
+  // ─── MINDSET HANDLERS ────────────────────────────────────────
   const handleAnalyze = async () => {
     if (answers.trim().length < 20) {
       toast({ title: 'Bitte ausführlicher antworten', description: 'Nimm dir einen Moment und schreibe zu den Fragen, was dir spontan einfällt.', variant: 'destructive' });
       return;
     }
-
     setIsAnalyzing(true);
     setAnalysisResult('');
     setExtractedTasks([]);
     setTasksCreated(false);
-
     try {
       const { data, error } = await supabase.functions.invoke('coach-analyze', {
         body: { type: 'analysis', userInput: answers },
       });
-
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-
       setAnalysisResult(data.content || '');
-      if (data.tasks?.length) {
-        setExtractedTasks(data.tasks);
-      }
+      if (data.tasks?.length) setExtractedTasks(data.tasks);
     } catch (e: any) {
       toast({ title: 'Fehler bei der Analyse', description: e.message || 'Bitte versuche es erneut.', variant: 'destructive' });
     } finally {
@@ -242,16 +240,11 @@ export default function ClientPortalCoachModule() {
     }
   };
 
-  const handleCreateTasks = async () => {
+  const handleCreateTasks = () => {
     if (!extractedTasks.length || !user) return;
-
-    // The client portal tasks page currently shows an empty state.
-    // We store coach tasks in localStorage for now as a simple V1 approach,
-    // since the tasks table requires a case_id which clients don't have.
     try {
       const existingRaw = localStorage.getItem('coach_tasks');
       const existing: any[] = existingRaw ? JSON.parse(existingRaw) : [];
-
       const newTasks = extractedTasks.map((t) => ({
         id: crypto.randomUUID(),
         title: t.title,
@@ -259,12 +252,12 @@ export default function ClientPortalCoachModule() {
         status: 'offen',
         module: 'mindset',
         created_at: new Date().toISOString(),
+        deadline: null,
       }));
-
       localStorage.setItem('coach_tasks', JSON.stringify([...existing, ...newTasks]));
       setTasksCreated(true);
       toast({ title: 'Aufgaben hinzugefügt', description: 'Die nächsten Schritte wurden zu deinen Aufgaben hinzugefügt.' });
-    } catch (e) {
+    } catch {
       toast({ title: 'Fehler', description: 'Aufgaben konnten nicht gespeichert werden.', variant: 'destructive' });
     }
   };
@@ -274,15 +267,12 @@ export default function ClientPortalCoachModule() {
       toast({ title: 'Bitte beschreibe kurz, was du umgesetzt hast', variant: 'destructive' });
       return;
     }
-
     setIsReflecting(true);
     setReflectionResult('');
-
     try {
       const { data, error } = await supabase.functions.invoke('coach-analyze', {
         body: { type: 'reflection', userInput: reflectionInput },
       });
-
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       setReflectionResult(data.content || '');
@@ -293,10 +283,44 @@ export default function ClientPortalCoachModule() {
     }
   };
 
+  const saveInsight = (source: string) => {
+    const content = source === 'reflection' ? reflectionResult : analysisResult;
+    if (!content) return;
+    const existingRaw = localStorage.getItem('coach_insights');
+    const existing: any[] = existingRaw ? JSON.parse(existingRaw) : [];
+    const insight = {
+      id: crypto.randomUUID(),
+      title: source === 'reflection' ? 'Reflexion – Mindset' : 'Analyse – Mindset',
+      description: content.slice(0, 300).replace(/##\s*/g, '').trim() + '...',
+      module: 'mindset',
+      created_at: new Date().toISOString(),
+    };
+    localStorage.setItem('coach_insights', JSON.stringify([...existing, insight]));
+    toast({ title: 'Erkenntnis gespeichert' });
+  };
+
+  const saveAchievement = () => {
+    if (!reflectionResult) return;
+    const existingRaw = localStorage.getItem('coach_achievements');
+    const existing: any[] = existingRaw ? JSON.parse(existingRaw) : [];
+    const achievement = {
+      id: crypto.randomUUID(),
+      title: 'Mindset-Reflexion abgeschlossen',
+      description: reflectionInput.slice(0, 200).trim(),
+      module: 'mindset',
+      created_at: new Date().toISOString(),
+    };
+    localStorage.setItem('coach_achievements', JSON.stringify([...existing, achievement]));
+    toast({ title: 'Erfolg gespeichert! 🎉' });
+  };
+
   const handleCopyTasks = () => {
     const text = extractedTasks.map((t, i) => `${i + 1}. ${t.title}\n   ${t.description}`).join('\n\n');
-    navigator.clipboard.writeText(text);
-    toast({ title: 'Aufgaben kopiert' });
+    navigator.clipboard.writeText(text).then(() => {
+      toast({ title: 'Aufgaben kopiert' });
+    }).catch(() => {
+      toast({ title: 'Kopieren fehlgeschlagen', variant: 'destructive' });
+    });
   };
 
   const handleShare = async () => {
@@ -306,8 +330,9 @@ export default function ClientPortalCoachModule() {
         await navigator.share({ title: 'Meine nächsten Schritte – Finanz-Coach', text });
       } catch { /* cancelled */ }
     } else {
-      navigator.clipboard.writeText(text);
-      toast({ title: 'In die Zwischenablage kopiert' });
+      navigator.clipboard.writeText(text).then(() => {
+        toast({ title: 'In die Zwischenablage kopiert' });
+      });
     }
   };
 
@@ -327,6 +352,25 @@ export default function ClientPortalCoachModule() {
           </div>
         </div>
 
+        {/* Video introduction */}
+        <Card>
+          <CardContent className="p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <Play className="h-4 w-4 text-primary" />
+              <h3 className="font-semibold text-sm text-foreground">Einführung in dieses Modul</h3>
+            </div>
+            <div className="aspect-video bg-muted rounded-lg flex items-center justify-center border border-border">
+              <div className="text-center space-y-2">
+                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                  <Play className="h-6 w-6 text-primary" />
+                </div>
+                <p className="text-xs text-muted-foreground">Video wird bald verfügbar sein</p>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">Schau dir dieses kurze Video an, bevor du startest.</p>
+          </CardContent>
+        </Card>
+
         {/* Questions */}
         <Card>
           <CardContent className="p-4 space-y-4">
@@ -334,7 +378,6 @@ export default function ClientPortalCoachModule() {
               <MessageSquare className="h-4 w-4 text-primary" />
               <h3 className="font-semibold text-sm text-foreground">Fragen</h3>
             </div>
-
             <div className="space-y-2">
               {mindsetQuestions.map((q, i) => (
                 <div key={i} className="flex items-start gap-2">
@@ -343,29 +386,17 @@ export default function ClientPortalCoachModule() {
                 </div>
               ))}
             </div>
-
             <SpeechInput
               value={answers}
               onChange={setAnswers}
               placeholder="Nimm dir einen Moment und beantworte die Fragen oben. Du kannst frei schreiben oder die Spracheingabe nutzen..."
               minHeight="160px"
             />
-
-            <Button
-              onClick={handleAnalyze}
-              disabled={isAnalyzing || answers.trim().length < 20}
-              className="w-full"
-            >
+            <Button onClick={handleAnalyze} disabled={isAnalyzing || answers.trim().length < 20} className="w-full">
               {isAnalyzing ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Wird analysiert...
-                </>
+                <><Loader2 className="h-4 w-4 animate-spin" /> Wird analysiert...</>
               ) : (
-                <>
-                  <BarChart3 className="h-4 w-4" />
-                  Antworten analysieren
-                </>
+                <><BarChart3 className="h-4 w-4" /> Antworten analysieren</>
               )}
             </Button>
           </CardContent>
@@ -380,6 +411,10 @@ export default function ClientPortalCoachModule() {
             </div>
             <AnalysisResult content={analysisResult} />
 
+            <Button variant="outline" size="sm" onClick={() => saveInsight('analysis')} className="w-full">
+              <BookOpen className="h-3.5 w-3.5" /> Als Erkenntnis speichern
+            </Button>
+
             {/* Task actions */}
             {extractedTasks.length > 0 && (
               <Card className="border-primary/20 bg-primary/5">
@@ -388,27 +423,22 @@ export default function ClientPortalCoachModule() {
                     <CheckSquare className="h-4 w-4 text-primary" />
                     <h3 className="font-semibold text-sm text-foreground">Aufgaben übernehmen</h3>
                   </div>
-
                   {!tasksCreated ? (
                     <Button onClick={handleCreateTasks} variant="default" className="w-full">
-                      <CheckSquare className="h-4 w-4" />
-                      Aufgaben zu «Meine Aufgaben» hinzufügen
+                      <CheckSquare className="h-4 w-4" /> Aufgaben zu «Meine Aufgaben» hinzufügen
                     </Button>
                   ) : (
-                    <div className="flex items-center gap-2 text-sm text-success">
+                    <div className="flex items-center gap-2 text-sm text-green-600">
                       <CheckSquare className="h-4 w-4" />
                       <span>Die nächsten Schritte wurden zu deinen Aufgaben hinzugefügt.</span>
                     </div>
                   )}
-
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm" onClick={handleCopyTasks} className="flex-1">
-                      <Copy className="h-3.5 w-3.5" />
-                      Kopieren
+                      <Copy className="h-3.5 w-3.5" /> Kopieren
                     </Button>
                     <Button variant="outline" size="sm" onClick={handleShare} className="flex-1">
-                      <Share2 className="h-3.5 w-3.5" />
-                      Teilen
+                      <Share2 className="h-3.5 w-3.5" /> Teilen
                     </Button>
                   </div>
                 </CardContent>
@@ -425,34 +455,20 @@ export default function ClientPortalCoachModule() {
                 <Lightbulb className="h-4 w-4 text-primary" />
                 <h3 className="font-semibold text-sm text-foreground">Reflexion</h3>
               </div>
-
               <p className="text-sm text-muted-foreground">
                 Was hast du konkret umgesetzt und was hat sich dadurch verändert?
               </p>
-
               <SpeechInput
                 value={reflectionInput}
                 onChange={setReflectionInput}
                 placeholder="Beschreibe, was du umgesetzt hast und wie es sich angefühlt hat..."
                 minHeight="100px"
               />
-
-              <Button
-                onClick={handleReflection}
-                disabled={isReflecting || reflectionInput.trim().length < 10}
-                variant="secondary"
-                className="w-full"
-              >
+              <Button onClick={handleReflection} disabled={isReflecting || reflectionInput.trim().length < 10} variant="secondary" className="w-full">
                 {isReflecting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Reflexion wird ausgewertet...
-                  </>
+                  <><Loader2 className="h-4 w-4 animate-spin" /> Reflexion wird ausgewertet...</>
                 ) : (
-                  <>
-                    <Lightbulb className="h-4 w-4" />
-                    Reflexion auswerten
-                  </>
+                  <><Lightbulb className="h-4 w-4" /> Reflexion auswerten</>
                 )}
               </Button>
             </CardContent>
@@ -467,6 +483,15 @@ export default function ClientPortalCoachModule() {
               <h3 className="font-semibold text-sm text-foreground">Deine Reflexion</h3>
             </div>
             <AnalysisResult content={reflectionResult} />
+
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => saveInsight('reflection')} className="flex-1">
+                <BookOpen className="h-3.5 w-3.5" /> Als Erkenntnis speichern
+              </Button>
+              <Button variant="outline" size="sm" onClick={saveAchievement} className="flex-1">
+                <Trophy className="h-3.5 w-3.5" /> Als Erfolg speichern
+              </Button>
+            </div>
           </div>
         )}
 
@@ -481,9 +506,7 @@ export default function ClientPortalCoachModule() {
               <p className="text-sm text-foreground/80 leading-relaxed">
                 Du baust Schritt für Schritt dein Fundament für ein selbstbestimmtes Leben.
               </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Jede kleine Entscheidung zählt.
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">Jede kleine Entscheidung zählt.</p>
             </CardContent>
           </Card>
         )}
