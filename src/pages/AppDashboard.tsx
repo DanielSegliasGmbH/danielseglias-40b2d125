@@ -113,7 +113,7 @@ export default function AppDashboard() {
         </div>
 
         {/* KPI Tiles */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{t('dashboard.activeClients')}</CardTitle>
@@ -123,7 +123,7 @@ export default function AppDashboard() {
               {loadingCustomers ? (
                 <Skeleton className="h-8 w-16" />
               ) : (
-                <div className="text-3xl font-bold">{activeCustomersCount}</div>
+                <div className="text-2xl sm:text-3xl font-bold">{activeCustomersCount}</div>
               )}
               <p className="text-xs text-muted-foreground mt-1">{t('dashboard.statusActive')}</p>
             </CardContent>
@@ -138,7 +138,7 @@ export default function AppDashboard() {
               {loadingCasesCount ? (
                 <Skeleton className="h-8 w-16" />
               ) : (
-                <div className="text-3xl font-bold">{activeCasesCount}</div>
+                <div className="text-2xl sm:text-3xl font-bold">{activeCasesCount}</div>
               )}
               <p className="text-xs text-muted-foreground mt-1">{t('dashboard.statusNotClosed')}</p>
             </CardContent>
@@ -153,7 +153,7 @@ export default function AppDashboard() {
               {loadingTasksCount ? (
                 <Skeleton className="h-8 w-16" />
               ) : (
-                <div className="text-3xl font-bold">{openTasksCount}</div>
+                <div className="text-2xl sm:text-3xl font-bold">{openTasksCount}</div>
               )}
               <p className="text-xs text-muted-foreground mt-1">{t('dashboard.statusNotDone')}</p>
             </CardContent>
