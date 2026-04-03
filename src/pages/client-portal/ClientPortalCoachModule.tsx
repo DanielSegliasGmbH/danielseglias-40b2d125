@@ -5,9 +5,10 @@ import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
+import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -15,19 +16,92 @@ import { useSpeechToText } from '@/hooks/useSpeechToText';
 import {
   Brain, Eye, Target, LayoutGrid, Shield, Settings2, TrendingUp, Rocket, Star, RotateCcw,
   MessageSquare, BarChart3, CheckSquare, Lightbulb, Info, Mic, MicOff, Loader2, Copy, Share2,
-  Sparkles, Play, BookOpen, Trophy, Calendar,
+  Sparkles, Play, BookOpen, Trophy, DollarSign, PiggyBank, CreditCard, ClipboardCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // ─── Module definitions ───────────────────────────────────────────
-const moduleData: Record<string, { title: string; desc: string; icon: React.ElementType; implemented: boolean }> = {
+
+interface ModuleConfig {
+  title: string;
+  desc: string;
+  icon: React.ElementType;
+  implemented: boolean;
+  questions?: string[];
+  questionsTitle?: string;
+  questionsSubtitle?: string;
+  analyzeLabel?: string;
+  reflectionQuestion?: string;
+  cathedralMoment?: string[];
+  structuredFields?: boolean;
+  sectionIcons?: Record<string, React.ElementType>;
+}
+
+const moduleData: Record<string, ModuleConfig> = {
   mindset: {
     title: 'Mindset',
     desc: 'In diesem Modul verstehst du, wie du aktuell über Geld denkst – und wie dich diese Denkweise beeinflusst.\n\nZiel ist es, limitierende Überzeugungen zu erkennen und durch stärkere, förderliche Perspektiven zu ersetzen.',
     icon: Brain,
     implemented: true,
+    questions: [
+      'Was hast du in deiner Kindheit über Geld gelernt?',
+      'Wie denkst du heute über Geld? (z. B. Sicherheit, Stress, Freiheit, Risiko)',
+      'Was ist aktuell deine grösste Angst im Zusammenhang mit Geld?',
+      'Was würdest du gerne finanziell erreichen, traust es dir aber noch nicht ganz zu?',
+      'Wenn du ehrlich bist: Was hält dich aktuell am meisten zurück?',
+    ],
+    questionsTitle: 'Fragen',
+    analyzeLabel: 'Antworten analysieren',
+    reflectionQuestion: 'Was hast du konkret umgesetzt und was hat sich dadurch verändert?',
+    cathedralMoment: [
+      'Du arbeitest nicht einfach an deinen Finanzen.',
+      'Du baust Schritt für Schritt dein Fundament für ein selbstbestimmtes Leben.',
+      'Jede kleine Entscheidung zählt.',
+    ],
+    sectionIcons: {
+      'Deine aktuelle Denkweise': Brain,
+      'Was dich aktuell bremst': Shield,
+      'Neue Perspektive': Sparkles,
+      'Deine nächsten Schritte': CheckSquare,
+      'Das hast du erreicht': Star,
+      'Warum das wichtig ist': Target,
+      'Was das für deine Zukunft bedeutet': TrendingUp,
+    },
   },
-  klarheit: { title: 'Klarheit', desc: 'Verschaffe dir einen vollständigen Überblick über deine aktuelle finanzielle Situation.', icon: Eye, implemented: false },
+  klarheit: {
+    title: 'Klarheit',
+    desc: 'In diesem Modul schaffst du Klarheit über deine aktuelle finanzielle Realität.\n\nDu erkennst, was reinkommt, was rausgeht, was du besitzt, was du schuldest und wo du gerade wirklich stehst.\n\nZiel ist nicht Perfektion, sondern Ehrlichkeit, Übersicht und ein sauberes Fundament für alle nächsten Schritte.',
+    icon: Eye,
+    implemented: true,
+    questions: [
+      'Wie viel Geld kommt monatlich ungefähr bei dir rein?',
+      'Wie viel Geld gibst du monatlich ungefähr aus?',
+      'Hast du aktuell Ersparnisse? Wenn ja, ungefähr wie viel?',
+      'Hast du Schulden, offene Verpflichtungen oder laufende finanzielle Belastungen? Wenn ja, welche?',
+      'Hast du aktuell einen Überblick über deine Konten, Versicherungen, Vorsorge, Anlagen und Fixkosten?',
+      'Was stresst dich aktuell finanziell am meisten?',
+      'Was ist aus deiner Sicht gerade der grösste blinde Fleck in deinen Finanzen?',
+    ],
+    questionsTitle: 'Deine aktuelle Situation',
+    questionsSubtitle: 'Beantworte die folgenden Fragen so ehrlich und einfach wie möglich. Es geht nicht um Perfektion, sondern um Klarheit.',
+    analyzeLabel: 'Situation analysieren',
+    reflectionQuestion: 'Was hast du konkret zusammengetragen, erkannt oder geordnet – und was hat sich dadurch verändert?',
+    cathedralMoment: [
+      'Du schaffst nicht einfach Ordnung in deinen Finanzen.',
+      'Du machst sichtbar, worauf du künftig bewusst aufbauen kannst.',
+      'Klarheit ist der Moment, in dem aus Druck wieder Richtung wird.',
+    ],
+    structuredFields: true,
+    sectionIcons: {
+      'Deine aktuelle finanzielle Ausgangslage': BarChart3,
+      'Was bereits gut ist': Star,
+      'Wo dir aktuell Klarheit fehlt': Eye,
+      'Deine nächsten Schritte': CheckSquare,
+      'Das hast du sichtbar gemacht': Star,
+      'Warum das wichtig ist': Target,
+      'Was das für deine nächsten Entscheidungen bedeutet': TrendingUp,
+    },
+  },
   ziele: { title: 'Ziele', desc: 'Definiere klare, messbare Finanzziele mit konkreten Zeitrahmen.', icon: Target, implemented: false },
   struktur: { title: 'Struktur', desc: 'Organisiere deine Konten, Budgets und Geldflüsse sauber und nachvollziehbar.', icon: LayoutGrid, implemented: false },
   absicherung: { title: 'Absicherung', desc: 'Stelle sicher, dass die wichtigsten Risiken richtig abgesichert sind.', icon: Shield, implemented: false },
@@ -38,15 +112,8 @@ const moduleData: Record<string, { title: string; desc: string; icon: React.Elem
   review: { title: 'Review', desc: 'Überprüfe regelmässig deine Fortschritte und passe deine Strategie an.', icon: RotateCcw, implemented: false },
 };
 
-const mindsetQuestions = [
-  'Was hast du in deiner Kindheit über Geld gelernt?',
-  'Wie denkst du heute über Geld? (z. B. Sicherheit, Stress, Freiheit, Risiko)',
-  'Was ist aktuell deine grösste Angst im Zusammenhang mit Geld?',
-  'Was würdest du gerne finanziell erreichen, traust es dir aber noch nicht ganz zu?',
-  'Wenn du ehrlich bist: Was hält dich aktuell am meisten zurück?',
-];
-
 // ─── Speech Input ─────────────────────────────────────────────────
+
 function SpeechInput({
   value,
   onChange,
@@ -61,7 +128,6 @@ function SpeechInput({
   const { isListening, isSupported, finalText, interimText, startListening, stopListening, resetTranscript } = useSpeechToText();
   const prevFinalRef = useRef('');
 
-  // Only append truly new final text (avoids double insertions)
   useEffect(() => {
     if (finalText && finalText !== prevFinalRef.current) {
       const newPart = finalText.slice(prevFinalRef.current.length).trim();
@@ -120,17 +186,10 @@ function SpeechInput({
 }
 
 // ─── Analysis result renderer ────────────────────────────────────
-function AnalysisResult({ content }: { content: string }) {
+
+function AnalysisResult({ content, sectionIcons }: { content: string; sectionIcons?: Record<string, React.ElementType> }) {
   const sections = content.split(/(?=## )/).filter(Boolean);
-  const sectionIcons: Record<string, React.ElementType> = {
-    'Deine aktuelle Denkweise': Brain,
-    'Was dich aktuell bremst': Shield,
-    'Neue Perspektive': Sparkles,
-    'Deine nächsten Schritte': CheckSquare,
-    'Das hast du erreicht': Star,
-    'Warum das wichtig ist': Target,
-    'Was das für deine Zukunft bedeutet': TrendingUp,
-  };
+  const icons = sectionIcons || {};
 
   return (
     <div className="space-y-3">
@@ -138,7 +197,7 @@ function AnalysisResult({ content }: { content: string }) {
         const titleMatch = section.match(/^## (.+)/);
         const title = titleMatch ? titleMatch[1].trim() : '';
         const body = section.replace(/^## .+\n?/, '').trim();
-        const SIcon = sectionIcons[title] || BarChart3;
+        const SIcon = icons[title] || BarChart3;
         return (
           <Card key={idx} className="overflow-hidden">
             <CardContent className="p-4">
@@ -157,24 +216,135 @@ function AnalysisResult({ content }: { content: string }) {
   );
 }
 
+// ─── Structured Fields for Klarheit ──────────────────────────────
+
+interface StructuredData {
+  income: string;
+  expenses: string;
+  savings: string;
+  debts: string;
+  accounts: string;
+  hasBudget: string;
+  insuranceOverview: string;
+  pensionOverview: string;
+}
+
+function StructuredFields({
+  data,
+  onChange,
+}: {
+  data: StructuredData;
+  onChange: (d: StructuredData) => void;
+}) {
+  const update = (key: keyof StructuredData, val: string) => onChange({ ...data, [key]: val });
+
+  const fields: { key: keyof StructuredData; label: string; icon: React.ElementType; type: 'text' | 'select'; placeholder?: string; options?: string[] }[] = [
+    { key: 'income', label: 'Monatliches Einkommen (ca.)', icon: DollarSign, type: 'text', placeholder: 'z. B. 6000' },
+    { key: 'expenses', label: 'Monatliche Ausgaben (ca.)', icon: CreditCard, type: 'text', placeholder: 'z. B. 4500' },
+    { key: 'savings', label: 'Erspartes / Notgroschen (ca.)', icon: PiggyBank, type: 'text', placeholder: 'z. B. 15000' },
+    { key: 'debts', label: 'Schulden / offene Verpflichtungen', icon: CreditCard, type: 'text', placeholder: 'z. B. Leasing 300/Mt' },
+    { key: 'accounts', label: 'Anzahl Konten (ca.)', icon: ClipboardCheck, type: 'text', placeholder: 'z. B. 3' },
+    { key: 'hasBudget', label: 'Besteht ein Budget?', icon: ClipboardCheck, type: 'select', options: ['', 'Ja', 'Nein', 'Teilweise'] },
+    { key: 'insuranceOverview', label: 'Überblick über Versicherungen?', icon: Shield, type: 'select', options: ['', 'Ja', 'Nein', 'Teilweise'] },
+    { key: 'pensionOverview', label: 'Überblick über Vorsorge / Anlagen?', icon: TrendingUp, type: 'select', options: ['', 'Ja', 'Nein', 'Teilweise'] },
+  ];
+
+  return (
+    <Card>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <ClipboardCheck className="h-4 w-4 text-primary" />
+          <h3 className="font-semibold text-sm text-foreground">Schnellübersicht (optional)</h3>
+        </div>
+        <p className="text-xs text-muted-foreground">Diese Angaben helfen der Auswertung, sind aber nicht zwingend.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {fields.map(f => (
+            <div key={f.key} className="space-y-1">
+              <label className="text-xs font-medium text-foreground/80 flex items-center gap-1.5">
+                <f.icon className="h-3 w-3 text-muted-foreground" />
+                {f.label}
+              </label>
+              {f.type === 'select' ? (
+                <select
+                  value={data[f.key]}
+                  onChange={e => update(f.key, e.target.value)}
+                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  {f.options?.map(o => <option key={o} value={o}>{o || '—'}</option>)}
+                </select>
+              ) : (
+                <Input
+                  value={data[f.key]}
+                  onChange={e => update(f.key, e.target.value)}
+                  placeholder={f.placeholder}
+                  className="text-sm"
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ─── Clarity Score ───────────────────────────────────────────────
+
+function ClarityScore({ hasAnswers, hasStructured, hasAnalysis, hasReflection, tasksCreated }: {
+  hasAnswers: boolean;
+  hasStructured: boolean;
+  hasAnalysis: boolean;
+  hasReflection: boolean;
+  tasksCreated: boolean;
+}) {
+  let score = 0;
+  if (hasAnswers) score += 20;
+  if (hasStructured) score += 15;
+  if (hasAnalysis) score += 25;
+  if (hasReflection) score += 25;
+  if (tasksCreated) score += 15;
+
+  const level = score >= 80 ? 'Hoch' : score >= 40 ? 'Mittel' : 'Niedrig';
+  const levelColor = score >= 80 ? 'text-green-600' : score >= 40 ? 'text-amber-600' : 'text-muted-foreground';
+
+  return (
+    <Card>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Eye className="h-4 w-4 text-primary" />
+            <h3 className="font-semibold text-sm text-foreground">Dein Klarheitsgrad</h3>
+          </div>
+          <span className={cn('text-sm font-semibold', levelColor)}>{level}</span>
+        </div>
+        <Progress value={score} className="h-2" />
+        <p className="text-xs text-muted-foreground">{score}% – Je mehr du beantwortest und umsetzt, desto klarer wird dein Bild.</p>
+      </CardContent>
+    </Card>
+  );
+}
+
 // ─── Main component ──────────────────────────────────────────────
+
 export default function ClientPortalCoachModule() {
   const { moduleKey } = useParams<{ moduleKey: string }>();
   const { user } = useAuth();
   const { toast } = useToast();
   const mod = moduleKey ? moduleData[moduleKey] : null;
 
-  // Mindset state
+  // State
   const [answers, setAnswers] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState('');
   const [extractedTasks, setExtractedTasks] = useState<{ title: string; description: string }[]>([]);
   const [tasksCreated, setTasksCreated] = useState(false);
-
-  // Reflection state
   const [reflectionInput, setReflectionInput] = useState('');
   const [isReflecting, setIsReflecting] = useState(false);
   const [reflectionResult, setReflectionResult] = useState('');
+  const [structured, setStructured] = useState<StructuredData>({
+    income: '', expenses: '', savings: '', debts: '', accounts: '',
+    hasBudget: '', insuranceOverview: '', pensionOverview: '',
+  });
 
   if (!mod) {
     return (
@@ -187,8 +357,9 @@ export default function ClientPortalCoachModule() {
   }
 
   const Icon = mod.icon;
+  const currentModuleKey = moduleKey || 'mindset';
 
-  // Not yet implemented modules
+  // ─── Not yet implemented ─────────────────────────────────────
   if (!mod.implemented) {
     return (
       <ClientPortalLayout>
@@ -207,7 +378,6 @@ export default function ClientPortalCoachModule() {
             <CardContent className="p-6 flex flex-col items-center justify-center text-center">
               <Badge variant="muted" className="mb-3 text-[10px]">Kommt bald</Badge>
               <p className="text-sm text-muted-foreground">Dieses Modul wird in einer späteren Version freigeschaltet.</p>
-              <p className="text-xs text-muted-foreground mt-1">Starte zuerst mit dem Modul «Mindset», um dein Fundament zu legen.</p>
             </CardContent>
           </Card>
         </div>
@@ -215,10 +385,11 @@ export default function ClientPortalCoachModule() {
     );
   }
 
-  // ─── MINDSET HANDLERS ────────────────────────────────────────
+  // ─── Handlers ────────────────────────────────────────────────
+
   const handleAnalyze = async () => {
     if (answers.trim().length < 20) {
-      toast({ title: 'Bitte ausführlicher antworten', description: 'Nimm dir einen Moment und schreibe zu den Fragen, was dir spontan einfällt.', variant: 'destructive' });
+      toast({ title: 'Bitte ausführlicher antworten', description: 'Nimm dir einen Moment und beantworte die Fragen.', variant: 'destructive' });
       return;
     }
     setIsAnalyzing(true);
@@ -226,9 +397,12 @@ export default function ClientPortalCoachModule() {
     setExtractedTasks([]);
     setTasksCreated(false);
     try {
-      const { data, error } = await supabase.functions.invoke('coach-analyze', {
-        body: { type: 'analysis', userInput: answers },
-      });
+      const body: any = { type: 'analysis', userInput: answers, moduleKey: currentModuleKey };
+      if (mod.structuredFields) {
+        const hasAny = Object.values(structured).some(v => v !== '');
+        if (hasAny) body.structuredData = structured;
+      }
+      const { data, error } = await supabase.functions.invoke('coach-analyze', { body });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       setAnalysisResult(data.content || '');
@@ -245,14 +419,16 @@ export default function ClientPortalCoachModule() {
     try {
       const existingRaw = localStorage.getItem('coach_tasks');
       const existing: any[] = existingRaw ? JSON.parse(existingRaw) : [];
-      const newTasks = extractedTasks.map((t) => ({
+      const deadline = new Date();
+      deadline.setDate(deadline.getDate() + 3);
+      const newTasks = extractedTasks.map(t => ({
         id: crypto.randomUUID(),
         title: t.title,
         description: t.description,
         status: 'offen',
-        module: 'mindset',
+        module: currentModuleKey,
         created_at: new Date().toISOString(),
-        deadline: null,
+        deadline: deadline.toISOString(),
       }));
       localStorage.setItem('coach_tasks', JSON.stringify([...existing, ...newTasks]));
       setTasksCreated(true);
@@ -271,7 +447,7 @@ export default function ClientPortalCoachModule() {
     setReflectionResult('');
     try {
       const { data, error } = await supabase.functions.invoke('coach-analyze', {
-        body: { type: 'reflection', userInput: reflectionInput },
+        body: { type: 'reflection', userInput: reflectionInput, moduleKey: currentModuleKey },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -288,14 +464,14 @@ export default function ClientPortalCoachModule() {
     if (!content) return;
     const existingRaw = localStorage.getItem('coach_insights');
     const existing: any[] = existingRaw ? JSON.parse(existingRaw) : [];
-    const insight = {
+    existing.push({
       id: crypto.randomUUID(),
-      title: source === 'reflection' ? 'Reflexion – Mindset' : 'Analyse – Mindset',
+      title: `${source === 'reflection' ? 'Reflexion' : 'Analyse'} – ${mod.title}`,
       description: content.slice(0, 300).replace(/##\s*/g, '').trim() + '...',
-      module: 'mindset',
+      module: currentModuleKey,
       created_at: new Date().toISOString(),
-    };
-    localStorage.setItem('coach_insights', JSON.stringify([...existing, insight]));
+    });
+    localStorage.setItem('coach_insights', JSON.stringify(existing));
     toast({ title: 'Erkenntnis gespeichert' });
   };
 
@@ -303,51 +479,47 @@ export default function ClientPortalCoachModule() {
     if (!reflectionResult) return;
     const existingRaw = localStorage.getItem('coach_achievements');
     const existing: any[] = existingRaw ? JSON.parse(existingRaw) : [];
-    const achievement = {
+    existing.push({
       id: crypto.randomUUID(),
-      title: 'Mindset-Reflexion abgeschlossen',
+      title: `${mod.title}-Reflexion abgeschlossen`,
       description: reflectionInput.slice(0, 200).trim(),
-      module: 'mindset',
+      module: currentModuleKey,
       created_at: new Date().toISOString(),
-    };
-    localStorage.setItem('coach_achievements', JSON.stringify([...existing, achievement]));
+    });
+    localStorage.setItem('coach_achievements', JSON.stringify(existing));
     toast({ title: 'Erfolg gespeichert! 🎉' });
   };
 
   const handleCopyTasks = () => {
     const text = extractedTasks.map((t, i) => `${i + 1}. ${t.title}\n   ${t.description}`).join('\n\n');
-    navigator.clipboard.writeText(text).then(() => {
-      toast({ title: 'Aufgaben kopiert' });
-    }).catch(() => {
-      toast({ title: 'Kopieren fehlgeschlagen', variant: 'destructive' });
-    });
+    navigator.clipboard.writeText(text).then(() => toast({ title: 'Aufgaben kopiert' })).catch(() => toast({ title: 'Kopieren fehlgeschlagen', variant: 'destructive' }));
   };
 
   const handleShare = async () => {
     const text = extractedTasks.map((t, i) => `${i + 1}. ${t.title}: ${t.description}`).join('\n');
     if (navigator.share) {
-      try {
-        await navigator.share({ title: 'Meine nächsten Schritte – Finanz-Coach', text });
-      } catch { /* cancelled */ }
+      try { await navigator.share({ title: `Nächste Schritte – ${mod.title}`, text }); } catch { /* cancelled */ }
     } else {
-      navigator.clipboard.writeText(text).then(() => {
-        toast({ title: 'In die Zwischenablage kopiert' });
-      });
+      navigator.clipboard.writeText(text).then(() => toast({ title: 'In die Zwischenablage kopiert' }));
     }
   };
 
+  const hasStructuredData = Object.values(structured).some(v => v !== '');
+
+  // ─── Render ──────────────────────────────────────────────────
+
   return (
     <ClientPortalLayout>
-      <ScreenHeader title="Mindset" showBack backTo="/app/client-portal/coach" />
+      <ScreenHeader title={mod.title} showBack backTo="/app/client-portal/coach" />
 
       <div className="max-w-2xl mx-auto space-y-5 p-4 pb-8">
         {/* Module header */}
         <div className="flex items-start gap-3">
           <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-            <Brain className="h-5 w-5 text-primary" />
+            <Icon className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-foreground">Mindset</h2>
+            <h2 className="text-lg font-bold text-foreground">{mod.title}</h2>
             <p className="text-sm text-muted-foreground mt-0.5 leading-relaxed whitespace-pre-line">{mod.desc}</p>
           </div>
         </div>
@@ -371,15 +543,34 @@ export default function ClientPortalCoachModule() {
           </CardContent>
         </Card>
 
+        {/* Clarity Score (only for klarheit) */}
+        {currentModuleKey === 'klarheit' && (
+          <ClarityScore
+            hasAnswers={answers.trim().length >= 20}
+            hasStructured={hasStructuredData}
+            hasAnalysis={!!analysisResult}
+            hasReflection={!!reflectionResult}
+            tasksCreated={tasksCreated}
+          />
+        )}
+
+        {/* Structured fields (optional, klarheit only) */}
+        {mod.structuredFields && (
+          <StructuredFields data={structured} onChange={setStructured} />
+        )}
+
         {/* Questions */}
         <Card>
           <CardContent className="p-4 space-y-4">
             <div className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4 text-primary" />
-              <h3 className="font-semibold text-sm text-foreground">Fragen</h3>
+              <h3 className="font-semibold text-sm text-foreground">{mod.questionsTitle || 'Fragen'}</h3>
             </div>
+            {mod.questionsSubtitle && (
+              <p className="text-sm text-muted-foreground">{mod.questionsSubtitle}</p>
+            )}
             <div className="space-y-2">
-              {mindsetQuestions.map((q, i) => (
+              {(mod.questions || []).map((q, i) => (
                 <div key={i} className="flex items-start gap-2">
                   <span className="text-xs font-semibold text-primary mt-0.5 shrink-0">{i + 1}.</span>
                   <p className="text-sm text-foreground/80">{q}</p>
@@ -396,7 +587,7 @@ export default function ClientPortalCoachModule() {
               {isAnalyzing ? (
                 <><Loader2 className="h-4 w-4 animate-spin" /> Wird analysiert...</>
               ) : (
-                <><BarChart3 className="h-4 w-4" /> Antworten analysieren</>
+                <><BarChart3 className="h-4 w-4" /> {mod.analyzeLabel || 'Antworten analysieren'}</>
               )}
             </Button>
           </CardContent>
@@ -409,13 +600,12 @@ export default function ClientPortalCoachModule() {
               <Sparkles className="h-4 w-4 text-primary" />
               <h3 className="font-semibold text-sm text-foreground">Deine Auswertung</h3>
             </div>
-            <AnalysisResult content={analysisResult} />
+            <AnalysisResult content={analysisResult} sectionIcons={mod.sectionIcons} />
 
             <Button variant="outline" size="sm" onClick={() => saveInsight('analysis')} className="w-full">
               <BookOpen className="h-3.5 w-3.5" /> Als Erkenntnis speichern
             </Button>
 
-            {/* Task actions */}
             {extractedTasks.length > 0 && (
               <Card className="border-primary/20 bg-primary/5">
                 <CardContent className="p-4 space-y-3">
@@ -455,9 +645,7 @@ export default function ClientPortalCoachModule() {
                 <Lightbulb className="h-4 w-4 text-primary" />
                 <h3 className="font-semibold text-sm text-foreground">Reflexion</h3>
               </div>
-              <p className="text-sm text-muted-foreground">
-                Was hast du konkret umgesetzt und was hat sich dadurch verändert?
-              </p>
+              <p className="text-sm text-muted-foreground">{mod.reflectionQuestion}</p>
               <SpeechInput
                 value={reflectionInput}
                 onChange={setReflectionInput}
@@ -482,8 +670,7 @@ export default function ClientPortalCoachModule() {
               <Lightbulb className="h-4 w-4 text-primary" />
               <h3 className="font-semibold text-sm text-foreground">Deine Reflexion</h3>
             </div>
-            <AnalysisResult content={reflectionResult} />
-
+            <AnalysisResult content={reflectionResult} sectionIcons={mod.sectionIcons} />
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={() => saveInsight('reflection')} className="flex-1">
                 <BookOpen className="h-3.5 w-3.5" /> Als Erkenntnis speichern
@@ -496,17 +683,18 @@ export default function ClientPortalCoachModule() {
         )}
 
         {/* Kathedralen-Moment */}
-        {(analysisResult || reflectionResult) && (
+        {(analysisResult || reflectionResult) && mod.cathedralMoment && (
           <Card className="bg-primary/5 border-primary/10">
             <CardContent className="p-5 text-center space-y-2">
               <Sparkles className="h-5 w-5 text-primary mx-auto" />
-              <p className="text-sm font-medium text-foreground leading-relaxed">
-                Du arbeitest nicht einfach an deinen Finanzen.
-              </p>
-              <p className="text-sm text-foreground/80 leading-relaxed">
-                Du baust Schritt für Schritt dein Fundament für ein selbstbestimmtes Leben.
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">Jede kleine Entscheidung zählt.</p>
+              {mod.cathedralMoment.map((line, i) => (
+                <p key={i} className={cn(
+                  'leading-relaxed',
+                  i === 0 ? 'text-sm font-medium text-foreground' :
+                  i === mod.cathedralMoment!.length - 1 ? 'text-xs text-muted-foreground mt-1' :
+                  'text-sm text-foreground/80'
+                )}>{line}</p>
+              ))}
             </CardContent>
           </Card>
         )}
