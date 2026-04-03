@@ -135,14 +135,11 @@ export default function AdminNotifications() {
   };
 
   // Sync exclusions when they load for editing
-  const prevExclusionsRef = useState<string | null>(null);
-  if (editingId && existingExclusions) {
-    const key = JSON.stringify(existingExclusions);
-    if (prevExclusionsRef[0] !== key) {
-      prevExclusionsRef[1](key);
+  useEffect(() => {
+    if (editingId && existingExclusions) {
       setExcludedUserIds(existingExclusions);
     }
-  }
+  }, [editingId, existingExclusions]);
 
   const handleSave = async () => {
     if (!form.title.trim() || !form.body.trim()) {
