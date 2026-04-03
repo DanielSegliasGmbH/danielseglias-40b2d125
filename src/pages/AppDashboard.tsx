@@ -161,8 +161,8 @@ export default function AppDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="flex flex-wrap gap-3 mb-8">
-          <Button onClick={() => setCreateCustomerOpen(true)}>
+        <div className="flex flex-wrap gap-2 sm:gap-3 mb-6 sm:mb-8">
+          <Button onClick={() => setCreateCustomerOpen(true)} className="flex-1 sm:flex-none">
             {t('customer.createTitle', 'Neuen Kunden anlegen')}
           </Button>
           <CreateCustomerDialog open={createCustomerOpen} onOpenChange={setCreateCustomerOpen} />
