@@ -335,7 +335,37 @@ const moduleData: Record<string, ModuleConfig> = {
       'Was sich jetzt verändert': TrendingUp,
     },
   },
-  review: { title: 'Review', desc: 'Überprüfe regelmässig deine Fortschritte und passe deine Strategie an.', icon: RotateCcw, implemented: false },
+  review: {
+    title: 'Review',
+    desc: 'In diesem Modul schaust du zurück auf deinen bisherigen Weg.\n\nDu erkennst, was du erreicht hast, was sich verändert hat und wo du heute stehst.\n\nZiel ist es, Klarheit über deinen Fortschritt zu bekommen und bewusst weiterzugehen.',
+    icon: RotateCcw,
+    implemented: true,
+    questions: [
+      'Was hast du durch diesen Prozess gelernt?',
+      'Was hat sich konkret verändert?',
+      'Worauf bist du stolz?',
+      'Was würdest du heute anders machen als vorher?',
+      'Was ist dein nächster logischer Schritt?',
+    ],
+    questionsTitle: 'Dein Rückblick',
+    questionsSubtitle: 'Nimm dir einen Moment und blicke ehrlich zurück auf deinen bisherigen Weg.',
+    analyzeLabel: 'Review auswerten',
+    reflectionQuestion: 'Was nimmst du aus diesem gesamten Prozess mit – und wie gehst du weiter?',
+    cathedralMoment: [
+      'Du bist nicht mehr dort, wo du gestartet bist.',
+      'Du hast verstanden, entschieden und gehandelt.',
+      'Und das ist der Unterschied.',
+    ],
+    sectionIcons: {
+      'Dein Weg bis hierhin': RotateCcw,
+      'Was sich verändert hat': TrendingUp,
+      'Worauf du stolz sein kannst': Star,
+      'Dein nächster Schritt': CheckSquare,
+      'Das nimmst du mit': Star,
+      'Warum das wichtig ist': Target,
+      'Wie du weitergehst': TrendingUp,
+    },
+  },
 };
 
 // ─── Speech Input ─────────────────────────────────────────────────
