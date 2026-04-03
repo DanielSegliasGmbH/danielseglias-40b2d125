@@ -9,7 +9,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   ClipboardList, CheckCircle2, Circle, Brain, Trash2, BookOpen, Trophy, Clock,
-  Loader2, Calendar,
+  Loader2, Calendar, Eye,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
