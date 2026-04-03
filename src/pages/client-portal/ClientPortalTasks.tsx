@@ -34,6 +34,7 @@ interface CoachInsight {
 const moduleIcons: Record<string, React.ElementType> = {
   mindset: Brain,
   klarheit: Eye,
+  ziele: Target,
 };
 
 function useLocalList<T>(key: string) {
