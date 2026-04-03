@@ -47,10 +47,23 @@ export function useClientNotifications() {
       const { data: notifications, error } = await query;
       if (error) throw error;
 
-      // Filter: not expired, not excluded
+      // Get user's role for target_role filtering
+      const { data: userRoleData } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user!.id)
+        .maybeSingle();
+      const userRole = userRoleData?.role || 'client';
+
+      // Filter: not expired, not excluded, matching target_role
       const visible = (notifications || []).filter(n => {
         if (excludedIds.has(n.id)) return false;
-        if ((n as any).expires_at && new Date((n as any).expires_at) < new Date()) return false;
+        if (n.expires_at && new Date(n.expires_at) < new Date()) return false;
+        // target_role filtering
+        const target = n.target_role || 'client';
+        if (target === 'client' && userRole !== 'client') return false;
+        if (target === 'staff' && userRole !== 'staff' && userRole !== 'admin') return false;
+        // 'all' = everyone sees it
         return true;
       });
 

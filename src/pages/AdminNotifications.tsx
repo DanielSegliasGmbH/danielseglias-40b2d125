@@ -134,12 +134,15 @@ export default function AdminNotifications() {
     setDialogOpen(true);
   };
 
-  // Sync exclusions when they load
-  useState(() => {
-    if (existingExclusions && editingId) {
+  // Sync exclusions when they load for editing
+  const prevExclusionsRef = useState<string | null>(null);
+  if (editingId && existingExclusions) {
+    const key = JSON.stringify(existingExclusions);
+    if (prevExclusionsRef[0] !== key) {
+      prevExclusionsRef[1](key);
       setExcludedUserIds(existingExclusions);
     }
-  });
+  }
 
   const handleSave = async () => {
     if (!form.title.trim() || !form.body.trim()) {
