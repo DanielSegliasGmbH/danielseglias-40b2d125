@@ -12,50 +12,49 @@ export interface UserWithRole {
   phone: string | null;
   role: AppRole | null;
   customer_id: string | null;
+  created_at: string | null;
+  last_sign_in_at: string | null;
+  email_confirmed_at: string | null;
+  invited_at: string | null;
+  confirmed_at: string | null;
+  is_confirmed: boolean;
+}
+
+export type UserStatus = 'active' | 'invited' | 'not_activated' | 'no_role';
+
+export function getUserStatus(user: UserWithRole): UserStatus {
+  if (!user.role) return 'no_role';
+  if (!user.is_confirmed) return 'invited';
+  if (!user.last_sign_in_at) return 'not_activated';
+  return 'active';
+}
+
+export function getUserStatusLabel(status: UserStatus): string {
+  switch (status) {
+    case 'active': return 'Aktiv';
+    case 'invited': return 'Einladung offen';
+    case 'not_activated': return 'Noch nicht eingeloggt';
+    case 'no_role': return 'Keine Rolle';
+  }
+}
+
+export function getUserStatusColor(status: UserStatus): string {
+  switch (status) {
+    case 'active': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
+    case 'invited': return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400';
+    case 'not_activated': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400';
+    case 'no_role': return 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400';
+  }
 }
 
 export function useAllUsers() {
   return useQuery({
     queryKey: ['admin', 'users'],
     queryFn: async () => {
-      // Fetch profiles
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('last_name', { ascending: true });
-
-      if (profilesError) throw profilesError;
-
-      // Fetch all roles (admin can see all)
-      const { data: roles, error: rolesError } = await supabase
-        .from('user_roles')
-        .select('user_id, role');
-
-      if (rolesError) throw rolesError;
-
-      // Fetch customer_users mappings
-      const { data: customerUsers, error: customerUsersError } = await supabase
-        .from('customer_users')
-        .select('user_id, customer_id');
-
-      if (customerUsersError) throw customerUsersError;
-
-      // Combine data
-      const users: UserWithRole[] = profiles.map((profile) => {
-        const userRole = roles?.find((r) => r.user_id === profile.id);
-        const customerUser = customerUsers?.find((cu) => cu.user_id === profile.id);
-        return {
-          id: profile.id,
-          email: '',
-          first_name: profile.first_name,
-          last_name: profile.last_name,
-          phone: profile.phone,
-          role: userRole?.role || null,
-          customer_id: customerUser?.customer_id || null,
-        };
-      });
-
-      return users;
+      const { data, error } = await supabase.functions.invoke('admin-list-users');
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return (data?.users || []) as UserWithRole[];
     },
   });
 }
@@ -65,7 +64,6 @@ export function useUpdateUserRole() {
 
   return useMutation({
     mutationFn: async ({ userId, role }: { userId: string; role: AppRole | null }) => {
-      // First, delete existing role
       const { error: deleteError } = await supabase
         .from('user_roles')
         .delete()
@@ -73,7 +71,6 @@ export function useUpdateUserRole() {
 
       if (deleteError) throw deleteError;
 
-      // If new role is set, insert it
       if (role) {
         const { error: insertError } = await supabase
           .from('user_roles')
@@ -90,13 +87,11 @@ export function useUpdateUserRole() {
   });
 }
 
-// Link customer to user
 export function useLinkCustomerToUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ userId, customerId }: { userId: string; customerId: string }) => {
-      // Check if user already has a customer link
       const { data: existing } = await supabase
         .from('customer_users')
         .select('id')
@@ -104,19 +99,15 @@ export function useLinkCustomerToUser() {
         .maybeSingle();
 
       if (existing) {
-        // Update existing
         const { error } = await supabase
           .from('customer_users')
           .update({ customer_id: customerId })
           .eq('user_id', userId);
-
         if (error) throw error;
       } else {
-        // Insert new
         const { error } = await supabase
           .from('customer_users')
           .insert({ user_id: userId, customer_id: customerId });
-
         if (error) throw error;
       }
 
@@ -145,6 +136,26 @@ export function useCreateUser() {
           ...data,
           customerId: data.customerId,
         },
+      });
+
+      if (error) throw error;
+      if (result?.error) throw new Error(result.error);
+
+      return result;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+    },
+  });
+}
+
+export function useResendInvite() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const { data: result, error } = await supabase.functions.invoke('admin-resend-invite', {
+        body: { userId },
       });
 
       if (error) throw error;
