@@ -956,6 +956,7 @@ export default function ClientPortalCoachModule() {
   const hasGoalFieldData = Object.values(goalFields).some(v => v !== '');
   const hasStrukturFieldData = Object.values(strukturFields).some(v => v !== '');
   const hasAbsicherungFieldData = Object.values(absicherungFields).some(v => v !== '');
+  const hasOptimierungFieldData = Object.values(optimierungFields).some(v => v !== '');
 
   const saveGoals = () => {
     if (!analysisResult) return;
