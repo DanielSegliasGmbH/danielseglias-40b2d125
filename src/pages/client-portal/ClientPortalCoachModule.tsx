@@ -828,6 +828,66 @@ function InvestmentFields({
   );
 }
 
+// ─── Structured Fields for Skalierung ────────────────────────────
+
+interface SkalierungData {
+  incomeType: string;
+  growthPotential: string;
+  additionalSources: string;
+}
+
+function SkalierungFields({
+  data,
+  onChange,
+}: {
+  data: SkalierungData;
+  onChange: (d: SkalierungData) => void;
+}) {
+  const update = (key: keyof SkalierungData, val: string) => onChange({ ...data, [key]: val });
+  const selectClass = "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
+  return (
+    <Card>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Rocket className="h-4 w-4 text-primary" />
+          <h3 className="font-semibold text-sm text-foreground">Schnellübersicht (optional)</h3>
+        </div>
+        <p className="text-xs text-muted-foreground">Diese Angaben helfen der Auswertung, sind aber nicht zwingend.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Einkommensart</label>
+            <select value={data.incomeType} onChange={e => update('incomeType', e.target.value)} className={selectClass}>
+              <option value="">—</option>
+              <option value="angestellt">Angestellt</option>
+              <option value="selbstständig">Selbstständig</option>
+              <option value="gemischt">Gemischt</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Wachstumspotenzial Gefühl</label>
+            <select value={data.growthPotential} onChange={e => update('growthPotential', e.target.value)} className={selectClass}>
+              <option value="">—</option>
+              <option value="niedrig">Niedrig</option>
+              <option value="mittel">Mittel</option>
+              <option value="hoch">Hoch</option>
+            </select>
+          </div>
+          <div className="space-y-1 sm:col-span-2">
+            <label className="text-xs font-medium text-foreground/80">Zusätzliche Einnahmequellen</label>
+            <select value={data.additionalSources} onChange={e => update('additionalSources', e.target.value)} className={selectClass}>
+              <option value="">—</option>
+              <option value="keine">Keine</option>
+              <option value="eine">Eine</option>
+              <option value="mehrere">Mehrere</option>
+            </select>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // ─── Module Score ────────────────────────────────────────────────
 
 function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasReflection, tasksCreated, goalsSaved }: {
