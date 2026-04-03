@@ -203,7 +203,39 @@ const moduleData: Record<string, ModuleConfig> = {
       'Was sich jetzt verändert': TrendingUp,
     },
   },
-  optimierung: { title: 'Optimierung', desc: 'Prüfe bestehende Verträge, Gebühren und Kosten – und verbessere sie gezielt.', icon: Settings2, implemented: false },
+  optimierung: {
+    title: 'Optimierung',
+    desc: 'In diesem Modul erkennst du, wo du aktuell finanzielles Potenzial liegen lässt.\n\nOft sind es kleine Dinge, die langfristig einen grossen Unterschied machen.\n\nZiel ist es, unnötige Kosten zu reduzieren, bessere Entscheidungen zu treffen und dein Geld gezielter für dich arbeiten zu lassen.',
+    icon: Settings2,
+    implemented: true,
+    questions: [
+      'Hast du schon einmal deine Kosten (z. B. Gebühren, Versicherungen, Anlagen) genauer angeschaut?',
+      'Weisst du, wie viel du jährlich an Gebühren oder versteckten Kosten zahlst?',
+      'Nutzt du steuerliche Vorteile (z. B. Vorsorge, Abzüge)?',
+      'Hast du aktuell Geld, das ungenutzt auf Konten liegt?',
+      'Hast du das Gefühl, dass dein Geld optimal für dich arbeitet?',
+      'Wo vermutest du selbst, dass du Potenzial liegen lässt?',
+    ],
+    questionsTitle: 'Dein aktuelles Optimierungspotenzial',
+    questionsSubtitle: 'Beschreibe ehrlich, wie du aktuell mit Kosten, Gebühren und Potenzial umgehst.',
+    analyzeLabel: 'Optimierung analysieren',
+    reflectionQuestion: 'Was hast du angepasst oder erkannt – und was hat sich dadurch verändert?',
+    cathedralMoment: [
+      'Du verdienst nicht nur Geld.',
+      'Du lernst, es bewusst für dich arbeiten zu lassen.',
+      'Optimierung ist der Unterschied zwischen Stillstand und Wachstum.',
+    ],
+    structuredFields: true,
+    sectionIcons: {
+      'Wo du aktuell Potenzial verlierst': Eye,
+      'Welche Hebel du hast': Settings2,
+      'Was das langfristig bedeutet': TrendingUp,
+      'Deine nächsten Schritte': CheckSquare,
+      'Das hast du optimiert': Star,
+      'Warum das wichtig ist': Target,
+      'Was sich daraus entwickelt': TrendingUp,
+    },
+  },
   investment: { title: 'Investment', desc: 'Lerne, dein Geld strategisch und langfristig für dich arbeiten zu lassen.', icon: TrendingUp, implemented: false },
   skalierung: { title: 'Skalierung', desc: 'Bringe deinen Vermögensaufbau auf die nächste Stufe mit fortgeschrittenen Strategien.', icon: Rocket, implemented: false },
   freiheit: { title: 'Freiheit', desc: 'Plane deine finanzielle Unabhängigkeit konkret und realistisch.', icon: Star, implemented: false },
@@ -602,6 +634,67 @@ function AbsicherungFields({
   );
 }
 
+// ─── Structured Fields for Optimierung ───────────────────────────
+
+interface OptimierungData {
+  has3a: string;
+  hasInvestments: string;
+  hasSavingsPlan: string;
+  feeling: string;
+}
+
+function OptimierungFields({
+  data,
+  onChange,
+}: {
+  data: OptimierungData;
+  onChange: (d: OptimierungData) => void;
+}) {
+  const update = (key: keyof OptimierungData, val: string) => onChange({ ...data, [key]: val });
+  const selectClass = "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
+  return (
+    <Card>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Settings2 className="h-4 w-4 text-primary" />
+          <h3 className="font-semibold text-sm text-foreground">Schnellübersicht (optional)</h3>
+        </div>
+        <p className="text-xs text-muted-foreground">Diese Angaben helfen der Auswertung, sind aber nicht zwingend.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Nutzt 3a / Vorsorge?</label>
+            <select value={data.has3a} onChange={e => update('has3a', e.target.value)} className={selectClass}>
+              <option value="">—</option><option value="Ja">Ja</option><option value="Nein">Nein</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Hat Investments?</label>
+            <select value={data.hasInvestments} onChange={e => update('hasInvestments', e.target.value)} className={selectClass}>
+              <option value="">—</option><option value="Ja">Ja</option><option value="Nein">Nein</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Hat Sparplan?</label>
+            <select value={data.hasSavingsPlan} onChange={e => update('hasSavingsPlan', e.target.value)} className={selectClass}>
+              <option value="">—</option><option value="Ja">Ja</option><option value="Nein">Nein</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Wie optimiert fühlst du dich?</label>
+            <select value={data.feeling} onChange={e => update('feeling', e.target.value)} className={selectClass}>
+              <option value="">—</option>
+              <option value="viel Potenzial offen">Viel Potenzial offen</option>
+              <option value="teilweise optimiert">Teilweise optimiert</option>
+              <option value="gut optimiert">Gut optimiert</option>
+            </select>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // ─── Module Score ────────────────────────────────────────────────
 
 function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasReflection, tasksCreated, goalsSaved }: {
@@ -626,6 +719,7 @@ function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasRef
     ziele: { title: 'Dein Zielfokus', icon: Target, levels: ['Unklar', 'Teilweise klar', 'Klar'], hint: 'Je klarer deine Ziele, desto leichter werden deine Entscheidungen.' },
     struktur: { title: 'Dein Struktur-Level', icon: LayoutGrid, levels: ['Chaotisch', 'Teilweise strukturiert', 'Klar organisiert'], hint: 'Einfache Systeme schaffen langfristig Kontrolle.' },
     absicherung: { title: 'Dein Sicherheitsgefühl', icon: Shield, levels: ['Unsicher', 'Teilweise abgesichert', 'Klar abgesichert'], hint: 'Klarheit über deine Risiken gibt dir Sicherheit.' },
+    optimierung: { title: 'Dein Optimierungsgrad', icon: Settings2, levels: ['Viel Potenzial offen', 'Teilweise optimiert', 'Gut optimiert'], hint: 'Kleine Anpassungen machen langfristig den Unterschied.' },
   };
   const cfg = scoreConfig[moduleKey] || scoreConfig.klarheit;
   const SIcon = cfg.icon;
@@ -679,6 +773,9 @@ export default function ClientPortalCoachModule() {
   });
   const [absicherungFields, setAbsicherungFields] = useState<AbsicherungData>({
     hasHealth: '', hasDisability: '', hasLiability: '', hasAdditional: '', feeling: '',
+  });
+  const [optimierungFields, setOptimierungFields] = useState<OptimierungData>({
+    has3a: '', hasInvestments: '', hasSavingsPlan: '', feeling: '',
   });
 
   if (!mod) {
@@ -748,6 +845,10 @@ export default function ClientPortalCoachModule() {
       if (mod.structuredFields && currentModuleKey === 'absicherung') {
         const hasAny = Object.values(absicherungFields).some(v => v !== '');
         if (hasAny) body.structuredData = absicherungFields;
+      }
+      if (mod.structuredFields && currentModuleKey === 'optimierung') {
+        const hasAny = Object.values(optimierungFields).some(v => v !== '');
+        if (hasAny) body.structuredData = optimierungFields;
       }
       const { data, error } = await supabase.functions.invoke('coach-analyze', { body });
       if (error) throw error;
@@ -855,6 +956,7 @@ export default function ClientPortalCoachModule() {
   const hasGoalFieldData = Object.values(goalFields).some(v => v !== '');
   const hasStrukturFieldData = Object.values(strukturFields).some(v => v !== '');
   const hasAbsicherungFieldData = Object.values(absicherungFields).some(v => v !== '');
+  const hasOptimierungFieldData = Object.values(optimierungFields).some(v => v !== '');
 
   const saveGoals = () => {
     if (!analysisResult) return;
@@ -925,11 +1027,11 @@ export default function ClientPortalCoachModule() {
         </Card>
 
         {/* Module Score */}
-        {(['klarheit', 'ziele', 'struktur', 'absicherung'].includes(currentModuleKey)) && (
+        {(['klarheit', 'ziele', 'struktur', 'absicherung', 'optimierung'].includes(currentModuleKey)) && (
           <ModuleScore
             moduleKey={currentModuleKey}
             hasAnswers={answers.trim().length >= 20}
-            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : currentModuleKey === 'ziele' ? hasGoalFieldData : currentModuleKey === 'absicherung' ? hasAbsicherungFieldData : hasStrukturFieldData}
+            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : currentModuleKey === 'ziele' ? hasGoalFieldData : currentModuleKey === 'absicherung' ? hasAbsicherungFieldData : currentModuleKey === 'optimierung' ? hasOptimierungFieldData : hasStrukturFieldData}
             hasAnalysis={!!analysisResult}
             hasReflection={!!reflectionResult}
             tasksCreated={tasksCreated}
@@ -955,6 +1057,11 @@ export default function ClientPortalCoachModule() {
         {/* Structured fields for absicherung */}
         {mod.structuredFields && currentModuleKey === 'absicherung' && (
           <AbsicherungFields data={absicherungFields} onChange={setAbsicherungFields} />
+        )}
+
+        {/* Structured fields for optimierung */}
+        {mod.structuredFields && currentModuleKey === 'optimierung' && (
+          <OptimierungFields data={optimierungFields} onChange={setOptimierungFields} />
         )}
 
         {/* Questions */}
