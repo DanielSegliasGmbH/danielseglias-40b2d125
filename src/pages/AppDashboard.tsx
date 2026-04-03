@@ -109,6 +109,8 @@ export default function AppDashboard() {
           </p>
         </div>
 
+        <NotificationPrompt className="mb-6" />
+
         {/* KPI Tiles */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <Card>
