@@ -365,6 +365,22 @@ function App() {
                   </RouteGuard>
                 }
               />
+              <Route
+                path="/app/client-portal/coach"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalCoach />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/coach/:moduleKey"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalCoachModule />
+                  </RouteGuard>
+                }
+              />
 
               {/* Protected: Admin only - Courses */}
               <Route

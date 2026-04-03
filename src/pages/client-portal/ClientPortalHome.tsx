@@ -56,7 +56,7 @@ export default function ClientPortalHome() {
   };
 
   // Split: primary sections (in bottom nav) vs secondary (in "Mehr")
-  const primaryKeys = ['tools', 'library', 'strategies'];
+  const primaryKeys = ['coach', 'tools', 'library', 'strategies'];
   const primarySections = visibleSections.filter(s => primaryKeys.includes(s.key));
   const secondarySections = visibleSections.filter(s => !primaryKeys.includes(s.key));
 
