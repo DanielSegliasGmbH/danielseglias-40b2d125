@@ -34,7 +34,7 @@ export default function ClientPortalCoach() {
   const navigate = useNavigate();
 
   // Static progress for now
-  const completedCount = modules.filter(m => m.status === 'completed').length;
+  const completedCount = modules.filter(m => (m.status as string) === 'completed').length;
   const progressPercent = Math.round((completedCount / modules.length) * 100);
 
   return (
