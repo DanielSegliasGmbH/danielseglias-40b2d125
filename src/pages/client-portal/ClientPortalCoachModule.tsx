@@ -634,6 +634,65 @@ function AbsicherungFields({
   );
 }
 
+// ─── Structured Fields for Optimierung ───────────────────────────
+
+interface OptimierungData {
+  has3a: string;
+  hasInvestments: string;
+  hasSavingsPlan: string;
+  feeling: string;
+}
+
+function OptimierungFields({
+  data,
+  onChange,
+}: {
+  data: OptimierungData;
+  onChange: (d: OptimierungData) => void;
+}) {
+  const update = (key: keyof OptimierungData, val: string) => onChange({ ...data, [key]: val });
+  const selectClass = "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
+  return (
+    <Card>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Settings2 className="h-4 w-4 text-primary" />
+          <h3 className="font-semibold text-sm text-foreground">Schnellübersicht (optional)</h3>
+        </div>
+        <p className="text-xs text-muted-foreground">Diese Angaben helfen der Auswertung, sind aber nicht zwingend.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Nutzt 3a / Vorsorge?</label>
+            <select value={data.has3a} onChange={e => update('has3a', e.target.value)} className={selectClass}>
+              <option value="">—</option><option value="Ja">Ja</option><option value="Nein">Nein</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Hat Investments?</label>
+            <select value={data.hasInvestments} onChange={e => update('hasInvestments', e.target.value)} className={selectClass}>
+              <option value="">—</option><option value="Ja">Ja</option><option value="Nein">Nein</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Hat Sparplan?</label>
+            <select value={data.hasSavingsPlan} onChange={e => update('hasSavingsPlan', e.target.value)} className={selectClass}>
+              <option value="">—</option><option value="Ja">Ja</option><option value="Nein">Nein</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Wie optimiert fühlst du dich?</label>
+            <select value={data.feeling} onChange={e => update('feeling', e.target.value)} className={selectClass}>
+              <option value="">—</option>
+              <option value="viel Potenzial offen">Viel Potenzial offen</option>
+              <option value="teilweise optimiert">Teilweise optimiert</option>
+              <option value="gut optimiert">Gut optimiert</option>
+            </select>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+
 // ─── Module Score ────────────────────────────────────────────────
 
 function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasReflection, tasksCreated, goalsSaved }: {
