@@ -91,9 +91,8 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
   };
 
   const visibleSections = portalSections.filter(section => {
-    if (!settings) return true; // Show all if no settings (default)
-    const settingKey = `show_${section.key}` as keyof typeof settings;
-    return settings[settingKey] !== false;
+    if (!settings) return true; // Show all if no settings (admin without preview)
+    return settings[section.settingsKey] !== false;
   });
 
   const handleLogout = async () => {
