@@ -9,6 +9,8 @@ import { OfflineBanner } from "@/components/OfflineBanner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import ResetPassword from "./pages/ResetPassword";
+import AdminNotifications from "./pages/AdminNotifications";
 import Onboarding from "./pages/Onboarding";
 import AppDashboard from "./pages/AppDashboard";
 import UserManagement from "./pages/UserManagement";
