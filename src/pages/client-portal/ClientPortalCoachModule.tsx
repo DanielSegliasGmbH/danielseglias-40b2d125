@@ -676,20 +676,27 @@ export default function ClientPortalCoachModule() {
           </CardContent>
         </Card>
 
-        {/* Clarity Score (only for klarheit) */}
-        {currentModuleKey === 'klarheit' && (
-          <ClarityScore
+        {/* Module Score (klarheit + ziele) */}
+        {(currentModuleKey === 'klarheit' || currentModuleKey === 'ziele') && (
+          <ModuleScore
+            moduleKey={currentModuleKey}
             hasAnswers={answers.trim().length >= 20}
-            hasStructured={hasStructuredData}
+            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : hasGoalFieldData}
             hasAnalysis={!!analysisResult}
             hasReflection={!!reflectionResult}
             tasksCreated={tasksCreated}
+            goalsSaved={goalsSaved}
           />
         )}
 
-        {/* Structured fields (optional, klarheit only) */}
-        {mod.structuredFields && (
+        {/* Structured fields for klarheit */}
+        {mod.structuredFields && currentModuleKey === 'klarheit' && (
           <StructuredFields data={structured} onChange={setStructured} />
+        )}
+
+        {/* Structured fields for ziele */}
+        {mod.structuredFields && currentModuleKey === 'ziele' && (
+          <GoalFields data={goalFields} onChange={setGoalFields} />
         )}
 
         {/* Questions */}
