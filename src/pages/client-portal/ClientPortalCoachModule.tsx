@@ -925,11 +925,11 @@ export default function ClientPortalCoachModule() {
         </Card>
 
         {/* Module Score */}
-        {(currentModuleKey === 'klarheit' || currentModuleKey === 'ziele' || currentModuleKey === 'struktur') && (
+        {(['klarheit', 'ziele', 'struktur', 'absicherung'].includes(currentModuleKey)) && (
           <ModuleScore
             moduleKey={currentModuleKey}
             hasAnswers={answers.trim().length >= 20}
-            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : currentModuleKey === 'ziele' ? hasGoalFieldData : hasStrukturFieldData}
+            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : currentModuleKey === 'ziele' ? hasGoalFieldData : currentModuleKey === 'absicherung' ? hasAbsicherungFieldData : hasStrukturFieldData}
             hasAnalysis={!!analysisResult}
             hasReflection={!!reflectionResult}
             tasksCreated={tasksCreated}
