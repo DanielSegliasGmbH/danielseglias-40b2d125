@@ -303,7 +303,38 @@ const moduleData: Record<string, ModuleConfig> = {
       'Was du jetzt anders siehst': TrendingUp,
     },
   },
-  freiheit: { title: 'Freiheit', desc: 'Plane deine finanzielle Unabhängigkeit konkret und realistisch.', icon: Star, implemented: false },
+  freiheit: {
+    title: 'Freiheit',
+    desc: 'In diesem Modul geht es nicht um Zahlen, sondern um dein Leben.\n\nDu definierst, was finanzielle Freiheit für dich bedeutet und wofür du dein Geld wirklich einsetzen willst.\n\nZiel ist es, deinem Weg eine klare Richtung zu geben.',
+    icon: Star,
+    implemented: true,
+    questions: [
+      'Was würdest du tun, wenn Geld keine Rolle spielen würde?',
+      'Wie würdest du deinen Alltag gestalten?',
+      'Was ist dir im Leben wirklich wichtig?',
+      'Welche Dinge würdest du mehr tun – und welche weniger?',
+      'Wie sieht ein Leben aus, das sich für dich wirklich richtig anfühlt?',
+      'Was möchtest du später einmal nicht bereuen?',
+    ],
+    questionsTitle: 'Was bedeutet Freiheit für dich?',
+    questionsSubtitle: 'Nimm dir einen ruhigen Moment. Es geht hier nicht um richtig oder falsch – sondern um dich.',
+    analyzeLabel: 'Freiheit reflektieren',
+    reflectionQuestion: 'Was hat sich durch dieses Modul in deiner Sicht auf dein Leben verändert?',
+    cathedralMoment: [
+      'Du arbeitest nicht nur für Geld.',
+      'Du gestaltest dein Leben.',
+      'Freiheit beginnt dort, wo du bewusst entscheidest.',
+    ],
+    sectionIcons: {
+      'Was dir wirklich wichtig ist': Star,
+      'Was dahinter steckt': Eye,
+      'Was Freiheit für dich bedeutet': Sparkles,
+      'Deine nächsten Schritte': CheckSquare,
+      'Das hast du erkannt': Star,
+      'Warum das wichtig ist': Target,
+      'Was sich jetzt verändert': TrendingUp,
+    },
+  },
   review: { title: 'Review', desc: 'Überprüfe regelmässig deine Fortschritte und passe deine Strategie an.', icon: RotateCcw, implemented: false },
 };
 
@@ -915,6 +946,7 @@ function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasRef
     optimierung: { title: 'Dein Optimierungsgrad', icon: Settings2, levels: ['Viel Potenzial offen', 'Teilweise optimiert', 'Gut optimiert'], hint: 'Kleine Anpassungen machen langfristig den Unterschied.' },
     investment: { title: 'Dein Investment-Verständnis', icon: TrendingUp, levels: ['Unsicher', 'Grundlegend verstanden', 'Klar orientiert'], hint: 'Je besser du Investieren verstehst, desto sicherer wirst du.' },
     skalierung: { title: 'Dein Wachstumspotenzial', icon: Rocket, levels: ['Kaum genutzt', 'Teilweise genutzt', 'Aktiv genutzt'], hint: 'Je bewusster du deine Möglichkeiten nutzt, desto grösser wird dein Spielfeld.' },
+    freiheit: { title: 'Dein Freiheitsgefühl', icon: Star, levels: ['Unklar', 'Teilweise klar', 'Klar'], hint: 'Je klarer du weisst, wofür du das alles machst, desto stärker wird deine Richtung.' },
   };
   const cfg = scoreConfig[moduleKey] || scoreConfig.klarheit;
   const SIcon = cfg.icon;
@@ -1238,11 +1270,11 @@ export default function ClientPortalCoachModule() {
         </Card>
 
         {/* Module Score */}
-        {(['klarheit', 'ziele', 'struktur', 'absicherung', 'optimierung', 'investment', 'skalierung'].includes(currentModuleKey)) && (
+        {(['klarheit', 'ziele', 'struktur', 'absicherung', 'optimierung', 'investment', 'skalierung', 'freiheit'].includes(currentModuleKey)) && (
           <ModuleScore
             moduleKey={currentModuleKey}
             hasAnswers={answers.trim().length >= 20}
-            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : currentModuleKey === 'ziele' ? hasGoalFieldData : currentModuleKey === 'absicherung' ? hasAbsicherungFieldData : currentModuleKey === 'optimierung' ? hasOptimierungFieldData : currentModuleKey === 'investment' ? hasInvestmentFieldData : currentModuleKey === 'skalierung' ? hasSkalierungFieldData : hasStrukturFieldData}
+            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : currentModuleKey === 'ziele' ? hasGoalFieldData : currentModuleKey === 'absicherung' ? hasAbsicherungFieldData : currentModuleKey === 'optimierung' ? hasOptimierungFieldData : currentModuleKey === 'investment' ? hasInvestmentFieldData : currentModuleKey === 'skalierung' ? hasSkalierungFieldData : currentModuleKey === 'freiheit' ? false : hasStrukturFieldData}
             hasAnalysis={!!analysisResult}
             hasReflection={!!reflectionResult}
             tasksCreated={tasksCreated}
