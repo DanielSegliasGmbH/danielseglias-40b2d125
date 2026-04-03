@@ -102,7 +102,40 @@ const moduleData: Record<string, ModuleConfig> = {
       'Was das für deine nächsten Entscheidungen bedeutet': TrendingUp,
     },
   },
-  ziele: { title: 'Ziele', desc: 'Definiere klare, messbare Finanzziele mit konkreten Zeitrahmen.', icon: Target, implemented: false },
+  ziele: {
+    title: 'Ziele',
+    desc: 'In diesem Modul definierst du, was du finanziell wirklich erreichen willst.\n\nNicht vage, nicht irgendwann, sondern so, dass daraus Richtung, Motivation und konkrete Entscheidungen entstehen.\n\nZiel ist es, aus allgemeinen Wünschen klare finanzielle Ziele zu machen, die zu deinem Leben passen.',
+    icon: Target,
+    implemented: true,
+    questions: [
+      'Was möchtest du finanziell in den nächsten 12 Monaten erreichen?',
+      'Was möchtest du finanziell in den nächsten 3 bis 5 Jahren erreichen?',
+      'Was bedeutet finanzielle Freiheit oder finanzielle Sicherheit für dich persönlich?',
+      'Welche Wünsche, Träume oder Lebensziele hängen direkt mit Geld zusammen?',
+      'Welche finanziellen Ziele sind dir wirklich wichtig – und welche glaubst du nur wichtig finden zu müssen?',
+      'Was wäre aktuell dein wichtigstes Ziel, wenn du dich auf nur eines konzentrieren müsstest?',
+      'Warum ist dir dieses Ziel wirklich wichtig?',
+    ],
+    questionsTitle: 'Deine Ziele',
+    questionsSubtitle: 'Beantworte die Fragen möglichst ehrlich. Es geht nicht darum, perfekt zu formulieren, sondern sichtbar zu machen, was dir wirklich wichtig ist.',
+    analyzeLabel: 'Ziele analysieren',
+    reflectionQuestion: 'Was ist dir durch dieses Modul klarer geworden – und was verändert sich dadurch für deine Entscheidungen?',
+    cathedralMoment: [
+      'Du formulierst nicht einfach Ziele.',
+      'Du gibst deiner finanziellen Zukunft Richtung.',
+      'Ein klares Ziel macht aus Hoffnung eine Entscheidung.',
+    ],
+    structuredFields: true,
+    sectionIcons: {
+      'Was dir wirklich wichtig ist': Star,
+      'Welche Ziele noch unscharf sind': Eye,
+      'Deine klare Zielrichtung': Target,
+      'Deine nächsten Schritte': CheckSquare,
+      'Das ist dir klarer geworden': Star,
+      'Warum das wichtig ist': Target,
+      'Was das für deine nächsten Entscheidungen bedeutet': TrendingUp,
+    },
+  },
   struktur: { title: 'Struktur', desc: 'Organisiere deine Konten, Budgets und Geldflüsse sauber und nachvollziehbar.', icon: LayoutGrid, implemented: false },
   absicherung: { title: 'Absicherung', desc: 'Stelle sicher, dass die wichtigsten Risiken richtig abgesichert sind.', icon: Shield, implemented: false },
   optimierung: { title: 'Optimierung', desc: 'Prüfe bestehende Verträge, Gebühren und Kosten – und verbessere sie gezielt.', icon: Settings2, implemented: false },
@@ -288,14 +321,99 @@ function StructuredFields({
   );
 }
 
-// ─── Clarity Score ───────────────────────────────────────────────
+// ─── Structured Fields for Ziele ─────────────────────────────────
 
-function ClarityScore({ hasAnswers, hasStructured, hasAnalysis, hasReflection, tasksCreated }: {
+interface GoalStructuredData {
+  shortTerm: string;
+  midTerm: string;
+  longTerm: string;
+  targetAmount: string;
+  targetDate: string;
+  priority: string;
+  category: string;
+}
+
+function GoalFields({
+  data,
+  onChange,
+}: {
+  data: GoalStructuredData;
+  onChange: (d: GoalStructuredData) => void;
+}) {
+  const update = (key: keyof GoalStructuredData, val: string) => onChange({ ...data, [key]: val });
+
+  return (
+    <Card>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Target className="h-4 w-4 text-primary" />
+          <h3 className="font-semibold text-sm text-foreground">Ziele konkretisieren (optional)</h3>
+        </div>
+        <p className="text-xs text-muted-foreground">Diese Angaben helfen, deine Ziele greifbarer zu machen.</p>
+        <div className="space-y-3">
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Kurzfristiges Ziel (0–12 Monate)</label>
+            <Input value={data.shortTerm} onChange={e => update('shortTerm', e.target.value)} placeholder="z. B. Notgroschen aufbauen" className="text-sm" />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Mittelfristiges Ziel (1–5 Jahre)</label>
+            <Input value={data.midTerm} onChange={e => update('midTerm', e.target.value)} placeholder="z. B. Eigenkapital für Wohneigentum" className="text-sm" />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Langfristiges Ziel (5+ Jahre)</label>
+            <Input value={data.longTerm} onChange={e => update('longTerm', e.target.value)} placeholder="z. B. Finanzielle Unabhängigkeit" className="text-sm" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-foreground/80">Wunschbetrag (optional)</label>
+              <Input value={data.targetAmount} onChange={e => update('targetAmount', e.target.value)} placeholder="z. B. 50'000" className="text-sm" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-foreground/80">Zeithorizont (optional)</label>
+              <Input value={data.targetDate} onChange={e => update('targetDate', e.target.value)} placeholder="z. B. 2027" className="text-sm" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-foreground/80">Priorität</label>
+              <select value={data.priority} onChange={e => update('priority', e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <option value="">—</option>
+                <option value="niedrig">Niedrig</option>
+                <option value="mittel">Mittel</option>
+                <option value="hoch">Hoch</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-foreground/80">Kategorie</label>
+              <select value={data.category} onChange={e => update('category', e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <option value="">—</option>
+                <option value="Sicherheit">Sicherheit</option>
+                <option value="Vermögensaufbau">Vermögensaufbau</option>
+                <option value="Wohnen">Wohnen</option>
+                <option value="Familie">Familie</option>
+                <option value="Freiheit">Freiheit</option>
+                <option value="Reisen / Erlebnisse">Reisen / Erlebnisse</option>
+                <option value="Business">Business</option>
+                <option value="Sonstiges">Sonstiges</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ─── Module Score (Klarheit / Ziele) ────────────────────────────
+
+function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasReflection, tasksCreated, goalsSaved }: {
+  moduleKey: string;
   hasAnswers: boolean;
   hasStructured: boolean;
   hasAnalysis: boolean;
   hasReflection: boolean;
   tasksCreated: boolean;
+  goalsSaved?: boolean;
 }) {
   let score = 0;
   if (hasAnswers) score += 20;
@@ -303,22 +421,29 @@ function ClarityScore({ hasAnswers, hasStructured, hasAnalysis, hasReflection, t
   if (hasAnalysis) score += 25;
   if (hasReflection) score += 25;
   if (tasksCreated) score += 15;
+  if (goalsSaved) score = Math.min(100, score + 10);
 
-  const level = score >= 80 ? 'Hoch' : score >= 40 ? 'Mittel' : 'Niedrig';
+  const isZiele = moduleKey === 'ziele';
+  const title = isZiele ? 'Dein Zielfokus' : 'Dein Klarheitsgrad';
+  const SIcon = isZiele ? Target : Eye;
+  const level = score >= 80 ? (isZiele ? 'Klar' : 'Hoch') : score >= 40 ? (isZiele ? 'Teilweise klar' : 'Mittel') : (isZiele ? 'Unklar' : 'Niedrig');
   const levelColor = score >= 80 ? 'text-green-600' : score >= 40 ? 'text-amber-600' : 'text-muted-foreground';
+  const hint = isZiele
+    ? 'Je klarer deine Ziele, desto leichter werden deine Entscheidungen.'
+    : 'Je mehr du beantwortest und umsetzt, desto klarer wird dein Bild.';
 
   return (
     <Card>
       <CardContent className="p-4 space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Eye className="h-4 w-4 text-primary" />
-            <h3 className="font-semibold text-sm text-foreground">Dein Klarheitsgrad</h3>
+            <SIcon className="h-4 w-4 text-primary" />
+            <h3 className="font-semibold text-sm text-foreground">{title}</h3>
           </div>
           <span className={cn('text-sm font-semibold', levelColor)}>{level}</span>
         </div>
         <Progress value={score} className="h-2" />
-        <p className="text-xs text-muted-foreground">{score}% – Je mehr du beantwortest und umsetzt, desto klarer wird dein Bild.</p>
+        <p className="text-xs text-muted-foreground">{score}% – {hint}</p>
       </CardContent>
     </Card>
   );
@@ -338,12 +463,16 @@ export default function ClientPortalCoachModule() {
   const [analysisResult, setAnalysisResult] = useState('');
   const [extractedTasks, setExtractedTasks] = useState<{ title: string; description: string }[]>([]);
   const [tasksCreated, setTasksCreated] = useState(false);
+  const [goalsSaved, setGoalsSaved] = useState(false);
   const [reflectionInput, setReflectionInput] = useState('');
   const [isReflecting, setIsReflecting] = useState(false);
   const [reflectionResult, setReflectionResult] = useState('');
   const [structured, setStructured] = useState<StructuredData>({
     income: '', expenses: '', savings: '', debts: '', accounts: '',
     hasBudget: '', insuranceOverview: '', pensionOverview: '',
+  });
+  const [goalFields, setGoalFields] = useState<GoalStructuredData>({
+    shortTerm: '', midTerm: '', longTerm: '', targetAmount: '', targetDate: '', priority: '', category: '',
   });
 
   if (!mod) {
@@ -398,9 +527,13 @@ export default function ClientPortalCoachModule() {
     setTasksCreated(false);
     try {
       const body: any = { type: 'analysis', userInput: answers, moduleKey: currentModuleKey };
-      if (mod.structuredFields) {
+      if (mod.structuredFields && currentModuleKey === 'klarheit') {
         const hasAny = Object.values(structured).some(v => v !== '');
         if (hasAny) body.structuredData = structured;
+      }
+      if (mod.structuredFields && currentModuleKey === 'ziele') {
+        const hasAny = Object.values(goalFields).some(v => v !== '');
+        if (hasAny) body.structuredData = goalFields;
       }
       const { data, error } = await supabase.functions.invoke('coach-analyze', { body });
       if (error) throw error;
@@ -505,6 +638,38 @@ export default function ClientPortalCoachModule() {
   };
 
   const hasStructuredData = Object.values(structured).some(v => v !== '');
+  const hasGoalFieldData = Object.values(goalFields).some(v => v !== '');
+
+  const saveGoals = () => {
+    if (!analysisResult) return;
+    const goalsSection = analysisResult.split('## Deine klare Zielrichtung')[1]?.split('## ')[0] || '';
+    const items = goalsSection.match(/\d+\.\s+\*\*(.+?)\*\*[:\s]*(.+?)(?=\n\d+\.|\n##|$)/gs) ||
+                  goalsSection.match(/\d+\.\s+(.+?)(?=\n\d+\.|\n##|$)/gs) || [];
+    const existingRaw = localStorage.getItem('coach_goals');
+    const existing: any[] = existingRaw ? JSON.parse(existingRaw) : [];
+    const newGoals = items.slice(0, 5).map((item: string) => {
+      const boldMatch = item.match(/\*\*(.+?)\*\*/);
+      const title = boldMatch ? boldMatch[1].trim() : item.replace(/^\d+\.\s+/, '').split(/[.!?]/)[0].trim();
+      const desc = item.replace(/^\d+\.\s+/, '').replace(/\*\*.*?\*\*[:\s]*/, '').trim();
+      return {
+        id: crypto.randomUUID(),
+        title,
+        description: desc,
+        category: goalFields.category || '',
+        priority: goalFields.priority || 'mittel',
+        timeframe: goalFields.targetDate || '',
+        module: 'ziele',
+        created_at: new Date().toISOString(),
+      };
+    });
+    if (newGoals.length === 0) {
+      toast({ title: 'Keine Ziele erkannt', description: 'Die Auswertung enthielt keine extrahierbaren Ziele.', variant: 'destructive' });
+      return;
+    }
+    localStorage.setItem('coach_goals', JSON.stringify([...existing, ...newGoals]));
+    setGoalsSaved(true);
+    toast({ title: 'Ziele gespeichert', description: 'Die Zielvorschläge wurden zu deinen Zielen hinzugefügt.' });
+  };
 
   // ─── Render ──────────────────────────────────────────────────
 
@@ -543,20 +708,27 @@ export default function ClientPortalCoachModule() {
           </CardContent>
         </Card>
 
-        {/* Clarity Score (only for klarheit) */}
-        {currentModuleKey === 'klarheit' && (
-          <ClarityScore
+        {/* Module Score (klarheit + ziele) */}
+        {(currentModuleKey === 'klarheit' || currentModuleKey === 'ziele') && (
+          <ModuleScore
+            moduleKey={currentModuleKey}
             hasAnswers={answers.trim().length >= 20}
-            hasStructured={hasStructuredData}
+            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : hasGoalFieldData}
             hasAnalysis={!!analysisResult}
             hasReflection={!!reflectionResult}
             tasksCreated={tasksCreated}
+            goalsSaved={goalsSaved}
           />
         )}
 
-        {/* Structured fields (optional, klarheit only) */}
-        {mod.structuredFields && (
+        {/* Structured fields for klarheit */}
+        {mod.structuredFields && currentModuleKey === 'klarheit' && (
           <StructuredFields data={structured} onChange={setStructured} />
+        )}
+
+        {/* Structured fields for ziele */}
+        {mod.structuredFields && currentModuleKey === 'ziele' && (
+          <GoalFields data={goalFields} onChange={setGoalFields} />
         )}
 
         {/* Questions */}
@@ -605,6 +777,28 @@ export default function ClientPortalCoachModule() {
             <Button variant="outline" size="sm" onClick={() => saveInsight('analysis')} className="w-full">
               <BookOpen className="h-3.5 w-3.5" /> Als Erkenntnis speichern
             </Button>
+
+            {/* Goal saving (ziele module only) */}
+            {currentModuleKey === 'ziele' && (
+              <Card className="border-primary/20 bg-primary/5">
+                <CardContent className="p-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Target className="h-4 w-4 text-primary" />
+                    <h3 className="font-semibold text-sm text-foreground">Ziele übernehmen</h3>
+                  </div>
+                  {!goalsSaved ? (
+                    <Button onClick={saveGoals} variant="default" className="w-full">
+                      <Target className="h-4 w-4" /> Zielvorschläge zu «Meine Ziele» hinzufügen
+                    </Button>
+                  ) : (
+                    <div className="flex items-center gap-2 text-sm text-green-600">
+                      <Target className="h-4 w-4" />
+                      <span>Die Zielvorschläge wurden zu deinen Zielen hinzugefügt.</span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
             {extractedTasks.length > 0 && (
               <Card className="border-primary/20 bg-primary/5">

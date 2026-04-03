@@ -9,7 +9,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   ClipboardList, CheckCircle2, Circle, Brain, Trash2, BookOpen, Trophy, Clock,
-  Loader2, Calendar, Eye,
+  Loader2, Calendar, Eye, Target,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -34,6 +34,7 @@ interface CoachInsight {
 const moduleIcons: Record<string, React.ElementType> = {
   mindset: Brain,
   klarheit: Eye,
+  ziele: Target,
 };
 
 function useLocalList<T>(key: string) {
