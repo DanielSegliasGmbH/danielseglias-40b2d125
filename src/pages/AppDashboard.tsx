@@ -249,6 +249,7 @@ export default function AppDashboard() {
             ) : activeCases?.length === 0 ? (
               <p className="text-muted-foreground py-4">{t('dashboard.noActiveCases')}</p>
             ) : (
+              <div className="overflow-x-auto -mx-6 px-6">
               <Table>
                 <TableHeader>
                   <TableRow>
