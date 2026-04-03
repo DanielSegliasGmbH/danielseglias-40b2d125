@@ -463,12 +463,16 @@ export default function ClientPortalCoachModule() {
   const [analysisResult, setAnalysisResult] = useState('');
   const [extractedTasks, setExtractedTasks] = useState<{ title: string; description: string }[]>([]);
   const [tasksCreated, setTasksCreated] = useState(false);
+  const [goalsSaved, setGoalsSaved] = useState(false);
   const [reflectionInput, setReflectionInput] = useState('');
   const [isReflecting, setIsReflecting] = useState(false);
   const [reflectionResult, setReflectionResult] = useState('');
   const [structured, setStructured] = useState<StructuredData>({
     income: '', expenses: '', savings: '', debts: '', accounts: '',
     hasBudget: '', insuranceOverview: '', pensionOverview: '',
+  });
+  const [goalFields, setGoalFields] = useState<GoalStructuredData>({
+    shortTerm: '', midTerm: '', longTerm: '', targetAmount: '', targetDate: '', priority: '', category: '',
   });
 
   if (!mod) {
