@@ -29,6 +29,8 @@ import { GlobalSearch } from '@/components/dashboard/GlobalSearch';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { AppLayout } from '@/components/AppLayout';
+import { ScreenHeader } from '@/components/ScreenHeader';
+import { NotificationPrompt } from '@/components/NotificationPrompt';
 import { Link } from 'react-router-dom';
 import { format, Locale } from 'date-fns';
 import { de, enUS, fr, it } from 'date-fns/locale';
