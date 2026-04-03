@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -134,12 +134,12 @@ export default function AdminNotifications() {
     setDialogOpen(true);
   };
 
-  // Sync exclusions when they load
-  useState(() => {
-    if (existingExclusions && editingId) {
+  // Sync exclusions when they load for editing
+  useEffect(() => {
+    if (editingId && existingExclusions) {
       setExcludedUserIds(existingExclusions);
     }
-  });
+  }, [editingId, existingExclusions]);
 
   const handleSave = async () => {
     if (!form.title.trim() || !form.body.trim()) {

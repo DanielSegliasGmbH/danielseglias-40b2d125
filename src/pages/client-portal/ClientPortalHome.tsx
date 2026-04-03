@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
@@ -31,6 +31,7 @@ const portalSections = [
 export default function ClientPortalHome() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { data: settings } = useCustomerPortalSettings();
   const [passwordGateOpen, setPasswordGateOpen] = useState(false);
   const [strategyUnlocked, setStrategyUnlocked] = useState(false);
@@ -145,7 +146,7 @@ export default function ClientPortalHome() {
         onSuccess={() => {
           setStrategyUnlocked(true);
           setPasswordGateOpen(false);
-          window.location.href = '/app/client-portal/strategies';
+          navigate('/app/client-portal/strategies');
         }}
       />
     </ClientPortalLayout>
