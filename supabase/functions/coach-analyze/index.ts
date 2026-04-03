@@ -868,6 +868,14 @@ ANTWORTSTRUKTUR (verwende exakt diese Markdown-Überschriften):
 // ─── Prompt selector ────────────────────────────────────────────
 
 function getPrompts(moduleKey: string, type: string) {
+  if (moduleKey === 'review') {
+    return {
+      system: type === 'reflection' ? REVIEW_REFLECTION_SYSTEM : REVIEW_ANALYSIS_SYSTEM,
+      userPrefix: type === 'reflection'
+        ? 'Der Nutzer beschreibt, was er aus dem gesamten Prozess mitnimmt und wie er weitergeht:\n\n'
+        : 'Der Nutzer blickt auf seinen bisherigen Finanz-Coach-Prozess zurück:\n\n',
+    };
+  }
   if (moduleKey === 'freiheit') {
     return {
       system: type === 'reflection' ? FREIHEIT_REFLECTION_SYSTEM : FREIHEIT_ANALYSIS_SYSTEM,

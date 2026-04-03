@@ -1589,6 +1589,23 @@ export default function ClientPortalCoachModule() {
           </Card>
         )}
 
+        {/* Review: Restart / Continue */}
+        {currentModuleKey === 'review' && (analysisResult || reflectionResult) && (
+          <Card className="border-primary/20">
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <Rocket className="h-4 w-4 text-primary" />
+                <h3 className="font-semibold text-sm text-foreground">Wie möchtest du weitermachen?</h3>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="default" className="flex-1" onClick={() => window.location.href = '/app/client-portal/coach'}>
+                  <RotateCcw className="h-4 w-4" /> Module vertiefen
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Data hint */}
         <div className="flex items-start gap-2.5 px-1 py-3">
           <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
