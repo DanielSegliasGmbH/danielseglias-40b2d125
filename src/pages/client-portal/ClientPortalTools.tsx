@@ -69,26 +69,15 @@ export default function ClientPortalTools() {
         )}
 
         {!isLoading && !hasTools && (
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-muted-foreground" />
-                <CardTitle>{t('clientPortal.comingSoon')}</CardTitle>
-              </div>
-              <CardDescription>{t('clientPortal.inDevelopment')}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-muted/50 rounded-lg p-6">
-                <h3 className="font-medium mb-3">{t('clientPortal.plannedFeatures')}</h3>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• {t('clientPortal.toolsFeatures.feature1')}</li>
-                  <li>• {t('clientPortal.toolsFeatures.feature2')}</li>
-                  <li>• {t('clientPortal.toolsFeatures.feature3')}</li>
-                  <li>• {t('clientPortal.toolsFeatures.feature4')}</li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-5">
+              <Wrench className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-semibold text-foreground mb-2">Noch keine Tools freigeschaltet</h3>
+            <p className="text-sm text-muted-foreground max-w-xs">
+              Dein Berater schaltet die passenden Analyse-Tools für dich frei.
+            </p>
+          </div>
         )}
 
         {clusteredTools.map(({ cluster, tools: clusterTools }) => (

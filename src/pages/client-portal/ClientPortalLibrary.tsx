@@ -391,7 +391,7 @@ function ArticleDetail({ article, isPrivateMode }: { article: KnowledgeArticle; 
           <CardContent className="p-5 flex items-center justify-between">
             <div>
               <h3 className="font-semibold text-foreground text-sm">Passendes Tool</h3>
-              <p className="text-xs text-muted-foreground">Vertiefen Sie dieses Thema interaktiv</p>
+              <p className="text-xs text-muted-foreground">Vertiefe dieses Thema interaktiv</p>
             </div>
             <Button size="sm" className="gap-1.5">
               <ExternalLink className="h-3.5 w-3.5" />

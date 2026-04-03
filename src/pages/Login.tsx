@@ -159,12 +159,9 @@ export default function Login() {
             Passwort vergessen?
           </button>
         </div>
-        <div className="mt-4 text-center text-sm text-muted-foreground">
-          <span>{t('auth.noAccount')} </span>
-          <Link to="/signup" className="text-primary font-medium hover:underline">
-            {t('auth.signup')}
-          </Link>
-        </div>
+        <p className="mt-6 text-center text-xs text-muted-foreground max-w-xs mx-auto">
+          Du hast noch keinen Zugang? Dein Berater sendet dir eine persönliche Einladung.
+        </p>
       </div>
 
       {/* Password Reset Dialog */}
