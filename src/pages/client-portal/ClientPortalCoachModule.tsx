@@ -1238,11 +1238,11 @@ export default function ClientPortalCoachModule() {
         </Card>
 
         {/* Module Score */}
-        {(['klarheit', 'ziele', 'struktur', 'absicherung', 'optimierung', 'investment'].includes(currentModuleKey)) && (
+        {(['klarheit', 'ziele', 'struktur', 'absicherung', 'optimierung', 'investment', 'skalierung'].includes(currentModuleKey)) && (
           <ModuleScore
             moduleKey={currentModuleKey}
             hasAnswers={answers.trim().length >= 20}
-            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : currentModuleKey === 'ziele' ? hasGoalFieldData : currentModuleKey === 'absicherung' ? hasAbsicherungFieldData : currentModuleKey === 'optimierung' ? hasOptimierungFieldData : currentModuleKey === 'investment' ? hasInvestmentFieldData : hasStrukturFieldData}
+            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : currentModuleKey === 'ziele' ? hasGoalFieldData : currentModuleKey === 'absicherung' ? hasAbsicherungFieldData : currentModuleKey === 'optimierung' ? hasOptimierungFieldData : currentModuleKey === 'investment' ? hasInvestmentFieldData : currentModuleKey === 'skalierung' ? hasSkalierungFieldData : hasStrukturFieldData}
             hasAnalysis={!!analysisResult}
             hasReflection={!!reflectionResult}
             tasksCreated={tasksCreated}
