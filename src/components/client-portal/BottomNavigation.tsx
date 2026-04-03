@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Home, Wrench, BookOpen, TrendingUp, MoreHorizontal } from 'lucide-react';
+import { Home, Wrench, BookOpen, TrendingUp, Sparkles, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCustomerPortalSettings, PortalVisibility } from '@/hooks/useClientPortal';
 import { useUnreadNotificationCount } from '@/hooks/useNotifications';
