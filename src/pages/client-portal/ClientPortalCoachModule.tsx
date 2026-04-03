@@ -772,6 +772,9 @@ export default function ClientPortalCoachModule() {
   const [absicherungFields, setAbsicherungFields] = useState<AbsicherungData>({
     hasHealth: '', hasDisability: '', hasLiability: '', hasAdditional: '', feeling: '',
   });
+  const [optimierungFields, setOptimierungFields] = useState<OptimierungData>({
+    has3a: '', hasInvestments: '', hasSavingsPlan: '', feeling: '',
+  });
 
   if (!mod) {
     return (
