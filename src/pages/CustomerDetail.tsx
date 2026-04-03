@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, User, Phone, Briefcase, Settings, Trash2, LayoutDashboard } from 'lucide-react';
+import { ArrowLeft, User, Phone, Briefcase, Settings, Trash2, LayoutDashboard, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   AlertDialog,
