@@ -88,11 +88,11 @@ export default function AppDashboard() {
     <AppLayout>
       <div className="min-h-screen bg-muted/30">
         <header className="bg-background border-b">
-          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <h1 className="text-xl font-bold text-foreground">{t('dashboard.title')}</h1>
+          <div className="px-4 sm:px-6 lg:container lg:mx-auto py-3 sm:py-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <h1 className="text-lg sm:text-xl font-bold text-foreground">{t('dashboard.title')}</h1>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <GlobalSearch />
               <ThemeSwitcher />
               <LanguageSwitcher />
