@@ -3,6 +3,12 @@ project_id = "nzdnlwditksqpcyvxfgc"
 [functions.admin-create-user]
 verify_jwt = true
 
+[functions.admin-list-users]
+verify_jwt = true
+
+[functions.admin-resend-invite]
+verify_jwt = true
+
 [functions.cleanup-trash]
 verify_jwt = true
 
