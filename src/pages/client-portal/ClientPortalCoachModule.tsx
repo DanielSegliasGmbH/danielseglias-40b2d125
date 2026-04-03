@@ -625,6 +625,7 @@ function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasRef
     klarheit: { title: 'Dein Klarheitsgrad', icon: Eye, levels: ['Niedrig', 'Mittel', 'Hoch'], hint: 'Je mehr du beantwortest und umsetzt, desto klarer wird dein Bild.' },
     ziele: { title: 'Dein Zielfokus', icon: Target, levels: ['Unklar', 'Teilweise klar', 'Klar'], hint: 'Je klarer deine Ziele, desto leichter werden deine Entscheidungen.' },
     struktur: { title: 'Dein Struktur-Level', icon: LayoutGrid, levels: ['Chaotisch', 'Teilweise strukturiert', 'Klar organisiert'], hint: 'Einfache Systeme schaffen langfristig Kontrolle.' },
+    absicherung: { title: 'Dein Sicherheitsgefühl', icon: Shield, levels: ['Unsicher', 'Teilweise abgesichert', 'Klar abgesichert'], hint: 'Klarheit über deine Risiken gibt dir Sicherheit.' },
   };
   const cfg = scoreConfig[moduleKey] || scoreConfig.klarheit;
   const SIcon = cfg.icon;
