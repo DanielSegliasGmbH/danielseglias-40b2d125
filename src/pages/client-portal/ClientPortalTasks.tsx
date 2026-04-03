@@ -36,7 +36,10 @@ const moduleIcons: Record<string, React.ElementType> = {
   klarheit: Eye,
   ziele: Target,
   struktur: LayoutGrid,
+  absicherung: Shield,
 };
+
+// Add Shield import check - it's already in lucide-react
 
 function useLocalList<T>(key: string) {
   const [items, setItems] = useState<T[]>([]);
