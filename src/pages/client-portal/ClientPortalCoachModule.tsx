@@ -1102,6 +1102,11 @@ export default function ClientPortalCoachModule() {
           <OptimierungFields data={optimierungFields} onChange={setOptimierungFields} />
         )}
 
+        {/* Structured fields for investment */}
+        {mod.structuredFields && currentModuleKey === 'investment' && (
+          <InvestmentFields data={investmentFields} onChange={setInvestmentFields} />
+        )}
+
         {/* Questions */}
         <Card>
           <CardContent className="p-4 space-y-4">
