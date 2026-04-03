@@ -1280,6 +1280,11 @@ export default function ClientPortalCoachModule() {
           <InvestmentFields data={investmentFields} onChange={setInvestmentFields} />
         )}
 
+        {/* Structured fields for skalierung */}
+        {mod.structuredFields && currentModuleKey === 'skalierung' && (
+          <SkalierungFields data={skalierungFields} onChange={setSkalierungFields} />
+        )}
+
         {/* Questions */}
         <Card>
           <CardContent className="p-4 space-y-4">

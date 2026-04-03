@@ -699,6 +699,14 @@ ANTWORTSTRUKTUR (verwende exakt diese Markdown-Überschriften):
 // ─── Prompt selector ────────────────────────────────────────────
 
 function getPrompts(moduleKey: string, type: string) {
+  if (moduleKey === 'skalierung') {
+    return {
+      system: type === 'reflection' ? SKALIERUNG_REFLECTION_SYSTEM : SKALIERUNG_ANALYSIS_SYSTEM,
+      userPrefix: type === 'reflection'
+        ? 'Der Nutzer beschreibt, was ihm das Modul Skalierung gezeigt hat und wo er neue Möglichkeiten sieht:\n\n'
+        : 'Der Nutzer hat folgende Angaben zu seinem Wachstumspotenzial gemacht:\n\n',
+    };
+  }
   if (moduleKey === 'investment') {
     return {
       system: type === 'reflection' ? INVESTMENT_REFLECTION_SYSTEM : INVESTMENT_ANALYSIS_SYSTEM,

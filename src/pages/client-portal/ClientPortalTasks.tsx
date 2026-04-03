@@ -39,6 +39,7 @@ const moduleIcons: Record<string, React.ElementType> = {
   absicherung: Shield,
   optimierung: Settings2,
   investment: TrendingUp,
+  skalierung: Clock,
 };
 
 function useLocalList<T>(key: string) {
