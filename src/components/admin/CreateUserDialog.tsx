@@ -57,7 +57,7 @@ export function CreateUserDialog() {
     try {
       await createUser.mutateAsync({
         email: formData.email,
-        password: formData.password,
+        password: '', // Empty = invitation flow
         firstName: formData.firstName,
         lastName: formData.lastName,
         role: formData.role as AppRole,
