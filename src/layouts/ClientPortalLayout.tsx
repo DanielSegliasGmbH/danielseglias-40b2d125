@@ -214,6 +214,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
           <div className="flex items-center justify-between px-4 h-14">
             <h1 className="text-lg font-semibold">{t('clientPortal.title')}</h1>
             <div className="flex items-center gap-2">
+              <NotificationBell />
               <Button
                 variant="ghost"
                 size="icon"
