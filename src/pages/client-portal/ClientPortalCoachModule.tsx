@@ -269,7 +269,40 @@ const moduleData: Record<string, ModuleConfig> = {
       'Was du jetzt anders siehst': TrendingUp,
     },
   },
-  skalierung: { title: 'Skalierung', desc: 'Bringe deinen Vermögensaufbau auf die nächste Stufe mit fortgeschrittenen Strategien.', icon: Rocket, implemented: false },
+  skalierung: {
+    title: 'Skalierung',
+    desc: 'In diesem Modul erkennst du, wie du dein finanzielles Potenzial erweitern kannst.\n\nNicht nur durch Sparen, sondern durch neue Möglichkeiten, höheres Einkommen und bessere Nutzung deiner Fähigkeiten.\n\nZiel ist es, neue Perspektiven zu öffnen und Wachstum bewusst zu gestalten.',
+    icon: Rocket,
+    implemented: true,
+    questions: [
+      'Wie verdienst du aktuell dein Geld?',
+      'Hast du Möglichkeiten, dein Einkommen zu erhöhen?',
+      'Nutzt du deine Fähigkeiten und dein Wissen aktuell voll aus?',
+      'Gibt es Ideen oder Möglichkeiten, die du bisher nicht umgesetzt hast?',
+      'Was hält dich aktuell davon ab, mehr zu verdienen oder zu wachsen?',
+      'Wie offen bist du für neue Wege oder Veränderungen?',
+      'Was würdest du tun, wenn Geld aktuell kein limitierender Faktor wäre?',
+    ],
+    questionsTitle: 'Dein aktuelles Potenzial',
+    questionsSubtitle: 'Beschreibe ehrlich, wie du aktuell dein Einkommen und deine Möglichkeiten nutzt.',
+    analyzeLabel: 'Potenzial analysieren',
+    reflectionQuestion: 'Was hat dir dieses Modul gezeigt – und wo siehst du neue Möglichkeiten für dich?',
+    cathedralMoment: [
+      'Du passt dich nicht nur an dein Einkommen an.',
+      'Du entscheidest, wie gross dein Spielfeld wird.',
+      'Wachstum beginnt dort, wo du Möglichkeiten erkennst.',
+    ],
+    structuredFields: true,
+    sectionIcons: {
+      'Dein aktuelles Potenzial': Rocket,
+      'Wo du wachsen kannst': TrendingUp,
+      'Neue Perspektiven für dich': Sparkles,
+      'Deine nächsten Schritte': CheckSquare,
+      'Das hast du erkannt': Star,
+      'Warum das wichtig ist': Target,
+      'Was du jetzt anders siehst': TrendingUp,
+    },
+  },
   freiheit: { title: 'Freiheit', desc: 'Plane deine finanzielle Unabhängigkeit konkret und realistisch.', icon: Star, implemented: false },
   review: { title: 'Review', desc: 'Überprüfe regelmässig deine Fortschritte und passe deine Strategie an.', icon: RotateCcw, implemented: false },
 };
@@ -795,6 +828,66 @@ function InvestmentFields({
   );
 }
 
+// ─── Structured Fields for Skalierung ────────────────────────────
+
+interface SkalierungData {
+  incomeType: string;
+  growthPotential: string;
+  additionalSources: string;
+}
+
+function SkalierungFields({
+  data,
+  onChange,
+}: {
+  data: SkalierungData;
+  onChange: (d: SkalierungData) => void;
+}) {
+  const update = (key: keyof SkalierungData, val: string) => onChange({ ...data, [key]: val });
+  const selectClass = "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
+  return (
+    <Card>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Rocket className="h-4 w-4 text-primary" />
+          <h3 className="font-semibold text-sm text-foreground">Schnellübersicht (optional)</h3>
+        </div>
+        <p className="text-xs text-muted-foreground">Diese Angaben helfen der Auswertung, sind aber nicht zwingend.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Einkommensart</label>
+            <select value={data.incomeType} onChange={e => update('incomeType', e.target.value)} className={selectClass}>
+              <option value="">—</option>
+              <option value="angestellt">Angestellt</option>
+              <option value="selbstständig">Selbstständig</option>
+              <option value="gemischt">Gemischt</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Wachstumspotenzial Gefühl</label>
+            <select value={data.growthPotential} onChange={e => update('growthPotential', e.target.value)} className={selectClass}>
+              <option value="">—</option>
+              <option value="niedrig">Niedrig</option>
+              <option value="mittel">Mittel</option>
+              <option value="hoch">Hoch</option>
+            </select>
+          </div>
+          <div className="space-y-1 sm:col-span-2">
+            <label className="text-xs font-medium text-foreground/80">Zusätzliche Einnahmequellen</label>
+            <select value={data.additionalSources} onChange={e => update('additionalSources', e.target.value)} className={selectClass}>
+              <option value="">—</option>
+              <option value="keine">Keine</option>
+              <option value="eine">Eine</option>
+              <option value="mehrere">Mehrere</option>
+            </select>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // ─── Module Score ────────────────────────────────────────────────
 
 function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasReflection, tasksCreated, goalsSaved }: {
@@ -821,6 +914,7 @@ function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasRef
     absicherung: { title: 'Dein Sicherheitsgefühl', icon: Shield, levels: ['Unsicher', 'Teilweise abgesichert', 'Klar abgesichert'], hint: 'Klarheit über deine Risiken gibt dir Sicherheit.' },
     optimierung: { title: 'Dein Optimierungsgrad', icon: Settings2, levels: ['Viel Potenzial offen', 'Teilweise optimiert', 'Gut optimiert'], hint: 'Kleine Anpassungen machen langfristig den Unterschied.' },
     investment: { title: 'Dein Investment-Verständnis', icon: TrendingUp, levels: ['Unsicher', 'Grundlegend verstanden', 'Klar orientiert'], hint: 'Je besser du Investieren verstehst, desto sicherer wirst du.' },
+    skalierung: { title: 'Dein Wachstumspotenzial', icon: Rocket, levels: ['Kaum genutzt', 'Teilweise genutzt', 'Aktiv genutzt'], hint: 'Je bewusster du deine Möglichkeiten nutzt, desto grösser wird dein Spielfeld.' },
   };
   const cfg = scoreConfig[moduleKey] || scoreConfig.klarheit;
   const SIcon = cfg.icon;
@@ -880,6 +974,9 @@ export default function ClientPortalCoachModule() {
   });
   const [investmentFields, setInvestmentFields] = useState<InvestmentData>({
     investsAlready: '', investmentType: '', horizon: '', riskFeeling: '',
+  });
+  const [skalierungFields, setSkalierungFields] = useState<SkalierungData>({
+    incomeType: '', growthPotential: '', additionalSources: '',
   });
 
   if (!mod) {
@@ -957,6 +1054,10 @@ export default function ClientPortalCoachModule() {
       if (mod.structuredFields && currentModuleKey === 'investment') {
         const hasAny = Object.values(investmentFields).some(v => v !== '');
         if (hasAny) body.structuredData = investmentFields;
+      }
+      if (mod.structuredFields && currentModuleKey === 'skalierung') {
+        const hasAny = Object.values(skalierungFields).some(v => v !== '');
+        if (hasAny) body.structuredData = skalierungFields;
       }
       const { data, error } = await supabase.functions.invoke('coach-analyze', { body });
       if (error) throw error;
@@ -1066,6 +1167,7 @@ export default function ClientPortalCoachModule() {
   const hasAbsicherungFieldData = Object.values(absicherungFields).some(v => v !== '');
   const hasOptimierungFieldData = Object.values(optimierungFields).some(v => v !== '');
   const hasInvestmentFieldData = Object.values(investmentFields).some(v => v !== '');
+  const hasSkalierungFieldData = Object.values(skalierungFields).some(v => v !== '');
 
   const saveGoals = () => {
     if (!analysisResult) return;
@@ -1136,11 +1238,11 @@ export default function ClientPortalCoachModule() {
         </Card>
 
         {/* Module Score */}
-        {(['klarheit', 'ziele', 'struktur', 'absicherung', 'optimierung', 'investment'].includes(currentModuleKey)) && (
+        {(['klarheit', 'ziele', 'struktur', 'absicherung', 'optimierung', 'investment', 'skalierung'].includes(currentModuleKey)) && (
           <ModuleScore
             moduleKey={currentModuleKey}
             hasAnswers={answers.trim().length >= 20}
-            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : currentModuleKey === 'ziele' ? hasGoalFieldData : currentModuleKey === 'absicherung' ? hasAbsicherungFieldData : currentModuleKey === 'optimierung' ? hasOptimierungFieldData : currentModuleKey === 'investment' ? hasInvestmentFieldData : hasStrukturFieldData}
+            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : currentModuleKey === 'ziele' ? hasGoalFieldData : currentModuleKey === 'absicherung' ? hasAbsicherungFieldData : currentModuleKey === 'optimierung' ? hasOptimierungFieldData : currentModuleKey === 'investment' ? hasInvestmentFieldData : currentModuleKey === 'skalierung' ? hasSkalierungFieldData : hasStrukturFieldData}
             hasAnalysis={!!analysisResult}
             hasReflection={!!reflectionResult}
             tasksCreated={tasksCreated}
@@ -1176,6 +1278,11 @@ export default function ClientPortalCoachModule() {
         {/* Structured fields for investment */}
         {mod.structuredFields && currentModuleKey === 'investment' && (
           <InvestmentFields data={investmentFields} onChange={setInvestmentFields} />
+        )}
+
+        {/* Structured fields for skalierung */}
+        {mod.structuredFields && currentModuleKey === 'skalierung' && (
+          <SkalierungFields data={skalierungFields} onChange={setSkalierungFields} />
         )}
 
         {/* Questions */}
