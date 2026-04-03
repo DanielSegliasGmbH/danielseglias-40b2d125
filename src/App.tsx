@@ -120,6 +120,7 @@ function App() {
               <Route path="/tools/:slug" element={<PublicToolDetail />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/onboarding" element={<Onboarding />} />
               
               {/* Protected: Internal area (admin + staff) */}
