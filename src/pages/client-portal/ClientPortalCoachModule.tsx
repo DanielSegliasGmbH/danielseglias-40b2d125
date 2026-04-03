@@ -727,6 +727,74 @@ function OptimierungFields({
   );
 }
 
+// ─── Structured Fields for Investment ────────────────────────────
+
+interface InvestmentData {
+  investsAlready: string;
+  investmentType: string;
+  horizon: string;
+  riskFeeling: string;
+}
+
+function InvestmentFields({
+  data,
+  onChange,
+}: {
+  data: InvestmentData;
+  onChange: (d: InvestmentData) => void;
+}) {
+  const update = (key: keyof InvestmentData, val: string) => onChange({ ...data, [key]: val });
+  const selectClass = "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
+  return (
+    <Card>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <TrendingUp className="h-4 w-4 text-primary" />
+          <h3 className="font-semibold text-sm text-foreground">Schnellübersicht (optional)</h3>
+        </div>
+        <p className="text-xs text-muted-foreground">Diese Angaben helfen der Auswertung, sind aber nicht zwingend.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Investiert bereits?</label>
+            <select value={data.investsAlready} onChange={e => update('investsAlready', e.target.value)} className={selectClass}>
+              <option value="">—</option><option value="Ja">Ja</option><option value="Nein">Nein</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Anlageform</label>
+            <select value={data.investmentType} onChange={e => update('investmentType', e.target.value)} className={selectClass}>
+              <option value="">—</option>
+              <option value="keine">Keine</option>
+              <option value="Sparkonto">Sparkonto</option>
+              <option value="Fonds/ETF">Fonds/ETF</option>
+              <option value="Einzelaktien">Einzelaktien</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Anlagehorizont</label>
+            <select value={data.horizon} onChange={e => update('horizon', e.target.value)} className={selectClass}>
+              <option value="">—</option>
+              <option value="kurz (<3 Jahre)">Kurz (&lt;3 Jahre)</option>
+              <option value="mittel (3–10 Jahre)">Mittel (3–10 Jahre)</option>
+              <option value="lang (>10 Jahre)">Lang (&gt;10 Jahre)</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Risikogefühl</label>
+            <select value={data.riskFeeling} onChange={e => update('riskFeeling', e.target.value)} className={selectClass}>
+              <option value="">—</option>
+              <option value="vorsichtig">Vorsichtig</option>
+              <option value="ausgewogen">Ausgewogen</option>
+              <option value="risikofreudig">Risikofreudig</option>
+            </select>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // ─── Module Score ────────────────────────────────────────────────
 
 function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasReflection, tasksCreated, goalsSaved }: {
