@@ -171,7 +171,7 @@ export default function AppDashboard() {
         </div>
 
         {/* Open Tasks */}
-        <Card className="mb-8">
+        <Card className="mb-6 sm:mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ClipboardList className="h-5 w-5" />
