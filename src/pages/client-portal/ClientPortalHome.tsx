@@ -31,6 +31,7 @@ const portalSections = [
 export default function ClientPortalHome() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { data: settings } = useCustomerPortalSettings();
   const [passwordGateOpen, setPasswordGateOpen] = useState(false);
   const [strategyUnlocked, setStrategyUnlocked] = useState(false);
