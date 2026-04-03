@@ -6,16 +6,15 @@ import { getDefaultRouteForRole } from '@/components/RouteGuard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { z } from 'zod';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 
 export default function Login() {
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { signIn, user, role, loading } = useAuth();
   const navigate = useNavigate();
@@ -35,88 +34,87 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     const validation = loginSchema.safeParse({ email, password });
     if (!validation.success) {
-      toast({
-        variant: 'destructive',
-        title: t('app.error'),
-        description: validation.error.errors[0].message,
-      });
+      toast({ variant: 'destructive', title: t('app.error'), description: validation.error.errors[0].message });
       return;
     }
-
     setIsLoading(true);
     const { error } = await signIn(email, password);
     setIsLoading(false);
-
     if (error) {
-      toast({
-        variant: 'destructive',
-        title: t('auth.loginError'),
-        description: t('auth.invalidCredentials'),
-      });
+      toast({ variant: 'destructive', title: t('auth.loginError'), description: t('auth.invalidCredentials') });
     }
   };
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4 relative">
-      <div className="absolute top-4 right-4 flex items-center gap-2">
-        <ThemeSwitcher />
-        <LanguageSwitcher />
+    <div className="min-h-screen flex flex-col bg-background safe-area-inset">
+      {/* Top section with branding */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 pt-12 pb-6">
+        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
+          <span className="text-2xl font-bold text-primary">DS</span>
+        </div>
+        <h1 className="text-2xl font-bold text-foreground mb-1">{t('auth.loginTitle')}</h1>
+        <p className="text-sm text-muted-foreground">{t('auth.loginSubtitle')}</p>
       </div>
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">{t('auth.loginTitle')}</CardTitle>
-          <CardDescription className="text-center">
-            {t('auth.loginSubtitle')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">{t('auth.email')}</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="name@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">{t('auth.passwordLabel')}</Label>
+
+      {/* Form */}
+      <div className="px-6 pb-8 w-full max-w-md mx-auto">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="email">{t('auth.email')}</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="name@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={isLoading}
+              className="h-14 rounded-2xl text-base px-4"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">{t('auth.passwordLabel')}</Label>
+            <div className="relative">
               <Input
                 id="password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isLoading}
+                className="h-14 rounded-2xl text-base px-4 pr-12"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? `${t('auth.login')}...` : t('auth.login')}
-            </Button>
-          </form>
-          <div className="mt-4 text-center text-sm text-muted-foreground">
-            <span>{t('auth.noAccount')} </span>
-            <Link to="/signup" className="text-primary hover:underline">
-              {t('auth.signup')}
-            </Link>
           </div>
-        </CardContent>
-      </Card>
+          <Button type="submit" className="w-full h-14 rounded-2xl text-base font-semibold" disabled={isLoading}>
+            {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : t('auth.login')}
+          </Button>
+        </form>
+        <div className="mt-6 text-center text-sm text-muted-foreground">
+          <span>{t('auth.noAccount')} </span>
+          <Link to="/signup" className="text-primary font-medium hover:underline">
+            {t('auth.signup')}
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
