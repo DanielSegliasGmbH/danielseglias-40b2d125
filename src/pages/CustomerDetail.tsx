@@ -349,12 +349,6 @@ export default function CustomerDetail() {
           <TabsContent value="portal" className="mt-6">
             <CustomerPortalSettingsCard customerId={id!} />
           </TabsContent>
-              formData={controlForm}
-              onChange={handleControlChange}
-              onSave={handleSaveControl}
-              saving={savingControl}
-            />
-          </TabsContent>
         </Tabs>
       </div>
 
