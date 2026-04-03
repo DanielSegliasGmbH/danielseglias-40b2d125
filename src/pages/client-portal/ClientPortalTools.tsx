@@ -19,7 +19,7 @@ const iconMap: Record<string, LucideIcon> = {
 export default function ClientPortalTools() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { data: tools, isLoading, error } = useClientTools();
+  const { data: tools, isLoading, error } = useClientToolsFiltered();
 
   const hasTools = tools && tools.length > 0;
   const clusteredTools = hasTools ? groupToolsByCluster(tools) : [];
