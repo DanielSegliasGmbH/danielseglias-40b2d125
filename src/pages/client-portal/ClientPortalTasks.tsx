@@ -37,6 +37,7 @@ const moduleIcons: Record<string, React.ElementType> = {
   ziele: Target,
   struktur: LayoutGrid,
   absicherung: Shield,
+  optimierung: Settings2,
 };
 
 function useLocalList<T>(key: string) {
