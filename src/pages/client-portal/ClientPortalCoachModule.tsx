@@ -136,7 +136,39 @@ const moduleData: Record<string, ModuleConfig> = {
       'Was das für deine nächsten Entscheidungen bedeutet': TrendingUp,
     },
   },
-  struktur: { title: 'Struktur', desc: 'Organisiere deine Konten, Budgets und Geldflüsse sauber und nachvollziehbar.', icon: LayoutGrid, implemented: false },
+  struktur: {
+    title: 'Struktur',
+    desc: 'In diesem Modul bringst du Ordnung in deine Finanzen.\n\nDu legst eine einfache Struktur fest, die dir hilft, den Überblick zu behalten, Entscheidungen leichter zu treffen und dein Geld gezielt zu steuern.\n\nZiel ist nicht Perfektion, sondern ein System, das für dich funktioniert.',
+    icon: LayoutGrid,
+    implemented: true,
+    questions: [
+      'Wie viele Bankkonten hast du aktuell und wofür nutzt du sie?',
+      'Hast du ein klares System, wofür welches Geld gedacht ist?',
+      'Hast du ein Budget oder eine feste Aufteilung deines Geldes?',
+      'Wie entscheidest du aktuell, wie viel du sparen, ausgeben oder investieren kannst?',
+      'Hast du das Gefühl, dein Geld ist organisiert oder eher chaotisch?',
+      'Wo verlierst du aktuell am ehesten den Überblick?',
+    ],
+    questionsTitle: 'Deine aktuelle Struktur',
+    questionsSubtitle: 'Wie sind deine Finanzen aktuell organisiert? Beschreibe es so einfach wie möglich.',
+    analyzeLabel: 'Struktur analysieren',
+    reflectionQuestion: 'Was hast du konkret organisiert oder verändert – und wie fühlt sich das an?',
+    cathedralMoment: [
+      'Du organisierst nicht einfach dein Geld.',
+      'Du schaffst ein System, das für dich arbeitet.',
+      'Struktur ist der Moment, in dem aus Unsicherheit Kontrolle wird.',
+    ],
+    structuredFields: true,
+    sectionIcons: {
+      'Deine aktuelle Struktur': LayoutGrid,
+      'Wo Chaos entsteht': Eye,
+      'Deine neue einfache Struktur': Sparkles,
+      'Deine nächsten Schritte': CheckSquare,
+      'Das hast du geordnet': Star,
+      'Warum das wichtig ist': Target,
+      'Was sich jetzt verändert': TrendingUp,
+    },
+  },
   absicherung: { title: 'Absicherung', desc: 'Stelle sicher, dass die wichtigsten Risiken richtig abgesichert sind.', icon: Shield, implemented: false },
   optimierung: { title: 'Optimierung', desc: 'Prüfe bestehende Verträge, Gebühren und Kosten – und verbessere sie gezielt.', icon: Settings2, implemented: false },
   investment: { title: 'Investment', desc: 'Lerne, dein Geld strategisch und langfristig für dich arbeiten zu lassen.', icon: TrendingUp, implemented: false },
@@ -404,7 +436,72 @@ function GoalFields({
   );
 }
 
-// ─── Module Score (Klarheit / Ziele) ────────────────────────────
+// ─── Structured Fields for Struktur ──────────────────────────────
+
+interface StrukturData {
+  accountCount: string;
+  hasBudget: string;
+  hasSavingsRate: string;
+  hasClearSplit: string;
+  feeling: string;
+}
+
+function StrukturFields({
+  data,
+  onChange,
+}: {
+  data: StrukturData;
+  onChange: (d: StrukturData) => void;
+}) {
+  const update = (key: keyof StrukturData, val: string) => onChange({ ...data, [key]: val });
+
+  return (
+    <Card>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <LayoutGrid className="h-4 w-4 text-primary" />
+          <h3 className="font-semibold text-sm text-foreground">Schnellübersicht (optional)</h3>
+        </div>
+        <p className="text-xs text-muted-foreground">Diese Angaben helfen der Auswertung, sind aber nicht zwingend.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Anzahl Konten</label>
+            <Input value={data.accountCount} onChange={e => update('accountCount', e.target.value)} placeholder="z. B. 3" className="text-sm" />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Hat Budget?</label>
+            <select value={data.hasBudget} onChange={e => update('hasBudget', e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <option value="">—</option><option value="Ja">Ja</option><option value="Nein">Nein</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Feste Sparrate?</label>
+            <select value={data.hasSavingsRate} onChange={e => update('hasSavingsRate', e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <option value="">—</option><option value="Ja">Ja</option><option value="Nein">Nein</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Klare Aufteilung?</label>
+            <select value={data.hasClearSplit} onChange={e => update('hasClearSplit', e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <option value="">—</option><option value="Ja">Ja</option><option value="Nein">Nein</option>
+            </select>
+          </div>
+          <div className="space-y-1 sm:col-span-2">
+            <label className="text-xs font-medium text-foreground/80">Wie fühlt sich deine Finanzstruktur an?</label>
+            <select value={data.feeling} onChange={e => update('feeling', e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <option value="">—</option>
+              <option value="sehr chaotisch">Sehr chaotisch</option>
+              <option value="teilweise organisiert">Teilweise organisiert</option>
+              <option value="klar strukturiert">Klar strukturiert</option>
+            </select>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ─── Module Score ────────────────────────────────────────────────
 
 function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasReflection, tasksCreated, goalsSaved }: {
   moduleKey: string;
@@ -423,14 +520,15 @@ function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasRef
   if (tasksCreated) score += 15;
   if (goalsSaved) score = Math.min(100, score + 10);
 
-  const isZiele = moduleKey === 'ziele';
-  const title = isZiele ? 'Dein Zielfokus' : 'Dein Klarheitsgrad';
-  const SIcon = isZiele ? Target : Eye;
-  const level = score >= 80 ? (isZiele ? 'Klar' : 'Hoch') : score >= 40 ? (isZiele ? 'Teilweise klar' : 'Mittel') : (isZiele ? 'Unklar' : 'Niedrig');
+  const scoreConfig: Record<string, { title: string; icon: React.ElementType; levels: [string, string, string]; hint: string }> = {
+    klarheit: { title: 'Dein Klarheitsgrad', icon: Eye, levels: ['Niedrig', 'Mittel', 'Hoch'], hint: 'Je mehr du beantwortest und umsetzt, desto klarer wird dein Bild.' },
+    ziele: { title: 'Dein Zielfokus', icon: Target, levels: ['Unklar', 'Teilweise klar', 'Klar'], hint: 'Je klarer deine Ziele, desto leichter werden deine Entscheidungen.' },
+    struktur: { title: 'Dein Struktur-Level', icon: LayoutGrid, levels: ['Chaotisch', 'Teilweise strukturiert', 'Klar organisiert'], hint: 'Einfache Systeme schaffen langfristig Kontrolle.' },
+  };
+  const cfg = scoreConfig[moduleKey] || scoreConfig.klarheit;
+  const SIcon = cfg.icon;
+  const level = score >= 80 ? cfg.levels[2] : score >= 40 ? cfg.levels[1] : cfg.levels[0];
   const levelColor = score >= 80 ? 'text-green-600' : score >= 40 ? 'text-amber-600' : 'text-muted-foreground';
-  const hint = isZiele
-    ? 'Je klarer deine Ziele, desto leichter werden deine Entscheidungen.'
-    : 'Je mehr du beantwortest und umsetzt, desto klarer wird dein Bild.';
 
   return (
     <Card>
@@ -438,12 +536,12 @@ function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasRef
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <SIcon className="h-4 w-4 text-primary" />
-            <h3 className="font-semibold text-sm text-foreground">{title}</h3>
+            <h3 className="font-semibold text-sm text-foreground">{cfg.title}</h3>
           </div>
           <span className={cn('text-sm font-semibold', levelColor)}>{level}</span>
         </div>
         <Progress value={score} className="h-2" />
-        <p className="text-xs text-muted-foreground">{score}% – {hint}</p>
+        <p className="text-xs text-muted-foreground">{score}% – {cfg.hint}</p>
       </CardContent>
     </Card>
   );
@@ -473,6 +571,9 @@ export default function ClientPortalCoachModule() {
   });
   const [goalFields, setGoalFields] = useState<GoalStructuredData>({
     shortTerm: '', midTerm: '', longTerm: '', targetAmount: '', targetDate: '', priority: '', category: '',
+  });
+  const [strukturFields, setStrukturFields] = useState<StrukturData>({
+    accountCount: '', hasBudget: '', hasSavingsRate: '', hasClearSplit: '', feeling: '',
   });
 
   if (!mod) {
@@ -534,6 +635,10 @@ export default function ClientPortalCoachModule() {
       if (mod.structuredFields && currentModuleKey === 'ziele') {
         const hasAny = Object.values(goalFields).some(v => v !== '');
         if (hasAny) body.structuredData = goalFields;
+      }
+      if (mod.structuredFields && currentModuleKey === 'struktur') {
+        const hasAny = Object.values(strukturFields).some(v => v !== '');
+        if (hasAny) body.structuredData = strukturFields;
       }
       const { data, error } = await supabase.functions.invoke('coach-analyze', { body });
       if (error) throw error;
@@ -639,6 +744,7 @@ export default function ClientPortalCoachModule() {
 
   const hasStructuredData = Object.values(structured).some(v => v !== '');
   const hasGoalFieldData = Object.values(goalFields).some(v => v !== '');
+  const hasStrukturFieldData = Object.values(strukturFields).some(v => v !== '');
 
   const saveGoals = () => {
     if (!analysisResult) return;
@@ -708,12 +814,12 @@ export default function ClientPortalCoachModule() {
           </CardContent>
         </Card>
 
-        {/* Module Score (klarheit + ziele) */}
-        {(currentModuleKey === 'klarheit' || currentModuleKey === 'ziele') && (
+        {/* Module Score */}
+        {(currentModuleKey === 'klarheit' || currentModuleKey === 'ziele' || currentModuleKey === 'struktur') && (
           <ModuleScore
             moduleKey={currentModuleKey}
             hasAnswers={answers.trim().length >= 20}
-            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : hasGoalFieldData}
+            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : currentModuleKey === 'ziele' ? hasGoalFieldData : hasStrukturFieldData}
             hasAnalysis={!!analysisResult}
             hasReflection={!!reflectionResult}
             tasksCreated={tasksCreated}
@@ -729,6 +835,11 @@ export default function ClientPortalCoachModule() {
         {/* Structured fields for ziele */}
         {mod.structuredFields && currentModuleKey === 'ziele' && (
           <GoalFields data={goalFields} onChange={setGoalFields} />
+        )}
+
+        {/* Structured fields for struktur */}
+        {mod.structuredFields && currentModuleKey === 'struktur' && (
+          <StrukturFields data={strukturFields} onChange={setStrukturFields} />
         )}
 
         {/* Questions */}
