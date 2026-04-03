@@ -53,7 +53,7 @@ export default function ClientPortalCoach() {
           </p>
           <p className="text-sm text-muted-foreground leading-relaxed">
             Hier wirst du Schritt für Schritt durch deine finanzielle Entwicklung geführt.
-            Nicht durch Theorie, sondern durch klare Entscheidungen und konkrete Umsetzung.
+            Nicht durch Theorie, sondern durch klare Entscheidungen, persönliche Reflexion und konkrete Umsetzung.
           </p>
         </div>
 
@@ -111,7 +111,7 @@ export default function ClientPortalCoach() {
           <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
           <p className="text-xs text-muted-foreground leading-relaxed">
             Deine sensiblen Dokumente werden nicht in dieser App gespeichert.
-            Du kannst externe Links (z.&nbsp;B. Google Drive) verwenden.
+            Du kannst externe Links wie Google Drive, Dropbox oder iCloud verwenden.
           </p>
         </div>
       </div>
