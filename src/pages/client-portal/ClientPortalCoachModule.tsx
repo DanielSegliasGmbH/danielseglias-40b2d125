@@ -692,6 +692,8 @@ function OptimierungFields({
         </div>
       </CardContent>
     </Card>
+  );
+}
 
 // ─── Module Score ────────────────────────────────────────────────
 
