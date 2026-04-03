@@ -952,6 +952,11 @@ export default function ClientPortalCoachModule() {
           <StrukturFields data={strukturFields} onChange={setStrukturFields} />
         )}
 
+        {/* Structured fields for absicherung */}
+        {mod.structuredFields && currentModuleKey === 'absicherung' && (
+          <AbsicherungFields data={absicherungFields} onChange={setAbsicherungFields} />
+        )}
+
         {/* Questions */}
         <Card>
           <CardContent className="p-4 space-y-4">
