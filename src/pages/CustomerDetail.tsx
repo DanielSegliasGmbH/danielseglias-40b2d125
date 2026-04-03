@@ -35,6 +35,7 @@ import { CustomerProfileTab } from '@/components/customers/CustomerProfileTab';
 import { CustomerEconomicsTab } from '@/components/customers/CustomerEconomicsTab';
 import { CustomerControlTab } from '@/components/customers/CustomerControlTab';
 import { CustomerDashboardTab } from '@/components/customers/CustomerDashboardTab';
+import { CustomerPortalSettingsCard } from '@/components/admin/CustomerPortalSettingsCard';
 
 export default function CustomerDetail() {
   const { id } = useParams<{ id: string }>();
