@@ -105,14 +105,14 @@ export default function AdminTools() {
                   <Link key={tool.id} to={`/app/tools/${tool.slug || tool.key}`}>
                     <Card className="transition-colors hover:bg-muted/30 cursor-pointer group">
                       <CardContent className="p-4">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex items-start gap-4">
+                         <div className="flex items-start justify-between gap-3 sm:gap-4">
+                          <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
                             <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
                               <IconComponent className="h-5 w-5 text-muted-foreground" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                <h3 className="font-medium text-foreground">{t(tool.name_key)}</h3>
+                              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                <h3 className="font-medium text-foreground text-sm sm:text-base">{t(tool.name_key)}</h3>
                                 {isPlanned && (
                                   <Badge variant="secondary" className="text-xs">
                                     <Clock className="h-3 w-3 mr-1" />
@@ -123,11 +123,11 @@ export default function AdminTools() {
                                   <Badge variant="outline" className="text-xs">Öffentlich</Badge>
                                 )}
                               </div>
-                              <p className="text-sm text-muted-foreground">{t(tool.description_key)}</p>
+                              <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{t(tool.description_key)}</p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-4">
-                            <div className="flex flex-col items-center gap-1" onClick={(e) => e.preventDefault()}>
+                          <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+                            <div className="hidden sm:flex flex-col items-center gap-1" onClick={(e) => e.preventDefault()}>
                               <Label htmlFor={`tool-client-${tool.id}`} className="text-xs text-muted-foreground">
                                 {t('adminTools.clients')}
                               </Label>
@@ -139,7 +139,7 @@ export default function AdminTools() {
                                 aria-label={t('adminTools.enableForClients')}
                               />
                             </div>
-                            <div className="flex flex-col items-center gap-1" onClick={(e) => e.preventDefault()}>
+                            <div className="hidden sm:flex flex-col items-center gap-1" onClick={(e) => e.preventDefault()}>
                               <Label htmlFor={`tool-public-${tool.id}`} className="text-xs text-muted-foreground">
                                 {t('adminTools.public')}
                               </Label>
