@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { BottomNavigation } from '@/components/client-portal/BottomNavigation';
 import { MoreSheet } from '@/components/client-portal/MoreSheet';
 import { ChatDrawer } from '@/components/client-portal/ChatDrawer';
+import { NotificationBell } from '@/components/client-portal/NotificationBell';
 import { useUnreadCount } from '@/hooks/useChat';
 import {
   Shield,
