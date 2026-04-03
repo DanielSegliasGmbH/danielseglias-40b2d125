@@ -38,6 +38,7 @@ const moduleIcons: Record<string, React.ElementType> = {
   struktur: LayoutGrid,
   absicherung: Shield,
   optimierung: Settings2,
+  investment: TrendingUp,
 };
 
 function useLocalList<T>(key: string) {
