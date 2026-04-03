@@ -98,6 +98,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <OfflineBanner />
         <Toaster />
         <Sonner />
         <BrowserRouter>
