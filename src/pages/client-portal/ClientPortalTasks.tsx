@@ -35,6 +35,7 @@ const moduleIcons: Record<string, React.ElementType> = {
   mindset: Brain,
   klarheit: Eye,
   ziele: Target,
+  struktur: LayoutGrid,
 };
 
 function useLocalList<T>(key: string) {

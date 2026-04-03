@@ -740,6 +740,7 @@ export default function ClientPortalCoachModule() {
 
   const hasStructuredData = Object.values(structured).some(v => v !== '');
   const hasGoalFieldData = Object.values(goalFields).some(v => v !== '');
+  const hasStrukturFieldData = Object.values(strukturFields).some(v => v !== '');
 
   const saveGoals = () => {
     if (!analysisResult) return;
