@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Home, Wrench, BookOpen, TrendingUp, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCustomerPortalSettings, PortalVisibility } from '@/hooks/useClientPortal';
+import { useUnreadNotificationCount } from '@/hooks/useNotifications';
+import { Badge } from '@/components/ui/badge';
 
 interface BottomNavigationProps {
   onMoreClick: () => void;
@@ -13,6 +15,7 @@ export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationPro
   const { t } = useTranslation();
   const location = useLocation();
   const { data: settings } = useCustomerPortalSettings();
+  const unreadCount = useUnreadNotificationCount();
 
   // Fixed order: Übersicht, Werkzeugkiste, Wissensbibliothek, Anlagestrategien
   const allNavItems = [
@@ -33,7 +36,7 @@ export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationPro
     '/app/client-portal/goals',
     '/app/client-portal/tasks',
     '/app/client-portal/courses',
-    '/app/client-portal/profile',
+    '/app/profile',
   ].some(p => location.pathname.startsWith(p));
 
   return (
@@ -67,13 +70,20 @@ export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationPro
         <button
           onClick={onMoreClick}
           className={cn(
-            "flex flex-col items-center justify-center flex-1 h-full min-w-0 py-2 px-0.5 transition-colors",
+            "flex flex-col items-center justify-center flex-1 h-full min-w-0 py-2 px-0.5 transition-colors relative",
             isMoreActive
               ? "text-primary"
               : "text-muted-foreground hover:text-foreground"
           )}
         >
-          <MoreHorizontal className={cn("h-5 w-5 mb-0.5 shrink-0", isMoreActive && "text-primary")} />
+          <div className="relative">
+            <MoreHorizontal className={cn("h-5 w-5 mb-0.5 shrink-0", isMoreActive && "text-primary")} />
+            {unreadCount > 0 && (
+              <Badge className="absolute -top-1.5 -right-2.5 h-3.5 min-w-[14px] px-1 text-[9px] flex items-center justify-center bg-destructive text-destructive-foreground">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </Badge>
+            )}
+          </div>
           <span className={cn(
             "text-[10px] leading-tight font-medium",
             isMoreActive && "text-primary"
