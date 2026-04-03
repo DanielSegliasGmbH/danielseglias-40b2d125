@@ -1231,6 +1231,33 @@ export type Database = {
           },
         ]
       }
+      notification_preferences: {
+        Row: {
+          created_at: string
+          enabled_categories: string[]
+          id: string
+          push_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          enabled_categories?: string[]
+          id?: string
+          push_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          enabled_categories?: string[]
+          id?: string
+          push_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notification_reads: {
         Row: {
           id: string
@@ -1263,12 +1290,16 @@ export type Database = {
       notifications: {
         Row: {
           body: string
+          category: string
           created_at: string
           created_by: string | null
+          description: string | null
+          expires_at: string | null
           id: string
           link_label: string | null
           link_url: string | null
           published_at: string | null
+          scheduled_at: string | null
           status: string
           target_role: string
           title: string
@@ -1276,12 +1307,16 @@ export type Database = {
         }
         Insert: {
           body: string
+          category?: string
           created_at?: string
           created_by?: string | null
+          description?: string | null
+          expires_at?: string | null
           id?: string
           link_label?: string | null
           link_url?: string | null
           published_at?: string | null
+          scheduled_at?: string | null
           status?: string
           target_role?: string
           title: string
@@ -1289,12 +1324,16 @@ export type Database = {
         }
         Update: {
           body?: string
+          category?: string
           created_at?: string
           created_by?: string | null
+          description?: string | null
+          expires_at?: string | null
           id?: string
           link_label?: string | null
           link_url?: string | null
           published_at?: string | null
+          scheduled_at?: string | null
           status?: string
           target_role?: string
           title?: string
@@ -1376,6 +1415,36 @@ export type Database = {
           slug?: string
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      push_device_tokens: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          platform: string
+          token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          platform?: string
+          token: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          platform?: string
+          token?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
