@@ -101,13 +101,13 @@ export default function AppDashboard() {
           </div>
         </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="px-4 sm:px-6 lg:container lg:mx-auto py-6 sm:py-8 page-transition">
         {/* Greeting */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-foreground mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-1 sm:mb-2">
             {t('dashboard.welcome', { name: user?.user_metadata?.first_name || 'User' })}
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground">
             {t('dashboard.loggedInAs')} <strong>{roleLabel}</strong>
           </p>
         </div>
