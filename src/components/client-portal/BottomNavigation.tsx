@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Home, Wrench, BookOpen, TrendingUp, MoreHorizontal } from 'lucide-react';
+import { Home, Wrench, BookOpen, TrendingUp, Sparkles, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCustomerPortalSettings, PortalVisibility } from '@/hooks/useClientPortal';
 import { useUnreadNotificationCount } from '@/hooks/useNotifications';
@@ -20,9 +20,9 @@ export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationPro
   // Fixed order: Übersicht, Werkzeugkiste, Wissensbibliothek, Anlagestrategien
   const allNavItems = [
     { key: 'home', path: '/app/client-portal', icon: Home, label: t('clientPortal.home'), settingsKey: null },
+    { key: 'coach', path: '/app/client-portal/coach', icon: Sparkles, label: t('clientPortal.coach'), settingsKey: null },
     { key: 'tools', path: '/app/client-portal/tools', icon: Wrench, label: t('clientPortal.tools'), settingsKey: 'show_tools' as keyof PortalVisibility },
     { key: 'library', path: '/app/client-portal/library', icon: BookOpen, label: t('clientPortal.library'), settingsKey: 'show_library' as keyof PortalVisibility },
-    { key: 'strategies', path: '/app/client-portal/strategies', icon: TrendingUp, label: t('clientPortal.strategies'), settingsKey: 'show_strategies' as keyof PortalVisibility },
   ];
 
   const navItems = allNavItems.filter(item => {
@@ -36,6 +36,7 @@ export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationPro
     '/app/client-portal/goals',
     '/app/client-portal/tasks',
     '/app/client-portal/courses',
+    '/app/client-portal/strategies',
     '/app/profile',
   ].some(p => location.pathname.startsWith(p));
 

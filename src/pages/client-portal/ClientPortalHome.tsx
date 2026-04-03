@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronRight, Lock } from 'lucide-react';
+import { ChevronRight, Lock, Sparkles } from 'lucide-react';
 import {
   Shield,
   Target,
@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils';
 import { StrategyPasswordGate } from '@/components/client-portal/StrategyPasswordGate';
 
 const portalSections = [
+  { key: 'coach', path: '/app/client-portal/coach', icon: Sparkles, titleKey: 'clientPortal.coach', descKey: 'clientPortal.coachDesc', protected: false },
   { key: 'tools', path: '/app/client-portal/tools', icon: Wrench, titleKey: 'clientPortal.tools', descKey: 'clientPortal.toolsDesc', protected: false },
   { key: 'library', path: '/app/client-portal/library', icon: BookOpen, titleKey: 'clientPortal.library', descKey: 'clientPortal.libraryDesc', protected: false },
   { key: 'strategies', path: '/app/client-portal/strategies', icon: TrendingUp, titleKey: 'clientPortal.strategies', descKey: 'clientPortal.strategiesDesc', protected: true },
@@ -55,7 +56,7 @@ export default function ClientPortalHome() {
   };
 
   // Split: primary sections (in bottom nav) vs secondary (in "Mehr")
-  const primaryKeys = ['tools', 'library', 'strategies'];
+  const primaryKeys = ['coach', 'tools', 'library', 'strategies'];
   const primarySections = visibleSections.filter(s => primaryKeys.includes(s.key));
   const secondarySections = visibleSections.filter(s => !primaryKeys.includes(s.key));
 

@@ -50,6 +50,8 @@ import ClientPortalTools from "./pages/client-portal/ClientPortalTools";
 import ClientPortalToolDetail from "./pages/client-portal/ClientPortalToolDetail";
 import ClientPortalCourses from "./pages/client-portal/ClientPortalCourses";
 import ClientPortalCourseModule from "./pages/client-portal/ClientPortalCourseModule";
+import ClientPortalCoach from "./pages/client-portal/ClientPortalCoach";
+import ClientPortalCoachModule from "./pages/client-portal/ClientPortalCoachModule";
 import AdminCourses from "./pages/AdminCourses";
 
 // Insurance Consulting Pages
@@ -360,6 +362,22 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['client', 'admin']}>
                     <ClientPortalCourseModule />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/coach"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalCoach />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/coach/:moduleKey"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalCoachModule />
                   </RouteGuard>
                 }
               />
