@@ -8,8 +8,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { z } from 'zod';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Mail, CheckCircle2 } from 'lucide-react';
 
 export default function Login() {
   const { t } = useTranslation();
@@ -17,13 +24,17 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [resetOpen, setResetOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
   const { signIn, user, role, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const loginSchema = z.object({
-    email: z.string().email(t('auth.invalidCredentials')),
-    password: z.string().min(6, t('auth.invalidCredentials')),
+    email: z.string().email('Bitte gib eine gültige E-Mail-Adresse ein.'),
+    password: z.string().min(1, 'Bitte gib dein Passwort ein.'),
   });
 
   useEffect(() => {
@@ -37,14 +48,40 @@ export default function Login() {
     e.preventDefault();
     const validation = loginSchema.safeParse({ email, password });
     if (!validation.success) {
-      toast({ variant: 'destructive', title: t('app.error'), description: validation.error.errors[0].message });
+      toast({ variant: 'destructive', title: 'Eingabe prüfen', description: validation.error.errors[0].message });
       return;
     }
     setIsLoading(true);
     const { error } = await signIn(email, password);
     setIsLoading(false);
     if (error) {
-      toast({ variant: 'destructive', title: t('auth.loginError'), description: t('auth.invalidCredentials') });
+      const msg = error.message?.toLowerCase() || '';
+      if (msg.includes('invalid') || msg.includes('credentials')) {
+        toast({ variant: 'destructive', title: 'Anmeldung fehlgeschlagen', description: 'E-Mail oder Passwort ist nicht korrekt.' });
+      } else if (msg.includes('email not confirmed')) {
+        toast({ variant: 'destructive', title: 'E-Mail nicht bestätigt', description: 'Bitte bestätige zuerst deine E-Mail-Adresse über den Link in der Einladungsmail.' });
+      } else if (msg.includes('too many')) {
+        toast({ variant: 'destructive', title: 'Zu viele Versuche', description: 'Bitte warte einen Moment und versuche es erneut.' });
+      } else {
+        toast({ variant: 'destructive', title: 'Anmeldung fehlgeschlagen', description: 'Ein Fehler ist aufgetreten. Bitte versuche es erneut.' });
+      }
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetEmail) return;
+
+    setResetLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setResetLoading(false);
+
+    if (error) {
+      toast({ variant: 'destructive', title: 'Fehler', description: 'Es ist ein Fehler aufgetreten. Bitte versuche es erneut.' });
+    } else {
+      setResetSent(true);
     }
   };
 
@@ -112,19 +149,10 @@ export default function Login() {
         <div className="mt-4 text-center">
           <button
             type="button"
-            onClick={async () => {
-              if (!email) {
-                toast({ variant: 'destructive', title: 'E-Mail erforderlich', description: 'Bitte gib deine E-Mail-Adresse ein.' });
-                return;
-              }
-              const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: `${window.location.origin}/reset-password`,
-              });
-              if (error) {
-                toast({ variant: 'destructive', title: 'Fehler', description: error.message });
-              } else {
-                toast({ title: 'E-Mail gesendet', description: 'Falls ein Konto existiert, erhältst du einen Link zum Zurücksetzen.' });
-              }
+            onClick={() => {
+              setResetEmail(email);
+              setResetSent(false);
+              setResetOpen(true);
             }}
             className="text-sm text-muted-foreground hover:text-primary hover:underline transition-colors"
           >
@@ -138,6 +166,64 @@ export default function Login() {
           </Link>
         </div>
       </div>
+
+      {/* Password Reset Dialog */}
+      <Dialog open={resetOpen} onOpenChange={setResetOpen}>
+        <DialogContent className="sm:max-w-md">
+          {resetSent ? (
+            <div className="py-6 text-center space-y-4">
+              <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                <CheckCircle2 className="h-7 w-7 text-primary" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground mb-1">E-Mail gesendet</h3>
+                <p className="text-sm text-muted-foreground">
+                  Falls ein Konto mit <span className="font-medium text-foreground">{resetEmail}</span> existiert, erhältst du einen Link zum Zurücksetzen deines Passworts.
+                </p>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Keine E-Mail erhalten? Prüfe deinen Spam-Ordner oder versuche es erneut.
+              </p>
+              <Button variant="outline" onClick={() => setResetOpen(false)} className="rounded-xl">
+                Schliessen
+              </Button>
+            </div>
+          ) : (
+            <>
+              <DialogHeader>
+                <DialogTitle>Passwort zurücksetzen</DialogTitle>
+                <DialogDescription>
+                  Gib deine E-Mail-Adresse ein. Du erhältst einen Link, über den du ein neues Passwort setzen kannst.
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleResetPassword} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="resetEmail">E-Mail-Adresse</Label>
+                  <Input
+                    id="resetEmail"
+                    type="email"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    placeholder="name@example.com"
+                    required
+                    disabled={resetLoading}
+                    className="h-12 rounded-xl"
+                  />
+                </div>
+                <div className="flex gap-2 justify-end">
+                  <Button type="button" variant="ghost" onClick={() => setResetOpen(false)}>
+                    Abbrechen
+                  </Button>
+                  <Button type="submit" disabled={resetLoading} className="rounded-xl">
+                    {resetLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Mail className="h-4 w-4 mr-2" />}
+                    Link senden
+                  </Button>
+                </div>
+              </form>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
