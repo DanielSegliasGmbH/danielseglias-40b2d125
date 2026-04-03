@@ -534,6 +534,74 @@ function StrukturFields({
   );
 }
 
+// ─── Structured Fields for Absicherung ───────────────────────────
+
+interface AbsicherungData {
+  hasHealth: string;
+  hasDisability: string;
+  hasLiability: string;
+  hasAdditional: string;
+  feeling: string;
+}
+
+function AbsicherungFields({
+  data,
+  onChange,
+}: {
+  data: AbsicherungData;
+  onChange: (d: AbsicherungData) => void;
+}) {
+  const update = (key: keyof AbsicherungData, val: string) => onChange({ ...data, [key]: val });
+  const selectClass = "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
+  return (
+    <Card>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Shield className="h-4 w-4 text-primary" />
+          <h3 className="font-semibold text-sm text-foreground">Schnellübersicht (optional)</h3>
+        </div>
+        <p className="text-xs text-muted-foreground">Diese Angaben helfen der Auswertung, sind aber nicht zwingend.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Krankenversicherung?</label>
+            <select value={data.hasHealth} onChange={e => update('hasHealth', e.target.value)} className={selectClass}>
+              <option value="">—</option><option value="Ja">Ja</option><option value="Nein">Nein</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Berufs-/Erwerbsunfähigkeit?</label>
+            <select value={data.hasDisability} onChange={e => update('hasDisability', e.target.value)} className={selectClass}>
+              <option value="">—</option><option value="Ja">Ja</option><option value="Nein">Nein</option><option value="Weiss nicht">Weiss nicht</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Haftpflichtversicherung?</label>
+            <select value={data.hasLiability} onChange={e => update('hasLiability', e.target.value)} className={selectClass}>
+              <option value="">—</option><option value="Ja">Ja</option><option value="Nein">Nein</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Zusatzversicherungen?</label>
+            <select value={data.hasAdditional} onChange={e => update('hasAdditional', e.target.value)} className={selectClass}>
+              <option value="">—</option><option value="Ja">Ja</option><option value="Nein">Nein</option><option value="Weiss nicht">Weiss nicht</option>
+            </select>
+          </div>
+          <div className="space-y-1 sm:col-span-2">
+            <label className="text-xs font-medium text-foreground/80">Wie fühlst du dich aktuell abgesichert?</label>
+            <select value={data.feeling} onChange={e => update('feeling', e.target.value)} className={selectClass}>
+              <option value="">—</option>
+              <option value="unsicher">Unsicher</option>
+              <option value="teilweise abgesichert">Teilweise abgesichert</option>
+              <option value="gut abgesichert">Gut abgesichert</option>
+            </select>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // ─── Module Score ────────────────────────────────────────────────
 
 function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasReflection, tasksCreated, goalsSaved }: {
