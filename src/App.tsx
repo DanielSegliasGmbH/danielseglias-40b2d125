@@ -384,6 +384,16 @@ function App() {
                 }
               />
 
+              {/* Protected: Admin only - Portal Settings */}
+              <Route
+                path="/app/portal-settings"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminPortalSettings />
+                  </RouteGuard>
+                }
+              />
+
               {/* Insurance Consulting Routes - wrapped in ConsultationProvider */}
               <Route
                 path="/app/insurance-consulting"

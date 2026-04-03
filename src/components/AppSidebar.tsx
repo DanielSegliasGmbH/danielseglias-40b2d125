@@ -72,6 +72,7 @@ export function AppSidebar() {
 
   const adminNavItems = [
     { title: t('userManagement.title'), url: '/app/users', icon: Settings },
+    { title: 'Portalfreigaben', url: '/app/portal-settings', icon: Eye },
     { title: 'Nachrichten', url: '/app/chat', icon: MessageCircle },
     { title: 'Videokurs', url: '/app/courses', icon: GraduationCap },
     { title: t('systemMap.title'), url: '/app/system-map', icon: Network },
