@@ -752,6 +752,7 @@ function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasRef
     struktur: { title: 'Dein Struktur-Level', icon: LayoutGrid, levels: ['Chaotisch', 'Teilweise strukturiert', 'Klar organisiert'], hint: 'Einfache Systeme schaffen langfristig Kontrolle.' },
     absicherung: { title: 'Dein Sicherheitsgefühl', icon: Shield, levels: ['Unsicher', 'Teilweise abgesichert', 'Klar abgesichert'], hint: 'Klarheit über deine Risiken gibt dir Sicherheit.' },
     optimierung: { title: 'Dein Optimierungsgrad', icon: Settings2, levels: ['Viel Potenzial offen', 'Teilweise optimiert', 'Gut optimiert'], hint: 'Kleine Anpassungen machen langfristig den Unterschied.' },
+    investment: { title: 'Dein Investment-Verständnis', icon: TrendingUp, levels: ['Unsicher', 'Grundlegend verstanden', 'Klar orientiert'], hint: 'Je besser du Investieren verstehst, desto sicherer wirst du.' },
   };
   const cfg = scoreConfig[moduleKey] || scoreConfig.klarheit;
   const SIcon = cfg.icon;
