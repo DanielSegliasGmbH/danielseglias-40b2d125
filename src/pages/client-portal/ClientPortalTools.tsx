@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Wrench, Clock, Calculator, PieChart, TrendingUp, FileText, LucideIcon } from 'lucide-react';
-import { useClientTools } from '@/hooks/useTools';
+import { useClientToolsFiltered } from '@/hooks/useClientPortal';
 import { groupToolsByCluster } from '@/config/toolClusters';
 
 const iconMap: Record<string, LucideIcon> = {
