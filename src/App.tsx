@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ResetPassword from "./pages/ResetPassword";
 import AdminNotifications from "./pages/AdminNotifications";
+import AdminPortalSettings from "./pages/AdminPortalSettings";
 import Onboarding from "./pages/Onboarding";
 import AppDashboard from "./pages/AppDashboard";
 import UserManagement from "./pages/UserManagement";
@@ -379,6 +380,16 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['admin']}>
                     <AdminNotifications />
+                  </RouteGuard>
+                }
+              />
+
+              {/* Protected: Admin only - Portal Settings */}
+              <Route
+                path="/app/portal-settings"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminPortalSettings />
                   </RouteGuard>
                 }
               />

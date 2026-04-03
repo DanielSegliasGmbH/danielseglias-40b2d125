@@ -2,7 +2,7 @@ import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useCustomerPortalSettings, usePreviewCustomerId } from '@/hooks/useClientPortal';
+import { useCustomerPortalSettings, usePreviewCustomerId, PortalVisibility } from '@/hooks/useClientPortal';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
@@ -42,12 +42,12 @@ interface ClientPortalLayoutProps {
 }
 
 const portalSections = [
-  { key: 'insurances', path: '/app/client-portal/insurances', icon: Shield, labelKey: 'clientPortal.insurances' },
-  { key: 'goals', path: '/app/client-portal/goals', icon: Target, labelKey: 'clientPortal.goals' },
-  { key: 'tasks', path: '/app/client-portal/tasks', icon: ClipboardList, labelKey: 'clientPortal.tasks' },
-  { key: 'strategies', path: '/app/client-portal/strategies', icon: TrendingUp, labelKey: 'clientPortal.strategies' },
-  { key: 'library', path: '/app/client-portal/library', icon: BookOpen, labelKey: 'clientPortal.library' },
-  { key: 'tools', path: '/app/client-portal/tools', icon: Wrench, labelKey: 'clientPortal.tools' },
+  { key: 'insurances', path: '/app/client-portal/insurances', icon: Shield, labelKey: 'clientPortal.insurances', settingsKey: 'show_insurances' as keyof PortalVisibility },
+  { key: 'goals', path: '/app/client-portal/goals', icon: Target, labelKey: 'clientPortal.goals', settingsKey: 'show_goals' as keyof PortalVisibility },
+  { key: 'tasks', path: '/app/client-portal/tasks', icon: ClipboardList, labelKey: 'clientPortal.tasks', settingsKey: 'show_tasks' as keyof PortalVisibility },
+  { key: 'strategies', path: '/app/client-portal/strategies', icon: TrendingUp, labelKey: 'clientPortal.strategies', settingsKey: 'show_strategies' as keyof PortalVisibility },
+  { key: 'library', path: '/app/client-portal/library', icon: BookOpen, labelKey: 'clientPortal.library', settingsKey: 'show_library' as keyof PortalVisibility },
+  { key: 'tools', path: '/app/client-portal/tools', icon: Wrench, labelKey: 'clientPortal.tools', settingsKey: 'show_tools' as keyof PortalVisibility },
 ] as const;
 
 // Hook to get customer name for preview (Phase 2: using customers table)
@@ -91,9 +91,8 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
   };
 
   const visibleSections = portalSections.filter(section => {
-    if (!settings) return true; // Show all if no settings (default)
-    const settingKey = `show_${section.key}` as keyof typeof settings;
-    return settings[settingKey] !== false;
+    if (!settings) return true; // Show all if no settings (admin without preview)
+    return settings[section.settingsKey] !== false;
   });
 
   const handleLogout = async () => {

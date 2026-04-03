@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Home, Wrench, BookOpen, TrendingUp, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useCustomerPortalSettings, PortalVisibility } from '@/hooks/useClientPortal';
 
 interface BottomNavigationProps {
   onMoreClick: () => void;
@@ -11,13 +12,20 @@ interface BottomNavigationProps {
 export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationProps) {
   const { t } = useTranslation();
   const location = useLocation();
+  const { data: settings } = useCustomerPortalSettings();
 
-  const navItems = [
-    { key: 'home', path: '/app/client-portal', icon: Home, label: t('clientPortal.home') },
-    { key: 'tools', path: '/app/client-portal/tools', icon: Wrench, label: t('clientPortal.tools') },
-    { key: 'library', path: '/app/client-portal/library', icon: BookOpen, label: t('clientPortal.library') },
-    { key: 'strategies', path: '/app/client-portal/strategies', icon: TrendingUp, label: t('clientPortal.strategies') },
+  const allNavItems = [
+    { key: 'home', path: '/app/client-portal', icon: Home, label: t('clientPortal.home'), settingsKey: null },
+    { key: 'tools', path: '/app/client-portal/tools', icon: Wrench, label: t('clientPortal.tools'), settingsKey: 'show_tools' as keyof PortalVisibility },
+    { key: 'library', path: '/app/client-portal/library', icon: BookOpen, label: t('clientPortal.library'), settingsKey: 'show_library' as keyof PortalVisibility },
+    { key: 'strategies', path: '/app/client-portal/strategies', icon: TrendingUp, label: t('clientPortal.strategies'), settingsKey: 'show_strategies' as keyof PortalVisibility },
   ];
+
+  const navItems = allNavItems.filter(item => {
+    if (!item.settingsKey) return true; // Home always visible
+    if (!settings) return true; // No settings = show all
+    return settings[item.settingsKey] !== false;
+  });
 
   const isMoreActive = [
     '/app/client-portal/insurances',

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Wrench, Clock, Calculator, PieChart, TrendingUp, FileText, LucideIcon } from 'lucide-react';
-import { useClientTools } from '@/hooks/useTools';
+import { useClientToolsFiltered } from '@/hooks/useClientPortal';
 import { groupToolsByCluster } from '@/config/toolClusters';
 
 const iconMap: Record<string, LucideIcon> = {
@@ -19,7 +19,7 @@ const iconMap: Record<string, LucideIcon> = {
 export default function ClientPortalTools() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { data: tools, isLoading, error } = useClientTools();
+  const { data: tools, isLoading, error } = useClientToolsFiltered();
 
   const hasTools = tools && tools.length > 0;
   const clusteredTools = hasTools ? groupToolsByCluster(tools) : [];
