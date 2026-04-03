@@ -176,7 +176,7 @@ export default function ClientPortalLibrary() {
             {filteredArticles.length === 0 && (
               <Card>
                 <CardContent className="p-8 text-center text-muted-foreground">
-                  Keine Ergebnisse gefunden. Versuchen Sie einen anderen Begriff.
+                  Keine Ergebnisse gefunden. Versuche einen anderen Begriff.
                 </CardContent>
               </Card>
             )}
