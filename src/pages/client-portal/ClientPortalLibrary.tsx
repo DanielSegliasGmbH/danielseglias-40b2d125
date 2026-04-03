@@ -370,7 +370,7 @@ function ArticleDetail({ article, isPrivateMode }: { article: KnowledgeArticle; 
       {/* Relevanz für den Kunden */}
       <Card className="border-primary/20 bg-primary/5">
         <CardContent className="p-5">
-          <h3 className="font-semibold text-foreground text-sm mb-1">Was bedeutet das für Sie?</h3>
+          <h3 className="font-semibold text-foreground text-sm mb-1">Was bedeutet das für dich?</h3>
           <p className="text-sm text-foreground/80 leading-relaxed">{article.customerRelevance}</p>
         </CardContent>
       </Card>
