@@ -236,7 +236,39 @@ const moduleData: Record<string, ModuleConfig> = {
       'Was sich daraus entwickelt': TrendingUp,
     },
   },
-  investment: { title: 'Investment', desc: 'Lerne, dein Geld strategisch und langfristig für dich arbeiten zu lassen.', icon: TrendingUp, implemented: false },
+  investment: {
+    title: 'Investment',
+    desc: 'In diesem Modul verstehst du, wie dein Geld langfristig wachsen kann.\n\nDu lernst, welche Rolle Investitionen spielen und wie du sinnvoll damit umgehst.\n\nZiel ist es, Unsicherheit zu reduzieren und dir eine klare, einfache Grundlage für deine Entscheidungen zu geben.',
+    icon: TrendingUp,
+    implemented: true,
+    questions: [
+      'Investierst du aktuell bereits Geld? Wenn ja, wie?',
+      'Wie fühlst du dich beim Thema Investieren? (z. B. unsicher, interessiert, skeptisch)',
+      'Was hält dich aktuell davon ab, mehr oder besser zu investieren?',
+      'Was glaubst du, wie man langfristig Vermögen aufbaut?',
+      'Wie lange könntest du Geld investieren, ohne es zu brauchen?',
+      'Was ist deine grösste Sorge beim Investieren?',
+    ],
+    questionsTitle: 'Dein aktueller Umgang mit Investment',
+    questionsSubtitle: 'Beschreibe ehrlich, wie du aktuell mit dem Thema Investieren umgehst.',
+    analyzeLabel: 'Investment analysieren',
+    reflectionQuestion: 'Was hast du über Investieren verstanden – und was hat sich in deinem Denken verändert?',
+    cathedralMoment: [
+      'Du spekulierst nicht.',
+      'Du baust langfristig Vermögen auf.',
+      'Investieren ist kein Glücksspiel – sondern ein Prozess.',
+    ],
+    structuredFields: true,
+    sectionIcons: {
+      'Deine aktuelle Sicht auf Investment': TrendingUp,
+      'Was du verstehen solltest': Eye,
+      'Wie du sinnvoll vorgehen kannst': Sparkles,
+      'Deine nächsten Schritte': CheckSquare,
+      'Das hast du verstanden': Star,
+      'Warum das wichtig ist': Target,
+      'Was du jetzt anders siehst': TrendingUp,
+    },
+  },
   skalierung: { title: 'Skalierung', desc: 'Bringe deinen Vermögensaufbau auf die nächste Stufe mit fortgeschrittenen Strategien.', icon: Rocket, implemented: false },
   freiheit: { title: 'Freiheit', desc: 'Plane deine finanzielle Unabhängigkeit konkret und realistisch.', icon: Star, implemented: false },
   review: { title: 'Review', desc: 'Überprüfe regelmässig deine Fortschritte und passe deine Strategie an.', icon: RotateCcw, implemented: false },
@@ -695,6 +727,74 @@ function OptimierungFields({
   );
 }
 
+// ─── Structured Fields for Investment ────────────────────────────
+
+interface InvestmentData {
+  investsAlready: string;
+  investmentType: string;
+  horizon: string;
+  riskFeeling: string;
+}
+
+function InvestmentFields({
+  data,
+  onChange,
+}: {
+  data: InvestmentData;
+  onChange: (d: InvestmentData) => void;
+}) {
+  const update = (key: keyof InvestmentData, val: string) => onChange({ ...data, [key]: val });
+  const selectClass = "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
+  return (
+    <Card>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <TrendingUp className="h-4 w-4 text-primary" />
+          <h3 className="font-semibold text-sm text-foreground">Schnellübersicht (optional)</h3>
+        </div>
+        <p className="text-xs text-muted-foreground">Diese Angaben helfen der Auswertung, sind aber nicht zwingend.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Investiert bereits?</label>
+            <select value={data.investsAlready} onChange={e => update('investsAlready', e.target.value)} className={selectClass}>
+              <option value="">—</option><option value="Ja">Ja</option><option value="Nein">Nein</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Anlageform</label>
+            <select value={data.investmentType} onChange={e => update('investmentType', e.target.value)} className={selectClass}>
+              <option value="">—</option>
+              <option value="keine">Keine</option>
+              <option value="Sparkonto">Sparkonto</option>
+              <option value="Fonds/ETF">Fonds/ETF</option>
+              <option value="Einzelaktien">Einzelaktien</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Anlagehorizont</label>
+            <select value={data.horizon} onChange={e => update('horizon', e.target.value)} className={selectClass}>
+              <option value="">—</option>
+              <option value="kurz (<3 Jahre)">Kurz (&lt;3 Jahre)</option>
+              <option value="mittel (3–10 Jahre)">Mittel (3–10 Jahre)</option>
+              <option value="lang (>10 Jahre)">Lang (&gt;10 Jahre)</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground/80">Risikogefühl</label>
+            <select value={data.riskFeeling} onChange={e => update('riskFeeling', e.target.value)} className={selectClass}>
+              <option value="">—</option>
+              <option value="vorsichtig">Vorsichtig</option>
+              <option value="ausgewogen">Ausgewogen</option>
+              <option value="risikofreudig">Risikofreudig</option>
+            </select>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // ─── Module Score ────────────────────────────────────────────────
 
 function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasReflection, tasksCreated, goalsSaved }: {
@@ -720,6 +820,7 @@ function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasRef
     struktur: { title: 'Dein Struktur-Level', icon: LayoutGrid, levels: ['Chaotisch', 'Teilweise strukturiert', 'Klar organisiert'], hint: 'Einfache Systeme schaffen langfristig Kontrolle.' },
     absicherung: { title: 'Dein Sicherheitsgefühl', icon: Shield, levels: ['Unsicher', 'Teilweise abgesichert', 'Klar abgesichert'], hint: 'Klarheit über deine Risiken gibt dir Sicherheit.' },
     optimierung: { title: 'Dein Optimierungsgrad', icon: Settings2, levels: ['Viel Potenzial offen', 'Teilweise optimiert', 'Gut optimiert'], hint: 'Kleine Anpassungen machen langfristig den Unterschied.' },
+    investment: { title: 'Dein Investment-Verständnis', icon: TrendingUp, levels: ['Unsicher', 'Grundlegend verstanden', 'Klar orientiert'], hint: 'Je besser du Investieren verstehst, desto sicherer wirst du.' },
   };
   const cfg = scoreConfig[moduleKey] || scoreConfig.klarheit;
   const SIcon = cfg.icon;
@@ -776,6 +877,9 @@ export default function ClientPortalCoachModule() {
   });
   const [optimierungFields, setOptimierungFields] = useState<OptimierungData>({
     has3a: '', hasInvestments: '', hasSavingsPlan: '', feeling: '',
+  });
+  const [investmentFields, setInvestmentFields] = useState<InvestmentData>({
+    investsAlready: '', investmentType: '', horizon: '', riskFeeling: '',
   });
 
   if (!mod) {
@@ -849,6 +953,10 @@ export default function ClientPortalCoachModule() {
       if (mod.structuredFields && currentModuleKey === 'optimierung') {
         const hasAny = Object.values(optimierungFields).some(v => v !== '');
         if (hasAny) body.structuredData = optimierungFields;
+      }
+      if (mod.structuredFields && currentModuleKey === 'investment') {
+        const hasAny = Object.values(investmentFields).some(v => v !== '');
+        if (hasAny) body.structuredData = investmentFields;
       }
       const { data, error } = await supabase.functions.invoke('coach-analyze', { body });
       if (error) throw error;
@@ -957,6 +1065,7 @@ export default function ClientPortalCoachModule() {
   const hasStrukturFieldData = Object.values(strukturFields).some(v => v !== '');
   const hasAbsicherungFieldData = Object.values(absicherungFields).some(v => v !== '');
   const hasOptimierungFieldData = Object.values(optimierungFields).some(v => v !== '');
+  const hasInvestmentFieldData = Object.values(investmentFields).some(v => v !== '');
 
   const saveGoals = () => {
     if (!analysisResult) return;
@@ -1027,11 +1136,11 @@ export default function ClientPortalCoachModule() {
         </Card>
 
         {/* Module Score */}
-        {(['klarheit', 'ziele', 'struktur', 'absicherung', 'optimierung'].includes(currentModuleKey)) && (
+        {(['klarheit', 'ziele', 'struktur', 'absicherung', 'optimierung', 'investment'].includes(currentModuleKey)) && (
           <ModuleScore
             moduleKey={currentModuleKey}
             hasAnswers={answers.trim().length >= 20}
-            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : currentModuleKey === 'ziele' ? hasGoalFieldData : currentModuleKey === 'absicherung' ? hasAbsicherungFieldData : currentModuleKey === 'optimierung' ? hasOptimierungFieldData : hasStrukturFieldData}
+            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : currentModuleKey === 'ziele' ? hasGoalFieldData : currentModuleKey === 'absicherung' ? hasAbsicherungFieldData : currentModuleKey === 'optimierung' ? hasOptimierungFieldData : currentModuleKey === 'investment' ? hasInvestmentFieldData : hasStrukturFieldData}
             hasAnalysis={!!analysisResult}
             hasReflection={!!reflectionResult}
             tasksCreated={tasksCreated}
@@ -1062,6 +1171,11 @@ export default function ClientPortalCoachModule() {
         {/* Structured fields for optimierung */}
         {mod.structuredFields && currentModuleKey === 'optimierung' && (
           <OptimierungFields data={optimierungFields} onChange={setOptimierungFields} />
+        )}
+
+        {/* Structured fields for investment */}
+        {mod.structuredFields && currentModuleKey === 'investment' && (
+          <InvestmentFields data={investmentFields} onChange={setInvestmentFields} />
         )}
 
         {/* Questions */}

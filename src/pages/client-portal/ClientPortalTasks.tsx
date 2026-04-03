@@ -9,7 +9,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   ClipboardList, CheckCircle2, Circle, Brain, Trash2, BookOpen, Trophy, Clock,
-  Loader2, Calendar, Eye, Target, LayoutGrid, Shield, Settings2,
+  Loader2, Calendar, Eye, Target, LayoutGrid, Shield, Settings2, TrendingUp,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -38,6 +38,7 @@ const moduleIcons: Record<string, React.ElementType> = {
   struktur: LayoutGrid,
   absicherung: Shield,
   optimierung: Settings2,
+  investment: TrendingUp,
 };
 
 function useLocalList<T>(key: string) {
