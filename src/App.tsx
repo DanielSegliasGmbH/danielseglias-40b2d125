@@ -373,6 +373,16 @@ function App() {
                 }
               />
 
+              {/* Protected: Admin only - Notifications */}
+              <Route
+                path="/app/notifications"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminNotifications />
+                  </RouteGuard>
+                }
+              />
+
               {/* Insurance Consulting Routes - wrapped in ConsultationProvider */}
               <Route
                 path="/app/insurance-consulting"
