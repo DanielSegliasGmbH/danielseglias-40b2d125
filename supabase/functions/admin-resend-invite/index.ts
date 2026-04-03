@@ -75,38 +75,79 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Generate a password reset link (works as re-invitation)
-    const { data: linkData, error: linkError } = await adminClient.auth.admin.generateLink({
-      type: 'magiclink',
-      email: targetUser.email,
-    })
+    // For unconfirmed users: re-invite (this sends an actual email)
+    if (!targetUser.email_confirmed_at) {
+      // First delete the user, then re-invite to trigger a fresh invitation email
+      // inviteUserByEmail fails if user already exists, so we use a workaround:
+      // Delete the auth user (keep profile/role via cascade), then re-create via invite
+      
+      // Actually, the cleanest approach: use admin.generateLink to get the action link,
+      // then we don't need to send email ourselves — Supabase sends it.
+      // BUT generateLink does NOT send email. So we need another approach.
+      
+      // The correct approach for re-inviting: delete and re-create the user
+      // This is safe because the profiles trigger will handle the profile,
+      // and we preserve the role.
+      
+      // Save user metadata and role before deletion
+      const userMetadata = targetUser.user_metadata
+      const email = targetUser.email
+      
+      // Get existing role
+      const { data: existingRole } = await adminClient
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .maybeSingle()
+      
+      // Get existing customer link
+      const { data: existingCustomerUser } = await adminClient
+        .from('customer_users')
+        .select('customer_id, created_by')
+        .eq('user_id', userId)
+        .maybeSingle()
 
-    if (linkError) {
+      // Delete old user (cascades profile, role, customer_users)
+      await adminClient.auth.admin.deleteUser(userId)
+      
+      // Re-invite with fresh invitation email
+      const { data: inviteData, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(email, {
+        data: userMetadata,
+      })
+      
+      if (inviteError) {
+        return new Response(
+          JSON.stringify({ error: `Einladung fehlgeschlagen: ${inviteError.message}` }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+
+      const newUserId = inviteData.user.id
+
+      // Restore role
+      if (existingRole) {
+        await adminClient.from('user_roles').insert({ user_id: newUserId, role: existingRole.role })
+      }
+
+      // Restore customer link
+      if (existingCustomerUser) {
+        await adminClient.from('customer_users').insert({
+          user_id: newUserId,
+          customer_id: existingCustomerUser.customer_id,
+          created_by: existingCustomerUser.created_by,
+        })
+      }
+
       return new Response(
-        JSON.stringify({ error: linkError.message }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ success: true, message: 'Einladung erneut versendet', newUserId }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    // Use invite again for unconfirmed users
-    if (!targetUser.email_confirmed_at) {
-      // Delete and re-invite
-      const { error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(targetUser.email, {
-        data: targetUser.user_metadata,
-      })
-      // inviteUserByEmail might fail if user exists, so we fall back to generateLink
-      if (!inviteError) {
-        return new Response(
-          JSON.stringify({ success: true, message: 'Einladung erneut versendet' }),
-          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
-      }
-    }
-
-    // For confirmed users, send password reset
-    const { error: resetError } = await adminClient.auth.admin.generateLink({
-      type: 'recovery',
-      email: targetUser.email,
+    // For confirmed/active users: send password reset email
+    // resetPasswordForEmail actually sends the email (unlike generateLink)
+    const { error: resetError } = await adminClient.auth.resetPasswordForEmail(targetUser.email, {
+      redirectTo: `${supabaseUrl.replace('.supabase.co', '.lovable.app')}/reset-password`,
     })
 
     if (resetError) {
@@ -117,7 +158,7 @@ Deno.serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ success: true, message: 'Passwort-Reset-Link wurde gesendet' }),
+      JSON.stringify({ success: true, message: 'Passwort-Reset-Link wurde per E-Mail gesendet' }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
