@@ -636,6 +636,10 @@ export default function ClientPortalCoachModule() {
         const hasAny = Object.values(goalFields).some(v => v !== '');
         if (hasAny) body.structuredData = goalFields;
       }
+      if (mod.structuredFields && currentModuleKey === 'struktur') {
+        const hasAny = Object.values(strukturFields).some(v => v !== '');
+        if (hasAny) body.structuredData = strukturFields;
+      }
       const { data, error } = await supabase.functions.invoke('coach-analyze', { body });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
