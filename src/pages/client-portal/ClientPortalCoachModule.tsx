@@ -1167,6 +1167,7 @@ export default function ClientPortalCoachModule() {
   const hasAbsicherungFieldData = Object.values(absicherungFields).some(v => v !== '');
   const hasOptimierungFieldData = Object.values(optimierungFields).some(v => v !== '');
   const hasInvestmentFieldData = Object.values(investmentFields).some(v => v !== '');
+  const hasSkalierungFieldData = Object.values(skalierungFields).some(v => v !== '');
 
   const saveGoals = () => {
     if (!analysisResult) return;
