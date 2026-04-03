@@ -208,27 +208,25 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
           </div>
         </aside>
 
-        {/* Mobile Header - Simplified */}
+        {/* Mobile Header - Clean & minimal */}
         <div className={cn("lg:hidden fixed left-0 right-0 z-50 bg-card border-b border-border", isAdminPreview ? "top-10" : "top-0")}>
-          <div className="flex items-center justify-between px-4 h-14">
-            <h1 className="text-lg font-semibold">{t('clientPortal.title')}</h1>
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between px-4 h-12">
+            <h1 className="text-base font-semibold text-foreground">{t('clientPortal.title')}</h1>
+            <div className="flex items-center gap-1">
               <NotificationBell />
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative h-9 w-9"
+                className="relative h-8 w-8"
                 onClick={() => setChatOpen(true)}
               >
-                <MessageCircle className="h-5 w-5" />
+                <MessageCircle className="h-4.5 w-4.5" />
                 {unreadCount > 0 && (
                   <Badge className="absolute -top-1 -right-1 h-4 min-w-[16px] px-1 text-[10px] flex items-center justify-center">
                     {unreadCount}
                   </Badge>
                 )}
               </Button>
-              <ThemeSwitcher />
-              <LanguageSwitcher />
             </div>
           </div>
         </div>
