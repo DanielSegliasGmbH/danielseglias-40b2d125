@@ -536,12 +536,12 @@ function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasRef
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <SIcon className="h-4 w-4 text-primary" />
-            <h3 className="font-semibold text-sm text-foreground">{title}</h3>
+            <h3 className="font-semibold text-sm text-foreground">{cfg.title}</h3>
           </div>
           <span className={cn('text-sm font-semibold', levelColor)}>{level}</span>
         </div>
         <Progress value={score} className="h-2" />
-        <p className="text-xs text-muted-foreground">{score}% – {hint}</p>
+        <p className="text-xs text-muted-foreground">{score}% – {cfg.hint}</p>
       </CardContent>
     </Card>
   );
