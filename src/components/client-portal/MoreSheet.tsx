@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, KeyRound } from 'lucide-react';
+import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, User, HelpCircle, Globe } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -24,76 +24,84 @@ interface MoreSheetProps {
 export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSections }: MoreSheetProps) {
   const { t } = useTranslation();
 
-  const moreItems = [
-    { key: 'tasks', path: '/app/client-portal/tasks', icon: ClipboardList, label: t('clientPortal.tasks') },
-    { key: 'goals', path: '/app/client-portal/goals', icon: Target, label: t('clientPortal.goals') },
+  // Secondary content sections (only if visible via permissions)
+  const contentItems = [
     { key: 'insurances', path: '/app/client-portal/insurances', icon: Shield, label: t('clientPortal.insurances') },
+    { key: 'goals', path: '/app/client-portal/goals', icon: Target, label: t('clientPortal.goals') },
+    { key: 'tasks', path: '/app/client-portal/tasks', icon: ClipboardList, label: t('clientPortal.tasks') },
     { key: 'courses', path: '/app/client-portal/courses', icon: GraduationCap, label: t('clientPortal.courses') },
   ];
 
-  const visibleMoreItems = moreItems.filter(item => 
+  const visibleContentItems = contentItems.filter(item => 
     visibleSections.some(s => s.key === item.key)
+  );
+
+  const MoreLink = ({ to, icon: Icon, label }: { to: string; icon: React.ElementType; label: string }) => (
+    <Link
+      to={to}
+      onClick={() => onOpenChange(false)}
+      className={cn(
+        "flex items-center justify-between w-full px-4 py-3.5 rounded-xl",
+        "bg-muted/50 hover:bg-muted transition-colors",
+        "active:scale-[0.98] touch-manipulation"
+      )}
+    >
+      <div className="flex items-center gap-3">
+        <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+          <Icon className="h-4.5 w-4.5 text-primary" />
+        </div>
+        <span className="font-medium text-sm text-foreground">{label}</span>
+      </div>
+      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+    </Link>
   );
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="rounded-t-3xl pb-safe">
-        <SheetHeader className="pb-4">
-          <SheetTitle>{t('clientPortal.more')}</SheetTitle>
+      <SheetContent side="bottom" className="rounded-t-3xl pb-safe max-h-[80vh]">
+        <SheetHeader className="pb-3">
+          <SheetTitle className="text-base">{t('clientPortal.more')}</SheetTitle>
         </SheetHeader>
         
-        <div className="space-y-2">
-          {visibleMoreItems.map((item) => (
-            <Link
-              key={item.key}
-              to={buildPath(item.path)}
-              onClick={() => onOpenChange(false)}
-              className={cn(
-                "flex items-center justify-between w-full px-4 py-4 rounded-xl",
-                "bg-muted/50 hover:bg-muted transition-colors",
-                "active:scale-[0.98] touch-manipulation"
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <item.icon className="h-5 w-5 text-primary" />
-                </div>
-                <span className="font-medium text-foreground">{item.label}</span>
-              </div>
-              <ChevronRight className="h-5 w-5 text-muted-foreground" />
-            </Link>
-          ))}
+        {/* Secondary content areas */}
+        {visibleContentItems.length > 0 && (
+          <div className="space-y-1.5 mb-4">
+            <p className="text-xs font-medium text-muted-foreground px-1 mb-2">
+              {t('clientPortal.moreContent', 'Weitere Bereiche')}
+            </p>
+            {visibleContentItems.map((item) => (
+              <MoreLink key={item.key} to={buildPath(item.path)} icon={item.icon} label={item.label} />
+            ))}
+          </div>
+        )}
 
-          {/* Profile */}
-          <Link
-            to="/app/profile"
-            onClick={() => onOpenChange(false)}
-            className={cn(
-              "flex items-center justify-between w-full px-4 py-4 rounded-xl",
-              "bg-muted/50 hover:bg-muted transition-colors",
-              "active:scale-[0.98] touch-manipulation"
-            )}
-          >
+        <Separator className="my-3" />
+
+        {/* Account & Settings */}
+        <div className="space-y-1.5">
+          <p className="text-xs font-medium text-muted-foreground px-1 mb-2">
+            {t('app.accountSettings', 'Konto & Einstellungen')}
+          </p>
+          <MoreLink to="/app/profile" icon={User} label={t('userManagement.profile')} />
+          
+          {/* Theme & Language compact row */}
+          <div className="flex items-center justify-between px-4 py-3 bg-muted/30 rounded-xl">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <KeyRound className="h-5 w-5 text-primary" />
+              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Globe className="h-4.5 w-4.5 text-primary" />
               </div>
-              <span className="font-medium text-foreground">{t('userManagement.profile')}</span>
+              <span className="text-sm font-medium text-foreground">
+                {t('app.displaySettings', 'Darstellung')}
+              </span>
             </div>
-            <ChevronRight className="h-5 w-5 text-muted-foreground" />
-          </Link>
-        </div>
-
-        <Separator className="my-4" />
-
-        {/* Settings Section */}
-        <div className="flex items-center justify-between px-4 py-3 bg-muted/30 rounded-xl mb-4">
-          <span className="text-sm font-medium text-muted-foreground">{t('app.settings', 'Einstellungen')}</span>
-          <div className="flex items-center gap-2">
-            <ThemeSwitcher />
-            <LanguageSwitcher />
+            <div className="flex items-center gap-1.5">
+              <ThemeSwitcher />
+              <LanguageSwitcher />
+            </div>
           </div>
         </div>
+
+        <Separator className="my-3" />
 
         <Button
           variant="ghost"
@@ -101,7 +109,7 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
             onOpenChange(false);
             onLogout();
           }}
-          className="w-full justify-start h-14 text-destructive hover:text-destructive hover:bg-destructive/10"
+          className="w-full justify-start h-12 text-destructive hover:text-destructive hover:bg-destructive/10 rounded-xl"
         >
           <LogOut className="h-5 w-5 mr-3" />
           {t('auth.logout')}

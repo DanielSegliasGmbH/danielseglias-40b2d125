@@ -14,6 +14,7 @@ export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationPro
   const location = useLocation();
   const { data: settings } = useCustomerPortalSettings();
 
+  // Fixed order: Übersicht, Werkzeugkiste, Wissensbibliothek, Anlagestrategien
   const allNavItems = [
     { key: 'home', path: '/app/client-portal', icon: Home, label: t('clientPortal.home'), settingsKey: null },
     { key: 'tools', path: '/app/client-portal/tools', icon: Wrench, label: t('clientPortal.tools'), settingsKey: 'show_tools' as keyof PortalVisibility },
@@ -22,8 +23,8 @@ export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationPro
   ];
 
   const navItems = allNavItems.filter(item => {
-    if (!item.settingsKey) return true; // Home always visible
-    if (!settings) return true; // No settings = show all
+    if (!item.settingsKey) return true;
+    if (!settings) return true;
     return settings[item.settingsKey] !== false;
   });
 
@@ -47,15 +48,15 @@ export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationPro
               key={item.key}
               to={buildPath(item.path)}
               className={cn(
-                "flex flex-col items-center justify-center flex-1 h-full min-w-[64px] py-2 px-1 transition-colors",
+                "flex flex-col items-center justify-center flex-1 h-full min-w-0 py-2 px-0.5 transition-colors",
                 isActive
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <item.icon className={cn("h-5 w-5 mb-1", isActive && "text-primary")} />
+              <item.icon className={cn("h-5 w-5 mb-0.5 shrink-0", isActive && "text-primary")} />
               <span className={cn(
-                "text-[10px] font-medium truncate max-w-[64px]",
+                "text-[10px] leading-tight font-medium truncate max-w-[60px] text-center",
                 isActive && "text-primary"
               )}>
                 {item.label}
@@ -66,15 +67,15 @@ export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationPro
         <button
           onClick={onMoreClick}
           className={cn(
-            "flex flex-col items-center justify-center flex-1 h-full min-w-[64px] py-2 px-1 transition-colors",
+            "flex flex-col items-center justify-center flex-1 h-full min-w-0 py-2 px-0.5 transition-colors",
             isMoreActive
               ? "text-primary"
               : "text-muted-foreground hover:text-foreground"
           )}
         >
-          <MoreHorizontal className={cn("h-5 w-5 mb-1", isMoreActive && "text-primary")} />
+          <MoreHorizontal className={cn("h-5 w-5 mb-0.5 shrink-0", isMoreActive && "text-primary")} />
           <span className={cn(
-            "text-[10px] font-medium",
+            "text-[10px] leading-tight font-medium",
             isMoreActive && "text-primary"
           )}>
             {t('clientPortal.more')}
