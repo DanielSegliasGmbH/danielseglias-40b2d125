@@ -1122,6 +1122,15 @@ export default function ClientPortalCoachModule() {
         const hasAny = Object.values(skalierungFields).some(v => v !== '');
         if (hasAny) body.structuredData = skalierungFields;
       }
+      if (currentModuleKey === 'review' && reviewHasData) {
+        body.structuredData = {
+          erledigteAufgaben: reviewDoneTasks.length,
+          offeneAufgaben: reviewOpenTasks.length,
+          erkenntnisse: reviewInsights.length,
+          erfolge: reviewAchievements.length,
+          ziele: reviewGoals.length,
+        };
+      }
       const { data, error } = await supabase.functions.invoke('coach-analyze', { body });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
