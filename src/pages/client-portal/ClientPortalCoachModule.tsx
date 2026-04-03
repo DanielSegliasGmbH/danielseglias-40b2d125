@@ -878,6 +878,9 @@ export default function ClientPortalCoachModule() {
   const [optimierungFields, setOptimierungFields] = useState<OptimierungData>({
     has3a: '', hasInvestments: '', hasSavingsPlan: '', feeling: '',
   });
+  const [investmentFields, setInvestmentFields] = useState<InvestmentData>({
+    investsAlready: '', investmentType: '', horizon: '', riskFeeling: '',
+  });
 
   if (!mod) {
     return (
