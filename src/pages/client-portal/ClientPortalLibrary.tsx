@@ -127,25 +127,6 @@ export default function ClientPortalLibrary() {
               </p>
             </div>
           </div>
-
-          {/* Private Mode Toggle */}
-          <div className="flex items-center gap-2 shrink-0 pt-1">
-            <Label
-              htmlFor="library-private-mode"
-              className="text-xs text-muted-foreground flex items-center gap-1.5 cursor-pointer"
-            >
-              {isPrivateMode ? (
-                <><EyeOff className="h-3.5 w-3.5" /> Privatmodus</>
-              ) : (
-                <><Eye className="h-3.5 w-3.5" /> Öffentlich</>
-              )}
-            </Label>
-            <Switch
-              id="library-private-mode"
-              checked={isPrivateMode}
-              onCheckedChange={setIsPrivateMode}
-            />
-          </div>
         </div>
 
         {/* Search */}

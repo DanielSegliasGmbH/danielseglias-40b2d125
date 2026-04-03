@@ -4,7 +4,7 @@ import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Wrench, Clock, Calculator, PieChart, TrendingUp, FileText, LucideIcon } from 'lucide-react';
+import { Wrench, Calculator, PieChart, TrendingUp, FileText, LucideIcon } from 'lucide-react';
 import { useClientToolsFiltered } from '@/hooks/useClientPortal';
 import { groupToolsByCluster } from '@/config/toolClusters';
 
