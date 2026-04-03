@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Shield, TrendingUp, Wrench, LogOut, ChevronRight, GraduationCap } from 'lucide-react';
+import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, KeyRound } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -12,6 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+
 interface MoreSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -24,9 +25,9 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
   const { t } = useTranslation();
 
   const moreItems = [
+    { key: 'tasks', path: '/app/client-portal/tasks', icon: ClipboardList, label: t('clientPortal.tasks') },
+    { key: 'goals', path: '/app/client-portal/goals', icon: Target, label: t('clientPortal.goals') },
     { key: 'insurances', path: '/app/client-portal/insurances', icon: Shield, label: t('clientPortal.insurances') },
-    { key: 'strategies', path: '/app/client-portal/strategies', icon: TrendingUp, label: t('clientPortal.strategies') },
-    { key: 'tools', path: '/app/client-portal/tools', icon: Wrench, label: t('clientPortal.tools') },
     { key: 'courses', path: '/app/client-portal/courses', icon: GraduationCap, label: t('clientPortal.courses') },
   ];
 
@@ -62,6 +63,25 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
               <ChevronRight className="h-5 w-5 text-muted-foreground" />
             </Link>
           ))}
+
+          {/* Profile */}
+          <Link
+            to="/app/profile"
+            onClick={() => onOpenChange(false)}
+            className={cn(
+              "flex items-center justify-between w-full px-4 py-4 rounded-xl",
+              "bg-muted/50 hover:bg-muted transition-colors",
+              "active:scale-[0.98] touch-manipulation"
+            )}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <KeyRound className="h-5 w-5 text-primary" />
+              </div>
+              <span className="font-medium text-foreground">{t('userManagement.profile')}</span>
+            </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          </Link>
         </div>
 
         <Separator className="my-4" />

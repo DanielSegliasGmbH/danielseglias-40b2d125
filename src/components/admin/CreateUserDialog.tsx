@@ -34,7 +34,6 @@ export function CreateUserDialog() {
 
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
     firstName: '',
     lastName: '',
     role: '' as AppRole | '',
@@ -44,7 +43,7 @@ export function CreateUserDialog() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.email || !formData.password || !formData.firstName || !formData.lastName || !formData.role) {
+    if (!formData.email || !formData.firstName || !formData.lastName || !formData.role) {
       toast.error(t('userManagement.requiredFields'));
       return;
     }
@@ -58,16 +57,16 @@ export function CreateUserDialog() {
     try {
       await createUser.mutateAsync({
         email: formData.email,
-        password: formData.password,
+        password: '', // Empty = invitation flow
         firstName: formData.firstName,
         lastName: formData.lastName,
         role: formData.role as AppRole,
         customerId: formData.customerId || undefined,
       });
 
-      toast.success(t('userManagement.userCreated'));
+      toast.success('Einladung wurde versendet.');
       setOpen(false);
-      setFormData({ email: '', password: '', firstName: '', lastName: '', role: '', customerId: '' });
+      setFormData({ email: '', firstName: '', lastName: '', role: '', customerId: '' });
     } catch (error: any) {
       toast.error(`${t('userManagement.userCreateError')}: ${error.message}`);
     } finally {
@@ -118,20 +117,9 @@ export function CreateUserDialog() {
               required
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Passwort *</Label>
-            <Input
-              id="password"
-              type="password"
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              required
-              minLength={6}
-            />
-            <p className="text-xs text-muted-foreground">
-              {t('userManagement.passwordHint')}
-            </p>
-          </div>
+          <p className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-lg">
+            Der Benutzer erhält eine Einladungsmail und kann anschliessend sein Passwort selbst setzen.
+          </p>
           <div className="space-y-2">
             <Label htmlFor="role">{t('table.role')} *</Label>
             <Select

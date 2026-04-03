@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { BottomNavigation } from '@/components/client-portal/BottomNavigation';
 import { MoreSheet } from '@/components/client-portal/MoreSheet';
 import { ChatDrawer } from '@/components/client-portal/ChatDrawer';
+import { NotificationBell } from '@/components/client-portal/NotificationBell';
 import { useUnreadCount } from '@/hooks/useChat';
 import {
   Shield,
@@ -213,6 +214,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
           <div className="flex items-center justify-between px-4 h-14">
             <h1 className="text-lg font-semibold">{t('clientPortal.title')}</h1>
             <div className="flex items-center gap-2">
+              <NotificationBell />
               <Button
                 variant="ghost"
                 size="icon"
@@ -239,6 +241,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
           isAdminPreview && "lg:pt-10"
         )}>
           <div className="hidden lg:flex items-center justify-end gap-4 p-4 border-b border-border bg-card">
+            <NotificationBell />
             <Button
               variant="ghost"
               size="icon"

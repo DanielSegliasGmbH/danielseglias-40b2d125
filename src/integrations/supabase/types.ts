@@ -645,6 +645,45 @@ export type Database = {
           },
         ]
       }
+      customer_tool_access: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          is_enabled: boolean
+          tool_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          is_enabled?: boolean
+          tool_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          is_enabled?: boolean
+          tool_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_tool_access_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_tool_access_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "tools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_users: {
         Row: {
           created_at: string
@@ -780,6 +819,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      default_portal_settings: {
+        Row: {
+          created_at: string
+          id: string
+          show_courses: boolean
+          show_goals: boolean
+          show_insurances: boolean
+          show_library: boolean
+          show_strategies: boolean
+          show_tasks: boolean
+          show_tools: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          show_courses?: boolean
+          show_goals?: boolean
+          show_insurances?: boolean
+          show_library?: boolean
+          show_strategies?: boolean
+          show_tasks?: boolean
+          show_tools?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          show_courses?: boolean
+          show_goals?: boolean
+          show_insurances?: boolean
+          show_library?: boolean
+          show_strategies?: boolean
+          show_tasks?: boolean
+          show_tools?: boolean
+          updated_at?: string
+        }
+        Relationships: []
       }
       insurance_consultations: {
         Row: {
@@ -1120,6 +1198,114 @@ export type Database = {
             columns: ["meeting_id"]
             isOneToOne: false
             referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_exclusions: {
+        Row: {
+          created_at: string
+          id: string
+          notification_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notification_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notification_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_exclusions_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_reads: {
+        Row: {
+          id: string
+          notification_id: string
+          read_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          notification_id: string
+          read_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          notification_id?: string
+          read_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_reads_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          created_by: string | null
+          id: string
+          link_label: string | null
+          link_url: string | null
+          published_at: string | null
+          status: string
+          target_role: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          link_label?: string | null
+          link_url?: string | null
+          published_at?: string | null
+          status?: string
+          target_role?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          link_label?: string | null
+          link_url?: string | null
+          published_at?: string | null
+          status?: string
+          target_role?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]

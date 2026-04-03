@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
@@ -108,7 +109,29 @@ export default function Login() {
             {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : t('auth.login')}
           </Button>
         </form>
-        <div className="mt-6 text-center text-sm text-muted-foreground">
+        <div className="mt-4 text-center">
+          <button
+            type="button"
+            onClick={async () => {
+              if (!email) {
+                toast({ variant: 'destructive', title: 'E-Mail erforderlich', description: 'Bitte gib deine E-Mail-Adresse ein.' });
+                return;
+              }
+              const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/reset-password`,
+              });
+              if (error) {
+                toast({ variant: 'destructive', title: 'Fehler', description: error.message });
+              } else {
+                toast({ title: 'E-Mail gesendet', description: 'Falls ein Konto existiert, erhältst du einen Link zum Zurücksetzen.' });
+              }
+            }}
+            className="text-sm text-muted-foreground hover:text-primary hover:underline transition-colors"
+          >
+            Passwort vergessen?
+          </button>
+        </div>
+        <div className="mt-4 text-center text-sm text-muted-foreground">
           <span>{t('auth.noAccount')} </span>
           <Link to="/signup" className="text-primary font-medium hover:underline">
             {t('auth.signup')}

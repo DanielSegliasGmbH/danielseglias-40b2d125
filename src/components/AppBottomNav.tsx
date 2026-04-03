@@ -42,6 +42,7 @@ export function AppBottomNav() {
     ...(role === 'admin' ? [
       { path: '/app/tools', icon: Wrench, label: t('nav.tools') },
       { path: '/app/users', icon: Settings, label: t('userManagement.title') },
+      { path: '/app/notifications', icon: MessageCircle, label: 'Benachrichtigungen' },
       { path: '/app/chat', icon: MessageCircle, label: 'Nachrichten' },
       { path: '/app/courses', icon: GraduationCap, label: 'Videokurs' },
       { path: '/app/system-map', icon: Network, label: t('systemMap.title') },

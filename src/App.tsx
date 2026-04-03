@@ -9,6 +9,8 @@ import { OfflineBanner } from "@/components/OfflineBanner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import ResetPassword from "./pages/ResetPassword";
+import AdminNotifications from "./pages/AdminNotifications";
 import Onboarding from "./pages/Onboarding";
 import AppDashboard from "./pages/AppDashboard";
 import UserManagement from "./pages/UserManagement";
@@ -118,6 +120,7 @@ function App() {
               <Route path="/tools/:slug" element={<PublicToolDetail />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/onboarding" element={<Onboarding />} />
               
               {/* Protected: Internal area (admin + staff) */}
@@ -366,6 +369,16 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['admin']}>
                     <AdminCourses />
+                  </RouteGuard>
+                }
+              />
+
+              {/* Protected: Admin only - Notifications */}
+              <Route
+                path="/app/notifications"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminNotifications />
                   </RouteGuard>
                 }
               />
