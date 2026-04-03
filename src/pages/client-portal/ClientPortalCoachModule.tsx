@@ -638,6 +638,38 @@ export default function ClientPortalCoachModule() {
   };
 
   const hasStructuredData = Object.values(structured).some(v => v !== '');
+  const hasGoalFieldData = Object.values(goalFields).some(v => v !== '');
+
+  const saveGoals = () => {
+    if (!analysisResult) return;
+    const goalsSection = analysisResult.split('## Deine klare Zielrichtung')[1]?.split('## ')[0] || '';
+    const items = goalsSection.match(/\d+\.\s+\*\*(.+?)\*\*[:\s]*(.+?)(?=\n\d+\.|\n##|$)/gs) ||
+                  goalsSection.match(/\d+\.\s+(.+?)(?=\n\d+\.|\n##|$)/gs) || [];
+    const existingRaw = localStorage.getItem('coach_goals');
+    const existing: any[] = existingRaw ? JSON.parse(existingRaw) : [];
+    const newGoals = items.slice(0, 5).map((item: string) => {
+      const boldMatch = item.match(/\*\*(.+?)\*\*/);
+      const title = boldMatch ? boldMatch[1].trim() : item.replace(/^\d+\.\s+/, '').split(/[.!?]/)[0].trim();
+      const desc = item.replace(/^\d+\.\s+/, '').replace(/\*\*.*?\*\*[:\s]*/, '').trim();
+      return {
+        id: crypto.randomUUID(),
+        title,
+        description: desc,
+        category: goalFields.category || '',
+        priority: goalFields.priority || 'mittel',
+        timeframe: goalFields.targetDate || '',
+        module: 'ziele',
+        created_at: new Date().toISOString(),
+      };
+    });
+    if (newGoals.length === 0) {
+      toast({ title: 'Keine Ziele erkannt', description: 'Die Auswertung enthielt keine extrahierbaren Ziele.', variant: 'destructive' });
+      return;
+    }
+    localStorage.setItem('coach_goals', JSON.stringify([...existing, ...newGoals]));
+    setGoalsSaved(true);
+    toast({ title: 'Ziele gespeichert', description: 'Die Zielvorschläge wurden zu deinen Zielen hinzugefügt.' });
+  };
 
   // ─── Render ──────────────────────────────────────────────────
 
