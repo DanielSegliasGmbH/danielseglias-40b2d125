@@ -977,6 +977,7 @@ function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasRef
     investment: { title: 'Dein Investment-Verständnis', icon: TrendingUp, levels: ['Unsicher', 'Grundlegend verstanden', 'Klar orientiert'], hint: 'Je besser du Investieren verstehst, desto sicherer wirst du.' },
     skalierung: { title: 'Dein Wachstumspotenzial', icon: Rocket, levels: ['Kaum genutzt', 'Teilweise genutzt', 'Aktiv genutzt'], hint: 'Je bewusster du deine Möglichkeiten nutzt, desto grösser wird dein Spielfeld.' },
     freiheit: { title: 'Dein Freiheitsgefühl', icon: Star, levels: ['Unklar', 'Teilweise klar', 'Klar'], hint: 'Je klarer du weisst, wofür du das alles machst, desto stärker wird deine Richtung.' },
+    review: { title: 'Dein Fortschritt', icon: RotateCcw, levels: ['Am Anfang', 'Auf dem Weg', 'Bewusst unterwegs'], hint: 'Jeder Rückblick macht den nächsten Schritt klarer.' },
   };
   const cfg = scoreConfig[moduleKey] || scoreConfig.klarheit;
   const SIcon = cfg.icon;
