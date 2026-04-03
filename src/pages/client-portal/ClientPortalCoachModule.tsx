@@ -846,6 +846,10 @@ export default function ClientPortalCoachModule() {
         const hasAny = Object.values(absicherungFields).some(v => v !== '');
         if (hasAny) body.structuredData = absicherungFields;
       }
+      if (mod.structuredFields && currentModuleKey === 'optimierung') {
+        const hasAny = Object.values(optimierungFields).some(v => v !== '');
+        if (hasAny) body.structuredData = optimierungFields;
+      }
       const { data, error } = await supabase.functions.invoke('coach-analyze', { body });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
