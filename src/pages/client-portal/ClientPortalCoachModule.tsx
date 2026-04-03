@@ -883,6 +883,10 @@ export default function ClientPortalCoachModule() {
         const hasAny = Object.values(optimierungFields).some(v => v !== '');
         if (hasAny) body.structuredData = optimierungFields;
       }
+      if (mod.structuredFields && currentModuleKey === 'investment') {
+        const hasAny = Object.values(investmentFields).some(v => v !== '');
+        if (hasAny) body.structuredData = investmentFields;
+      }
       const { data, error } = await supabase.functions.invoke('coach-analyze', { body });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
