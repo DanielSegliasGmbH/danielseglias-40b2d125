@@ -111,7 +111,7 @@ export default function ClientPortalCoach() {
           <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
           <p className="text-xs text-muted-foreground leading-relaxed">
             Deine sensiblen Dokumente werden nicht in dieser App gespeichert.
-            Du kannst externe Links (z.&nbsp;B. Google Drive) verwenden.
+            Du kannst externe Links wie Google Drive, Dropbox oder iCloud verwenden.
           </p>
         </div>
       </div>
