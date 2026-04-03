@@ -3,7 +3,8 @@ import { useState, useCallback, useRef } from 'react';
 interface UseSpeechToTextReturn {
   isListening: boolean;
   isSupported: boolean;
-  transcript: string;
+  finalText: string;
+  interimText: string;
   startListening: () => void;
   stopListening: () => void;
   resetTranscript: () => void;
@@ -11,8 +12,10 @@ interface UseSpeechToTextReturn {
 
 export function useSpeechToText(): UseSpeechToTextReturn {
   const [isListening, setIsListening] = useState(false);
-  const [transcript, setTranscript] = useState('');
+  const [finalText, setFinalText] = useState('');
+  const [interimText, setInterimText] = useState('');
   const recognitionRef = useRef<any>(null);
+  const finalTextRef = useRef('');
 
   const SpeechRecognition =
     typeof window !== 'undefined'
@@ -22,35 +25,48 @@ export function useSpeechToText(): UseSpeechToTextReturn {
   const isSupported = !!SpeechRecognition;
 
   const startListening = useCallback(() => {
-    if (!SpeechRecognition) return;
+    if (!SpeechRecognition || recognitionRef.current) return;
 
     const recognition = new SpeechRecognition();
     recognition.lang = 'de-CH';
     recognition.continuous = true;
     recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
 
-    let finalTranscript = '';
+    finalTextRef.current = '';
+    setFinalText('');
+    setInterimText('');
 
     recognition.onresult = (event: any) => {
-      let interim = '';
+      let currentFinal = finalTextRef.current;
+      let currentInterim = '';
+
       for (let i = event.resultIndex; i < event.results.length; i++) {
-        const t = event.results[i][0].transcript;
+        const transcript = event.results[i][0].transcript;
         if (event.results[i].isFinal) {
-          finalTranscript += t + ' ';
+          currentFinal += (currentFinal ? ' ' : '') + transcript.trim();
         } else {
-          interim = t;
+          currentInterim = transcript;
         }
       }
-      setTranscript(finalTranscript + interim);
+
+      finalTextRef.current = currentFinal;
+      setFinalText(currentFinal);
+      setInterimText(currentInterim);
     };
 
     recognition.onerror = (event: any) => {
       console.error('Speech recognition error:', event.error);
-      setIsListening(false);
+      if (event.error !== 'no-speech') {
+        setIsListening(false);
+        recognitionRef.current = null;
+      }
     };
 
     recognition.onend = () => {
       setIsListening(false);
+      setInterimText('');
+      recognitionRef.current = null;
     };
 
     recognitionRef.current = recognition;
@@ -64,16 +80,20 @@ export function useSpeechToText(): UseSpeechToTextReturn {
       recognitionRef.current = null;
     }
     setIsListening(false);
+    setInterimText('');
   }, []);
 
   const resetTranscript = useCallback(() => {
-    setTranscript('');
+    finalTextRef.current = '';
+    setFinalText('');
+    setInterimText('');
   }, []);
 
   return {
     isListening,
     isSupported,
-    transcript,
+    finalText,
+    interimText,
     startListening,
     stopListening,
     resetTranscript,
