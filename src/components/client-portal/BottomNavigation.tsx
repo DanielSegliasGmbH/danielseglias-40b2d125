@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Home, ClipboardList, Target, BookOpen, MoreHorizontal } from 'lucide-react';
+import { Home, Wrench, BookOpen, TrendingUp, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface BottomNavigationProps {
@@ -14,23 +14,26 @@ export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationPro
 
   const navItems = [
     { key: 'home', path: '/app/client-portal', icon: Home, label: t('clientPortal.home') },
-    { key: 'tasks', path: '/app/client-portal/tasks', icon: ClipboardList, label: t('clientPortal.tasks') },
-    { key: 'goals', path: '/app/client-portal/goals', icon: Target, label: t('clientPortal.goals') },
+    { key: 'tools', path: '/app/client-portal/tools', icon: Wrench, label: t('clientPortal.tools') },
     { key: 'library', path: '/app/client-portal/library', icon: BookOpen, label: t('clientPortal.library') },
+    { key: 'strategies', path: '/app/client-portal/strategies', icon: TrendingUp, label: t('clientPortal.strategies') },
   ];
 
   const isMoreActive = [
     '/app/client-portal/insurances',
-    '/app/client-portal/strategies',
-    '/app/client-portal/tools',
+    '/app/client-portal/goals',
+    '/app/client-portal/tasks',
     '/app/client-portal/courses',
+    '/app/client-portal/profile',
   ].some(p => location.pathname.startsWith(p));
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border lg:hidden safe-area-pb">
       <div className="flex items-center justify-around h-16">
         {navItems.map((item) => {
-          const isActive = location.pathname === item.path;
+          const isActive = item.key === 'home' 
+            ? location.pathname === item.path 
+            : location.pathname.startsWith(item.path);
           return (
             <Link
               key={item.key}
