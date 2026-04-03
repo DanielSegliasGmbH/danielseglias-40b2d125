@@ -64,9 +64,9 @@ export function CreateUserDialog() {
         customerId: formData.customerId || undefined,
       });
 
-      toast.success(t('userManagement.userCreated'));
+      toast.success('Einladung wurde versendet.');
       setOpen(false);
-      setFormData({ email: '', password: '', firstName: '', lastName: '', role: '', customerId: '' });
+      setFormData({ email: '', firstName: '', lastName: '', role: '', customerId: '' });
     } catch (error: any) {
       toast.error(`${t('userManagement.userCreateError')}: ${error.message}`);
     } finally {
