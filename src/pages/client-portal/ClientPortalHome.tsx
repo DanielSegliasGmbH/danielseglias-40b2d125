@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronRight, Lock } from 'lucide-react';
+import { ChevronRight, Lock, Sparkles } from 'lucide-react';
 import {
   Shield,
   Target,
