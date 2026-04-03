@@ -335,7 +335,37 @@ const moduleData: Record<string, ModuleConfig> = {
       'Was sich jetzt verändert': TrendingUp,
     },
   },
-  review: { title: 'Review', desc: 'Überprüfe regelmässig deine Fortschritte und passe deine Strategie an.', icon: RotateCcw, implemented: false },
+  review: {
+    title: 'Review',
+    desc: 'In diesem Modul schaust du zurück auf deinen bisherigen Weg.\n\nDu erkennst, was du erreicht hast, was sich verändert hat und wo du heute stehst.\n\nZiel ist es, Klarheit über deinen Fortschritt zu bekommen und bewusst weiterzugehen.',
+    icon: RotateCcw,
+    implemented: true,
+    questions: [
+      'Was hast du durch diesen Prozess gelernt?',
+      'Was hat sich konkret verändert?',
+      'Worauf bist du stolz?',
+      'Was würdest du heute anders machen als vorher?',
+      'Was ist dein nächster logischer Schritt?',
+    ],
+    questionsTitle: 'Dein Rückblick',
+    questionsSubtitle: 'Nimm dir einen Moment und blicke ehrlich zurück auf deinen bisherigen Weg.',
+    analyzeLabel: 'Review auswerten',
+    reflectionQuestion: 'Was nimmst du aus diesem gesamten Prozess mit – und wie gehst du weiter?',
+    cathedralMoment: [
+      'Du bist nicht mehr dort, wo du gestartet bist.',
+      'Du hast verstanden, entschieden und gehandelt.',
+      'Und das ist der Unterschied.',
+    ],
+    sectionIcons: {
+      'Dein Weg bis hierhin': RotateCcw,
+      'Was sich verändert hat': TrendingUp,
+      'Worauf du stolz sein kannst': Star,
+      'Dein nächster Schritt': CheckSquare,
+      'Das nimmst du mit': Star,
+      'Warum das wichtig ist': Target,
+      'Wie du weitergehst': TrendingUp,
+    },
+  },
 };
 
 // ─── Speech Input ─────────────────────────────────────────────────
@@ -947,6 +977,7 @@ function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasRef
     investment: { title: 'Dein Investment-Verständnis', icon: TrendingUp, levels: ['Unsicher', 'Grundlegend verstanden', 'Klar orientiert'], hint: 'Je besser du Investieren verstehst, desto sicherer wirst du.' },
     skalierung: { title: 'Dein Wachstumspotenzial', icon: Rocket, levels: ['Kaum genutzt', 'Teilweise genutzt', 'Aktiv genutzt'], hint: 'Je bewusster du deine Möglichkeiten nutzt, desto grösser wird dein Spielfeld.' },
     freiheit: { title: 'Dein Freiheitsgefühl', icon: Star, levels: ['Unklar', 'Teilweise klar', 'Klar'], hint: 'Je klarer du weisst, wofür du das alles machst, desto stärker wird deine Richtung.' },
+    review: { title: 'Dein Fortschritt', icon: RotateCcw, levels: ['Am Anfang', 'Auf dem Weg', 'Bewusst unterwegs'], hint: 'Jeder Rückblick macht den nächsten Schritt klarer.' },
   };
   const cfg = scoreConfig[moduleKey] || scoreConfig.klarheit;
   const SIcon = cfg.icon;
@@ -1091,6 +1122,15 @@ export default function ClientPortalCoachModule() {
         const hasAny = Object.values(skalierungFields).some(v => v !== '');
         if (hasAny) body.structuredData = skalierungFields;
       }
+      if (currentModuleKey === 'review' && reviewHasData) {
+        body.structuredData = {
+          erledigteAufgaben: reviewDoneTasks.length,
+          offeneAufgaben: reviewOpenTasks.length,
+          erkenntnisse: reviewInsights.length,
+          erfolge: reviewAchievements.length,
+          ziele: reviewGoals.length,
+        };
+      }
       const { data, error } = await supabase.functions.invoke('coach-analyze', { body });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -1201,6 +1241,23 @@ export default function ClientPortalCoachModule() {
   const hasInvestmentFieldData = Object.values(investmentFields).some(v => v !== '');
   const hasSkalierungFieldData = Object.values(skalierungFields).some(v => v !== '');
 
+  // ─── Review: load existing data from localStorage ──────────
+  const reviewTasks = (() => {
+    try { return JSON.parse(localStorage.getItem('coach_tasks') || '[]') as any[]; } catch { return []; }
+  })();
+  const reviewInsights = (() => {
+    try { return JSON.parse(localStorage.getItem('coach_insights') || '[]') as any[]; } catch { return []; }
+  })();
+  const reviewAchievements = (() => {
+    try { return JSON.parse(localStorage.getItem('coach_achievements') || '[]') as any[]; } catch { return []; }
+  })();
+  const reviewGoals = (() => {
+    try { return JSON.parse(localStorage.getItem('coach_goals') || '[]') as any[]; } catch { return []; }
+  })();
+  const reviewDoneTasks = reviewTasks.filter((t: any) => t.status === 'erledigt');
+  const reviewOpenTasks = reviewTasks.filter((t: any) => t.status !== 'erledigt');
+  const reviewHasData = reviewTasks.length > 0 || reviewInsights.length > 0 || reviewAchievements.length > 0 || reviewGoals.length > 0;
+
   const saveGoals = () => {
     if (!analysisResult) return;
     const goalsSection = analysisResult.split('## Deine klare Zielrichtung')[1]?.split('## ')[0] || '';
@@ -1270,11 +1327,11 @@ export default function ClientPortalCoachModule() {
         </Card>
 
         {/* Module Score */}
-        {(['klarheit', 'ziele', 'struktur', 'absicherung', 'optimierung', 'investment', 'skalierung', 'freiheit'].includes(currentModuleKey)) && (
+        {(['klarheit', 'ziele', 'struktur', 'absicherung', 'optimierung', 'investment', 'skalierung', 'freiheit', 'review'].includes(currentModuleKey)) && (
           <ModuleScore
             moduleKey={currentModuleKey}
             hasAnswers={answers.trim().length >= 20}
-            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : currentModuleKey === 'ziele' ? hasGoalFieldData : currentModuleKey === 'absicherung' ? hasAbsicherungFieldData : currentModuleKey === 'optimierung' ? hasOptimierungFieldData : currentModuleKey === 'investment' ? hasInvestmentFieldData : currentModuleKey === 'skalierung' ? hasSkalierungFieldData : currentModuleKey === 'freiheit' ? false : hasStrukturFieldData}
+            hasStructured={currentModuleKey === 'klarheit' ? hasStructuredData : currentModuleKey === 'ziele' ? hasGoalFieldData : currentModuleKey === 'absicherung' ? hasAbsicherungFieldData : currentModuleKey === 'optimierung' ? hasOptimierungFieldData : currentModuleKey === 'investment' ? hasInvestmentFieldData : currentModuleKey === 'skalierung' ? hasSkalierungFieldData : currentModuleKey === 'review' ? reviewHasData : currentModuleKey === 'freiheit' ? false : hasStrukturFieldData}
             hasAnalysis={!!analysisResult}
             hasReflection={!!reflectionResult}
             tasksCreated={tasksCreated}
@@ -1315,6 +1372,68 @@ export default function ClientPortalCoachModule() {
         {/* Structured fields for skalierung */}
         {mod.structuredFields && currentModuleKey === 'skalierung' && (
           <SkalierungFields data={skalierungFields} onChange={setSkalierungFields} />
+        )}
+
+        {/* Review: Progress Summary */}
+        {currentModuleKey === 'review' && (
+          <Card>
+            <CardContent className="p-4 space-y-4">
+              <div className="flex items-center gap-2">
+                <RotateCcw className="h-4 w-4 text-primary" />
+                <h3 className="font-semibold text-sm text-foreground">Dein bisheriger Fortschritt</h3>
+              </div>
+              {reviewHasData ? (
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-primary/5 rounded-lg p-3 text-center">
+                    <p className="text-2xl font-bold text-primary">{reviewDoneTasks.length}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">Aufgaben erledigt</p>
+                  </div>
+                  <div className="bg-primary/5 rounded-lg p-3 text-center">
+                    <p className="text-2xl font-bold text-primary">{reviewOpenTasks.length}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">Aufgaben offen</p>
+                  </div>
+                  <div className="bg-primary/5 rounded-lg p-3 text-center">
+                    <p className="text-2xl font-bold text-primary">{reviewInsights.length}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">Erkenntnisse</p>
+                  </div>
+                  <div className="bg-primary/5 rounded-lg p-3 text-center">
+                    <p className="text-2xl font-bold text-primary">{reviewAchievements.length}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">Erfolge</p>
+                  </div>
+                  {reviewGoals.length > 0 && (
+                    <div className="bg-primary/5 rounded-lg p-3 text-center col-span-2">
+                      <p className="text-2xl font-bold text-primary">{reviewGoals.length}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Definierte Ziele</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">Noch keine Daten vorhanden. Durchlaufe zuerst die Module, um deinen Fortschritt hier zu sehen.</p>
+              )}
+              {reviewAchievements.length > 0 && (
+                <div className="space-y-2 pt-2">
+                  <p className="text-xs font-medium text-muted-foreground">Deine Erfolge</p>
+                  {reviewAchievements.slice(0, 5).map((a: any) => (
+                    <div key={a.id} className="flex items-start gap-2 text-sm">
+                      <Trophy className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+                      <span className="text-foreground/80">{a.title}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {reviewInsights.length > 0 && (
+                <div className="space-y-2 pt-2">
+                  <p className="text-xs font-medium text-muted-foreground">Deine Erkenntnisse</p>
+                  {reviewInsights.slice(0, 5).map((i: any) => (
+                    <div key={i.id} className="flex items-start gap-2 text-sm">
+                      <BookOpen className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+                      <span className="text-foreground/80">{i.title}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         )}
 
         {/* Questions */}
@@ -1475,6 +1594,23 @@ export default function ClientPortalCoachModule() {
                   'text-sm text-foreground/80'
                 )}>{line}</p>
               ))}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Review: Restart / Continue */}
+        {currentModuleKey === 'review' && (analysisResult || reflectionResult) && (
+          <Card className="border-primary/20">
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <Rocket className="h-4 w-4 text-primary" />
+                <h3 className="font-semibold text-sm text-foreground">Wie möchtest du weitermachen?</h3>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="default" className="flex-1" onClick={() => window.location.href = '/app/client-portal/coach'}>
+                  <RotateCcw className="h-4 w-4" /> Module vertiefen
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )}

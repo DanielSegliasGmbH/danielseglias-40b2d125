@@ -41,6 +41,7 @@ const moduleIcons: Record<string, React.ElementType> = {
   investment: TrendingUp,
   skalierung: Rocket,
   freiheit: Trophy,
+  review: Clock,
 };
 
 function useLocalList<T>(key: string) {
