@@ -1232,6 +1232,23 @@ export default function ClientPortalCoachModule() {
   const hasInvestmentFieldData = Object.values(investmentFields).some(v => v !== '');
   const hasSkalierungFieldData = Object.values(skalierungFields).some(v => v !== '');
 
+  // ─── Review: load existing data from localStorage ──────────
+  const reviewTasks = (() => {
+    try { return JSON.parse(localStorage.getItem('coach_tasks') || '[]') as any[]; } catch { return []; }
+  })();
+  const reviewInsights = (() => {
+    try { return JSON.parse(localStorage.getItem('coach_insights') || '[]') as any[]; } catch { return []; }
+  })();
+  const reviewAchievements = (() => {
+    try { return JSON.parse(localStorage.getItem('coach_achievements') || '[]') as any[]; } catch { return []; }
+  })();
+  const reviewGoals = (() => {
+    try { return JSON.parse(localStorage.getItem('coach_goals') || '[]') as any[]; } catch { return []; }
+  })();
+  const reviewDoneTasks = reviewTasks.filter((t: any) => t.status === 'erledigt');
+  const reviewOpenTasks = reviewTasks.filter((t: any) => t.status !== 'erledigt');
+  const reviewHasData = reviewTasks.length > 0 || reviewInsights.length > 0 || reviewAchievements.length > 0 || reviewGoals.length > 0;
+
   const saveGoals = () => {
     if (!analysisResult) return;
     const goalsSection = analysisResult.split('## Deine klare Zielrichtung')[1]?.split('## ')[0] || '';
