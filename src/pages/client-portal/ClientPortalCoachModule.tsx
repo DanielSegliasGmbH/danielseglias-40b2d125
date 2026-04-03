@@ -778,6 +778,28 @@ export default function ClientPortalCoachModule() {
               <BookOpen className="h-3.5 w-3.5" /> Als Erkenntnis speichern
             </Button>
 
+            {/* Goal saving (ziele module only) */}
+            {currentModuleKey === 'ziele' && (
+              <Card className="border-primary/20 bg-primary/5">
+                <CardContent className="p-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Target className="h-4 w-4 text-primary" />
+                    <h3 className="font-semibold text-sm text-foreground">Ziele übernehmen</h3>
+                  </div>
+                  {!goalsSaved ? (
+                    <Button onClick={saveGoals} variant="default" className="w-full">
+                      <Target className="h-4 w-4" /> Zielvorschläge zu «Meine Ziele» hinzufügen
+                    </Button>
+                  ) : (
+                    <div className="flex items-center gap-2 text-sm text-green-600">
+                      <Target className="h-4 w-4" />
+                      <span>Die Zielvorschläge wurden zu deinen Zielen hinzugefügt.</span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
             {extractedTasks.length > 0 && (
               <Card className="border-primary/20 bg-primary/5">
                 <CardContent className="p-4 space-y-3">
