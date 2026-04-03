@@ -29,6 +29,8 @@ import { GlobalSearch } from '@/components/dashboard/GlobalSearch';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { AppLayout } from '@/components/AppLayout';
+import { ScreenHeader } from '@/components/ScreenHeader';
+import { NotificationPrompt } from '@/components/NotificationPrompt';
 import { Link } from 'react-router-dom';
 import { format, Locale } from 'date-fns';
 import { de, enUS, fr, it } from 'date-fns/locale';
@@ -86,20 +88,15 @@ export default function AppDashboard() {
 
   return (
     <AppLayout>
-      <div className="min-h-screen bg-muted/30">
-        <header className="bg-background border-b">
-          <div className="px-4 sm:px-6 lg:container lg:mx-auto py-3 sm:py-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <h1 className="text-lg sm:text-xl font-bold text-foreground">{t('dashboard.title')}</h1>
-            </div>
-            <div className="flex items-center gap-2 sm:gap-4">
+      <div className="min-h-screen bg-background">
+        <ScreenHeader
+          title={t('dashboard.title')}
+          rightAction={
+            <div className="flex items-center gap-2">
               <GlobalSearch />
-              <ThemeSwitcher />
-              <LanguageSwitcher />
-              <span className="text-sm text-muted-foreground hidden sm:inline">{user?.email}</span>
             </div>
-          </div>
-        </header>
+          }
+        />
 
       <main className="px-4 sm:px-6 lg:container lg:mx-auto py-6 sm:py-8 page-transition">
         {/* Greeting */}
@@ -111,6 +108,8 @@ export default function AppDashboard() {
             {t('dashboard.loggedInAs')} <strong>{roleLabel}</strong>
           </p>
         </div>
+
+        <NotificationPrompt className="mb-6" />
 
         {/* KPI Tiles */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
