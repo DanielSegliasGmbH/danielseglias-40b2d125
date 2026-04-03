@@ -39,8 +39,6 @@ const moduleIcons: Record<string, React.ElementType> = {
   absicherung: Shield,
 };
 
-// Add Shield import check - it's already in lucide-react
-
 function useLocalList<T>(key: string) {
   const [items, setItems] = useState<T[]>([]);
   useEffect(() => {
