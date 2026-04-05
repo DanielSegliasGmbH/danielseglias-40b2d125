@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Home, Wrench, BookOpen, TrendingUp, Sparkles, MoreHorizontal } from 'lucide-react';
+import { Home, Wrench, BookOpen, TrendingUp, Sparkles, MoreHorizontal, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCustomerPortalSettings, PortalVisibility } from '@/hooks/useClientPortal';
 import { useUnreadNotificationCount } from '@/hooks/useNotifications';
@@ -22,7 +22,7 @@ export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationPro
     { key: 'home', path: '/app/client-portal', icon: Home, label: t('clientPortal.home'), settingsKey: null },
     { key: 'coach', path: '/app/client-portal/coach', icon: Sparkles, label: t('clientPortal.coach'), settingsKey: null },
     { key: 'tools', path: '/app/client-portal/tools', icon: Wrench, label: t('clientPortal.tools'), settingsKey: 'show_tools' as keyof PortalVisibility },
-    { key: 'library', path: '/app/client-portal/library', icon: BookOpen, label: t('clientPortal.library'), settingsKey: 'show_library' as keyof PortalVisibility },
+    { key: 'memories', path: '/app/client-portal/memories', icon: Clock, label: t('clientPortal.memories', 'Erinnerungen'), settingsKey: null },
   ];
 
   const navItems = allNavItems.filter(item => {
@@ -37,6 +37,7 @@ export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationPro
     '/app/client-portal/tasks',
     '/app/client-portal/courses',
     '/app/client-portal/strategies',
+    '/app/client-portal/library',
     '/app/client-portal/premium',
     '/app/profile',
   ].some(p => location.pathname.startsWith(p));

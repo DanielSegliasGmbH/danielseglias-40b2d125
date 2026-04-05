@@ -1,7 +1,8 @@
 import { PdfExportWrapper } from '../PdfExportWrapper';
 import { ToolNextStep } from '../ToolNextStep';
 import { ToolReflection, ToolTrustNote } from '../ToolConversionElements';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+import { useMemorySnapshot } from '@/hooks/useMemories';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,6 +22,7 @@ import {
 
 export function InflationsrechnerTool() {
   const [mode, setMode] = useState<'future' | 'past' | 'simulation'>('future');
+  const { saveSnapshot } = useMemorySnapshot();
 
   // Future inputs
   const [amount, setAmount] = useState(100000);
@@ -38,11 +40,22 @@ export function InflationsrechnerTool() {
   const activeResult = mode === 'future' ? futureResult : pastResult;
   const activeAmount = mode === 'future' ? amount : pastAmount;
 
+  // Save snapshot when user switches tabs (indicates completed interaction)
+  const handleModeChange = useCallback((newMode: string) => {
+    // Save current calculation before switching
+    if (mode === 'future') {
+      saveSnapshot('inflationsrechner', 'Zukunftsprojektion', { amount, years, rate }, { endValue: futureResult.endValue, lossPercent: futureResult.lossPercent });
+    } else if (mode === 'past') {
+      saveSnapshot('inflationsrechner', 'Vergangenheitsanalyse', { pastAmount, startYear, endYear }, { endValue: pastResult.endValue, lossPercent: pastResult.lossPercent });
+    }
+    setMode(newMode as 'future' | 'past' | 'simulation');
+  }, [mode, amount, years, rate, pastAmount, startYear, endYear, futureResult, pastResult, saveSnapshot]);
+
   return (
     <PdfExportWrapper toolName="Inflationsrechner">
     <div className="space-y-6">
       {/* Mode Tabs */}
-      <Tabs value={mode} onValueChange={(v) => setMode(v as 'future' | 'past' | 'simulation')}>
+      <Tabs value={mode} onValueChange={handleModeChange}>
         <TabsList className="w-full grid grid-cols-3">
           <TabsTrigger value="future" className="gap-2">
             <TrendingDown className="h-4 w-4" />
