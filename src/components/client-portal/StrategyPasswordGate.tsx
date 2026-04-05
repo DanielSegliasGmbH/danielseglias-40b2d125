@@ -16,7 +16,7 @@ export function StrategyPasswordGate({ open, onOpenChange, onSuccess }: Strategy
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { data: customerId } = useClientPortalCustomerId();
+  const { data: customerId } = useClientCustomerId();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
