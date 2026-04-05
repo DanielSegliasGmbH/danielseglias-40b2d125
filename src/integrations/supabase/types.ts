@@ -2033,7 +2033,59 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      customer_portal_settings_client: {
+        Row: {
+          created_at: string | null
+          customer_id: string | null
+          id: string | null
+          show_courses: boolean | null
+          show_goals: boolean | null
+          show_insurances: boolean | null
+          show_library: boolean | null
+          show_strategies: boolean | null
+          show_strategy_privacy: boolean | null
+          show_tasks: boolean | null
+          show_tools: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          customer_id?: string | null
+          id?: string | null
+          show_courses?: boolean | null
+          show_goals?: boolean | null
+          show_insurances?: boolean | null
+          show_library?: boolean | null
+          show_strategies?: boolean | null
+          show_strategy_privacy?: boolean | null
+          show_tasks?: boolean | null
+          show_tools?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          customer_id?: string | null
+          id?: string | null
+          show_courses?: boolean | null
+          show_goals?: boolean | null
+          show_insurances?: boolean | null
+          show_library?: boolean | null
+          show_strategies?: boolean | null
+          show_strategy_privacy?: boolean | null
+          show_tasks?: boolean | null
+          show_tools?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_portal_settings_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: true
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       cleanup_deleted_items: { Args: never; Returns: number }
