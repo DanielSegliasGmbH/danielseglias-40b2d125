@@ -44,9 +44,9 @@ export function InflationsrechnerTool() {
   const handleModeChange = useCallback((newMode: string) => {
     // Save current calculation before switching
     if (mode === 'future') {
-      saveSnapshot('inflationsrechner', 'Zukunftsprojektion', { amount, years, rate }, { realValue: futureResult.realValue, loss: futureResult.loss });
+      saveSnapshot('inflationsrechner', 'Zukunftsprojektion', { amount, years, rate }, { endValue: futureResult.endValue, lossPercent: futureResult.lossPercent });
     } else if (mode === 'past') {
-      saveSnapshot('inflationsrechner', 'Vergangenheitsanalyse', { pastAmount, startYear, endYear }, { realValue: pastResult.realValue, loss: pastResult.loss });
+      saveSnapshot('inflationsrechner', 'Vergangenheitsanalyse', { pastAmount, startYear, endYear }, { endValue: pastResult.endValue, lossPercent: pastResult.lossPercent });
     }
     setMode(newMode as 'future' | 'past' | 'simulation');
   }, [mode, amount, years, rate, pastAmount, startYear, endYear, futureResult, pastResult, saveSnapshot]);
