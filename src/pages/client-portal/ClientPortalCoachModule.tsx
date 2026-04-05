@@ -1007,6 +1007,7 @@ export default function ClientPortalCoachModule() {
   const { moduleKey } = useParams<{ moduleKey: string }>();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { awardPoints } = useGamification();
   const mod = moduleKey ? moduleData[moduleKey] : null;
 
   // State
