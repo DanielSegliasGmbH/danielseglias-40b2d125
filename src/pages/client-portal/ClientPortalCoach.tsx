@@ -7,8 +7,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronRight, Sparkles, Brain, Eye, Target, LayoutGrid, Shield, Settings2, TrendingUp, Rocket, Star, RotateCcw, Info } from 'lucide-react';
+import { ChevronRight, Sparkles, Brain, Eye, Target, LayoutGrid, Shield, Settings2, TrendingUp, Rocket, Star, RotateCcw, Info, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useSubscription } from '@/hooks/useSubscription';
 
 const modules = [
   { id: 1, key: 'mindset', icon: Brain, title: 'Mindset', desc: 'Deine Denkmuster erkennen und bewusst steuern.', status: 'not_started' as const },
@@ -32,6 +33,10 @@ const statusConfig = {
 export default function ClientPortalCoach() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { isPremium, isLoading: subLoading } = useSubscription();
+
+  // First 3 modules free, rest premium
+  const FREE_MODULE_COUNT = 3;
 
   // Static progress for now
   const completedCount = modules.filter(m => (m.status as string) === 'completed').length;
@@ -76,27 +81,51 @@ export default function ClientPortalCoach() {
           {modules.map((mod, idx) => {
             const statusInfo = statusConfig[mod.status];
             const Icon = mod.icon;
+            const isLocked = !isPremium && !subLoading && idx >= FREE_MODULE_COUNT;
 
             return (
               <Card
                 key={mod.id}
-                className="w-full transition-all active:scale-[0.98] touch-manipulation hover:shadow-md cursor-pointer"
-                onClick={() => navigate(`/app/client-portal/coach/${mod.key}`)}
+                className={cn(
+                  "w-full transition-all active:scale-[0.98] touch-manipulation hover:shadow-md cursor-pointer",
+                  isLocked && "opacity-60"
+                )}
+                onClick={() => {
+                  if (isLocked) {
+                    navigate('/app/client-portal/premium');
+                  } else {
+                    navigate(`/app/client-portal/coach/${mod.key}`);
+                  }
+                }}
               >
                 <CardContent className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                      <span className="text-xs font-bold text-primary">{idx + 1}</span>
+                    <div className={cn(
+                      "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
+                      isLocked ? "bg-muted" : "bg-primary/10"
+                    )}>
+                      {isLocked ? (
+                        <Lock className="h-4 w-4 text-muted-foreground" />
+                      ) : (
+                        <span className="text-xs font-bold text-primary">{idx + 1}</span>
+                      )}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <Icon className="h-3.5 w-3.5 text-primary shrink-0" />
+                        <Icon className={cn("h-3.5 w-3.5 shrink-0", isLocked ? "text-muted-foreground" : "text-primary")} />
                         <h3 className="font-semibold text-sm text-foreground truncate">{mod.title}</h3>
+                        {isLocked && (
+                          <Badge variant="secondary" className="text-[9px] bg-primary/10 text-primary border-0 px-1.5 py-0">
+                            Premium
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-xs text-muted-foreground line-clamp-1">{mod.desc}</p>
-                      <Badge variant={statusInfo.variant} className="mt-1.5 text-[10px]">
-                        {statusInfo.label}
-                      </Badge>
+                      {!isLocked && (
+                        <Badge variant={statusInfo.variant} className="mt-1.5 text-[10px]">
+                          {statusInfo.label}
+                        </Badge>
+                      )}
                     </div>
                   </div>
                   <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 ml-2" />

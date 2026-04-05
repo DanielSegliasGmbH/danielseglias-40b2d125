@@ -5,7 +5,7 @@ export default function Onboarding() {
   const navigate = useNavigate();
 
   const handleComplete = () => {
-    localStorage.setItem('onboarding_complete', 'true');
+    localStorage.setItem('client_onboarding_complete', 'true');
     navigate('/login', { replace: true });
   };
 

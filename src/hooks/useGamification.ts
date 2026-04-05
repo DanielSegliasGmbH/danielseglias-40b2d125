@@ -70,6 +70,7 @@ export function useGamification() {
   const [streakDays, setStreakDays] = useState(0);
   const [loading, setLoading] = useState(true);
   const prevLevelRef = useRef<number>(1);
+  const pointsRef = useRef(100);
   const initializedRef = useRef(false);
 
   useEffect(() => {
@@ -92,6 +93,7 @@ export function useGamification() {
 
       if (data) {
         setPoints(data.points);
+        pointsRef.current = data.points;
         setStreakDays(data.streak_days || 0);
         prevLevelRef.current = getLevel(data.points).level;
 
@@ -194,6 +196,7 @@ export function useGamification() {
       .eq('user_id', user.id);
 
     setPoints(currentPts);
+    pointsRef.current = currentPts;
     setStreakDays(newStreak);
 
     // Show streak toasts
@@ -286,6 +289,7 @@ export function useGamification() {
     const newLevel = getLevel(newPoints).level;
 
     setPoints(newPoints);
+    pointsRef.current = newPoints;
 
     if (showToast) {
       toast(`+${pointsToAdd} Punkte`, {
@@ -315,9 +319,9 @@ export function useGamification() {
         ? getLocalDateStr()
         : actionRef;
 
-      return awardPointsInternal(actionType, ref, points);
+      return awardPointsInternal(actionType, ref, pointsRef.current);
     },
-    [user, points]
+    [user]
   );
 
   const levelInfo = getLevel(points);
