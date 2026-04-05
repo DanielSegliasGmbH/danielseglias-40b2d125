@@ -1,4 +1,4 @@
-import { useGamification, getLevel } from '@/hooks/useGamification';
+import { useGamification } from '@/hooks/useGamification';
 import { useSubscription } from '@/hooks/useSubscription';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -16,107 +16,67 @@ export function GamificationBar() {
 
   const Icon = LEVEL_ICONS[level] || Zap;
 
-  // Next streak bonus info
-  const daysToNext3 = streakDays > 0 ? 3 - (streakDays % 3) : 3;
-  const daysToNext7 = streakDays > 0 ? 7 - (streakDays % 7) : 7;
-  const nextBonusDays = daysToNext7 <= daysToNext3 ? daysToNext7 : daysToNext3;
-  const nextBonusIsWeekly = daysToNext7 <= daysToNext3;
-
   return (
-    <div className="space-y-2">
-      {/* Premium badge */}
-      {!subLoading && (
-        <div
-          className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-2xl border cursor-pointer transition-colors",
-            isPremium
-              ? "bg-primary/5 border-primary/20"
-              : "bg-card border-border hover:border-primary/30"
-          )}
-          onClick={() => navigate('/app/client-portal/premium')}
-        >
-          <Sparkles className={cn("h-4 w-4", isPremium ? "text-primary" : "text-muted-foreground")} />
-          <span className={cn("text-xs font-medium", isPremium ? "text-primary" : "text-muted-foreground")}>
-            {isPremium ? 'Premium aktiv' : 'Upgrade verfügbar'}
+    <div className="flex items-center gap-2 px-3 py-2.5 bg-card border border-border rounded-2xl">
+      {/* Level icon + points */}
+      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+        <Icon className="h-4.5 w-4.5 text-primary" />
+      </div>
+
+      {/* Progress bar + labels */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between mb-0.5">
+          <span className="text-xs font-semibold text-foreground">
+            Lv.{level} · {points} Pkt
           </span>
-          {isPremium && (
-            <Badge variant="secondary" className="ml-auto text-[9px] bg-primary/10 text-primary border-0 px-1.5 py-0">
-              PRO
-            </Badge>
+          {!maxLevel && (
+            <span className="text-[10px] text-muted-foreground">
+              noch {pointsToNext}
+            </span>
           )}
         </div>
-      )}
-      {/* Main bar: Level + Points */}
-      <div className="flex items-center gap-3 px-4 py-3 bg-card border border-border rounded-2xl">
-        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-          <Icon className="h-5 w-5 text-primary" />
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-sm font-semibold text-foreground">
-              Level {level} <span className="font-normal text-muted-foreground">• {points} Punkte</span>
-            </span>
-            {!maxLevel && (
-              <span className="text-xs text-muted-foreground">
-                noch {pointsToNext}
-              </span>
-            )}
-          </div>
-
-          <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-            <div
-              className="h-full bg-primary rounded-full transition-all duration-700 ease-out"
-              style={{ width: `${maxLevel ? 100 : progressPercent}%` }}
-            />
-          </div>
-
-          <div className="flex items-center justify-between mt-0.5">
-            <span className="text-[10px] text-muted-foreground">{levelLabel}</span>
-            {!maxLevel && (
-              <span className="text-[10px] text-muted-foreground">
-                Level {level + 1}
-              </span>
-            )}
-          </div>
+        <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+          <div
+            className="h-full bg-primary rounded-full transition-all duration-700 ease-out"
+            style={{ width: `${maxLevel ? 100 : progressPercent}%` }}
+          />
         </div>
       </div>
 
-      {/* Streak bar */}
-      <div className="flex items-center gap-3 px-4 py-2.5 bg-card border border-border rounded-2xl">
+      {/* Streak pill */}
+      {streakDays > 0 && (
         <div className={cn(
-          "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
-          streakDays >= 7 ? "bg-orange-500/15" : streakDays >= 3 ? "bg-amber-500/15" : "bg-muted"
+          "flex items-center gap-1 px-2 py-1 rounded-full shrink-0",
+          streakDays >= 7 ? "bg-orange-500/10" : streakDays >= 3 ? "bg-amber-500/10" : "bg-muted"
         )}>
           <Flame className={cn(
-            "h-4 w-4",
+            "h-3.5 w-3.5",
             streakDays >= 7 ? "text-orange-500" : streakDays >= 3 ? "text-amber-500" : "text-muted-foreground"
           )} />
+          <span className={cn(
+            "text-[11px] font-semibold",
+            streakDays >= 7 ? "text-orange-600" : streakDays >= 3 ? "text-amber-600" : "text-muted-foreground"
+          )}>
+            {streakDays}
+          </span>
         </div>
+      )}
 
-        <div className="flex-1 min-w-0 flex items-center justify-between">
-          <div>
-            <span className={cn(
-              "text-sm font-semibold",
-              streakDays >= 3 ? "text-foreground" : "text-muted-foreground"
-            )}>
-              {streakDays > 0 ? `${streakDays} ${streakDays === 1 ? 'Tag' : 'Tage'}` : 'Kein Streak'}
-            </span>
-            {streakDays > 0 && (
-              <span className="text-xs text-muted-foreground ml-1.5">Streak</span>
-            )}
-          </div>
-
-          {streakDays > 0 && nextBonusDays > 0 && nextBonusDays <= 3 && (
-            <span className="text-[10px] text-muted-foreground">
-              {nextBonusDays === 1
-                ? `Morgen +${nextBonusIsWeekly ? '25' : '10'} Bonus`
-                : `Noch ${nextBonusDays} Tage bis Bonus`
-              }
-            </span>
+      {/* Premium badge */}
+      {!subLoading && (
+        <button
+          onClick={() => navigate('/app/client-portal/premium')}
+          className={cn(
+            "flex items-center gap-1 px-2.5 py-1 rounded-full shrink-0 transition-colors text-[11px] font-medium",
+            isPremium
+              ? "bg-primary/10 text-primary"
+              : "bg-muted text-muted-foreground hover:text-foreground"
           )}
-        </div>
-      </div>
+        >
+          <Sparkles className="h-3 w-3" />
+          {isPremium ? 'PRO' : 'Upgrade'}
+        </button>
+      )}
     </div>
   );
 }

@@ -4,8 +4,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronRight, Lock, Sparkles } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ChevronRight, Lock, Sparkles, ArrowRight } from 'lucide-react';
 import {
   Shield,
   Target,
@@ -14,6 +15,7 @@ import {
   BookOpen,
   Wrench,
   GraduationCap,
+  Brain,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { StrategyPasswordGate } from '@/components/client-portal/StrategyPasswordGate';
@@ -30,6 +32,13 @@ const portalSections = [
   { key: 'tasks', path: '/app/client-portal/tasks', icon: ClipboardList, titleKey: 'clientPortal.tasks', descKey: 'clientPortal.tasksDesc', protected: false },
   { key: 'courses', path: '/app/client-portal/courses', icon: GraduationCap, titleKey: 'clientPortal.courses', descKey: 'clientPortal.coursesDesc', protected: false },
 ] as const;
+
+// Suggested starting action based on what's available
+const SUGGESTED_ACTIONS = [
+  { key: 'coach', path: '/app/client-portal/coach', icon: Brain, title: 'Starte deinen Finanz-Coach', desc: 'Dein persönlicher Einstieg in die finanzielle Klarheit.' },
+  { key: 'tools', path: '/app/client-portal/tools', icon: Wrench, title: 'Entdecke die Werkzeugkiste', desc: 'Interaktive Tools für bessere Entscheidungen.' },
+  { key: 'library', path: '/app/client-portal/library', icon: BookOpen, title: 'Wissen aufbauen', desc: 'Artikel und Grundlagen einfach erklärt.' },
+];
 
 export default function ClientPortalHome() {
   const { t } = useTranslation();
@@ -64,10 +73,14 @@ export default function ClientPortalHome() {
     }
   };
 
-  // Split: primary sections (in bottom nav) vs secondary (in "Mehr")
-  const primaryKeys = ['coach', 'tools', 'library', 'strategies'];
-  const primarySections = visibleSections.filter(s => primaryKeys.includes(s.key));
-  const secondarySections = visibleSections.filter(s => !primaryKeys.includes(s.key));
+  // Only show secondary sections that are NOT already in bottom nav
+  const bottomNavKeys = ['coach', 'tools', 'library'];
+  const secondarySections = visibleSections.filter(s => !bottomNavKeys.includes(s.key));
+
+  // Pick suggested action based on visible sections
+  const suggestedAction = SUGGESTED_ACTIONS.find(a =>
+    visibleSections.some(s => s.key === a.key)
+  );
 
   const SectionCard = ({ section }: { section: typeof portalSections[number] }) => {
     const isProtected = section.protected && hasStrategyPassword && !strategyUnlocked;
@@ -83,10 +96,10 @@ export default function ClientPortalHome() {
           "w-full transition-all active:scale-[0.98] touch-manipulation hover:shadow-md",
           isProtected && "opacity-80"
         )}>
-          <CardContent className="flex items-center justify-between p-4">
-            <div className="flex items-center gap-4">
-              <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 relative">
-                <section.icon className="h-5 w-5 text-primary" />
+          <CardContent className="flex items-center justify-between p-3.5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 relative">
+                <section.icon className="h-4.5 w-4.5 text-primary" />
                 {isProtected && (
                   <Lock className="h-3 w-3 text-muted-foreground absolute -bottom-1 -right-1 bg-background rounded-full p-0.5" />
                 )}
@@ -121,7 +134,7 @@ export default function ClientPortalHome() {
   return (
     <ClientPortalLayout>
       <div className="max-w-2xl mx-auto space-y-5">
-        {/* Gamification */}
+        {/* Compact gamification */}
         <GamificationBar />
 
         {/* Welcome */}
@@ -134,16 +147,35 @@ export default function ClientPortalHome() {
           </p>
         </div>
 
-        {/* Primary sections – prominent */}
-        {primarySections.length > 0 && (
-          <div className="space-y-2">
-            {primarySections.map(section => (
-              <SectionCard key={section.key} section={section} />
-            ))}
-          </div>
+        {/* Hero CTA: clear next step */}
+        {suggestedAction && (
+          <Card
+            className="border-primary/20 bg-primary/5 cursor-pointer transition-all hover:shadow-md active:scale-[0.98] touch-manipulation"
+            onClick={() => navigate(suggestedAction.path)}
+          >
+            <CardContent className="p-5">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <suggestedAction.icon className="h-6 w-6 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] uppercase tracking-widest font-semibold text-primary mb-1">
+                    Empfohlen
+                  </p>
+                  <h2 className="text-base font-bold text-foreground mb-1">
+                    {suggestedAction.title}
+                  </h2>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {suggestedAction.desc}
+                  </p>
+                </div>
+                <ArrowRight className="h-5 w-5 text-primary shrink-0 mt-1" />
+              </div>
+            </CardContent>
+          </Card>
         )}
 
-        {/* Secondary sections – smaller, grouped */}
+        {/* Weitere Bereiche – only sections NOT in bottom nav */}
         {secondarySections.length > 0 && (
           <div className="space-y-2">
             <p className="text-xs font-medium text-muted-foreground px-1">
