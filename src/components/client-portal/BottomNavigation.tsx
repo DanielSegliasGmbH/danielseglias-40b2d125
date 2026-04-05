@@ -37,6 +37,7 @@ export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationPro
     '/app/client-portal/tasks',
     '/app/client-portal/courses',
     '/app/client-portal/strategies',
+    '/app/client-portal/premium',
     '/app/profile',
   ].some(p => location.pathname.startsWith(p));
 

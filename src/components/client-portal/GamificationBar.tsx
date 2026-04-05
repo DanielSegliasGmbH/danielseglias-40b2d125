@@ -1,11 +1,16 @@
 import { useGamification, getLevel } from '@/hooks/useGamification';
+import { useSubscription } from '@/hooks/useSubscription';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Trophy, Star, Zap, Award, Crown, Flame } from 'lucide-react';
+import { Trophy, Star, Zap, Award, Crown, Flame, Sparkles } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 const LEVEL_ICONS = [null, Zap, Star, Trophy, Award, Crown];
 
 export function GamificationBar() {
   const { points, streakDays, level, levelLabel, progressPercent, pointsToNext, maxLevel, loading } = useGamification();
+  const { isPremium, isLoading: subLoading } = useSubscription();
+  const navigate = useNavigate();
 
   if (loading) return null;
 
@@ -19,6 +24,28 @@ export function GamificationBar() {
 
   return (
     <div className="space-y-2">
+      {/* Premium badge */}
+      {!subLoading && (
+        <div
+          className={cn(
+            "flex items-center gap-2 px-4 py-2 rounded-2xl border cursor-pointer transition-colors",
+            isPremium
+              ? "bg-primary/5 border-primary/20"
+              : "bg-card border-border hover:border-primary/30"
+          )}
+          onClick={() => navigate('/app/client-portal/premium')}
+        >
+          <Sparkles className={cn("h-4 w-4", isPremium ? "text-primary" : "text-muted-foreground")} />
+          <span className={cn("text-xs font-medium", isPremium ? "text-primary" : "text-muted-foreground")}>
+            {isPremium ? 'Premium aktiv' : 'Upgrade verfügbar'}
+          </span>
+          {isPremium && (
+            <Badge variant="secondary" className="ml-auto text-[9px] bg-primary/10 text-primary border-0 px-1.5 py-0">
+              PRO
+            </Badge>
+          )}
+        </div>
+      )}
       {/* Main bar: Level + Points */}
       <div className="flex items-center gap-3 px-4 py-3 bg-card border border-border rounded-2xl">
         <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">

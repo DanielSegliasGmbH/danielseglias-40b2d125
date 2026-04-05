@@ -53,6 +53,7 @@ import ClientPortalCourseModule from "./pages/client-portal/ClientPortalCourseMo
 import ClientPortalCoach from "./pages/client-portal/ClientPortalCoach";
 import ClientPortalCoachModule from "./pages/client-portal/ClientPortalCoachModule";
 import AdminCourses from "./pages/AdminCourses";
+import ClientPortalPremium from "./pages/client-portal/ClientPortalPremium";
 
 // Insurance Consulting Pages
 import InsuranceConsultingStart from "./pages/insurance-consulting/InsuranceConsultingStart";
@@ -381,6 +382,15 @@ function App() {
                   </RouteGuard>
                 }
               />
+              <Route
+                path="/app/client-portal/premium"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalPremium />
+                  </RouteGuard>
+                }
+              />
+
 
               {/* Protected: Admin only - Courses */}
               <Route
