@@ -407,8 +407,7 @@ function App() {
                     <ClientPortalProfileData />
                   </RouteGuard>
                 }
-
-
+              />
               {/* Protected: Admin only - Courses */}
               <Route
                 path="/app/courses"
