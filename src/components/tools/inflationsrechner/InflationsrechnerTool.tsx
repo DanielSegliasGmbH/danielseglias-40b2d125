@@ -22,6 +22,7 @@ import {
 
 export function InflationsrechnerTool() {
   const [mode, setMode] = useState<'future' | 'past' | 'simulation'>('future');
+  const { saveSnapshot } = useMemorySnapshot();
 
   // Future inputs
   const [amount, setAmount] = useState(100000);
@@ -38,6 +39,17 @@ export function InflationsrechnerTool() {
 
   const activeResult = mode === 'future' ? futureResult : pastResult;
   const activeAmount = mode === 'future' ? amount : pastAmount;
+
+  // Save snapshot when user switches tabs (indicates completed interaction)
+  const handleModeChange = useCallback((newMode: string) => {
+    // Save current calculation before switching
+    if (mode === 'future') {
+      saveSnapshot('inflationsrechner', 'Zukunftsprojektion', { amount, years, rate }, { realValue: futureResult.realValue, loss: futureResult.loss });
+    } else if (mode === 'past') {
+      saveSnapshot('inflationsrechner', 'Vergangenheitsanalyse', { pastAmount, startYear, endYear }, { realValue: pastResult.realValue, loss: pastResult.loss });
+    }
+    setMode(newMode as 'future' | 'past' | 'simulation');
+  }, [mode, amount, years, rate, pastAmount, startYear, endYear, futureResult, pastResult, saveSnapshot]);
 
   return (
     <PdfExportWrapper toolName="Inflationsrechner">
