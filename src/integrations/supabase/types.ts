@@ -859,6 +859,33 @@ export type Database = {
         }
         Relationships: []
       }
+      gamification_actions: {
+        Row: {
+          action_ref: string
+          action_type: string
+          created_at: string
+          id: string
+          points_awarded: number
+          user_id: string
+        }
+        Insert: {
+          action_ref?: string
+          action_type: string
+          created_at?: string
+          id?: string
+          points_awarded: number
+          user_id: string
+        }
+        Update: {
+          action_ref?: string
+          action_type?: string
+          created_at?: string
+          id?: string
+          points_awarded?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       insurance_consultations: {
         Row: {
           consultation_data: Json
@@ -1894,6 +1921,39 @@ export type Database = {
           sort_order?: number
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      user_gamification: {
+        Row: {
+          created_at: string
+          id: string
+          last_daily_login: string | null
+          points: number
+          profile_completed_bonus: boolean
+          streak_days: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_daily_login?: string | null
+          points?: number
+          profile_completed_bonus?: boolean
+          streak_days?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_daily_login?: string | null
+          points?: number
+          profile_completed_bonus?: boolean
+          streak_days?: number
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

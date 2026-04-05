@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useGamification } from '@/hooks/useGamification';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
@@ -47,7 +49,14 @@ export default function ClientPortalToolDetail() {
   const { t } = useTranslation();
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const { awardPoints } = useGamification();
 
+  // Award points for tool usage
+  useEffect(() => {
+    if (slug) {
+      awardPoints('tool_used', slug);
+    }
+  }, [slug]);
   const { data: tool, isLoading, error } = useQuery({
     queryKey: ['client-tool', slug],
     queryFn: async () => {

@@ -8,6 +8,7 @@ import { ArrowLeft, Play, Lock, Clock, MessageSquareHeart, Check, ChevronRight }
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
+import { useGamification } from '@/hooks/useGamification';
 import {
   useCourseModules,
   useCourseLessons,
@@ -21,6 +22,7 @@ import {
 export default function ClientPortalCourseModule() {
   const { moduleId } = useParams<{ moduleId: string }>();
   const { user } = useAuth();
+  const { awardPoints } = useGamification();
   const { data: modules } = useCourseModules();
   const { data: lessons, isLoading } = useCourseLessons(moduleId);
   const { data: customerId } = useMyCustomerId();
@@ -83,6 +85,7 @@ export default function ClientPortalCourseModule() {
                 <VideoHero
                   lesson={selectedLesson!}
                   unlocked={selectedUnlocked}
+                  onVideoPlayed={() => awardPoints('video_watched', selectedLesson!.id)}
                 />
 
                 {/* Next lesson teaser */}
@@ -202,7 +205,7 @@ export default function ClientPortalCourseModule() {
 }
 
 /* ─── Video Hero ─── */
-function VideoHero({ lesson, unlocked }: { lesson: CourseLesson; unlocked: boolean }) {
+function VideoHero({ lesson, unlocked, onVideoPlayed }: { lesson: CourseLesson; unlocked: boolean; onVideoPlayed?: () => void }) {
   const handlePlay = () => {
     if (!unlocked) {
       toast.info('Dieser Inhalt ist aktuell noch nicht freigeschaltet.');
@@ -210,6 +213,7 @@ function VideoHero({ lesson, unlocked }: { lesson: CourseLesson; unlocked: boole
     }
     if (lesson.video_url) {
       window.open(lesson.video_url, '_blank', 'noopener,noreferrer');
+      onVideoPlayed?.();
     } else {
       toast.info('Für diese Lektion ist noch kein Video hinterlegt.');
     }

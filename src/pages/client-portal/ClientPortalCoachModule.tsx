@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useSpeechToText } from '@/hooks/useSpeechToText';
+import { useGamification } from '@/hooks/useGamification';
 import {
   Brain, Eye, Target, LayoutGrid, Shield, Settings2, TrendingUp, Rocket, Star, RotateCcw,
   MessageSquare, BarChart3, CheckSquare, Lightbulb, Info, Mic, MicOff, Loader2, Copy, Share2,
@@ -1007,6 +1008,7 @@ export default function ClientPortalCoachModule() {
   const { moduleKey } = useParams<{ moduleKey: string }>();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { awardPoints } = useGamification();
   const mod = moduleKey ? moduleData[moduleKey] : null;
 
   // State
@@ -1136,6 +1138,10 @@ export default function ClientPortalCoachModule() {
       if (data?.error) throw new Error(data.error);
       setAnalysisResult(data.content || '');
       if (data.tasks?.length) setExtractedTasks(data.tasks);
+      // Award gamification points for completing a coach module
+      if (moduleKey) {
+        awardPoints('coach_module_completed', moduleKey);
+      }
     } catch (e: any) {
       toast({ title: 'Fehler bei der Analyse', description: e.message || 'Bitte versuche es erneut.', variant: 'destructive' });
     } finally {
