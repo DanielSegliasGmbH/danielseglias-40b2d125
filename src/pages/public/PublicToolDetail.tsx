@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import DOMPurify from 'dompurify';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -209,7 +210,10 @@ export default function PublicToolDetail() {
               ) : publicPage.content ? (
                 <Card className="mb-8">
                   <CardContent className="py-6 prose prose-neutral dark:prose-invert max-w-none">
-                    <div dangerouslySetInnerHTML={{ __html: publicPage.content }} />
+                    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(publicPage.content, {
+                      ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a', 'blockquote', 'code', 'pre', 'img', 'span', 'div', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
+                      ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'src', 'alt', 'width', 'height']
+                    }) }} />
                   </CardContent>
                 </Card>
               ) : (
