@@ -1,9 +1,11 @@
+import { useEffect, useRef } from 'react';
 import { PdfExportWrapper } from '../PdfExportWrapper';
 import { useFinanzcheckLogic } from './useFinanzcheckLogic';
 import { FinanzcheckStep0 } from './FinanzcheckStep0';
 import { FinanzcheckStep1 } from './FinanzcheckStep1';
 import { FinanzcheckStep2 } from './FinanzcheckStep2';
 import { FinanzcheckStep3 } from './FinanzcheckStep3';
+import { useMemorySnapshot } from '@/hooks/useMemories';
 
 interface Props {
   mode: 'internal' | 'public';
@@ -24,6 +26,23 @@ export function FinanzcheckTool({ mode }: Props) {
     goBack,
     reset,
   } = useFinanzcheckLogic();
+
+  const { saveSnapshot } = useMemorySnapshot();
+  const snapshotSaved = useRef(false);
+
+  // Save memory snapshot when result is computed
+  useEffect(() => {
+    if (currentStep === 3 && result && !snapshotSaved.current) {
+      snapshotSaved.current = true;
+      saveSnapshot(
+        'finanzcheck',
+        'Berechnung durchgeführt',
+        { age: userData.age, income: userData.income, expenses: userData.expenses, thirdPillar: userData.thirdPillar },
+        { gesamtScore: result.gesamtScore, categories: result.categories.map(c => ({ key: c.key, label: c.label, score: c.score })) }
+      );
+    }
+    if (currentStep !== 3) snapshotSaved.current = false;
+  }, [currentStep, result]);
 
   // Progress indicator
   const steps = ['Start', 'Basisdaten', 'Themen', 'Ergebnis'];
