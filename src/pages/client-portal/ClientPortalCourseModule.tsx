@@ -204,7 +204,7 @@ export default function ClientPortalCourseModule() {
 }
 
 /* ─── Video Hero ─── */
-function VideoHero({ lesson, unlocked }: { lesson: CourseLesson; unlocked: boolean }) {
+function VideoHero({ lesson, unlocked, onVideoPlayed }: { lesson: CourseLesson; unlocked: boolean; onVideoPlayed?: () => void }) {
   const handlePlay = () => {
     if (!unlocked) {
       toast.info('Dieser Inhalt ist aktuell noch nicht freigeschaltet.');
@@ -212,6 +212,7 @@ function VideoHero({ lesson, unlocked }: { lesson: CourseLesson; unlocked: boole
     }
     if (lesson.video_url) {
       window.open(lesson.video_url, '_blank', 'noopener,noreferrer');
+      onVideoPlayed?.();
     } else {
       toast.info('Für diese Lektion ist noch kein Video hinterlegt.');
     }
