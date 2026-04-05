@@ -54,6 +54,7 @@ import ClientPortalCoach from "./pages/client-portal/ClientPortalCoach";
 import ClientPortalCoachModule from "./pages/client-portal/ClientPortalCoachModule";
 import AdminCourses from "./pages/AdminCourses";
 import ClientPortalPremium from "./pages/client-portal/ClientPortalPremium";
+import ClientPortalMemories from "./pages/client-portal/ClientPortalMemories";
 
 // Insurance Consulting Pages
 import InsuranceConsultingStart from "./pages/insurance-consulting/InsuranceConsultingStart";
@@ -387,6 +388,14 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['client', 'admin']}>
                     <ClientPortalPremium />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/memories"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalMemories />
                   </RouteGuard>
                 }
               />
