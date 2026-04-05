@@ -38,7 +38,7 @@ export function FinanzcheckTool({ mode }: Props) {
         'finanzcheck',
         'Berechnung durchgeführt',
         { age: userData.age, income: userData.income, expenses: userData.expenses, thirdPillar: userData.thirdPillar },
-        { gesamtScore: result.gesamtScore, categories: result.categories.map(c => ({ key: c.key, label: c.label, score: c.score })) }
+        { overallScore: result.overallScore, categoryScores: result.categoryScores.map(c => ({ id: c.categoryId, label: c.label, score: c.percentage })) }
       );
     }
     if (currentStep !== 3) snapshotSaved.current = false;
