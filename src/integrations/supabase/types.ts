@@ -1230,6 +1230,39 @@ export type Database = {
           },
         ]
       }
+      memories: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          input_data: Json | null
+          output_data: Json | null
+          title: string | null
+          tool_slug: string
+          user_id: string
+        }
+        Insert: {
+          action?: string
+          created_at?: string
+          id?: string
+          input_data?: Json | null
+          output_data?: Json | null
+          title?: string | null
+          tool_slug: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          input_data?: Json | null
+          output_data?: Json | null
+          title?: string | null
+          tool_slug?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notes: {
         Row: {
           author_id: string | null
