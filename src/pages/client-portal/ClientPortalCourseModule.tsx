@@ -85,6 +85,7 @@ export default function ClientPortalCourseModule() {
                 <VideoHero
                   lesson={selectedLesson!}
                   unlocked={selectedUnlocked}
+                  onVideoPlayed={() => awardPoints('video_watched', selectedLesson!.id)}
                 />
 
                 {/* Next lesson teaser */}
