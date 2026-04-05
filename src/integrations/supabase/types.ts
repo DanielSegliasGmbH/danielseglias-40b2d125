@@ -1263,6 +1263,90 @@ export type Database = {
         }
         Relationships: []
       }
+      meta_profile_history: {
+        Row: {
+          created_at: string
+          field_name: string
+          id: string
+          new_value: string | null
+          old_value: string | null
+          source: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          field_name: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+          source?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          field_name?: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+          source?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      meta_profiles: {
+        Row: {
+          age: number | null
+          created_at: string
+          debts: number | null
+          financial_goal: string | null
+          fixed_costs: number | null
+          id: string
+          last_confirmed_at: string | null
+          monthly_income: number | null
+          occupation: string | null
+          risk_tolerance: number | null
+          savings_rate: number | null
+          tax_burden: number | null
+          updated_at: string
+          user_id: string
+          wealth: number | null
+        }
+        Insert: {
+          age?: number | null
+          created_at?: string
+          debts?: number | null
+          financial_goal?: string | null
+          fixed_costs?: number | null
+          id?: string
+          last_confirmed_at?: string | null
+          monthly_income?: number | null
+          occupation?: string | null
+          risk_tolerance?: number | null
+          savings_rate?: number | null
+          tax_burden?: number | null
+          updated_at?: string
+          user_id: string
+          wealth?: number | null
+        }
+        Update: {
+          age?: number | null
+          created_at?: string
+          debts?: number | null
+          financial_goal?: string | null
+          fixed_costs?: number | null
+          id?: string
+          last_confirmed_at?: string | null
+          monthly_income?: number | null
+          occupation?: string | null
+          risk_tolerance?: number | null
+          savings_rate?: number | null
+          tax_burden?: number | null
+          updated_at?: string
+          user_id?: string
+          wealth?: number | null
+        }
+        Relationships: []
+      }
       notes: {
         Row: {
           author_id: string | null
