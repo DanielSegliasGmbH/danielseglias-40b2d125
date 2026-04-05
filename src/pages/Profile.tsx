@@ -9,14 +9,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { KeyRound, LogOut, ChevronRight, User } from 'lucide-react';
+import { KeyRound, LogOut, ChevronRight, User, RotateCcw } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { PasswordStrengthChecker } from '@/components/PasswordStrengthChecker';
 
 export default function Profile() {
   const { t } = useTranslation();
-  const { user, signOut } = useAuth();
+  const { user, role, signOut } = useAuth();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -155,6 +157,24 @@ export default function Profile() {
                 <span className="text-sm font-medium text-foreground">Sprache</span>
                 <LanguageSwitcher />
               </div>
+              {role === 'client' && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-foreground">Einführung erneut starten</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-xl gap-1.5"
+                    onClick={() => {
+                      localStorage.removeItem('client_onboarding_complete');
+                      toast.success('Einführung wird beim nächsten Besuch angezeigt.');
+                      navigate('/app/client-portal');
+                    }}
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" />
+                    Starten
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
 
