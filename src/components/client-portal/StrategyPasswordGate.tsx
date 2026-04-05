@@ -3,7 +3,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Lock } from 'lucide-react';
-import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
+import { supabase } from '@/integrations/supabase/client';
+import { useClientPortalCustomerId } from '@/hooks/useClientPortal';
 
 interface StrategyPasswordGateProps {
   open: boolean;
@@ -14,19 +15,37 @@ interface StrategyPasswordGateProps {
 export function StrategyPasswordGate({ open, onOpenChange, onSuccess }: StrategyPasswordGateProps) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { data: settings } = useCustomerPortalSettings();
+  const [loading, setLoading] = useState(false);
+  const { data: customerId } = useClientPortalCustomerId();
 
-  const expectedPassword = (settings as any)?.strategy_access_password;
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === expectedPassword) {
-      setError('');
-      setPassword('');
-      sessionStorage.setItem('strategy_unlocked', 'true');
-      onSuccess();
-    } else {
-      setError('Passwort nicht korrekt');
+    if (!password.trim() || !customerId) return;
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke('verify-strategy-password', {
+        body: { password, customer_id: customerId },
+      });
+
+      if (fnError) {
+        setError('Fehler bei der Überprüfung');
+        return;
+      }
+
+      if (data?.match) {
+        setPassword('');
+        sessionStorage.setItem('strategy_unlocked', 'true');
+        onSuccess();
+      } else {
+        setError('Passwort nicht korrekt');
+      }
+    } catch {
+      setError('Fehler bei der Überprüfung');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,8 +79,8 @@ export function StrategyPasswordGate({ open, onOpenChange, onSuccess }: Strategy
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Abbrechen
             </Button>
-            <Button type="submit" disabled={!password.trim()}>
-              Entsperren
+            <Button type="submit" disabled={!password.trim() || loading}>
+              {loading ? 'Prüfe...' : 'Entsperren'}
             </Button>
           </div>
         </form>
