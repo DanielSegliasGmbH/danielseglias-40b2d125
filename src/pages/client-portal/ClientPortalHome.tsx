@@ -23,6 +23,8 @@ import { StrategyPasswordGate } from '@/components/client-portal/StrategyPasswor
 import { OnboardingScreen } from '@/components/OnboardingScreen';
 import { GamificationBar } from '@/components/client-portal/GamificationBar';
 import { useGamification } from '@/hooks/useGamification';
+import { useMetaProfile } from '@/hooks/useMetaProfile';
+import { AlertTriangle } from 'lucide-react';
 
 const portalSections = [
   { key: 'coach', path: '/app/client-portal/coach', icon: Sparkles, titleKey: 'clientPortal.coach', descKey: 'clientPortal.coachDesc', protected: false },
@@ -64,6 +66,7 @@ export default function ClientPortalHome() {
   const navigate = useNavigate();
   const { data: settings } = useCustomerPortalSettings();
   const { level, streakDays } = useGamification();
+  const { needsCheckup } = useMetaProfile();
   const [passwordGateOpen, setPasswordGateOpen] = useState(false);
   const [strategyUnlocked, setStrategyUnlocked] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
