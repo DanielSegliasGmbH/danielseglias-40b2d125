@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, TrendingUp, User, HelpCircle, Globe, Crown } from 'lucide-react';
+import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, TrendingUp, User, HelpCircle, Globe, Crown, Wallet } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -85,6 +85,7 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
             {t('app.accountSettings', 'Konto & Einstellungen')}
           </p>
           <MoreLink to="/app/client-portal/premium" icon={Crown} label="Premium" />
+          <MoreLink to={buildPath('/app/client-portal/profile-data')} icon={Wallet} label="Mein Finanzprofil" />
           <MoreLink to="/app/profile" icon={User} label={t('userManagement.profile')} />
           
           {/* Theme & Language compact row */}

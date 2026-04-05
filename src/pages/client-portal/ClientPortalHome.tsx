@@ -23,6 +23,8 @@ import { StrategyPasswordGate } from '@/components/client-portal/StrategyPasswor
 import { OnboardingScreen } from '@/components/OnboardingScreen';
 import { GamificationBar } from '@/components/client-portal/GamificationBar';
 import { useGamification } from '@/hooks/useGamification';
+import { useMetaProfile } from '@/hooks/useMetaProfile';
+import { AlertTriangle } from 'lucide-react';
 
 const portalSections = [
   { key: 'coach', path: '/app/client-portal/coach', icon: Sparkles, titleKey: 'clientPortal.coach', descKey: 'clientPortal.coachDesc', protected: false },
@@ -64,6 +66,7 @@ export default function ClientPortalHome() {
   const navigate = useNavigate();
   const { data: settings } = useCustomerPortalSettings();
   const { level, streakDays } = useGamification();
+  const { needsCheckup } = useMetaProfile();
   const [passwordGateOpen, setPasswordGateOpen] = useState(false);
   const [strategyUnlocked, setStrategyUnlocked] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -159,6 +162,27 @@ export default function ClientPortalHome() {
         {/* Compact gamification */}
         <GamificationBar />
 
+        {/* Meta-Profile Checkup Banner */}
+        {needsCheckup && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.3 }}
+          >
+            <Link to="/app/client-portal/profile-data">
+              <Card className="border-warning/50 bg-warning/5 hover:shadow-md transition-shadow cursor-pointer">
+                <CardContent className="flex items-center gap-3 py-3.5 px-4">
+                  <AlertTriangle className="h-5 w-5 text-warning shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground">Profil-Check fällig</p>
+                    <p className="text-xs text-muted-foreground">Überprüfe deine Finanzdaten – dauert nur 1 Minute.</p>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                </CardContent>
+              </Card>
+            </Link>
+          </motion.div>
+        )}
         {/* Welcome with dynamic greeting */}
         <motion.div
           className="pt-1"
