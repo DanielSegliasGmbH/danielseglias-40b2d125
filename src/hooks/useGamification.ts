@@ -93,6 +93,7 @@ export function useGamification() {
 
       if (data) {
         setPoints(data.points);
+        pointsRef.current = data.points;
         setStreakDays(data.streak_days || 0);
         prevLevelRef.current = getLevel(data.points).level;
 
