@@ -571,6 +571,59 @@ export type Database = {
           },
         ]
       }
+      customer_products: {
+        Row: {
+          category: string
+          created_at: string
+          customer_id: string
+          document_url: string | null
+          id: string
+          notes: string | null
+          payment_interval: string
+          price: number | null
+          product_name: string
+          provider: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          customer_id: string
+          document_url?: string | null
+          id?: string
+          notes?: string | null
+          payment_interval?: string
+          price?: number | null
+          product_name: string
+          provider?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          customer_id?: string
+          document_url?: string | null
+          id?: string
+          notes?: string | null
+          payment_interval?: string
+          price?: number | null
+          product_name?: string
+          provider?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_products_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_profiles: {
         Row: {
           canton: string | null
