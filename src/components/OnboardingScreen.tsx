@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Eye, Link2, Rocket, ChevronRight } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Sparkles, Eye, Link2, Rocket, ChevronRight, Shield, Lock, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -25,6 +26,12 @@ const slides = [
     title: 'Alles ist miteinander verbunden',
     description: 'Dein persönlicher Finanz-Coach begleitet dich Schritt für Schritt. Die Werkzeugkiste zeigt dir Zusammenhänge. Der Wissensbereich macht dich unabhängig.',
     showAreas: true,
+  },
+  {
+    icon: Shield,
+    title: 'Deine Daten gehören dir',
+    description: 'Diese App wurde entwickelt, um dich zu schützen – nicht um dich auszunutzen.',
+    isPrivacy: true,
   },
   {
     icon: Rocket,
@@ -56,9 +63,36 @@ function AreaBubble({ label, icon, delay }: AreaBubbleProps) {
   );
 }
 
+interface PrivacyPointProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  delay: number;
+}
+
+function PrivacyPoint({ icon, title, description, delay }: PrivacyPointProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.35, ease: 'easeOut' }}
+      className="flex items-start gap-3 text-left"
+    >
+      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+        {icon}
+      </div>
+      <div className="min-w-0">
+        <p className="text-sm font-semibold text-foreground">{title}</p>
+        <p className="text-xs text-muted-foreground leading-relaxed">{description}</p>
+      </div>
+    </motion.div>
+  );
+}
+
 export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
+  const [privacyAcknowledged, setPrivacyAcknowledged] = useState(false);
 
   const handleNext = () => {
     if (current < slides.length - 1) {
@@ -77,6 +111,9 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
   const Icon = slide.icon;
   const progress = ((current + 1) / slides.length) * 100;
 
+  const isPrivacySlide = slide.isPrivacy === true;
+  const canProceed = !isPrivacySlide || privacyAcknowledged;
+
   const variants = {
     enter: (dir: number) => ({ x: dir > 0 ? 80 : -80, opacity: 0 }),
     center: { x: 0, opacity: 1 },
@@ -85,7 +122,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-between px-6 py-10 safe-area-inset">
-      {/* Top bar: progress + skip */}
+      {/* Top bar */}
       <div className="w-full max-w-sm space-y-4">
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground font-medium">
@@ -98,7 +135,6 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
             Überspringen
           </button>
         </div>
-        {/* Progress bar */}
         <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
           <div
             className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
@@ -125,32 +161,66 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
           <h1 className="text-2xl font-bold text-foreground mb-4 leading-tight">{slide.title}</h1>
           <p className="text-muted-foreground text-base leading-relaxed mb-6">{slide.description}</p>
 
-          {/* Screen 4: connected areas visualization */}
+          {/* Connected areas (slide 4) */}
           {slide.showAreas && (
             <div className="flex flex-col gap-3 w-full mt-2">
-              <AreaBubble
-                label="Finanz-Coach"
-                icon={<Sparkles className="h-4 w-4 text-primary" />}
+              <AreaBubble label="Finanz-Coach" icon={<Sparkles className="h-4 w-4 text-primary" />} delay={0.1} />
+              <AreaBubble label="Werkzeugkiste" icon={<Eye className="h-4 w-4 text-primary" />} delay={0.25} />
+              <AreaBubble label="Wissensbereich" icon={<Link2 className="h-4 w-4 text-primary" />} delay={0.4} />
+            </div>
+          )}
+
+          {/* Privacy slide */}
+          {isPrivacySlide && (
+            <div className="flex flex-col gap-4 w-full mt-2">
+              <PrivacyPoint
+                icon={<Lock className="h-4 w-4 text-primary" />}
+                title="Kein Verkauf deiner Daten"
+                description="Deine Daten werden nicht verkauft, nicht für Werbung genutzt und nicht an Dritte weitergegeben."
                 delay={0.1}
               />
-              <AreaBubble
-                label="Werkzeugkiste"
-                icon={<Eye className="h-4 w-4 text-primary" />}
-                delay={0.25}
+              <PrivacyPoint
+                icon={<Sparkles className="h-4 w-4 text-primary" />}
+                title="Nur für dich"
+                description="Deine Daten dienen nur besseren Berechnungen, personalisierten Ergebnissen und automatischer Vorausfüllung."
+                delay={0.2}
               />
-              <AreaBubble
-                label="Wissensbereich"
-                icon={<Link2 className="h-4 w-4 text-primary" />}
+              <PrivacyPoint
+                icon={<EyeOff className="h-4 w-4 text-primary" />}
+                title="Immer anonym"
+                description="Falls wir Daten auswerten, dann nur anonym – ohne Rückschluss auf dich."
+                delay={0.3}
+              />
+              <PrivacyPoint
+                icon={<Shield className="h-4 w-4 text-primary" />}
+                title="Du hast die Kontrolle"
+                description="Du kannst deine Daten jederzeit einsehen, bearbeiten oder löschen."
                 delay={0.4}
               />
+
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.55, duration: 0.3 }}
+                className="flex items-start gap-3 mt-3 pt-3 border-t border-border"
+              >
+                <Checkbox
+                  id="privacy-ack"
+                  checked={privacyAcknowledged}
+                  onCheckedChange={(v) => setPrivacyAcknowledged(v === true)}
+                  className="mt-0.5"
+                />
+                <label htmlFor="privacy-ack" className="text-xs text-muted-foreground text-left leading-relaxed cursor-pointer select-none">
+                  Ich habe verstanden, wie meine Daten verwendet werden.
+                </label>
+              </motion.div>
             </div>
           )}
         </motion.div>
       </AnimatePresence>
 
-      {/* Bottom: dots + button */}
+      {/* Bottom */}
       <div className="w-full max-w-sm space-y-5">
-        {/* Dots */}
         <div className="flex items-center justify-center gap-2">
           {slides.map((_, i) => (
             <div
@@ -165,6 +235,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
 
         <Button
           onClick={handleNext}
+          disabled={!canProceed}
           className={cn(
             "w-full h-14 text-base font-semibold rounded-2xl gap-2",
             slide.isFinal && "animate-pulse"
