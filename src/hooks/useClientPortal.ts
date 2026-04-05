@@ -13,6 +13,7 @@ export interface PortalVisibility {
   show_courses: boolean;
   show_strategy_privacy: boolean;
   strategy_access_password: string | null;
+  has_strategy_password: boolean;
 }
 
 interface CustomerPortalSettings {
@@ -116,6 +117,7 @@ function mergeSettings(
     show_courses: defaults?.show_courses ?? false,
     show_strategy_privacy: false,
     strategy_access_password: null,
+    has_strategy_password: false,
   };
 
   if (!customer) return base;
@@ -128,6 +130,7 @@ function mergeSettings(
   }
   base.show_strategy_privacy = customer.show_strategy_privacy ?? false;
   base.strategy_access_password = customer.strategy_access_password ?? null;
+  base.has_strategy_password = (customer as any).has_strategy_password ?? !!customer.strategy_access_password;
 
   return base;
 }
