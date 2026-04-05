@@ -8,6 +8,7 @@ import { ArrowLeft, Play, Lock, Clock, MessageSquareHeart, Check, ChevronRight }
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
+import { useGamification } from '@/hooks/useGamification';
 import {
   useCourseModules,
   useCourseLessons,
@@ -21,6 +22,7 @@ import {
 export default function ClientPortalCourseModule() {
   const { moduleId } = useParams<{ moduleId: string }>();
   const { user } = useAuth();
+  const { awardPoints } = useGamification();
   const { data: modules } = useCourseModules();
   const { data: lessons, isLoading } = useCourseLessons(moduleId);
   const { data: customerId } = useMyCustomerId();
