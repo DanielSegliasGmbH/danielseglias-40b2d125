@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { StrategyPasswordGate } from '@/components/client-portal/StrategyPasswordGate';
+import { OnboardingScreen } from '@/components/OnboardingScreen';
 
 const portalSections = [
   { key: 'coach', path: '/app/client-portal/coach', icon: Sparkles, titleKey: 'clientPortal.coach', descKey: 'clientPortal.coachDesc', protected: false },
@@ -36,6 +37,13 @@ export default function ClientPortalHome() {
   const { data: settings } = useCustomerPortalSettings();
   const [passwordGateOpen, setPasswordGateOpen] = useState(false);
   const [strategyUnlocked, setStrategyUnlocked] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    if (!localStorage.getItem('client_onboarding_complete')) {
+      setShowOnboarding(true);
+    }
+  }, []);
 
   const firstName = user?.user_metadata?.first_name || 'Kunde';
 
@@ -97,6 +105,17 @@ export default function ClientPortalHome() {
       </Link>
     );
   };
+
+  if (showOnboarding) {
+    return (
+      <OnboardingScreen
+        onComplete={() => {
+          localStorage.setItem('client_onboarding_complete', 'true');
+          setShowOnboarding(false);
+        }}
+      />
+    );
+  }
 
   return (
     <ClientPortalLayout>
