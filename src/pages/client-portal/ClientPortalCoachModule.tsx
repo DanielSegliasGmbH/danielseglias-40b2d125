@@ -1138,6 +1138,10 @@ export default function ClientPortalCoachModule() {
       if (data?.error) throw new Error(data.error);
       setAnalysisResult(data.content || '');
       if (data.tasks?.length) setExtractedTasks(data.tasks);
+      // Award gamification points for completing a coach module
+      if (moduleKey) {
+        awardPoints('coach_module_completed', moduleKey);
+      }
     } catch (e: any) {
       toast({ title: 'Fehler bei der Analyse', description: e.message || 'Bitte versuche es erneut.', variant: 'destructive' });
     } finally {
