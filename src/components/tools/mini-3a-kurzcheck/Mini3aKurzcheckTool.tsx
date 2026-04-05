@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -15,6 +15,7 @@ import { LinksSection } from './LinksSection';
 import { generateOnePager, generateReport } from './pdfExport';
 import { ToolReflection, ToolTrustNote } from '../ToolConversionElements';
 import { ToolNextStep } from '../ToolNextStep';
+import { useMemorySnapshot } from '@/hooks/useMemories';
 
 interface Mini3aKurzcheckToolProps {
   mode?: 'internal' | 'public';
@@ -33,6 +34,21 @@ export function Mini3aKurzcheckTool({ mode = 'internal' }: Mini3aKurzcheckToolPr
   const [links, setLinks] = useState<CategoryLinks>(initLinks);
 
   const result = useMemo(() => calculateMini3a(inputs), [inputs]);
+  const { saveSnapshot } = useMemorySnapshot();
+  const snapshotSaved = useRef(false);
+
+  // Save snapshot once when result is first meaningful (user changed inputs)
+  useEffect(() => {
+    if (inputs.kundenname && result.gesamtscore > 0 && !snapshotSaved.current) {
+      snapshotSaved.current = true;
+      saveSnapshot(
+        'mini-3a-kurzcheck',
+        'Analyse durchgeführt',
+        { kundenname: inputs.kundenname, firma: inputs.firma, typ: inputs.typ, alter: inputs.alter },
+        { gesamtscore: result.gesamtscore, sterne: result.sterne, empfehlung: result.empfehlung }
+      );
+    }
+  }, [inputs.kundenname, result.gesamtscore]);
 
   return (
     <div className="space-y-8">
