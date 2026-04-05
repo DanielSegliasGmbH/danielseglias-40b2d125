@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.analyze-3a]
 verify_jwt = false
+
+[functions.verify-strategy-password]
+verify_jwt = false

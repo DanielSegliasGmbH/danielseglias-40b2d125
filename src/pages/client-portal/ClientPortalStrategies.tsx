@@ -20,8 +20,7 @@ export default function ClientPortalStrategies() {
 
   const { data: settings } = useCustomerPortalSettings();
   const privacyMode = settings?.show_strategy_privacy ?? false;
-  const strategyPassword = (settings as any)?.strategy_access_password;
-  const needsPassword = !!strategyPassword && role === 'client';
+  const needsPassword = (settings?.has_strategy_password ?? false) && role === 'client';
 
   useEffect(() => {
     if (needsPassword) {

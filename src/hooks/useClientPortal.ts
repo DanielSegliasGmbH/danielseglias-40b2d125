@@ -13,6 +13,7 @@ export interface PortalVisibility {
   show_courses: boolean;
   show_strategy_privacy: boolean;
   strategy_access_password: string | null;
+  has_strategy_password: boolean;
 }
 
 interface CustomerPortalSettings {
@@ -104,7 +105,7 @@ export function useUpdateDefaultPortalSettings() {
  */
 function mergeSettings(
   defaults: DefaultPortalSettings | null,
-  customer: CustomerPortalSettings | null
+  customer: Partial<CustomerPortalSettings> | null
 ): PortalVisibility {
   const base: PortalVisibility = {
     show_insurances: defaults?.show_insurances ?? false,
@@ -116,6 +117,7 @@ function mergeSettings(
     show_courses: defaults?.show_courses ?? false,
     show_strategy_privacy: false,
     strategy_access_password: null,
+    has_strategy_password: false,
   };
 
   if (!customer) return base;
@@ -128,6 +130,7 @@ function mergeSettings(
   }
   base.show_strategy_privacy = customer.show_strategy_privacy ?? false;
   base.strategy_access_password = customer.strategy_access_password ?? null;
+  base.has_strategy_password = (customer as any).has_strategy_password ?? !!customer.strategy_access_password;
 
   return base;
 }
@@ -175,7 +178,7 @@ export function useCustomerPortalSettings() {
 
       const { data: customerSettings } = await supabase
         .from('customer_portal_settings')
-        .select('*')
+        .select('id, customer_id, show_courses, show_goals, show_insurances, show_library, show_strategies, show_strategy_privacy, show_tasks, show_tools, created_at, updated_at')
         .eq('customer_id', customerUser.customer_id)
         .maybeSingle();
 
