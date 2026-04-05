@@ -20,6 +20,8 @@ import {
   Sparkles, Play, BookOpen, Trophy, DollarSign, PiggyBank, CreditCard, ClipboardCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { RecommendationCards } from '@/components/client-portal/RecommendationCards';
+import { COACH_MODULE_RECOMMENDATIONS } from '@/config/recommendationConfig';
 
 // ─── Module definitions ───────────────────────────────────────────
 
@@ -1619,6 +1621,11 @@ export default function ClientPortalCoachModule() {
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {/* Recommendations after analysis */}
+        {(analysisResult || reflectionResult) && COACH_MODULE_RECOMMENDATIONS[currentModuleKey] && (
+          <RecommendationCards recommendations={COACH_MODULE_RECOMMENDATIONS[currentModuleKey]} />
         )}
 
         {/* Data hint */}

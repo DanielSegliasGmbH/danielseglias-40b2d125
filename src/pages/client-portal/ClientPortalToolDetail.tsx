@@ -33,6 +33,8 @@ import { FinanzEntscheidungTool } from '@/components/tools/finanz-entscheidung/F
 import { LebenzeitRechnerTool } from '@/components/tools/lebenzeit-rechner/LebenzeitRechnerTool';
 import { RolexRechnerTool } from '@/components/tools/rolex-rechner/RolexRechnerTool';
 import { ThreeAAnalyzerTool } from '@/components/tools/three-a-analyzer/ThreeAAnalyzerTool';
+import { RecommendationCards } from '@/components/client-portal/RecommendationCards';
+import { TOOL_RECOMMENDATIONS } from '@/config/recommendationConfig';
 
 const iconMap: Record<string, LucideIcon> = {
   'calculator': Calculator,
@@ -191,6 +193,11 @@ export default function ClientPortalToolDetail() {
         </div>
 
         {renderToolComponent()}
+
+        {/* Recommendations */}
+        {slug && TOOL_RECOMMENDATIONS[slug] && (
+          <RecommendationCards recommendations={TOOL_RECOMMENDATIONS[slug]} />
+        )}
       </div>
     </ClientPortalLayout>
   );
