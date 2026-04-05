@@ -82,8 +82,7 @@ export default function ClientPortalHome() {
     return settings[settingKey] !== false;
   });
 
-  const strategyPassword = (settings as any)?.strategy_access_password;
-  const hasStrategyPassword = !!strategyPassword;
+  const hasStrategyPassword = settings?.has_strategy_password ?? false;
 
   const handleSectionClick = (section: typeof portalSections[number], e: React.MouseEvent) => {
     if (section.protected && hasStrategyPassword && !strategyUnlocked) {
