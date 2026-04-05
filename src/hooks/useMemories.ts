@@ -89,14 +89,14 @@ export function useMemorySnapshot() {
 
     const autoTitle = title || `${toolSlug} – ${action}`;
 
-    const { error } = await supabase.from('memories').insert({
+    const { error } = await supabase.from('memories').insert([{
       user_id: user.id,
       tool_slug: toolSlug,
       action,
       title: autoTitle,
-      input_data: inputData,
-      output_data: outputData,
-    });
+      input_data: inputData as any,
+      output_data: outputData as any,
+    }]);
 
     if (error) {
       console.error('Memory snapshot failed:', error);

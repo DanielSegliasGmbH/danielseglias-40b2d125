@@ -83,10 +83,8 @@ export default function ClientPortalMemories() {
 
   return (
     <ClientPortalLayout>
-      <ScreenHeader
-        title={t('clientPortal.memories', 'Erinnerungen')}
-        subtitle={t('clientPortal.memoriesDesc', 'Dein persönliches Aktivitäts-Logbuch')}
-      />
+      <ScreenHeader title={t('clientPortal.memories', 'Erinnerungen')} />
+      <p className="text-sm text-muted-foreground mb-6">{t('clientPortal.memoriesDesc', 'Dein persönliches Aktivitäts-Logbuch')}</p>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
