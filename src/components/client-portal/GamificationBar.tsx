@@ -3,12 +3,12 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Trophy, Star, Zap, Award, Crown, Flame, Sparkles } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const LEVEL_ICONS = [null, Zap, Star, Trophy, Award, Crown];
 
 export function GamificationBar() {
-  const { points, streakDays, level, levelLabel, progressPercent, pointsToNext, maxLevel, loading } = useGamification();
+  const { points, streakDays, level, progressPercent, pointsToNext, maxLevel, lastAwardedPoints, loading } = useGamification();
   const { isPremium, isLoading: subLoading } = useSubscription();
   const navigate = useNavigate();
 
@@ -17,11 +17,32 @@ export function GamificationBar() {
   const Icon = LEVEL_ICONS[level] || Zap;
 
   return (
-    <div className="flex items-center gap-2 px-3 py-2.5 bg-card border border-border rounded-2xl">
-      {/* Level icon + points */}
-      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-        <Icon className="h-4.5 w-4.5 text-primary" />
-      </div>
+    <div className="relative flex items-center gap-2 px-3 py-2.5 bg-card border border-border rounded-2xl overflow-hidden">
+      {/* Animated points popup */}
+      <AnimatePresence>
+        {lastAwardedPoints !== null && (
+          <motion.div
+            key={lastAwardedPoints + '-' + Date.now()}
+            initial={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 0, y: -28 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2, ease: 'easeOut' }}
+            className="absolute top-0 left-1/2 -translate-x-1/2 z-10 pointer-events-none"
+          >
+            <span className="text-sm font-bold text-primary">
+              +{lastAwardedPoints}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Level icon */}
+      <motion.div
+        className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0"
+        whileTap={{ scale: 0.9 }}
+      >
+        <Icon className="h-4 w-4 text-primary" />
+      </motion.div>
 
       {/* Progress bar + labels */}
       <div className="flex-1 min-w-0">
@@ -36,9 +57,11 @@ export function GamificationBar() {
           )}
         </div>
         <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
-          <div
-            className="h-full bg-primary rounded-full transition-all duration-700 ease-out"
-            style={{ width: `${maxLevel ? 100 : progressPercent}%` }}
+          <motion.div
+            className="h-full bg-primary rounded-full"
+            initial={false}
+            animate={{ width: `${maxLevel ? 100 : progressPercent}%` }}
+            transition={{ duration: 0.7, ease: 'easeOut' }}
           />
         </div>
       </div>
