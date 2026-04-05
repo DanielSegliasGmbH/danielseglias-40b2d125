@@ -55,7 +55,7 @@ export function InflationsrechnerTool() {
     <PdfExportWrapper toolName="Inflationsrechner">
     <div className="space-y-6">
       {/* Mode Tabs */}
-      <Tabs value={mode} onValueChange={(v) => setMode(v as 'future' | 'past' | 'simulation')}>
+      <Tabs value={mode} onValueChange={handleModeChange}>
         <TabsList className="w-full grid grid-cols-3">
           <TabsTrigger value="future" className="gap-2">
             <TrendingDown className="h-4 w-4" />
