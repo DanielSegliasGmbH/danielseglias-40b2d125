@@ -366,17 +366,20 @@ export default function ClientPortalInsurances() {
             ))}
           </div>
         ) : products.length === 0 ? (
-          <EmptyState
-            icon={Shield}
-            title="Noch keine Produkte"
-            description="Füge dein erstes Finanzprodukt hinzu – z. B. eine Versicherung, Vorsorge oder Anlage."
-          >
+          <div className="space-y-4">
+            <EmptyState
+              icon={Shield}
+              title="Noch keine Produkte"
+              description="Füge dein erstes Finanzprodukt hinzu – z. B. eine Versicherung, Vorsorge oder Anlage."
+            />
             {customerId && (
-              <Button onClick={openAdd} className="gap-2 mt-4">
-                <Plus className="h-4 w-4" /> Produkt hinzufügen
-              </Button>
+              <div className="flex justify-center">
+                <Button onClick={openAdd} className="gap-2">
+                  <Plus className="h-4 w-4" /> Produkt hinzufügen
+                </Button>
+              </div>
             )}
-          </EmptyState>
+          </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {products.map(p => {
