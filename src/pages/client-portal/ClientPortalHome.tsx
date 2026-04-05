@@ -18,6 +18,7 @@ import {
 import { cn } from '@/lib/utils';
 import { StrategyPasswordGate } from '@/components/client-portal/StrategyPasswordGate';
 import { OnboardingScreen } from '@/components/OnboardingScreen';
+import { GamificationBar } from '@/components/client-portal/GamificationBar';
 
 const portalSections = [
   { key: 'coach', path: '/app/client-portal/coach', icon: Sparkles, titleKey: 'clientPortal.coach', descKey: 'clientPortal.coachDesc', protected: false },
@@ -120,6 +121,9 @@ export default function ClientPortalHome() {
   return (
     <ClientPortalLayout>
       <div className="max-w-2xl mx-auto space-y-5">
+        {/* Gamification */}
+        <GamificationBar />
+
         {/* Welcome */}
         <div className="pt-1">
           <h1 className="text-xl lg:text-2xl font-bold text-foreground mb-0.5">
