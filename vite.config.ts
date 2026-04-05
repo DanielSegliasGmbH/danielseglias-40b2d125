@@ -8,6 +8,14 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    strictPort: true,
+    hmr: {
+      clientPort: 443,
+      protocol: "wss",
+    },
+  },
+  optimizeDeps: {
+    exclude: ["framer-motion"],
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
