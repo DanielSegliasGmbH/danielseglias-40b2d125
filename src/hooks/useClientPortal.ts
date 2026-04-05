@@ -104,7 +104,7 @@ export function useUpdateDefaultPortalSettings() {
  */
 function mergeSettings(
   defaults: DefaultPortalSettings | null,
-  customer: CustomerPortalSettings | null
+  customer: Partial<CustomerPortalSettings> | null
 ): PortalVisibility {
   const base: PortalVisibility = {
     show_insurances: defaults?.show_insurances ?? false,
