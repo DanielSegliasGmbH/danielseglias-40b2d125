@@ -35,15 +35,49 @@ export function getLevel(points: number) {
   return { ...lvl, nextLevel: nextLvl, progressPercent, pointsToNext: nextLvl ? nextLvl.min - points : 0 };
 }
 
-const MOTIVATIONAL_MESSAGES = [
-  'Nice! Du machst Fortschritt 💪',
-  'Weiter so! Jeder Schritt zählt ✨',
-  'Super! Du bist auf dem richtigen Weg 🎯',
-  'Stark! Dein Einsatz zahlt sich aus 🚀',
+// ─── Motivational messages by action type ────────────────────────
+
+const ACTION_MESSAGES: Record<ActionType, string[]> = {
+  daily_login: [
+    'Willkommen zurück! Dein Einsatz zählt ✨',
+    'Schön, dass du da bist – weiter so 💪',
+    'Gute Gewohnheit! Jeder Tag bringt dich weiter 🎯',
+  ],
+  tool_used: [
+    'Gute Entscheidung – Wissen ist Macht 🧠',
+    'Stark! Du nimmst deine Finanzen in die Hand 💪',
+    'Super – jedes Tool bringt dir mehr Klarheit ✨',
+    'Gut gemacht! Du bist auf dem richtigen Weg 🎯',
+  ],
+  coach_module_completed: [
+    'Beeindruckend! Du wächst über dich hinaus 🚀',
+    'Ein Modul mehr – ein grosser Schritt für dich 🏆',
+    'Stark! Du baust dein finanzielles Fundament auf 💎',
+  ],
+  video_watched: [
+    'Wissen aufgebaut – gut investierte Zeit 📚',
+    'Je mehr du lernst, desto sicherer wirst du ✨',
+    'Weiter so – Verstehen ist der erste Schritt 🎯',
+  ],
+  profile_completed: [
+    'Perfekt! Dein Profil ist jetzt komplett 🎉',
+    'Super – wir kennen dich jetzt besser ✨',
+  ],
+};
+
+const LEVEL_UP_MESSAGES = [
+  'Du bist aufgestiegen! Dein Einsatz zahlt sich aus 🏆',
+  'Neues Level erreicht – beeindruckend! 🎉',
+  'Level up! Du gehörst zur Elite 💎',
 ];
 
-function randomMotivation() {
-  return MOTIVATIONAL_MESSAGES[Math.floor(Math.random() * MOTIVATIONAL_MESSAGES.length)];
+function getActionMessage(actionType: ActionType): string {
+  const messages = ACTION_MESSAGES[actionType];
+  return messages[Math.floor(Math.random() * messages.length)];
+}
+
+function getLevelUpMessage(): string {
+  return LEVEL_UP_MESSAGES[Math.floor(Math.random() * LEVEL_UP_MESSAGES.length)];
 }
 
 // Helper: get date string in local timezone
@@ -69,9 +103,18 @@ export function useGamification() {
   const [points, setPoints] = useState(100);
   const [streakDays, setStreakDays] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [lastAwardedPoints, setLastAwardedPoints] = useState<number | null>(null);
   const prevLevelRef = useRef<number>(1);
   const pointsRef = useRef(100);
   const initializedRef = useRef(false);
+
+  // Clear the animated points indicator after a delay
+  useEffect(() => {
+    if (lastAwardedPoints !== null) {
+      const timer = setTimeout(() => setLastAwardedPoints(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [lastAwardedPoints]);
 
   useEffect(() => {
     if (!user) { setLoading(false); return; }
@@ -140,13 +183,10 @@ export function useGamification() {
     let streakBroken = false;
 
     if (lastLogin && isConsecutiveDay(lastLogin, today)) {
-      // Consecutive day – increment streak
       newStreak = (data.streak_days || 0) + 1;
     } else if (lastLogin && isSameDay(lastLogin, today)) {
-      // Same day – no change
       return;
     } else {
-      // Streak broken
       newStreak = 1;
       streakBroken = data.streak_days > 1;
     }
@@ -199,25 +239,22 @@ export function useGamification() {
     pointsRef.current = currentPts;
     setStreakDays(newStreak);
 
-    // Show streak toasts
+    // Show streak toasts with emotional messages
     if (streakBroken) {
       toast('Neustart – heute beginnt dein neuer Lauf 💪', {
-        description: 'Dein Streak wurde zurückgesetzt. Ab jetzt zählt wieder jeder Tag!',
+        description: 'Jeder Neuanfang ist ein Zeichen von Stärke. Ab heute zählt wieder jeder Tag!',
         duration: 3500,
       });
     } else if (awarded && newStreak > 1) {
-      // Check if close to next bonus
       const daysToNext3 = 3 - (newStreak % 3);
       const daysToNext7 = 7 - (newStreak % 7);
       let hint = '';
-      if (daysToNext7 === 1) {
-        hint = 'Noch 1 Tag bis zum nächsten Bonus!';
-      } else if (daysToNext3 === 1) {
+      if (daysToNext7 === 1 || daysToNext3 === 1) {
         hint = 'Noch 1 Tag bis zum nächsten Bonus!';
       }
 
-      toast(`🔥 Streak: ${newStreak} Tage – Stark, du bleibst dran!`, {
-        description: `+5 Punkte erhalten${hint ? ` • ${hint}` : ''}`,
+      toast(`🔥 ${newStreak} Tage in Folge – stark!`, {
+        description: `+5 Punkte${hint ? ` · ${hint}` : ''} · Du bleibst dran, das macht den Unterschied.`,
         duration: 3000,
       });
     }
@@ -226,7 +263,7 @@ export function useGamification() {
     if (streakBonusMessage) {
       setTimeout(() => {
         toast.success(streakBonusMessage, {
-          description: `${newStreak} Tage in Folge aktiv – weiter so!`,
+          description: `${newStreak} Tage Disziplin – das ist echte Stärke.`,
           duration: 4000,
         });
       }, 1500);
@@ -237,9 +274,9 @@ export function useGamification() {
     const newLevel = getLevel(currentPts).level;
     if (newLevel > oldLevel) {
       setTimeout(() => {
-        toast.success(`🎉 Level ${newLevel} erreicht!`, {
-          description: `Du bist ein Level aufgestiegen – ${getLevel(currentPts).label}`,
-          duration: 4000,
+        toast.success(`🏆 Level ${newLevel} – ${getLevel(currentPts).label}`, {
+          description: getLevelUpMessage(),
+          duration: 5000,
         });
       }, streakBonusMessage ? 3000 : 1500);
     }
@@ -292,16 +329,19 @@ export function useGamification() {
     pointsRef.current = newPoints;
 
     if (showToast) {
+      // Set animated points indicator
+      setLastAwardedPoints(pointsToAdd);
+
       toast(`+${pointsToAdd} Punkte`, {
-        description: randomMotivation(),
+        description: getActionMessage(actionType),
         duration: 2500,
       });
 
       if (newLevel > oldLevel) {
         setTimeout(() => {
-          toast.success(`🎉 Level ${newLevel} erreicht!`, {
-            description: `Du bist ein Level aufgestiegen – ${getLevel(newPoints).label}`,
-            duration: 4000,
+          toast.success(`🏆 Level ${newLevel} – ${getLevel(newPoints).label}`, {
+            description: getLevelUpMessage(),
+            duration: 5000,
           });
         }, 800);
       }
@@ -335,6 +375,7 @@ export function useGamification() {
     pointsToNext: levelInfo.pointsToNext,
     maxLevel: levelInfo.level === 5,
     awardPoints,
+    lastAwardedPoints,
     loading,
   };
 }
