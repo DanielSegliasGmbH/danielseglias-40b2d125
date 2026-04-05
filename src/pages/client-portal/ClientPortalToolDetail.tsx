@@ -49,7 +49,14 @@ export default function ClientPortalToolDetail() {
   const { t } = useTranslation();
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const { awardPoints } = useGamification();
 
+  // Award points for tool usage
+  useEffect(() => {
+    if (slug) {
+      awardPoints('tool_used', slug);
+    }
+  }, [slug]);
   const { data: tool, isLoading, error } = useQuery({
     queryKey: ['client-tool', slug],
     queryFn: async () => {
