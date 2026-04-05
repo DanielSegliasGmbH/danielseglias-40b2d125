@@ -175,7 +175,7 @@ export function useCustomerPortalSettings() {
 
       const { data: customerSettings } = await supabase
         .from('customer_portal_settings')
-        .select('*')
+        .select('id, customer_id, show_courses, show_goals, show_insurances, show_library, show_strategies, show_strategy_privacy, show_tasks, show_tools, created_at, updated_at')
         .eq('customer_id', customerUser.customer_id)
         .maybeSingle();
 
