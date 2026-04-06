@@ -72,6 +72,7 @@ export function AppSidebar() {
   ];
 
   const adminNavItems = [
+    { title: 'Nutzer-Analytik', url: '/app/analytics', icon: BarChart3 },
     { title: t('userManagement.title'), url: '/app/users', icon: Settings },
     { title: 'Portalfreigaben', url: '/app/portal-settings', icon: Eye },
     { title: 'Nachrichten', url: '/app/chat', icon: MessageCircle },

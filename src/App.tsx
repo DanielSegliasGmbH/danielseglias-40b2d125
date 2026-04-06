@@ -87,6 +87,7 @@ import ConsultationPresentationPage from "./pages/presentation/ConsultationPrese
 import { ViewModeProvider } from "./hooks/useViewMode";
 import { PageViewTracker } from "./components/PageViewTracker";
 import AdminAutomations from "./pages/AdminAutomations";
+import AdminAnalyticsDashboard from "./pages/AdminAnalyticsDashboard";
 
 // Public Pages (no auth required)
 import PublicLanding from "./pages/public/PublicLanding";
@@ -262,6 +263,14 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['admin']}>
                     <AdminAutomations />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/analytics"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminAnalyticsDashboard />
                   </RouteGuard>
                 }
               />
