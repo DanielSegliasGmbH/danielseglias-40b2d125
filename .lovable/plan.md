@@ -1,119 +1,127 @@
-
-# Event-Tracking-System — Implementierungsplan
+# Automations-Engine — Implementierungsplan
 
 ## Übersicht
-
-Aufbau eines zentralen, nicht-blockierenden Event-Tracking-Systems. Bestehende Logik (Gamification, Memories, Auth) bleibt unverändert. Alles wird additiv hinzugefügt.
+Aufbau eines einfachen, stabilen Regelsystems nach dem Prinzip «Wenn X, dann Y». Bestehende Freigabe-, Tracking- und Nutzerlogik wird wiederverwendet. Kein visueller Automation-Builder — nur solides Fundament.
 
 ---
 
-## 1. Datenbank: Neue Tabelle `tracking_events`
+## 1. Datenbank: Neue Tabellen
 
-Migration erstellt eine Tabelle mit folgenden Spalten:
-
+### `automation_rules`
 | Spalte | Typ | Beschreibung |
-|--------|-----|-------------|
-| id | uuid PK | |
-| user_id | uuid | auth.uid(), nullable für anonyme Events |
-| session_id | text | Client-generierte Session-ID |
-| event_type | text | z.B. page_view, login, tool_opened |
-| event_name | text | Detailname, z.B. "inflationsrechner" |
-| page_path | text | window.location.pathname |
-| page_title | text | document.title |
-| module_key | text | optional |
-| tool_key | text | optional |
-| content_key | text | optional |
-| duration_seconds | numeric | optional |
-| metadata | jsonb | flexibel erweiterbar |
-| created_at | timestamptz | now() |
+|---|---|---|
+| id | uuid | PK |
+| name | text | Regelname (z.B. «Nach erstem Login → Onboarding») |
+| description | text | Kurzbeschreibung |
+| is_active | boolean | Regel aktiv/inaktiv |
+| condition_type | text | z.B. `first_login`, `tool_completed`, `sessions_reached`, `days_inactive`, `event_occurred` |
+| condition_config | jsonb | Bedingungsparameter (z.B. `{"tool_key": "finanzcheck"}`) |
+| action_type | text | z.B. `unlock_tool`, `unlock_module`, `set_flag`, `set_portal_section` |
+| action_config | jsonb | Aktionsparameter (z.B. `{"tool_key": "inflationsrechner"}`) |
+| priority | int | Ausführungsreihenfolge |
+| scope | text | `global` / `segment` / `individual` |
+| created_by | uuid | Admin-Referenz |
+| last_triggered_at | timestamptz | Letzte Auslösung |
+| trigger_count | int | Wie oft ausgelöst |
+| created_at / updated_at | timestamptz | Zeitstempel |
 
-RLS-Policies:
-- Users können eigene Events einfügen (`user_id = auth.uid()`)
-- Users können eigene Events lesen
-- Admins können alle Events lesen
-- Kein UPDATE/DELETE für normale User
+### `automation_rule_logs`
+| Spalte | Typ | Beschreibung |
+|---|---|---|
+| id | uuid | PK |
+| rule_id | uuid | FK → automation_rules |
+| user_id | uuid | Betroffener Nutzer |
+| condition_snapshot | jsonb | Bedingungszustand zum Zeitpunkt |
+| action_executed | text | Ausgeführte Aktion |
+| result | jsonb | Was wurde geändert (alt → neu) |
+| created_at | timestamptz | Wann ausgelöst |
 
-Index auf `(user_id, created_at)` und `(event_type)` für spätere Queries.
-
----
-
-## 2. Session-Tracking: Neue Tabelle `tracking_sessions`
-
-| Spalte | Typ |
-|--------|-----|
-| id | text PK (client-generierte UUID) |
-| user_id | uuid |
-| started_at | timestamptz |
-| last_activity_at | timestamptz |
-| ended_at | timestamptz (nullable) |
-| user_agent | text |
-| metadata | jsonb |
-
-RLS: Gleich wie tracking_events (insert/select own, admin select all). Zusätzlich update own für heartbeat.
+RLS: Nur Admins haben Zugriff auf beide Tabellen.
 
 ---
 
-## 3. Zentraler Hook: `src/hooks/useTracking.ts`
+## 2. Regel-Engine (Client-Hook)
 
-Neuer Hook mit folgender API:
+**`useAutomationEngine`** — wird beim Login und bei relevanten Events aufgerufen:
+1. Lädt alle aktiven Regeln (`is_active = true`), sortiert nach `priority`
+2. Prüft pro Regel, ob die Bedingung für den aktuellen Nutzer erfüllt ist
+3. Prüft, ob bereits ein manueller Admin-Override existiert → wenn ja, Regel überspringen
+4. Führt die Aktion aus (z.B. `customer_tool_access` Insert)
+5. Schreibt einen Log-Eintrag in `automation_rule_logs`
+6. Aktualisiert `last_triggered_at` und `trigger_count`
 
-```text
-const { trackEvent } = useTracking();
-
-trackEvent({
-  eventType: 'tool_opened',
-  eventName: 'inflationsrechner',
-  toolKey: 'inflationsrechner',
-  metadata: { source: 'dashboard' }
-});
-```
-
-Intern:
-- **Session-Management**: Erzeugt eine `session_id` (UUID in sessionStorage), sendet `session_start` beim ersten Aufruf
-- **Fire-and-forget**: Alle DB-Inserts laufen async ohne await, Fehler werden nur geloggt (`console.warn`)
-- **Automatisch**: `user_id`, `session_id`, `page_path`, `page_title` werden automatisch gesetzt
-- **Session-End**: `beforeunload`-Event sendet `session_end` via `navigator.sendBeacon` (best-effort)
-- **Heartbeat**: Aktualisiert `last_activity_at` in `tracking_sessions` alle 60s
+**Prioritätslogik:**
+- Manueller Admin-Override hat IMMER Vorrang
+- Automationen wirken nur, wenn KEIN Override existiert
+- Bei Konflikten zwischen Regeln: höhere Priorität gewinnt
 
 ---
 
-## 4. Page-View-Tracker: `src/components/PageViewTracker.tsx`
+## 3. Unterstützte Bedingungen (Phase 1)
 
-Kleine Komponente in `App.tsx` eingebunden:
-- Lauscht auf `useLocation()` Änderungen
-- Sendet automatisch `page_view` Events
-- Kein UI-Output (returns null)
-
----
-
-## 5. Basis-Integrationen (additive Änderungen)
-
-| Stelle | Event | Aufwand |
-|--------|-------|--------|
-| `useAuth.tsx` signIn | `login` | +3 Zeilen |
-| `useAuth.tsx` signOut | `logout` + `session_end` | +3 Zeilen |
-| `App.tsx` | `<PageViewTracker />` einbinden | +1 Zeile |
-| `ChatDrawer.tsx` | `chat_opened`, `chat_message_sent` | +4 Zeilen |
-
-Keine bestehende Logik wird verändert. Keine UI-Änderungen.
+| condition_type | Beschreibung | Prüfung via |
+|---|---|---|
+| `first_login` | Nutzer hat sich erstmals eingeloggt | tracking_events: login count = 1 |
+| `event_count_reached` | Bestimmtes Event X-mal aufgetreten | tracking_events count |
+| `tool_opened` | Bestimmtes Tool wurde geöffnet | tracking_events: tool_opened |
+| `tool_completed` | Bestimmtes Tool wurde abgeschlossen | tracking_events: tool_completed |
+| `sessions_reached` | X Sessions erreicht | tracking_sessions count |
+| `days_inactive` | X Tage ohne Aktivität | tracking_sessions: letzte Aktivität |
 
 ---
 
-## 6. Betroffene Dateien
+## 4. Unterstützte Aktionen (Phase 1)
+
+| action_type | Beschreibung | Umsetzung |
+|---|---|---|
+| `unlock_tool` | Tool freischalten | customer_tool_access upsert |
+| `lock_tool` | Tool sperren | customer_tool_access upsert |
+| `unlock_module` | Modul freischalten | customer_module_access upsert |
+| `lock_module` | Modul sperren | customer_module_access upsert |
+| `set_flag` | Internes Flag setzen | automation_rule_logs (als Marker) |
+
+---
+
+## 5. Beispielregeln (als Seed-Daten)
+
+1. **Nach erstem Login** → Basis-Onboarding-Hinweis (Flag)
+2. **Nach Abschluss Finanzcheck** → Inflationsrechner freischalten
+3. **Nach 5 Sessions** → Erweiterte Tools sichtbar
+4. **7 Tage inaktiv** → Reaktivierungs-Flag setzen
+
+---
+
+## 6. Admin-UI
+
+### Neue Seite: `/app/automations`
+- Listenansicht aller Regeln
+- Name, Status (aktiv/inaktiv), Bedingung, Aktion, Scope
+- Toggle für aktiv/inaktiv
+- Letzte Auslösung + Trigger-Count
+- Link zur Navigation im Sidebar
+
+### UserActivityDetail erweitert
+- Neuer Bereich: «Automatische Einflüsse»
+- Zeigt Rule-Logs für diesen Nutzer
+- z.B. «Inflationsrechner freigeschaltet durch Regel ‹Nach Finanzcheck-Abschluss›»
+
+---
+
+## 7. Dateien
 
 | Datei | Änderung |
-|-------|----------|
-| **NEU** `src/hooks/useTracking.ts` | Zentraler Tracking-Hook + Session-Logic |
-| **NEU** `src/components/PageViewTracker.tsx` | Automatisches Page-View-Tracking |
-| **NEU** Migration SQL | tracking_events + tracking_sessions Tabellen |
-| `src/hooks/useAuth.tsx` | +5 Zeilen: login/logout Events |
-| `src/App.tsx` | +2 Zeilen: Import + PageViewTracker |
-| `src/components/client-portal/ChatDrawer.tsx` | +4 Zeilen: chat Events |
+|---|---|
+| Migration SQL | automation_rules + automation_rule_logs Tabellen |
+| `src/hooks/useAutomationEngine.ts` | NEU: Regel-Engine |
+| `src/pages/AdminAutomations.tsx` | NEU: Admin-Regelübersicht |
+| `src/pages/UserActivityDetail.tsx` | Erweiterung: Automation-Logs |
+| `src/App.tsx` | Route + Engine-Integration |
+| `src/components/AppSidebar.tsx` | Menüeintrag |
 
 ---
 
-## 7. Was bewusst NICHT gemacht wird
-
-- Kein Admin-Dashboard / UI
-- Keine Tool-spezifischen Integrationen (API ist bereit)
-- Keine Aggregations-Views / Export
+## 8. Was bewusst NICHT gemacht wird
+- Kein visueller Drag-and-Drop-Builder
+- Keine komplexen UND/ODER-Verknüpfungen (vorbereitet in JSONB)
+- Keine Echtzeit-Trigger (Regeln werden bei Login/Navigation geprüft)
+- Keine automatische Segmentierung (Struktur vorbereitet)

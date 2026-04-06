@@ -41,6 +41,7 @@ import {
   KeyRound,
   MessageCircle,
   GraduationCap,
+  Zap,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -80,6 +81,7 @@ export function AppSidebar() {
     { title: t('adminLeads.title', 'Leads'), url: '/app/leads', icon: UserPlus },
     { title: t('adminPages.title', 'Öffentliche Seiten'), url: '/app/public-pages', icon: Globe },
     { title: t('trash.title'), url: '/app/trash', icon: Trash2 },
+    { title: 'Automationen', url: '/app/automations', icon: Zap },
     { title: t('clientPortal.preview'), url: '/app/client-portal', icon: Eye },
   ];
 
