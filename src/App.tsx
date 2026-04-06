@@ -248,7 +248,14 @@ function App() {
                   </RouteGuard>
                 }
               />
-
+              <Route
+                path="/app/users/:userId"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <UserActivityDetail />
+                  </RouteGuard>
+                }
+              />
 
               {/* Protected: Customer Detail (new structure) */}
               <Route
