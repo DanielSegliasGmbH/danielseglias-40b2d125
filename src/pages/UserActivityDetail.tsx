@@ -273,19 +273,8 @@ export default function UserActivityDetail() {
             </Card>
           )}
 
-          {/* ── 4. Permissions placeholder ───────────── */}
-          <Card className="border-dashed">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2 text-muted-foreground">
-                <Shield className="h-4 w-4" /> Freigaben & Sichtbarkeit
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Bereich wird in einer späteren Version ausgebaut. Hier werden individuelle Zugriffsrechte, Tool-Freigaben und Modul-Sichtbarkeit gesteuert.
-              </p>
-            </CardContent>
-          </Card>
+          {/* ── 4. Visibility / Permissions ────────── */}
+          <UserVisibilityPanel userId={userId!} customerId={linkedCustomerId} />
 
           {/* ── 5. Timeline with filters ─────────────── */}
           <Card>
