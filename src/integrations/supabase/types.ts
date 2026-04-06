@@ -2094,6 +2094,84 @@ export type Database = {
         }
         Relationships: []
       }
+      tracking_events: {
+        Row: {
+          content_key: string | null
+          created_at: string
+          duration_seconds: number | null
+          event_name: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          module_key: string | null
+          page_path: string | null
+          page_title: string | null
+          session_id: string | null
+          tool_key: string | null
+          user_id: string | null
+        }
+        Insert: {
+          content_key?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          event_name?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          module_key?: string | null
+          page_path?: string | null
+          page_title?: string | null
+          session_id?: string | null
+          tool_key?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          content_key?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          event_name?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          module_key?: string | null
+          page_path?: string | null
+          page_title?: string | null
+          session_id?: string | null
+          tool_key?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      tracking_sessions: {
+        Row: {
+          ended_at: string | null
+          id: string
+          last_activity_at: string
+          metadata: Json | null
+          started_at: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          ended_at?: string | null
+          id: string
+          last_activity_at?: string
+          metadata?: Json | null
+          started_at?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          ended_at?: string | null
+          id?: string
+          last_activity_at?: string
+          metadata?: Json | null
+          started_at?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_gamification: {
         Row: {
           created_at: string
