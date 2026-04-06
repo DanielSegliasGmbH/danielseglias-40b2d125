@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAllUsers, getUserStatus, getUserStatusLabel, getUserStatusColor } from '@/hooks/useUserManagement';
 import { useUserEvents, useUserSessions, useUserActivitySummary } from '@/hooks/useUserActivity';
 import { UserVisibilityPanel } from '@/components/admin/UserVisibilityPanel';
+import { useUserRuleLogs, CONDITION_LABELS, ACTION_LABELS } from '@/hooks/useAutomationEngine';
 import { AppLayout } from '@/components/AppLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,7 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   ArrowLeft, User, Mail, CalendarDays, Clock, Activity,
   MessageSquare, MousePointer, Eye, LogIn, BarChart3, Wrench,
-  ChevronLeft, ChevronRight, Copy, Shield,
+  ChevronLeft, ChevronRight, Copy, Shield, Zap,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
