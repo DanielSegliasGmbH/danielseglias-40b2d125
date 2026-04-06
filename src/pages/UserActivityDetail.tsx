@@ -102,6 +102,21 @@ export default function UserActivityDetail() {
     page,
   });
   const { data: sessions } = useUserSessions(userId);
+
+  // Resolve customer_id for visibility panel
+  const { data: customerLink } = useQuery({
+    queryKey: ['customer-user-link', userId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('customer_users')
+        .select('customer_id')
+        .eq('user_id', userId!)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!userId,
+  });
+  const linkedCustomerId = customerLink?.customer_id ?? user?.customer_id ?? null;
   const { data: summary, isLoading: summaryLoading } = useUserActivitySummary(userId);
 
   // Distinct event types for filter dropdown
