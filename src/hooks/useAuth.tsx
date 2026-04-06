@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
+import { trackEventDirect } from '@/hooks/useTracking';
 
 type AppRole = Database['public']['Enums']['app_role'];
 
@@ -79,6 +80,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email,
       password,
     });
+    if (!error) {
+      trackEventDirect({ eventType: 'login', metadata: { method: 'password' } });
+    }
     return { error };
   };
 
@@ -100,6 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    trackEventDirect({ eventType: 'logout' });
     await supabase.auth.signOut();
     setUser(null);
     setSession(null);
