@@ -1,7 +1,10 @@
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { useAllUsers, getUserStatus, getUserStatusLabel, getUserStatusColor } from '@/hooks/useUserManagement';
 import { useUserEvents, useUserSessions, useUserActivitySummary } from '@/hooks/useUserActivity';
+import { UserVisibilityPanel } from '@/components/admin/UserVisibilityPanel';
 import { AppLayout } from '@/components/AppLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -99,6 +102,21 @@ export default function UserActivityDetail() {
     page,
   });
   const { data: sessions } = useUserSessions(userId);
+
+  // Resolve customer_id for visibility panel
+  const { data: customerLink } = useQuery({
+    queryKey: ['customer-user-link', userId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('customer_users')
+        .select('customer_id')
+        .eq('user_id', userId!)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!userId,
+  });
+  const linkedCustomerId = customerLink?.customer_id ?? user?.customer_id ?? null;
   const { data: summary, isLoading: summaryLoading } = useUserActivitySummary(userId);
 
   // Distinct event types for filter dropdown
@@ -255,19 +273,8 @@ export default function UserActivityDetail() {
             </Card>
           )}
 
-          {/* ── 4. Permissions placeholder ───────────── */}
-          <Card className="border-dashed">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2 text-muted-foreground">
-                <Shield className="h-4 w-4" /> Freigaben & Sichtbarkeit
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Bereich wird in einer späteren Version ausgebaut. Hier werden individuelle Zugriffsrechte, Tool-Freigaben und Modul-Sichtbarkeit gesteuert.
-              </p>
-            </CardContent>
-          </Card>
+          {/* ── 4. Visibility / Permissions ────────── */}
+          <UserVisibilityPanel userId={userId!} customerId={linkedCustomerId} />
 
           {/* ── 5. Timeline with filters ─────────────── */}
           <Card>

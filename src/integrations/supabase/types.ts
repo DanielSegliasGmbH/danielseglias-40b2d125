@@ -444,6 +444,7 @@ export type Database = {
           id: string
           is_unlocked: boolean
           lesson_id: string
+          visibility_condition: Json | null
         }
         Insert: {
           created_at?: string
@@ -451,6 +452,7 @@ export type Database = {
           id?: string
           is_unlocked?: boolean
           lesson_id: string
+          visibility_condition?: Json | null
         }
         Update: {
           created_at?: string
@@ -458,6 +460,7 @@ export type Database = {
           id?: string
           is_unlocked?: boolean
           lesson_id?: string
+          visibility_condition?: Json | null
         }
         Relationships: [
           {
@@ -483,6 +486,7 @@ export type Database = {
           id: string
           is_unlocked: boolean
           module_id: string
+          visibility_condition: Json | null
         }
         Insert: {
           created_at?: string
@@ -490,6 +494,7 @@ export type Database = {
           id?: string
           is_unlocked?: boolean
           module_id: string
+          visibility_condition?: Json | null
         }
         Update: {
           created_at?: string
@@ -497,6 +502,7 @@ export type Database = {
           id?: string
           is_unlocked?: boolean
           module_id?: string
+          visibility_condition?: Json | null
         }
         Relationships: [
           {
@@ -705,6 +711,7 @@ export type Database = {
           id: string
           is_enabled: boolean
           tool_id: string
+          visibility_condition: Json | null
         }
         Insert: {
           created_at?: string
@@ -712,6 +719,7 @@ export type Database = {
           id?: string
           is_enabled?: boolean
           tool_id: string
+          visibility_condition?: Json | null
         }
         Update: {
           created_at?: string
@@ -719,6 +727,7 @@ export type Database = {
           id?: string
           is_enabled?: boolean
           tool_id?: string
+          visibility_condition?: Json | null
         }
         Relationships: [
           {
