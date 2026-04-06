@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -61,6 +62,7 @@ function formatDateTime(dateStr: string | null): string {
 
 export default function UserManagement() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { data: users, isLoading } = useAllUsers();
   const { data: customers } = useCustomers();
@@ -189,7 +191,10 @@ export default function UserManagement() {
                         {/* Left: Name + Info */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-foreground truncate">
+                            <h3
+                              className="font-semibold text-foreground truncate cursor-pointer hover:text-primary transition-colors"
+                              onClick={() => navigate(`/app/users/${u.id}`)}
+                            >
                               {u.first_name} {u.last_name}
                             </h3>
                             <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0 ${statusColor}`}>
