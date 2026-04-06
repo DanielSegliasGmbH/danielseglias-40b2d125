@@ -44,7 +44,7 @@ export default function AdminAutomations() {
   return (
     <AppLayout>
       <div className="space-y-6">
-        <ScreenHeader title="Automationen" subtitle="Bedingte Freischaltungen und interne Regeln" />
+        <ScreenHeader title="Automationen" />
 
         {/* Info */}
         <Card className="border-dashed border-muted-foreground/30">
