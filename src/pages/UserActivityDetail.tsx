@@ -278,7 +278,35 @@ export default function UserActivityDetail() {
           {/* ── 4. Visibility / Permissions ────────── */}
           <UserVisibilityPanel userId={userId!} customerId={linkedCustomerId} />
 
-          {/* ── 5. Timeline with filters ─────────────── */}
+          {/* ── 4b. Automation Logs ───────────────── */}
+          {ruleLogs && ruleLogs.length > 0 && (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Zap className="h-4 w-4" /> Automatische Einflüsse
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {ruleLogs.map((log) => (
+                    <div key={log.id} className="flex items-start gap-3 py-2 px-3 rounded-lg bg-muted/50 text-sm">
+                      <Zap className="h-4 w-4 mt-0.5 text-primary shrink-0" />
+                      <div className="min-w-0">
+                        <p className="font-medium text-foreground">
+                          {ACTION_LABELS[log.action_executed] || log.action_executed}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Regel: {(log.automation_rules as any)?.name || 'Unbekannt'} ·{' '}
+                          {new Date(log.created_at).toLocaleString('de-CH')}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
