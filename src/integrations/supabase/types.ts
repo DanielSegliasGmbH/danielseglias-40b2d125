@@ -14,6 +14,112 @@ export type Database = {
   }
   public: {
     Tables: {
+      automation_rule_logs: {
+        Row: {
+          action_executed: string
+          condition_snapshot: Json | null
+          created_at: string
+          customer_id: string | null
+          id: string
+          result: Json | null
+          rule_id: string
+          user_id: string
+        }
+        Insert: {
+          action_executed: string
+          condition_snapshot?: Json | null
+          created_at?: string
+          customer_id?: string | null
+          id?: string
+          result?: Json | null
+          rule_id: string
+          user_id: string
+        }
+        Update: {
+          action_executed?: string
+          condition_snapshot?: Json | null
+          created_at?: string
+          customer_id?: string | null
+          id?: string
+          result?: Json | null
+          rule_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "automation_rule_logs_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "automation_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      automation_rules: {
+        Row: {
+          action_config: Json
+          action_type: string
+          condition_config: Json
+          condition_type: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          last_triggered_at: string | null
+          name: string
+          notes: string | null
+          priority: number
+          scope: string
+          trigger_count: number
+          updated_at: string
+        }
+        Insert: {
+          action_config?: Json
+          action_type: string
+          condition_config?: Json
+          condition_type: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          last_triggered_at?: string | null
+          name: string
+          notes?: string | null
+          priority?: number
+          scope?: string
+          trigger_count?: number
+          updated_at?: string
+        }
+        Update: {
+          action_config?: Json
+          action_type?: string
+          condition_config?: Json
+          condition_type?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          last_triggered_at?: string | null
+          name?: string
+          notes?: string | null
+          priority?: number
+          scope?: string
+          trigger_count?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "automation_rules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cases: {
         Row: {
           assigned_to: string | null
