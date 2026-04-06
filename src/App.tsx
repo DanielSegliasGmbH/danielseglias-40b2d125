@@ -15,6 +15,7 @@ import AdminPortalSettings from "./pages/AdminPortalSettings";
 import Onboarding from "./pages/Onboarding";
 import AppDashboard from "./pages/AppDashboard";
 import UserManagement from "./pages/UserManagement";
+import UserActivityDetail from "./pages/UserActivityDetail";
 import Profile from "./pages/Profile";
 import CustomersList from "./pages/CustomersList";
 import CustomerDetail from "./pages/CustomerDetail";
