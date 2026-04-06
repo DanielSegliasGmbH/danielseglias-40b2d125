@@ -119,6 +119,7 @@ export default function UserActivityDetail() {
   });
   const linkedCustomerId = customerLink?.customer_id ?? user?.customer_id ?? null;
   const { data: summary, isLoading: summaryLoading } = useUserActivitySummary(userId);
+  const { data: ruleLogs } = useUserRuleLogs(userId);
 
   // Distinct event types for filter dropdown
   const distinctTypes = useMemo(() => {
