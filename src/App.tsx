@@ -86,6 +86,7 @@ import { InvestmentConsultationProvider } from "./hooks/useInvestmentConsultatio
 import ConsultationPresentationPage from "./pages/presentation/ConsultationPresentationPage";
 import { ViewModeProvider } from "./hooks/useViewMode";
 import { PageViewTracker } from "./components/PageViewTracker";
+import AdminAutomations from "./pages/AdminAutomations";
 
 // Public Pages (no auth required)
 import PublicLanding from "./pages/public/PublicLanding";
@@ -255,7 +256,14 @@ function App() {
                     <UserActivityDetail />
                   </RouteGuard>
                 }
-              />
+                />
+              <Route
+                path="/app/automations"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminAutomations />
+                  </RouteGuard>
+                }
 
               {/* Protected: Customer Detail (new structure) */}
               <Route
