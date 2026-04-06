@@ -264,7 +264,7 @@ function App() {
                     <AdminAutomations />
                   </RouteGuard>
                 }
-
+              />
               {/* Protected: Customer Detail (new structure) */}
               <Route
                 path="/app/customers/:id"
