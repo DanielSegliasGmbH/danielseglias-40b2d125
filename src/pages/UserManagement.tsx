@@ -62,6 +62,7 @@ function formatDateTime(dateStr: string | null): string {
 
 export default function UserManagement() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { data: users, isLoading } = useAllUsers();
   const { data: customers } = useCustomers();
