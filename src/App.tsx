@@ -84,6 +84,7 @@ import InvestmentConsultingPresentation from "./pages/investment-consulting/Inve
 import { InvestmentConsultationProvider } from "./hooks/useInvestmentConsultationState";
 import ConsultationPresentationPage from "./pages/presentation/ConsultationPresentationPage";
 import { ViewModeProvider } from "./hooks/useViewMode";
+import { PageViewTracker } from "./components/PageViewTracker";
 
 // Public Pages (no auth required)
 import PublicLanding from "./pages/public/PublicLanding";
@@ -114,6 +115,7 @@ function App() {
         <BrowserRouter>
           <CaseStudyProvider>
           <AuthProvider>
+            <PageViewTracker />
             <Routes>
               {/* Public routes (no auth) */}
               <Route path="/" element={<PublicLanding />} />

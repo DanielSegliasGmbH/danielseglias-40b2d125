@@ -12,6 +12,7 @@ import {
   type ChatMessage,
 } from '@/hooks/useChat';
 import { cn } from '@/lib/utils';
+import { useTracking } from '@/hooks/useTracking';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -27,16 +28,18 @@ export function ChatDrawer({ open, onOpenChange }: ChatDrawerProps) {
   const { data: messages = [], isLoading } = useChatMessages(customerId ?? null);
   const sendMessage = useSendMessage();
   const markAsRead = useMarkAsRead();
+  const { trackEvent } = useTracking();
   const [text, setText] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
   const isChatUnavailable = !isCustomerLoading && !customerId;
 
-  // Mark messages as read when opening
+  // Track chat opened + mark messages as read
   useEffect(() => {
     if (open && customerId) {
+      trackEvent({ eventType: 'chat_opened' });
       markAsRead.mutate(customerId);
     }
-  }, [open, customerId, markAsRead]);
+  }, [open, customerId, markAsRead, trackEvent]);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -55,6 +58,7 @@ export function ChatDrawer({ open, onOpenChange }: ChatDrawerProps) {
 
     try {
       await sendMessage.mutateAsync({ customerId, message: text });
+      trackEvent({ eventType: 'chat_message_sent' });
       setText('');
     } catch (error) {
       toast.error(
