@@ -455,3 +455,178 @@ function StatusChip({ done, label }: { done: boolean; label: string }) {
     </span>
   );
 }
+
+// ── Scoring Card ────────────────────────────────────────
+function ScoringCard({ scoring, userId, onUpdate }: {
+  scoring: import('@/hooks/useUserScoring').UserScoringRow | null | undefined;
+  userId: string;
+  onUpdate: ReturnType<typeof import('@/hooks/useUserScoring').useUpdateUserScoring>;
+}) {
+  const [editingStatus, setEditingStatus] = useState(false);
+  const [editingLabels, setEditingLabels] = useState(false);
+
+  if (!scoring) {
+    return (
+      <Card>
+        <CardContent className="py-4 px-4">
+          <p className="text-sm text-muted-foreground">Kein Scoring vorhanden. Bitte «Scoring aktualisieren» im Dashboard ausführen.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const statusCfg = STATUS_CONFIG[scoring.status] || STATUS_CONFIG.neu;
+  const breakdown = scoring.score_breakdown;
+
+  const handleStatusChange = (newStatus: string) => {
+    onUpdate.mutate(
+      { userId, status: newStatus as UserStatus, isManualOverride: true },
+      { onSuccess: () => { toast.success('Status aktualisiert'); setEditingStatus(false); } }
+    );
+  };
+
+  const toggleLabel = (label: string) => {
+    const current = scoring.labels || [];
+    const updated = current.includes(label)
+      ? current.filter(l => l !== label)
+      : [...current, label];
+    onUpdate.mutate(
+      { userId, labels: updated, isManualOverride: scoring.is_manual_override },
+      { onSuccess: () => toast.success('Labels aktualisiert') }
+    );
+  };
+
+  const removeManualOverride = () => {
+    onUpdate.mutate(
+      { userId, isManualOverride: false },
+      { onSuccess: () => toast.success('Manueller Override entfernt') }
+    );
+  };
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base flex items-center gap-2">
+          <BarChart3 className="h-4 w-4" /> Scoring & Status
+          {scoring.is_manual_override && (
+            <Badge variant="outline" className="text-[10px] ml-auto">
+              <Pencil className="h-2.5 w-2.5 mr-1" /> Manuell überschrieben
+            </Badge>
+          )}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Score + Status row */}
+        <div className="flex items-center gap-4 flex-wrap">
+          <div className="bg-muted/50 rounded-lg p-3 min-w-[80px] text-center">
+            <p className="text-2xl font-bold text-foreground">{scoring.score}</p>
+            <p className="text-[10px] text-muted-foreground">Score</p>
+          </div>
+          <div>
+            {editingStatus ? (
+              <Select value={scoring.status} onValueChange={handleStatusChange}>
+                <SelectTrigger className="w-[180px] h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
+                    <SelectItem key={key} value={key}>{cfg.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <button
+                onClick={() => setEditingStatus(true)}
+                className="group flex items-center gap-1.5"
+              >
+                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusCfg.color}`}>
+                  {statusCfg.label}
+                </span>
+                <Pencil className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
+            )}
+          </div>
+          {scoring.is_manual_override && (
+            <Button variant="ghost" size="sm" className="text-xs" onClick={removeManualOverride}>
+              Override entfernen
+            </Button>
+          )}
+        </div>
+
+        {/* Score breakdown */}
+        {breakdown && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {[
+              { label: 'Login', value: breakdown.login, max: 5 },
+              { label: 'Sessions', value: breakdown.sessions, max: 20 },
+              { label: 'Tools ▸', value: breakdown.tools_opened, max: 15 },
+              { label: 'Tools ✓', value: breakdown.tools_completed, max: 25 },
+              { label: 'Chat', value: breakdown.chat, max: 10 },
+              { label: 'CTA', value: breakdown.cta, max: 10 },
+              { label: 'Wiederkehr', value: breakdown.recurrence, max: 15 },
+              { label: 'Inaktivität', value: breakdown.inactivity_penalty, max: 0 },
+            ].map(item => (
+              <div key={item.label} className="text-xs">
+                <div className="flex justify-between mb-0.5">
+                  <span className="text-muted-foreground">{item.label}</span>
+                  <span className={`font-medium tabular-nums ${item.value < 0 ? 'text-destructive' : 'text-foreground'}`}>
+                    {item.value > 0 ? '+' : ''}{item.value}
+                  </span>
+                </div>
+                {item.max > 0 && (
+                  <Progress value={(item.value / item.max) * 100} className="h-1" />
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Labels */}
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <Tag className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="text-xs font-medium text-foreground">Labels</span>
+            <button
+              onClick={() => setEditingLabels(!editingLabels)}
+              className="text-[10px] text-primary hover:underline ml-auto"
+            >
+              {editingLabels ? 'Fertig' : 'Bearbeiten'}
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {editingLabels ? (
+              LABEL_PRESETS.map(label => {
+                const active = (scoring.labels || []).includes(label);
+                return (
+                  <button
+                    key={label}
+                    onClick={() => toggleLabel(label)}
+                    className={`text-[10px] px-2 py-1 rounded-full border transition-colors ${
+                      active
+                        ? 'bg-primary/10 text-primary border-primary/30'
+                        : 'bg-muted text-muted-foreground border-transparent hover:border-border'
+                    }`}
+                  >
+                    {active ? '✓ ' : ''}{label}
+                  </button>
+                );
+              })
+            ) : (
+              (scoring.labels || []).length > 0
+                ? scoring.labels.map(l => (
+                    <span key={l} className="text-[10px] bg-muted px-2 py-1 rounded-full text-muted-foreground">
+                      {l}
+                    </span>
+                  ))
+                : <span className="text-[10px] text-muted-foreground">Keine Labels</span>
+            )}
+          </div>
+        </div>
+
+        <p className="text-[10px] text-muted-foreground">
+          Zuletzt berechnet: {scoring.last_computed_at ? new Date(scoring.last_computed_at).toLocaleString('de-CH') : '–'}
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
