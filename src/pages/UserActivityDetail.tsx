@@ -247,6 +247,9 @@ export default function UserActivityDetail() {
             </CardContent>
           </Card>
 
+          {/* ── 2b. Scoring & Status ─────────────────── */}
+          <ScoringCard scoring={userScoring} userId={userId!} onUpdate={updateScoring} />
+
           {/* ── 3. Status overview ───────────────────── */}
           {summary && (
             <Card>
