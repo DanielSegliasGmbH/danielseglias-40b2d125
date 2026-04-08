@@ -168,7 +168,7 @@ export function useAllUserScoring() {
         .from('user_scoring')
         .select('*');
       if (error) throw error;
-      return (data || []) as UserScoringRow[];
+      return (data || []) as unknown as UserScoringRow[];
     },
     staleTime: 30000,
   });
@@ -185,7 +185,7 @@ export function useUserScoring(userId: string | undefined) {
         .eq('user_id', userId!)
         .maybeSingle();
       if (error) throw error;
-      return data as UserScoringRow | null;
+      return data as unknown as UserScoringRow | null;
     },
     enabled: !!userId,
     staleTime: 30000,
