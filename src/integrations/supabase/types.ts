@@ -2341,6 +2341,45 @@ export type Database = {
         }
         Relationships: []
       }
+      user_scoring: {
+        Row: {
+          created_at: string
+          id: string
+          is_manual_override: boolean
+          labels: string[]
+          last_computed_at: string | null
+          score: number
+          score_breakdown: Json
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_manual_override?: boolean
+          labels?: string[]
+          last_computed_at?: string | null
+          score?: number
+          score_breakdown?: Json
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_manual_override?: boolean
+          labels?: string[]
+          last_computed_at?: string | null
+          score?: number
+          score_breakdown?: Json
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       customer_portal_settings_client: {

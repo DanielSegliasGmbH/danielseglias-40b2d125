@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/AppLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
@@ -13,15 +13,22 @@ import {
 } from '@/components/ui/table';
 import {
   Users, Activity, TrendingUp, MessageSquare, LogIn, Wrench,
-  ArrowRight, BarChart3, AlertTriangle, Zap, Eye,
+  ArrowRight, BarChart3, RefreshCw, Tag,
 } from 'lucide-react';
 import {
   useAdminKPIs,
   useAdminUserSegments,
   useToolUsageStats,
-  SIGNAL_CONFIG,
   type UserSegmentRow,
 } from '@/hooks/useAdminDashboard';
+import {
+  useAllUserScoring,
+  useRecomputeScores,
+  STATUS_CONFIG,
+  type UserStatus,
+  type UserScoringRow,
+} from '@/hooks/useUserScoring';
+import { toast } from 'sonner';
 
 function KPICard({ label, value, icon: Icon, sub }: {
   label: string; value: number | string; icon: typeof Users; sub?: string;
@@ -42,7 +49,7 @@ function KPICard({ label, value, icon: Icon, sub }: {
   );
 }
 
-type SignalFilter = UserSegmentRow['signal'] | 'all';
+type StatusFilter = UserStatus | 'all';
 type RoleFilter = 'all' | 'admin' | 'staff' | 'client';
 
 export default function AdminAnalyticsDashboard() {
@@ -50,23 +57,61 @@ export default function AdminAnalyticsDashboard() {
   const { data: kpis, isLoading: kpisLoading } = useAdminKPIs();
   const { data: users, isLoading: usersLoading } = useAdminUserSegments();
   const { data: toolStats } = useToolUsageStats();
+  const { data: scoring } = useAllUserScoring();
+  const recompute = useRecomputeScores();
 
-  const [signalFilter, setSignalFilter] = useState<SignalFilter>('all');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [roleFilter, setRoleFilter] = useState<RoleFilter>('all');
+  const [labelFilter, setLabelFilter] = useState('all');
+
+  // Build scoring map
+  const scoringMap = useMemo(() => {
+    const map = new Map<string, UserScoringRow>();
+    scoring?.forEach(s => map.set(s.user_id, s));
+    return map;
+  }, [scoring]);
+
+  // Collect all labels for filter
+  const allLabels = useMemo(() => {
+    const labels = new Set<string>();
+    scoring?.forEach(s => s.labels?.forEach(l => labels.add(l)));
+    return Array.from(labels).sort();
+  }, [scoring]);
 
   const filteredUsers = useMemo(() => {
     if (!users) return [];
     return users.filter(u => {
-      if (signalFilter !== 'all' && u.signal !== signalFilter) return false;
+      const sc = scoringMap.get(u.id);
+      if (statusFilter !== 'all' && sc?.status !== statusFilter) return false;
       if (roleFilter !== 'all' && u.role !== roleFilter) return false;
+      if (labelFilter !== 'all' && !(sc?.labels || []).includes(labelFilter)) return false;
       return true;
     });
-  }, [users, signalFilter, roleFilter]);
+  }, [users, statusFilter, roleFilter, labelFilter, scoringMap]);
+
+  const handleRecompute = () => {
+    recompute.mutate(undefined, {
+      onSuccess: (count) => toast.success(`Scoring für ${count} Nutzer aktualisiert`),
+      onError: () => toast.error('Fehler beim Berechnen'),
+    });
+  };
 
   return (
     <AppLayout>
       <div className="space-y-6">
-        <ScreenHeader title="Nutzer-Analytik" />
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <ScreenHeader title="Nutzer-Analytik" />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRecompute}
+            disabled={recompute.isPending}
+            className="text-xs"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${recompute.isPending ? 'animate-spin' : ''}`} />
+            Scoring aktualisieren
+          </Button>
+        </div>
 
         {/* ── KPIs ────────────────────────────────── */}
         {kpisLoading ? (
@@ -83,15 +128,37 @@ export default function AdminAnalyticsDashboard() {
           </div>
         ) : null}
 
+        {/* ── Status segments summary ─────────────── */}
+        {scoring && scoring.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {(Object.entries(STATUS_CONFIG) as [UserStatus, { label: string; color: string }][]).map(([key, cfg]) => {
+              const count = scoring.filter(s => s.status === key).length;
+              if (count === 0) return null;
+              return (
+                <Card
+                  key={key}
+                  className={`cursor-pointer hover:ring-1 hover:ring-primary/20 transition-all ${statusFilter === key ? 'ring-2 ring-primary' : ''}`}
+                  onClick={() => setStatusFilter(statusFilter === key ? 'all' : key)}
+                >
+                  <CardContent className="pt-3 pb-2 px-4">
+                    <p className="text-xs text-muted-foreground">{cfg.label}</p>
+                    <p className="text-xl font-bold text-foreground">{count}</p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+
         {/* ── Filters ─────────────────────────────── */}
         <div className="flex flex-wrap gap-2">
-          <Select value={signalFilter} onValueChange={(v) => setSignalFilter(v as SignalFilter)}>
-            <SelectTrigger className="w-[200px] h-9 text-xs">
-              <SelectValue placeholder="Signal" />
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
+            <SelectTrigger className="w-[180px] h-9 text-xs">
+              <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Alle Signale</SelectItem>
-              {Object.entries(SIGNAL_CONFIG).filter(([k]) => k !== 'none').map(([key, cfg]) => (
+              <SelectItem value="all">Alle Status</SelectItem>
+              {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
                 <SelectItem key={key} value={key}>{cfg.label}</SelectItem>
               ))}
             </SelectContent>
@@ -107,6 +174,20 @@ export default function AdminAnalyticsDashboard() {
               <SelectItem value="client">Client</SelectItem>
             </SelectContent>
           </Select>
+          {allLabels.length > 0 && (
+            <Select value={labelFilter} onValueChange={setLabelFilter}>
+              <SelectTrigger className="w-[200px] h-9 text-xs">
+                <Tag className="h-3 w-3 mr-1" />
+                <SelectValue placeholder="Label" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Alle Labels</SelectItem>
+                {allLabels.map(l => (
+                  <SelectItem key={l} value={l}>{l}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
           <Badge variant="outline" className="text-xs self-center">
             {filteredUsers.length} Nutzer
           </Badge>
@@ -129,19 +210,19 @@ export default function AdminAnalyticsDashboard() {
                     <TableRow>
                       <TableHead className="text-xs">Name</TableHead>
                       <TableHead className="text-xs">Rolle</TableHead>
+                      <TableHead className="text-xs">Status</TableHead>
+                      <TableHead className="text-xs text-right">Score</TableHead>
+                      <TableHead className="text-xs">Labels</TableHead>
                       <TableHead className="text-xs text-right">Sessions</TableHead>
-                      <TableHead className="text-xs text-right">Events</TableHead>
-                      <TableHead className="text-xs text-right">Tools ▸</TableHead>
                       <TableHead className="text-xs text-right">Tools ✓</TableHead>
-                      <TableHead className="text-xs text-right">Chat</TableHead>
                       <TableHead className="text-xs">Letzte Aktivität</TableHead>
-                      <TableHead className="text-xs">Signal</TableHead>
                       <TableHead className="text-xs w-8"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredUsers.slice(0, 100).map((u) => {
-                      const sig = SIGNAL_CONFIG[u.signal];
+                      const sc = scoringMap.get(u.id);
+                      const statusCfg = sc ? STATUS_CONFIG[sc.status] : null;
                       return (
                         <TableRow
                           key={u.id}
@@ -154,20 +235,37 @@ export default function AdminAnalyticsDashboard() {
                           <TableCell>
                             <Badge variant="outline" className="text-[10px]">{u.role}</Badge>
                           </TableCell>
+                          <TableCell>
+                            {statusCfg ? (
+                              <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${statusCfg.color}`}>
+                                {statusCfg.label}
+                                {sc?.is_manual_override && ' ✎'}
+                              </span>
+                            ) : (
+                              <span className="text-[10px] text-muted-foreground">—</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right text-sm tabular-nums font-medium">
+                            {sc ? sc.score : '—'}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-1 max-w-[200px]">
+                              {(sc?.labels || []).slice(0, 3).map(l => (
+                                <span key={l} className="text-[9px] bg-muted px-1.5 py-0.5 rounded-full text-muted-foreground truncate max-w-[120px]">
+                                  {l}
+                                </span>
+                              ))}
+                              {(sc?.labels?.length || 0) > 3 && (
+                                <span className="text-[9px] text-muted-foreground">+{sc!.labels.length - 3}</span>
+                              )}
+                            </div>
+                          </TableCell>
                           <TableCell className="text-right text-sm tabular-nums">{u.session_count}</TableCell>
-                          <TableCell className="text-right text-sm tabular-nums">{u.event_count}</TableCell>
-                          <TableCell className="text-right text-sm tabular-nums">{u.tool_opened_count}</TableCell>
                           <TableCell className="text-right text-sm tabular-nums">{u.tool_completed_count}</TableCell>
-                          <TableCell className="text-right text-sm tabular-nums">{u.chat_count}</TableCell>
                           <TableCell className="text-xs text-muted-foreground">
                             {u.last_activity
                               ? new Date(u.last_activity).toLocaleDateString('de-CH')
                               : '—'}
-                          </TableCell>
-                          <TableCell>
-                            <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${sig.color}`}>
-                              {sig.label}
-                            </span>
                           </TableCell>
                           <TableCell>
                             <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
@@ -220,29 +318,6 @@ export default function AdminAnalyticsDashboard() {
               </div>
             </CardContent>
           </Card>
-        )}
-
-        {/* ── Signal segments summary ─────────────── */}
-        {users && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {(Object.entries(SIGNAL_CONFIG) as [UserSegmentRow['signal'], typeof SIGNAL_CONFIG['new']][])
-              .filter(([k]) => k !== 'none')
-              .map(([key, cfg]) => {
-                const count = users.filter(u => u.signal === key).length;
-                return (
-                  <Card
-                    key={key}
-                    className="cursor-pointer hover:ring-1 hover:ring-primary/20 transition-all"
-                    onClick={() => setSignalFilter(key)}
-                  >
-                    <CardContent className="pt-3 pb-2 px-4">
-                      <p className="text-xs text-muted-foreground">{cfg.label}</p>
-                      <p className="text-xl font-bold text-foreground">{count}</p>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-          </div>
         )}
       </div>
     </AppLayout>
