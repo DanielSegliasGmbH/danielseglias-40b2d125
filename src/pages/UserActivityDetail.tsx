@@ -19,7 +19,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   ArrowLeft, User, Mail, CalendarDays, Clock, Activity,
   MessageSquare, MousePointer, Eye, LogIn, BarChart3, Wrench,
-  ChevronLeft, ChevronRight, Copy, Shield, Zap,
+  ChevronLeft, ChevronRight, Copy, Shield, Zap, Tag, Pencil,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
