@@ -6,12 +6,14 @@ import { useAllUsers, getUserStatus, getUserStatusLabel, getUserStatusColor } fr
 import { useUserEvents, useUserSessions, useUserActivitySummary } from '@/hooks/useUserActivity';
 import { UserVisibilityPanel } from '@/components/admin/UserVisibilityPanel';
 import { useUserRuleLogs, CONDITION_LABELS, ACTION_LABELS } from '@/hooks/useAutomationEngine';
+import { useUserScoring, useUpdateUserScoring, STATUS_CONFIG, LABEL_PRESETS, type UserStatus } from '@/hooks/useUserScoring';
 import { AppLayout } from '@/components/AppLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import {
