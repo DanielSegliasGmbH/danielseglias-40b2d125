@@ -373,6 +373,95 @@ export type Database = {
         }
         Relationships: []
       }
+      cta_definitions: {
+        Row: {
+          conditions: Json
+          created_at: string
+          cta_type: string
+          description: string | null
+          display_description: string | null
+          display_text: string
+          icon: string | null
+          id: string
+          is_active: boolean
+          name: string
+          priority: number
+          target: string
+          updated_at: string
+        }
+        Insert: {
+          conditions?: Json
+          created_at?: string
+          cta_type?: string
+          description?: string | null
+          display_description?: string | null
+          display_text?: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          priority?: number
+          target?: string
+          updated_at?: string
+        }
+        Update: {
+          conditions?: Json
+          created_at?: string
+          cta_type?: string
+          description?: string | null
+          display_description?: string | null
+          display_text?: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          priority?: number
+          target?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      cta_impressions: {
+        Row: {
+          clicked: boolean
+          clicked_at: string | null
+          context: string | null
+          created_at: string
+          cta_id: string | null
+          cta_ref: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          clicked?: boolean
+          clicked_at?: string | null
+          context?: string | null
+          created_at?: string
+          cta_id?: string | null
+          cta_ref: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          clicked?: boolean
+          clicked_at?: string | null
+          context?: string | null
+          created_at?: string
+          cta_id?: string | null
+          cta_ref?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cta_impressions_cta_id_fkey"
+            columns: ["cta_id"]
+            isOneToOne: false
+            referencedRelation: "cta_definitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_control: {
         Row: {
           created_at: string
