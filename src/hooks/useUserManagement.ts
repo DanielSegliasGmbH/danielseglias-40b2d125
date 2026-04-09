@@ -12,6 +12,9 @@ export interface UserWithRole {
   phone: string | null;
   role: AppRole | null;
   customer_id: string | null;
+  user_type: 'user' | 'customer';
+  plan: 'free' | 'premium';
+  has_strategy_access: boolean;
   created_at: string | null;
   last_sign_in_at: string | null;
   email_confirmed_at: string | null;
