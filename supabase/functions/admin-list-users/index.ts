@@ -95,12 +95,14 @@ Deno.serve(async (req) => {
         user_type: profile.user_type || 'user',
         plan: profile.plan || 'free',
         has_strategy_access: profile.has_strategy_access || false,
+        account_status: profile.account_status || 'active',
         created_at: authUser?.created_at || profile.created_at,
         last_sign_in_at: authUser?.last_sign_in_at || null,
         email_confirmed_at: authUser?.email_confirmed_at || null,
         invited_at: authUser?.invited_at || null,
         confirmed_at: authUser?.confirmed_at || null,
         is_confirmed: !!authUser?.email_confirmed_at,
+        is_banned: !!authUser?.banned_until,
       }
     })
 

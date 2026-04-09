@@ -4,6 +4,8 @@ import type { Database } from '@/integrations/supabase/types';
 
 type AppRole = Database['public']['Enums']['app_role'];
 
+export type AccountStatus = 'active' | 'suspended' | 'deleted';
+
 export interface UserWithRole {
   id: string;
   email: string;
@@ -15,12 +17,14 @@ export interface UserWithRole {
   user_type: 'user' | 'customer';
   plan: 'free' | 'premium';
   has_strategy_access: boolean;
+  account_status: AccountStatus;
   created_at: string | null;
   last_sign_in_at: string | null;
   email_confirmed_at: string | null;
   invited_at: string | null;
   confirmed_at: string | null;
   is_confirmed: boolean;
+  is_banned: boolean;
 }
 
 export type UserStatus = 'active' | 'invited' | 'not_activated' | 'no_role';
