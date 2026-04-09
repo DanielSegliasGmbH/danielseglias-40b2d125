@@ -4,6 +4,8 @@ import type { Database } from '@/integrations/supabase/types';
 
 type AppRole = Database['public']['Enums']['app_role'];
 
+export type AccountStatus = 'active' | 'suspended' | 'deleted';
+
 export interface UserWithRole {
   id: string;
   email: string;
@@ -15,12 +17,14 @@ export interface UserWithRole {
   user_type: 'user' | 'customer';
   plan: 'free' | 'premium';
   has_strategy_access: boolean;
+  account_status: AccountStatus;
   created_at: string | null;
   last_sign_in_at: string | null;
   email_confirmed_at: string | null;
   invited_at: string | null;
   confirmed_at: string | null;
   is_confirmed: boolean;
+  is_banned: boolean;
 }
 
 export type UserStatus = 'active' | 'invited' | 'not_activated' | 'no_role';
@@ -223,3 +227,68 @@ export function useCurrentUserProfile() {
     },
   });
 }
+
+export type ManageUserAction = 'suspend' | 'reactivate' | 'soft_delete' | 'hard_delete';
+
+export function useManageUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ targetUserId, action }: { targetUserId: string; action: ManageUserAction }) => {
+      const { data, error } = await supabase.functions.invoke('admin-manage-user', {
+        body: { targetUserId, action },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+      queryClient.invalidateQueries({ queryKey: ['user-profile'] });
+    },
+  });
+}
+
+export interface AuditLogEntry {
+  id: string;
+  admin_id: string;
+  target_user_id: string;
+  action: string;
+  details: Record<string, unknown>;
+  created_at: string;
+}
+
+export function useAuditLogs(targetUserId?: string) {
+  return useQuery({
+    queryKey: ['admin', 'audit-logs', targetUserId],
+    queryFn: async () => {
+      let query = supabase
+        .from('admin_audit_logs')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (targetUserId) {
+        query = query.eq('target_user_id', targetUserId);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return (data || []) as AuditLogEntry[];
+    },
+    enabled: true,
+  });
+}
+
+export const ACCOUNT_STATUS_CONFIG: Record<AccountStatus, { label: string; color: string }> = {
+  active: { label: 'Aktiv', color: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' },
+  suspended: { label: 'Gesperrt', color: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' },
+  deleted: { label: 'Gelöscht', color: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' },
+};
+
+export const AUDIT_ACTION_LABELS: Record<string, string> = {
+  suspend: 'Zugang gesperrt',
+  reactivate: 'Zugang reaktiviert',
+  soft_delete: 'Soft Delete',
+  hard_delete: 'Endgültig gelöscht',
+};

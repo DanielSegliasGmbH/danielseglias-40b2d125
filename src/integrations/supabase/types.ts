@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_logs: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string
+          details: Json
+          id: string
+          target_user_id: string
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          details?: Json
+          id?: string
+          target_user_id: string
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          details?: Json
+          id?: string
+          target_user_id?: string
+        }
+        Relationships: []
+      }
       automation_rule_logs: {
         Row: {
           action_executed: string
@@ -1791,6 +1818,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_status: string
           created_at: string
           first_name: string
           has_strategy_access: boolean
@@ -1802,6 +1830,7 @@ export type Database = {
           user_type: string
         }
         Insert: {
+          account_status?: string
           created_at?: string
           first_name: string
           has_strategy_access?: boolean
@@ -1813,6 +1842,7 @@ export type Database = {
           user_type?: string
         }
         Update: {
+          account_status?: string
           created_at?: string
           first_name?: string
           has_strategy_access?: boolean
