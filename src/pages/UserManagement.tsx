@@ -9,6 +9,8 @@ import {
   getUserStatus,
   getUserStatusLabel,
   getUserStatusColor,
+  ACCOUNT_STATUS_CONFIG,
+  type AccountStatus,
 } from '@/hooks/useUserManagement';
 import { useCustomers } from '@/hooks/useCustomerData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
