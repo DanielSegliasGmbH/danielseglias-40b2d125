@@ -141,6 +141,10 @@ export default function UserActivityDetail() {
   const { data: nextStepData } = useNextBestStepForUser(userId);
   const { data: consentRecords } = useAdminUserConsent(userId);
   const updateAccess = useUpdateUserAccess();
+  const manageUser = useManageUser();
+  const { data: auditLogs } = useAuditLogs(userId);
+  const { data: allUsersForAudit } = useAllUsers();
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
 
   // Distinct event types for filter dropdown
   const distinctTypes = useMemo(() => {
