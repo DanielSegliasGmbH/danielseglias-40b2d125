@@ -253,7 +253,39 @@ export default function UserActivityDetail() {
           {/* ── 2b. Scoring & Status ─────────────────── */}
           <ScoringCard scoring={userScoring} userId={userId!} onUpdate={updateScoring} />
 
-          {/* ── 3. Status overview ───────────────────── */}
+          {/* ── 2c. Next Best Step (Admin view) ──────── */}
+          {nextStepData?.primary && (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Navigation className="h-4 w-4" /> Empfohlener nächster Schritt
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Badge variant="outline" className="text-[10px]">{nextStepData.primary.type}</Badge>
+                    <span className="text-sm font-semibold text-foreground">{nextStepData.primary.title}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{nextStepData.primary.reason}</p>
+                  <p className="text-[10px] text-muted-foreground mt-2">Pfad: {nextStepData.primary.path}</p>
+                </div>
+                {nextStepData.secondary && (
+                  <div className="bg-muted/50 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <Badge variant="outline" className="text-[10px]">{nextStepData.secondary.type}</Badge>
+                      <span className="text-xs font-medium text-foreground">{nextStepData.secondary.title}</span>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">{nextStepData.secondary.reason}</p>
+                  </div>
+                )}
+                <p className="text-[10px] text-muted-foreground">
+                  Begründung: {nextStepData.reasoning}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
           {summary && (
             <Card>
               <CardHeader className="pb-3">
