@@ -35,6 +35,7 @@ import {
   Navigation, ShieldCheck, Ban, Trash2, History, AlertTriangle,
   ShieldOff, RotateCw,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 // ── Helpers ─────────────────────────────────────────────
 function formatDate(d: string | null) {
