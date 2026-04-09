@@ -48,10 +48,6 @@ export function CreateUserDialog() {
       return;
     }
 
-    if (formData.role === 'client' && !formData.customerId) {
-      toast.error(t('userManagement.customerRequired'));
-      return;
-    }
 
     setLoading(true);
     try {
@@ -139,7 +135,7 @@ export function CreateUserDialog() {
 
           {formData.role === 'client' && (
             <div className="space-y-2">
-              <Label htmlFor="customerId">{t('customer.singular', 'Kunde')} *</Label>
+              <Label htmlFor="customerId">{t('customer.singular', 'Kunde')}</Label>
               <Select
                 value={formData.customerId}
                 onValueChange={(value) => setFormData((prev) => ({ ...prev, customerId: value }))}
@@ -155,6 +151,7 @@ export function CreateUserDialog() {
                   ))}
                 </SelectContent>
               </Select>
+              <p className="text-xs text-muted-foreground">Optional – kann später zugewiesen werden.</p>
             </div>
           )}
 
