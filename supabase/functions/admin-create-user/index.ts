@@ -77,12 +77,7 @@ Deno.serve(async (req) => {
       )
     }
 
-    if (role === 'client' && !targetCustomerId) {
-      return new Response(
-        JSON.stringify({ error: 'customerId is required when role is client' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
+    // customerId is optional for client role – can be linked later
 
     const adminClient = createClient(supabaseUrl, supabaseServiceKey)
 
