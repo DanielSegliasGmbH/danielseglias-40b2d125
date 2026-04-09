@@ -2,13 +2,40 @@ import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useAllUsers, getUserStatus, getUserStatusLabel, getUserStatusColor, useUpdateUserAccess } from '@/hooks/useUserManagement';
+import {
+  useAllUsers, getUserStatus, getUserStatusLabel, getUserStatusColor,
+  useUpdateUserAccess, useManageUser, useAuditLogs,
+  ACCOUNT_STATUS_CONFIG, AUDIT_ACTION_LABELS,
+  type AccountStatus, type ManageUserAction,
+} from '@/hooks/useUserManagement';
 import { useUserEvents, useUserSessions, useUserActivitySummary } from '@/hooks/useUserActivity';
 import { UserVisibilityPanel } from '@/components/admin/UserVisibilityPanel';
 import { useUserRuleLogs, CONDITION_LABELS, ACTION_LABELS } from '@/hooks/useAutomationEngine';
 import { useUserScoring, useUpdateUserScoring, STATUS_CONFIG, LABEL_PRESETS, type UserStatus } from '@/hooks/useUserScoring';
 import { useNextBestStepForUser } from '@/hooks/useNextBestStep';
 import { useAdminUserConsent, CURRENT_TERMS_VERSION, CURRENT_PRIVACY_VERSION } from '@/hooks/useConsent';
+import { AppLayout } from '@/components/AppLayout';
+import { ScreenHeader } from '@/components/ScreenHeader';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import {
+  ArrowLeft, User, Mail, CalendarDays, Clock, Activity,
+  MessageSquare, MousePointer, Eye, LogIn, BarChart3, Wrench,
+  ChevronLeft, ChevronRight, Copy, Shield, Zap, Tag, Pencil,
+  Navigation, ShieldCheck, Ban, Trash2, History, AlertTriangle,
+  ShieldOff, RotateCw,
+} from 'lucide-react';
+import { toast } from 'sonner';
 import { AppLayout } from '@/components/AppLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
