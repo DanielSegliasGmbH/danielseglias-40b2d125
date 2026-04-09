@@ -69,6 +69,7 @@ export default function UserManagement() {
   const updateRole = useUpdateUserRole();
   const resendInvite = useResendInvite();
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
@@ -105,6 +106,7 @@ export default function UserManagement() {
   };
 
   const filteredUsers = users?.filter((u) => {
+    if (statusFilter !== 'all' && u.account_status !== statusFilter) return false;
     if (!search) return true;
     const s = search.toLowerCase();
     return (
@@ -148,9 +150,9 @@ export default function UserManagement() {
             </Card>
           </div>
 
-          {/* Search + Create */}
-          <div className="flex gap-3 items-center">
-            <div className="relative flex-1">
+          {/* Search + Filter + Create */}
+          <div className="flex gap-3 items-center flex-wrap">
+            <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Benutzer suchen…"
@@ -159,6 +161,17 @@ export default function UserManagement() {
                 className="pl-9 h-12 rounded-xl"
               />
             </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[140px] h-12 rounded-xl">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Alle Status</SelectItem>
+                <SelectItem value="active">Aktiv</SelectItem>
+                <SelectItem value="suspended">Gesperrt</SelectItem>
+                <SelectItem value="deleted">Gelöscht</SelectItem>
+              </SelectContent>
+            </Select>
             <CreateUserDialog />
           </div>
 
@@ -200,6 +213,11 @@ export default function UserManagement() {
                             <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0 ${statusColor}`}>
                               {statusLabel}
                             </span>
+                            {u.account_status !== 'active' && (
+                              <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0 ${ACCOUNT_STATUS_CONFIG[u.account_status as AccountStatus]?.color || ''}`}>
+                                {ACCOUNT_STATUS_CONFIG[u.account_status as AccountStatus]?.label || u.account_status}
+                              </span>
+                            )}
                           </div>
                           <p className="text-sm text-muted-foreground truncate">{u.email || '–'}</p>
                           
