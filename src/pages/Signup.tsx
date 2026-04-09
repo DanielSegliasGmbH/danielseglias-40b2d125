@@ -76,7 +76,7 @@ export default function Signup() {
     }
   };
 
-  const isFormValid = firstName.trim() && lastName.trim() && email.trim() && passwordValid;
+  const isFormValid = firstName.trim() && lastName.trim() && email.trim() && passwordValid && termsAccepted && privacyAccepted;
 
   if (loading) {
     return (
