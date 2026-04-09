@@ -54,6 +54,10 @@ export default function Signup() {
       toast({ variant: 'destructive', title: t('app.error'), description: t('auth.password.invalid') });
       return;
     }
+    if (!termsAccepted || !privacyAccepted) {
+      toast({ variant: 'destructive', title: t('app.error'), description: 'Bitte akzeptiere die AGB und Datenschutzerklärung.' });
+      return;
+    }
     setIsLoading(true);
     const { error } = await signUp(email, password, firstName, lastName);
     setIsLoading(false);
@@ -61,6 +65,12 @@ export default function Signup() {
       const isPasswordPolicyError = error.message?.toLowerCase().includes('password') || error.message?.toLowerCase().includes('weak');
       toast({ variant: 'destructive', title: t('auth.signupError'), description: isPasswordPolicyError ? t('auth.password.invalid') : error.message });
     } else {
+      // Save consent record — user may not be confirmed yet, so we use a fallback
+      const { data: sessionData } = await supabase.auth.getSession();
+      const uid = sessionData?.session?.user?.id;
+      if (uid) {
+        saveConsent.mutate({ userId: uid });
+      }
       toast({ title: t('auth.signup'), description: t('auth.signupSuccess') });
     }
   };
