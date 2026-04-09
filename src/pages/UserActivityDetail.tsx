@@ -8,6 +8,7 @@ import { UserVisibilityPanel } from '@/components/admin/UserVisibilityPanel';
 import { useUserRuleLogs, CONDITION_LABELS, ACTION_LABELS } from '@/hooks/useAutomationEngine';
 import { useUserScoring, useUpdateUserScoring, STATUS_CONFIG, LABEL_PRESETS, type UserStatus } from '@/hooks/useUserScoring';
 import { useNextBestStepForUser } from '@/hooks/useNextBestStep';
+import { useAdminUserConsent, CURRENT_TERMS_VERSION, CURRENT_PRIVACY_VERSION } from '@/hooks/useConsent';
 import { AppLayout } from '@/components/AppLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

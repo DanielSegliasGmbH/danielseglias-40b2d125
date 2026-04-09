@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { ConsentGate } from '@/components/ConsentGate';
 
 interface RouteGuardProps {
   children: ReactNode;
@@ -51,14 +52,18 @@ export function RouteGuard({ children, allowedRoles }: RouteGuardProps) {
   }
 
   if (allowedRoles && !allowedRoles.includes(role)) {
-    // Redirect based on role
     if (role === 'client') {
       return <Navigate to="/app/client-portal" replace />;
     }
     return <Navigate to="/app" replace />;
   }
 
-  return <>{children}</>;
+  // Admins skip consent gate
+  if (role === 'admin') {
+    return <>{children}</>;
+  }
+
+  return <ConsentGate>{children}</ConsentGate>;
 }
 
 // Role-based redirect after login
