@@ -25,6 +25,7 @@ import { useGamification } from '@/hooks/useGamification';
 import { useMetaProfile } from '@/hooks/useMetaProfile';
 import { useNextBestStep } from '@/hooks/useNextBestStep';
 import { NextStepCard } from '@/components/client-portal/NextStepCard';
+import { CtaBanner } from '@/components/client-portal/CtaBanner';
 import { AlertTriangle } from 'lucide-react';
 
 const portalSections = [
@@ -196,6 +197,9 @@ export default function ClientPortalHome() {
         {nextStepResult && nextStepResult.primary && (
           <NextStepCard result={nextStepResult} />
         )}
+
+        {/* Contextual CTA */}
+        <CtaBanner context="dashboard" />
 
         {/* Weitere Bereiche */}
         {secondarySections.length > 0 && (
