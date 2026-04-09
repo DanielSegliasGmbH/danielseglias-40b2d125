@@ -22,7 +22,7 @@ import {
   ArrowLeft, User, Mail, CalendarDays, Clock, Activity,
   MessageSquare, MousePointer, Eye, LogIn, BarChart3, Wrench,
   ChevronLeft, ChevronRight, Copy, Shield, Zap, Tag, Pencil,
-  Navigation,
+  Navigation, ShieldCheck,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
