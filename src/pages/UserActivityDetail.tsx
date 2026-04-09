@@ -35,23 +35,6 @@ import {
   Navigation, ShieldCheck, Ban, Trash2, History, AlertTriangle,
   ShieldOff, RotateCw,
 } from 'lucide-react';
-import { toast } from 'sonner';
-import { AppLayout } from '@/components/AppLayout';
-import { ScreenHeader } from '@/components/ScreenHeader';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Progress } from '@/components/ui/progress';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
-import {
-  ArrowLeft, User, Mail, CalendarDays, Clock, Activity,
-  MessageSquare, MousePointer, Eye, LogIn, BarChart3, Wrench,
-  ChevronLeft, ChevronRight, Copy, Shield, Zap, Tag, Pencil,
-  Navigation, ShieldCheck,
-} from 'lucide-react';
-import { toast } from 'sonner';
 
 // ── Helpers ─────────────────────────────────────────────
 function formatDate(d: string | null) {
