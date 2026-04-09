@@ -212,6 +212,15 @@ export default function UserManagement() {
                                 </span>
                               </span>
                             )}
+                            <span className="font-medium">
+                              {u.user_type === 'customer' ? '🏷 Kunde' : '👤 User'}
+                            </span>
+                            <span className="font-medium">
+                              {u.plan === 'premium' ? '⭐ Premium' : 'Free'}
+                            </span>
+                            {u.has_strategy_access && (
+                              <span className="font-medium text-green-600 dark:text-green-400">Strategie ✓</span>
+                            )}
                             {customerName && (
                               <span>Kunde: <span className="font-medium text-foreground">{customerName}</span></span>
                             )}
