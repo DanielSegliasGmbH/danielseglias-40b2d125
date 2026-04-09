@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useAllUsers, getUserStatus, getUserStatusLabel, getUserStatusColor } from '@/hooks/useUserManagement';
+import { useAllUsers, getUserStatus, getUserStatusLabel, getUserStatusColor, useUpdateUserAccess } from '@/hooks/useUserManagement';
 import { useUserEvents, useUserSessions, useUserActivitySummary } from '@/hooks/useUserActivity';
 import { UserVisibilityPanel } from '@/components/admin/UserVisibilityPanel';
 import { useUserRuleLogs, CONDITION_LABELS, ACTION_LABELS } from '@/hooks/useAutomationEngine';
@@ -129,6 +129,7 @@ export default function UserActivityDetail() {
   const updateScoring = useUpdateUserScoring();
   const { data: nextStepData } = useNextBestStepForUser(userId);
   const { data: consentRecords } = useAdminUserConsent(userId);
+  const updateAccess = useUpdateUserAccess();
 
   // Distinct event types for filter dropdown
   const distinctTypes = useMemo(() => {
