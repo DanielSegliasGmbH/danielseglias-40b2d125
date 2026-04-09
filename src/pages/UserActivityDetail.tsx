@@ -346,7 +346,192 @@ export default function UserActivityDetail() {
             </CardContent>
           </Card>
 
-          <Card>
+          {/* ── 1d. Account-Verwaltung ─────────────── */}
+          <Card className="border-destructive/20">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <ShieldOff className="h-4 w-4" /> Account-Verwaltung
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Current status */}
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-muted-foreground">Account-Status:</span>
+                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${ACCOUNT_STATUS_CONFIG[(user.account_status || 'active') as AccountStatus]?.color || ''}`}>
+                  {ACCOUNT_STATUS_CONFIG[(user.account_status || 'active') as AccountStatus]?.label || user.account_status}
+                </span>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {/* Suspend / Reactivate */}
+                {(user.account_status || 'active') === 'active' ? (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="text-amber-600 border-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20">
+                        <Ban className="h-3.5 w-3.5 mr-1.5" /> Zugang sperren
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Zugang sperren?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Der Nutzer <strong>{user.first_name} {user.last_name}</strong> kann sich nicht mehr einloggen.
+                          Bestehende Sessions werden ungültig. Diese Aktion ist reversibel.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                        <AlertDialogAction
+                          className="bg-amber-600 hover:bg-amber-700"
+                          onClick={async () => {
+                            try {
+                              await manageUser.mutateAsync({ targetUserId: user.id, action: 'suspend' });
+                              toast.success('Zugang gesperrt');
+                            } catch (e: any) { toast.error(e.message); }
+                          }}
+                        >
+                          Sperren
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                ) : (user.account_status === 'suspended') ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-green-600 border-green-300 hover:bg-green-50 dark:hover:bg-green-900/20"
+                    onClick={async () => {
+                      try {
+                        await manageUser.mutateAsync({ targetUserId: user.id, action: 'reactivate' });
+                        toast.success('Zugang reaktiviert');
+                      } catch (e: any) { toast.error(e.message); }
+                    }}
+                  >
+                    <RotateCw className="h-3.5 w-3.5 mr-1.5" /> Zugang reaktivieren
+                  </Button>
+                ) : null}
+
+                {/* Soft Delete */}
+                {user.account_status !== 'deleted' && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="text-destructive border-destructive/30 hover:bg-destructive/5">
+                        <Trash2 className="h-3.5 w-3.5 mr-1.5" /> Löschen (Soft)
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="flex items-center gap-2">
+                          <AlertTriangle className="h-5 w-5 text-destructive" /> Account löschen?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Der Account von <strong>{user.first_name} {user.last_name}</strong> wird als gelöscht markiert.
+                          Login wird gesperrt und alle Rollen entfernt. Daten bleiben zur Nachverfolgung erhalten.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                        <AlertDialogAction
+                          className="bg-destructive hover:bg-destructive/90"
+                          onClick={async () => {
+                            try {
+                              await manageUser.mutateAsync({ targetUserId: user.id, action: 'soft_delete' });
+                              toast.success('Account gelöscht (Soft Delete)');
+                            } catch (e: any) { toast.error(e.message); }
+                          }}
+                        >
+                          Löschen
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
+
+                {/* Hard Delete – extra protection */}
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" size="sm">
+                      <Trash2 className="h-3.5 w-3.5 mr-1.5" /> Endgültig löschen
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+                        <AlertTriangle className="h-5 w-5" /> Endgültige Löschung
+                      </AlertDialogTitle>
+                      <AlertDialogDescription className="space-y-3">
+                        <p>
+                          Der Account von <strong>{user.first_name} {user.last_name}</strong> wird vollständig und
+                          unwiderruflich gelöscht. Alle Daten (Profil, Rollen, Einwilligungen, Erinnerungen) werden entfernt.
+                        </p>
+                        <p className="font-semibold">Bitte «LÖSCHEN» eingeben zur Bestätigung:</p>
+                        <Input
+                          value={deleteConfirmText}
+                          onChange={(e) => setDeleteConfirmText(e.target.value)}
+                          placeholder="LÖSCHEN"
+                          className="mt-2"
+                        />
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel onClick={() => setDeleteConfirmText('')}>Abbrechen</AlertDialogCancel>
+                      <AlertDialogAction
+                        className="bg-destructive hover:bg-destructive/90"
+                        disabled={deleteConfirmText !== 'LÖSCHEN'}
+                        onClick={async () => {
+                          try {
+                            await manageUser.mutateAsync({ targetUserId: user.id, action: 'hard_delete' });
+                            toast.success('Account endgültig gelöscht');
+                            setDeleteConfirmText('');
+                            navigate('/app/users');
+                          } catch (e: any) { toast.error(e.message); }
+                        }}
+                      >
+                        Endgültig löschen
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+
+              <p className="text-[10px] text-muted-foreground">
+                Soft Delete: Daten bleiben erhalten, Login gesperrt. Endgültig: Alle Daten werden unwiderruflich entfernt.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* ── 1e. Audit Log ──────────────────────── */}
+          {auditLogs && auditLogs.length > 0 && (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <History className="h-4 w-4" /> Admin-Protokoll
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {auditLogs.map((log) => {
+                    const adminUser = allUsersForAudit?.find(u => u.id === log.admin_id);
+                    const adminName = adminUser ? `${adminUser.first_name} ${adminUser.last_name}` : log.admin_id.slice(0, 8);
+                    return (
+                      <div key={log.id} className="flex items-start gap-3 py-2 px-3 rounded-lg bg-muted/50 text-sm">
+                        <History className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-foreground">
+                            {AUDIT_ACTION_LABELS[log.action] || log.action}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            von {adminName} · {new Date(log.created_at).toLocaleString('de-CH')}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
                 <BarChart3 className="h-4 w-4" /> Nutzungs-Zusammenfassung
