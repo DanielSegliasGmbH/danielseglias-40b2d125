@@ -227,7 +227,40 @@ export default function UserActivityDetail() {
             </CardContent>
           </Card>
 
-          {/* ── 2. Usage Summary ─────────────────────── */}
+          {/* ── 1b. Consent / Zustimmung ─────────────── */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4" /> Rechtliche Zustimmung
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {consentRecords && consentRecords.length > 0 ? (
+                <div className="space-y-2">
+                  {consentRecords.map((r) => {
+                    const termsOk = r.terms_accepted && r.terms_version === CURRENT_TERMS_VERSION;
+                    const privacyOk = r.privacy_accepted && r.privacy_version === CURRENT_PRIVACY_VERSION;
+                    return (
+                      <div key={r.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm py-2 px-3 rounded-lg bg-muted/50">
+                        <span className={`font-medium ${termsOk ? 'text-green-600 dark:text-green-400' : 'text-destructive'}`}>
+                          AGB {r.terms_version} {termsOk ? '✓' : '✗'}
+                        </span>
+                        <span className={`font-medium ${privacyOk ? 'text-green-600 dark:text-green-400' : 'text-destructive'}`}>
+                          Datenschutz {r.privacy_version} {privacyOk ? '✓' : '✗'}
+                        </span>
+                        <span className="text-xs text-muted-foreground ml-auto">
+                          {new Date(r.accepted_at).toLocaleString('de-CH')}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Keine Zustimmung vorhanden.</p>
+              )}
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
