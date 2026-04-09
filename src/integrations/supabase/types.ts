@@ -252,6 +252,45 @@ export type Database = {
         }
         Relationships: []
       }
+      consent_records: {
+        Row: {
+          accepted_at: string
+          created_at: string
+          id: string
+          ip_address: string | null
+          privacy_accepted: boolean
+          privacy_version: string
+          terms_accepted: boolean
+          terms_version: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          privacy_accepted?: boolean
+          privacy_version?: string
+          terms_accepted?: boolean
+          terms_version?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          privacy_accepted?: boolean
+          privacy_version?: string
+          terms_accepted?: boolean
+          terms_version?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       course_feedback: {
         Row: {
           created_at: string

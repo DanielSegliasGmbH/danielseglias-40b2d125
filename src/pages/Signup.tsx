@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,6 +10,8 @@ import { useToast } from '@/hooks/use-toast';
 import { PasswordStrengthChecker, usePasswordValidation } from '@/components/PasswordStrengthChecker';
 import { z } from 'zod';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useSaveConsent, CURRENT_TERMS_VERSION, CURRENT_PRIVACY_VERSION } from '@/hooks/useConsent';
 
 export default function Signup() {
   const { t } = useTranslation();
@@ -18,6 +21,9 @@ export default function Signup() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const saveConsent = useSaveConsent();
   const { signUp, user, role, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -49,6 +55,10 @@ export default function Signup() {
       toast({ variant: 'destructive', title: t('app.error'), description: t('auth.password.invalid') });
       return;
     }
+    if (!termsAccepted || !privacyAccepted) {
+      toast({ variant: 'destructive', title: t('app.error'), description: 'Bitte akzeptiere die AGB und Datenschutzerklärung.' });
+      return;
+    }
     setIsLoading(true);
     const { error } = await signUp(email, password, firstName, lastName);
     setIsLoading(false);
@@ -56,11 +66,17 @@ export default function Signup() {
       const isPasswordPolicyError = error.message?.toLowerCase().includes('password') || error.message?.toLowerCase().includes('weak');
       toast({ variant: 'destructive', title: t('auth.signupError'), description: isPasswordPolicyError ? t('auth.password.invalid') : error.message });
     } else {
+      // Save consent record — user may not be confirmed yet, so we use a fallback
+      const { data: sessionData } = await supabase.auth.getSession();
+      const uid = sessionData?.session?.user?.id;
+      if (uid) {
+        saveConsent.mutate({ userId: uid });
+      }
       toast({ title: t('auth.signup'), description: t('auth.signupSuccess') });
     }
   };
 
-  const isFormValid = firstName.trim() && lastName.trim() && email.trim() && passwordValid;
+  const isFormValid = firstName.trim() && lastName.trim() && email.trim() && passwordValid && termsAccepted && privacyAccepted;
 
   if (loading) {
     return (
@@ -144,6 +160,41 @@ export default function Signup() {
             </div>
             <PasswordStrengthChecker password={password} context={passwordContext} className="mt-3" />
           </div>
+
+          {/* Consent checkboxes */}
+          <div className="space-y-3 pt-1">
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="signup-terms"
+                checked={termsAccepted}
+                onCheckedChange={(v) => setTermsAccepted(v === true)}
+                disabled={isLoading}
+              />
+              <label htmlFor="signup-terms" className="text-sm leading-snug text-foreground cursor-pointer">
+                Ich akzeptiere die{' '}
+                <a href="/agb" target="_blank" rel="noopener noreferrer" className="text-primary font-medium hover:underline">
+                  Allgemeinen Geschäftsbedingungen
+                </a>
+                {' '}(Version {CURRENT_TERMS_VERSION}).
+              </label>
+            </div>
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="signup-privacy"
+                checked={privacyAccepted}
+                onCheckedChange={(v) => setPrivacyAccepted(v === true)}
+                disabled={isLoading}
+              />
+              <label htmlFor="signup-privacy" className="text-sm leading-snug text-foreground cursor-pointer">
+                Ich habe die{' '}
+                <a href="/datenschutz" target="_blank" rel="noopener noreferrer" className="text-primary font-medium hover:underline">
+                  Datenschutzerklärung
+                </a>
+                {' '}gelesen und akzeptiere sie (Version {CURRENT_PRIVACY_VERSION}).
+              </label>
+            </div>
+          </div>
+
           <Button type="submit" className="w-full h-14 rounded-2xl text-base font-semibold" disabled={isLoading || !isFormValid}>
             {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : t('auth.signup')}
           </Button>
