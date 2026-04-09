@@ -160,6 +160,41 @@ export default function Signup() {
             </div>
             <PasswordStrengthChecker password={password} context={passwordContext} className="mt-3" />
           </div>
+
+          {/* Consent checkboxes */}
+          <div className="space-y-3 pt-1">
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="signup-terms"
+                checked={termsAccepted}
+                onCheckedChange={(v) => setTermsAccepted(v === true)}
+                disabled={isLoading}
+              />
+              <label htmlFor="signup-terms" className="text-sm leading-snug text-foreground cursor-pointer">
+                Ich akzeptiere die{' '}
+                <a href="/agb" target="_blank" rel="noopener noreferrer" className="text-primary font-medium hover:underline">
+                  Allgemeinen Geschäftsbedingungen
+                </a>
+                {' '}(Version {CURRENT_TERMS_VERSION}).
+              </label>
+            </div>
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="signup-privacy"
+                checked={privacyAccepted}
+                onCheckedChange={(v) => setPrivacyAccepted(v === true)}
+                disabled={isLoading}
+              />
+              <label htmlFor="signup-privacy" className="text-sm leading-snug text-foreground cursor-pointer">
+                Ich habe die{' '}
+                <a href="/datenschutz" target="_blank" rel="noopener noreferrer" className="text-primary font-medium hover:underline">
+                  Datenschutzerklärung
+                </a>
+                {' '}gelesen und akzeptiere sie (Version {CURRENT_PRIVACY_VERSION}).
+              </label>
+            </div>
+          </div>
+
           <Button type="submit" className="w-full h-14 rounded-2xl text-base font-semibold" disabled={isLoading || !isFormValid}>
             {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : t('auth.signup')}
           </Button>
