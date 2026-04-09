@@ -76,14 +76,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data: signInData, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    if (!error) {
+    if (error) return { error };
+
+    // Check account_status
+    if (signInData.user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('account_status')
+        .eq('id', signInData.user.id)
+        .maybeSingle();
+
+      if (profile?.account_status === 'suspended' || profile?.account_status === 'deleted') {
+        await supabase.auth.signOut();
+        setUser(null);
+        setSession(null);
+        setRole(null);
+        const msg = profile.account_status === 'suspended'
+          ? 'Dein Zugang ist aktuell gesperrt. Bitte kontaktiere den Support.'
+          : 'Dieser Account existiert nicht mehr.';
+        return { error: new Error(msg) };
+      }
+
       trackEventDirect({ eventType: 'login', metadata: { method: 'password' } });
     }
-    return { error };
+    return { error: null };
   };
 
   const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
