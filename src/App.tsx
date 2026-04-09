@@ -88,6 +88,7 @@ import { ViewModeProvider } from "./hooks/useViewMode";
 import { PageViewTracker } from "./components/PageViewTracker";
 import AdminAutomations from "./pages/AdminAutomations";
 import AdminAnalyticsDashboard from "./pages/AdminAnalyticsDashboard";
+import AdminCtaManagement from "./pages/AdminCtaManagement";
 
 // Public Pages (no auth required)
 import PublicLanding from "./pages/public/PublicLanding";
