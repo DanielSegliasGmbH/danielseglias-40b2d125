@@ -1793,26 +1793,35 @@ export type Database = {
         Row: {
           created_at: string
           first_name: string
+          has_strategy_access: boolean
           id: string
           last_name: string
           phone: string | null
+          plan: string
           updated_at: string
+          user_type: string
         }
         Insert: {
           created_at?: string
           first_name: string
+          has_strategy_access?: boolean
           id: string
           last_name: string
           phone?: string | null
+          plan?: string
           updated_at?: string
+          user_type?: string
         }
         Update: {
           created_at?: string
           first_name?: string
+          has_strategy_access?: boolean
           id?: string
           last_name?: string
           phone?: string | null
+          plan?: string
           updated_at?: string
+          user_type?: string
         }
         Relationships: []
       }
@@ -2579,6 +2588,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      has_strategy_access: { Args: { _user_id: string }; Returns: boolean }
       increment_rate_limit: {
         Args: { p_ip: string; p_window: string }
         Returns: undefined

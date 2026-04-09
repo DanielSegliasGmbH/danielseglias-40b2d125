@@ -12,6 +12,9 @@ export interface UserWithRole {
   phone: string | null;
   role: AppRole | null;
   customer_id: string | null;
+  user_type: 'user' | 'customer';
+  plan: 'free' | 'premium';
+  has_strategy_access: boolean;
   created_at: string | null;
   last_sign_in_at: string | null;
   email_confirmed_at: string | null;
@@ -165,6 +168,58 @@ export function useResendInvite() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+    },
+  });
+}
+
+export function useUpdateUserAccess() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      userId,
+      user_type,
+      plan,
+      has_strategy_access,
+    }: {
+      userId: string;
+      user_type?: 'user' | 'customer';
+      plan?: 'free' | 'premium';
+      has_strategy_access?: boolean;
+    }) => {
+      const updates: Record<string, unknown> = {};
+      if (user_type !== undefined) updates.user_type = user_type;
+      if (plan !== undefined) updates.plan = plan;
+      if (has_strategy_access !== undefined) updates.has_strategy_access = has_strategy_access;
+
+      const { error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', userId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+      queryClient.invalidateQueries({ queryKey: ['user-profile'] });
+    },
+  });
+}
+
+/** Hook for the current user's profile (user_type, plan, has_strategy_access) */
+export function useCurrentUserProfile() {
+  return useQuery({
+    queryKey: ['user-profile'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('user_type, plan, has_strategy_access')
+        .eq('id', user.id)
+        .maybeSingle();
+      if (error) throw error;
+      return data as { user_type: string; plan: string; has_strategy_access: boolean } | null;
     },
   });
 }

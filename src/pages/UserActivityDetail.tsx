@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useAllUsers, getUserStatus, getUserStatusLabel, getUserStatusColor } from '@/hooks/useUserManagement';
+import { useAllUsers, getUserStatus, getUserStatusLabel, getUserStatusColor, useUpdateUserAccess } from '@/hooks/useUserManagement';
 import { useUserEvents, useUserSessions, useUserActivitySummary } from '@/hooks/useUserActivity';
 import { UserVisibilityPanel } from '@/components/admin/UserVisibilityPanel';
 import { useUserRuleLogs, CONDITION_LABELS, ACTION_LABELS } from '@/hooks/useAutomationEngine';
@@ -129,6 +129,7 @@ export default function UserActivityDetail() {
   const updateScoring = useUpdateUserScoring();
   const { data: nextStepData } = useNextBestStepForUser(userId);
   const { data: consentRecords } = useAdminUserConsent(userId);
+  const updateAccess = useUpdateUserAccess();
 
   // Distinct event types for filter dropdown
   const distinctTypes = useMemo(() => {
@@ -203,6 +204,17 @@ export default function UserActivityDetail() {
                         {user.role === 'admin' ? 'Admin' : user.role === 'staff' ? 'Mitarbeiter' : 'Benutzer'}
                       </Badge>
                     )}
+                    <Badge variant={user.user_type === 'customer' ? 'default' : 'secondary'} className="text-xs">
+                      {user.user_type === 'customer' ? 'Kunde' : 'User'}
+                    </Badge>
+                    <Badge variant={user.plan === 'premium' ? 'default' : 'outline'} className="text-xs">
+                      {user.plan === 'premium' ? 'Premium' : 'Free'}
+                    </Badge>
+                    {user.has_strategy_access && (
+                      <Badge className="text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                        Strategie ✓
+                      </Badge>
+                    )}
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Mail className="h-3.5 w-3.5" />
@@ -258,6 +270,64 @@ export default function UserActivityDetail() {
               ) : (
                 <p className="text-sm text-muted-foreground">Keine Zustimmung vorhanden.</p>
               )}
+            </CardContent>
+          </Card>
+
+          {/* ── 1c. Zugriffssteuerung ──────────────── */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Shield className="h-4 w-4" /> Zugriffssteuerung
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* User Type */}
+                <div className="space-y-1.5">
+                  <p className="text-xs font-medium text-muted-foreground">Nutzer-Typ</p>
+                  <Select
+                    value={user.user_type || 'user'}
+                    onValueChange={(v) => updateAccess.mutate({ userId: user.id, user_type: v as 'user' | 'customer' })}
+                  >
+                    <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="user">User</SelectItem>
+                      <SelectItem value="customer">Kunde</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Plan */}
+                <div className="space-y-1.5">
+                  <p className="text-xs font-medium text-muted-foreground">Plan</p>
+                  <Select
+                    value={user.plan || 'free'}
+                    onValueChange={(v) => updateAccess.mutate({ userId: user.id, plan: v as 'free' | 'premium' })}
+                  >
+                    <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="free">Free</SelectItem>
+                      <SelectItem value="premium">Premium</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Strategy Access */}
+                <div className="space-y-1.5">
+                  <p className="text-xs font-medium text-muted-foreground">Strategie-Zugang</p>
+                  <Button
+                    variant={user.has_strategy_access ? 'default' : 'outline'}
+                    size="sm"
+                    className="w-full h-9"
+                    onClick={() => updateAccess.mutate({ userId: user.id, has_strategy_access: !user.has_strategy_access })}
+                  >
+                    {user.has_strategy_access ? '✓ Aktiv' : '✗ Gesperrt'}
+                  </Button>
+                </div>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-3">
+                Strategie-Zugang erfordert: Nutzer-Typ = Kunde UND Strategie-Zugang = Aktiv
+              </p>
             </CardContent>
           </Card>
 
