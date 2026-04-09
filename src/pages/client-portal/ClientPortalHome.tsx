@@ -24,6 +24,8 @@ import { OnboardingScreen } from '@/components/OnboardingScreen';
 import { GamificationBar } from '@/components/client-portal/GamificationBar';
 import { useGamification } from '@/hooks/useGamification';
 import { useMetaProfile } from '@/hooks/useMetaProfile';
+import { useNextBestStep } from '@/hooks/useNextBestStep';
+import { NextStepCard } from '@/components/client-portal/NextStepCard';
 import { AlertTriangle } from 'lucide-react';
 
 const portalSections = [
