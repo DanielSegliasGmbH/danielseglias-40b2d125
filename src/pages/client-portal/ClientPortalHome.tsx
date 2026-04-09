@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronRight, Lock, ArrowRight } from 'lucide-react';
+import { ChevronRight, Lock } from 'lucide-react';
 import {
   Shield,
   Target,
@@ -14,7 +14,6 @@ import {
   BookOpen,
   Wrench,
   GraduationCap,
-  Brain,
   Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
