@@ -7,6 +7,7 @@ import { useUserEvents, useUserSessions, useUserActivitySummary } from '@/hooks/
 import { UserVisibilityPanel } from '@/components/admin/UserVisibilityPanel';
 import { useUserRuleLogs, CONDITION_LABELS, ACTION_LABELS } from '@/hooks/useAutomationEngine';
 import { useUserScoring, useUpdateUserScoring, STATUS_CONFIG, LABEL_PRESETS, type UserStatus } from '@/hooks/useUserScoring';
+import { useNextBestStepForUser } from '@/hooks/useNextBestStep';
 import { AppLayout } from '@/components/AppLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,6 +21,7 @@ import {
   ArrowLeft, User, Mail, CalendarDays, Clock, Activity,
   MessageSquare, MousePointer, Eye, LogIn, BarChart3, Wrench,
   ChevronLeft, ChevronRight, Copy, Shield, Zap, Tag, Pencil,
+  Navigation,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -124,6 +126,7 @@ export default function UserActivityDetail() {
   const { data: ruleLogs } = useUserRuleLogs(userId);
   const { data: userScoring } = useUserScoring(userId);
   const updateScoring = useUpdateUserScoring();
+  const { data: nextStepData } = useNextBestStepForUser(userId);
 
   // Distinct event types for filter dropdown
   const distinctTypes = useMemo(() => {
@@ -250,7 +253,39 @@ export default function UserActivityDetail() {
           {/* ── 2b. Scoring & Status ─────────────────── */}
           <ScoringCard scoring={userScoring} userId={userId!} onUpdate={updateScoring} />
 
-          {/* ── 3. Status overview ───────────────────── */}
+          {/* ── 2c. Next Best Step (Admin view) ──────── */}
+          {nextStepData?.primary && (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Navigation className="h-4 w-4" /> Empfohlener nächster Schritt
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Badge variant="outline" className="text-[10px]">{nextStepData.primary.type}</Badge>
+                    <span className="text-sm font-semibold text-foreground">{nextStepData.primary.title}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{nextStepData.primary.reason}</p>
+                  <p className="text-[10px] text-muted-foreground mt-2">Pfad: {nextStepData.primary.path}</p>
+                </div>
+                {nextStepData.secondary && (
+                  <div className="bg-muted/50 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <Badge variant="outline" className="text-[10px]">{nextStepData.secondary.type}</Badge>
+                      <span className="text-xs font-medium text-foreground">{nextStepData.secondary.title}</span>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">{nextStepData.secondary.reason}</p>
+                  </div>
+                )}
+                <p className="text-[10px] text-muted-foreground">
+                  Begründung: {nextStepData.reasoning}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
           {summary && (
             <Card>
               <CardHeader className="pb-3">

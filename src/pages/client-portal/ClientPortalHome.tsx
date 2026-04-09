@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronRight, Lock, ArrowRight } from 'lucide-react';
+import { ChevronRight, Lock } from 'lucide-react';
 import {
   Shield,
   Target,
@@ -14,7 +14,6 @@ import {
   BookOpen,
   Wrench,
   GraduationCap,
-  Brain,
   Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -24,6 +23,8 @@ import { OnboardingScreen } from '@/components/OnboardingScreen';
 import { GamificationBar } from '@/components/client-portal/GamificationBar';
 import { useGamification } from '@/hooks/useGamification';
 import { useMetaProfile } from '@/hooks/useMetaProfile';
+import { useNextBestStep } from '@/hooks/useNextBestStep';
+import { NextStepCard } from '@/components/client-portal/NextStepCard';
 import { AlertTriangle } from 'lucide-react';
 
 const portalSections = [
@@ -37,11 +38,6 @@ const portalSections = [
   { key: 'courses', path: '/app/client-portal/courses', icon: GraduationCap, titleKey: 'clientPortal.courses', descKey: 'clientPortal.coursesDesc', protected: false },
 ] as const;
 
-const SUGGESTED_ACTIONS = [
-  { key: 'coach', path: '/app/client-portal/coach', icon: Brain, title: 'Starte deinen Finanz-Coach', desc: 'Dein persönlicher Einstieg in die finanzielle Klarheit.' },
-  { key: 'tools', path: '/app/client-portal/tools', icon: Wrench, title: 'Entdecke die Werkzeugkiste', desc: 'Interaktive Tools für bessere Entscheidungen.' },
-  { key: 'library', path: '/app/client-portal/library', icon: BookOpen, title: 'Wissen aufbauen', desc: 'Artikel und Grundlagen einfach erklärt.' },
-];
 
 // Motivational greetings based on time of day
 function getGreeting(name: string): string {
@@ -67,6 +63,7 @@ export default function ClientPortalHome() {
   const { data: settings } = useCustomerPortalSettings();
   const { level, streakDays } = useGamification();
   const { needsCheckup } = useMetaProfile();
+  const { data: nextStepResult } = useNextBestStep();
   const [passwordGateOpen, setPasswordGateOpen] = useState(false);
   const [strategyUnlocked, setStrategyUnlocked] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -97,9 +94,6 @@ export default function ClientPortalHome() {
   const bottomNavKeys = ['coach', 'tools', 'library'];
   const secondarySections = visibleSections.filter(s => !bottomNavKeys.includes(s.key));
 
-  const suggestedAction = SUGGESTED_ACTIONS.find(a =>
-    visibleSections.some(s => s.key === a.key)
-  );
 
   const SectionCard = ({ section, index }: { section: typeof portalSections[number]; index: number }) => {
     const isProtected = section.protected && hasStrategyPassword && !strategyUnlocked;
@@ -198,38 +192,9 @@ export default function ClientPortalHome() {
           </p>
         </motion.div>
 
-        {/* Hero CTA: clear next step */}
-        {suggestedAction && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15, duration: 0.4, ease: 'easeOut' }}
-          >
-            <Card
-              className="border-primary/20 bg-primary/5 cursor-pointer transition-all hover:shadow-md active:scale-[0.98] touch-manipulation"
-              onClick={() => navigate(suggestedAction.path)}
-            >
-              <CardContent className="p-5">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <suggestedAction.icon className="h-6 w-6 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] uppercase tracking-widest font-semibold text-primary mb-1">
-                      Empfohlen
-                    </p>
-                    <h2 className="text-base font-bold text-foreground mb-1">
-                      {suggestedAction.title}
-                    </h2>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {suggestedAction.desc}
-                    </p>
-                  </div>
-                  <ArrowRight className="h-5 w-5 text-primary shrink-0 mt-1" />
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+        {/* Dynamic Next Best Step */}
+        {nextStepResult && nextStepResult.primary && (
+          <NextStepCard result={nextStepResult} />
         )}
 
         {/* Weitere Bereiche */}
