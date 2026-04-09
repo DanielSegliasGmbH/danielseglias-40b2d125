@@ -275,6 +275,14 @@ function App() {
                   </RouteGuard>
                 }
               />
+              <Route
+                path="/app/cta"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminCtaManagement />
+                  </RouteGuard>
+                }
+              />
               {/* Protected: Customer Detail (new structure) */}
               <Route
                 path="/app/customers/:id"

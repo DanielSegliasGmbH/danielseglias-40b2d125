@@ -84,6 +84,7 @@ export function AppSidebar() {
     { title: t('adminPages.title', 'Öffentliche Seiten'), url: '/app/public-pages', icon: Globe },
     { title: t('trash.title'), url: '/app/trash', icon: Trash2 },
     { title: 'Automationen', url: '/app/automations', icon: Zap },
+    { title: 'CTA-Steuerung', url: '/app/cta', icon: TrendingUp },
     { title: t('clientPortal.preview'), url: '/app/client-portal', icon: Eye },
   ];
 
