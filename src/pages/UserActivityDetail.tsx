@@ -126,6 +126,7 @@ export default function UserActivityDetail() {
   const { data: ruleLogs } = useUserRuleLogs(userId);
   const { data: userScoring } = useUserScoring(userId);
   const updateScoring = useUpdateUserScoring();
+  const { data: nextStepData } = useNextBestStepForUser(userId);
 
   // Distinct event types for filter dropdown
   const distinctTypes = useMemo(() => {
