@@ -230,6 +230,11 @@ export default function UserActivityDetail() {
                         Strategie ✓
                       </Badge>
                     )}
+                    {user.account_status && user.account_status !== 'active' && (
+                      <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${ACCOUNT_STATUS_CONFIG[user.account_status as AccountStatus]?.color || ''}`}>
+                        {ACCOUNT_STATUS_CONFIG[user.account_status as AccountStatus]?.label || user.account_status}
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Mail className="h-3.5 w-3.5" />
