@@ -9,6 +9,8 @@ import { useToast } from '@/hooks/use-toast';
 import { PasswordStrengthChecker, usePasswordValidation } from '@/components/PasswordStrengthChecker';
 import { z } from 'zod';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useSaveConsent, CURRENT_TERMS_VERSION, CURRENT_PRIVACY_VERSION } from '@/hooks/useConsent';
 
 export default function Signup() {
   const { t } = useTranslation();
@@ -18,6 +20,9 @@ export default function Signup() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const saveConsent = useSaveConsent();
   const { signUp, user, role, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
