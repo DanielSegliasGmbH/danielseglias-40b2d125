@@ -39,11 +39,6 @@ const portalSections = [
   { key: 'courses', path: '/app/client-portal/courses', icon: GraduationCap, titleKey: 'clientPortal.courses', descKey: 'clientPortal.coursesDesc', protected: false },
 ] as const;
 
-const SUGGESTED_ACTIONS = [
-  { key: 'coach', path: '/app/client-portal/coach', icon: Brain, title: 'Starte deinen Finanz-Coach', desc: 'Dein persönlicher Einstieg in die finanzielle Klarheit.' },
-  { key: 'tools', path: '/app/client-portal/tools', icon: Wrench, title: 'Entdecke die Werkzeugkiste', desc: 'Interaktive Tools für bessere Entscheidungen.' },
-  { key: 'library', path: '/app/client-portal/library', icon: BookOpen, title: 'Wissen aufbauen', desc: 'Artikel und Grundlagen einfach erklärt.' },
-];
 
 // Motivational greetings based on time of day
 function getGreeting(name: string): string {
