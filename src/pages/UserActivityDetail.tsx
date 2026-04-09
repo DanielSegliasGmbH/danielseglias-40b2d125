@@ -204,6 +204,17 @@ export default function UserActivityDetail() {
                         {user.role === 'admin' ? 'Admin' : user.role === 'staff' ? 'Mitarbeiter' : 'Benutzer'}
                       </Badge>
                     )}
+                    <Badge variant={user.user_type === 'customer' ? 'default' : 'secondary'} className="text-xs">
+                      {user.user_type === 'customer' ? 'Kunde' : 'User'}
+                    </Badge>
+                    <Badge variant={user.plan === 'premium' ? 'default' : 'outline'} className="text-xs">
+                      {user.plan === 'premium' ? 'Premium' : 'Free'}
+                    </Badge>
+                    {user.has_strategy_access && (
+                      <Badge className="text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                        Strategie ✓
+                      </Badge>
+                    )}
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Mail className="h-3.5 w-3.5" />
