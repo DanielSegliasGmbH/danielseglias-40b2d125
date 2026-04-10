@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Sparkles, Eye, Link2, Rocket, ChevronRight, Shield, Lock, EyeOff } from 'lucide-react';
+import { Sparkles, Eye, Link2, Rocket, ChevronRight, ChevronLeft, Shield, Lock, EyeOff, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -26,6 +26,12 @@ const slides = [
     title: 'Alles ist miteinander verbunden',
     description: 'Dein persönlicher Finanz-Coach begleitet dich Schritt für Schritt. Die Werkzeugkiste zeigt dir Zusammenhänge. Der Wissensbereich macht dich unabhängig.',
     showAreas: true,
+  },
+  {
+    icon: Target,
+    title: 'Verstehen. Planen. Prüfen lassen.',
+    description: 'Diese App ersetzt keine Beratung – sie macht dich stark genug, um eine gute Beratung auch wirklich zu nutzen. Du erarbeitest deinen eigenen Plan, erkennst Zusammenhänge und triffst informierte Entscheidungen.',
+    isPurpose: true,
   },
   {
     icon: Shield,
@@ -89,6 +95,45 @@ function PrivacyPoint({ icon, title, description, delay }: PrivacyPointProps) {
   );
 }
 
+function PurposePoints() {
+  const points = [
+    {
+      icon: <Eye className="h-4 w-4 text-primary" />,
+      title: 'Zusammenhänge verstehen',
+      description: 'Lerne, was dir sonst niemand erklärt – und erkenne, worauf es wirklich ankommt.',
+    },
+    {
+      icon: <Target className="h-4 w-4 text-primary" />,
+      title: 'Eigenen Plan erarbeiten',
+      description: 'Entwickle Schritt für Schritt einen Plan, der zu deiner Situation passt.',
+    },
+    {
+      icon: <Shield className="h-4 w-4 text-primary" />,
+      title: 'Prüfen lassen',
+      description: 'Lass deinen fertigen Plan professionell auf Lücken und blinde Flecken prüfen.',
+    },
+    {
+      icon: <Sparkles className="h-4 w-4 text-primary" />,
+      title: 'Kosten sparen, Qualität gewinnen',
+      description: 'Wer vorbereitet in eine Beratung geht, spart Zeit und Geld – und trifft bessere Entscheidungen.',
+    },
+  ];
+
+  return (
+    <div className="flex flex-col gap-3.5 w-full mt-2">
+      {points.map((point, i) => (
+        <PrivacyPoint
+          key={i}
+          icon={point.icon}
+          title={point.title}
+          description={point.description}
+          delay={0.1 + i * 0.1}
+        />
+      ))}
+    </div>
+  );
+}
+
 export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -100,6 +145,13 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
       setCurrent(current + 1);
     } else {
       onComplete();
+    }
+  };
+
+  const handleBack = () => {
+    if (current > 0) {
+      setDirection(-1);
+      setCurrent(current - 1);
     }
   };
 
@@ -125,9 +177,20 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
       {/* Top bar */}
       <div className="w-full max-w-sm space-y-4">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground font-medium">
-            {current + 1} / {slides.length}
-          </span>
+          <div className="flex items-center gap-2">
+            {current > 0 && (
+              <button
+                onClick={handleBack}
+                className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-muted transition-colors min-h-[44px] min-w-[44px]"
+                aria-label="Zurück"
+              >
+                <ChevronLeft className="h-5 w-5 text-muted-foreground" />
+              </button>
+            )}
+            <span className="text-xs text-muted-foreground font-medium">
+              {current + 1} / {slides.length}
+            </span>
+          </div>
           <button
             onClick={handleSkip}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors min-h-[44px] px-3"
@@ -153,9 +216,9 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
           animate="center"
           exit="exit"
           transition={{ duration: 0.35, ease: 'easeInOut' }}
-          className="flex-1 flex flex-col items-center justify-center text-center max-w-sm w-full"
+          className="flex-1 flex flex-col items-center justify-center text-center max-w-sm w-full overflow-y-auto"
         >
-          <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center mb-8">
+          <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center mb-8 shrink-0">
             <Icon className="h-10 w-10 text-primary" />
           </div>
           <h1 className="text-2xl font-bold text-foreground mb-4 leading-tight">{slide.title}</h1>
@@ -169,6 +232,9 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
               <AreaBubble label="Wissensbereich" icon={<Link2 className="h-4 w-4 text-primary" />} delay={0.4} />
             </div>
           )}
+
+          {/* Purpose slide (new slide 5) */}
+          {slide.isPurpose && <PurposePoints />}
 
           {/* Privacy slide */}
           {isPrivacySlide && (
