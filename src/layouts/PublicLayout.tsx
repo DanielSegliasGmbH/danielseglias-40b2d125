@@ -141,7 +141,7 @@ export function PublicLayout({ children, title, description }: PublicLayoutProps
                   </Link>
                 </li>
                 <li>
-                  <Link to="/datenschutz" className="text-muted-foreground hover:text-foreground">
+                  <a href="https://danielseglias.ch/datenschutz" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                     {t('public.footer.privacy')}
                   </Link>
                 </li>

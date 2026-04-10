@@ -54,7 +54,7 @@ export function ConsentGate({ children }: ConsentGateProps) {
             <label htmlFor="consent-terms" className="text-sm leading-snug text-foreground cursor-pointer">
               Ich akzeptiere die{' '}
               <a
-                href="/agb"
+                href="https://danielseglias.ch/agb"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary font-medium hover:underline"
@@ -74,7 +74,7 @@ export function ConsentGate({ children }: ConsentGateProps) {
             <label htmlFor="consent-privacy" className="text-sm leading-snug text-foreground cursor-pointer">
               Ich habe die{' '}
               <a
-                href="/datenschutz"
+                href="https://danielseglias.ch/datenschutz"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary font-medium hover:underline"
