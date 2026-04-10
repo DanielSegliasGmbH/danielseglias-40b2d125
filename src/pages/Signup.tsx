@@ -172,7 +172,7 @@ export default function Signup() {
               />
               <label htmlFor="signup-terms" className="text-sm leading-snug text-foreground cursor-pointer">
                 Ich akzeptiere die{' '}
-                <a href="/agb" target="_blank" rel="noopener noreferrer" className="text-primary font-medium hover:underline">
+                <a href="https://danielseglias.ch/agb" target="_blank" rel="noopener noreferrer" className="text-primary font-medium hover:underline">
                   Allgemeinen Geschäftsbedingungen
                 </a>
                 {' '}(Version {CURRENT_TERMS_VERSION}).
@@ -187,7 +187,7 @@ export default function Signup() {
               />
               <label htmlFor="signup-privacy" className="text-sm leading-snug text-foreground cursor-pointer">
                 Ich habe die{' '}
-                <a href="/datenschutz" target="_blank" rel="noopener noreferrer" className="text-primary font-medium hover:underline">
+                <a href="https://danielseglias.ch/datenschutz" target="_blank" rel="noopener noreferrer" className="text-primary font-medium hover:underline">
                   Datenschutzerklärung
                 </a>
                 {' '}gelesen und akzeptiere sie (Version {CURRENT_PRIVACY_VERSION}).
