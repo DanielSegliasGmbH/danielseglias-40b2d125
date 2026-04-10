@@ -3,14 +3,17 @@ import { supabase } from '@/integrations/supabase/client';
 
 export const CURRENT_TERMS_VERSION = 'v1.0';
 export const CURRENT_PRIVACY_VERSION = 'v1.0';
+export const CURRENT_DISCLAIMER_VERSION = 'v1.0';
 
 export interface ConsentRecord {
   id: string;
   user_id: string;
   terms_accepted: boolean;
   privacy_accepted: boolean;
+  disclaimer_accepted: boolean;
   terms_version: string;
   privacy_version: string;
+  disclaimer_version: string;
   accepted_at: string;
   ip_address: string | null;
   user_agent: string | null;
@@ -39,8 +42,10 @@ export function useHasValidConsent(userId: string | undefined) {
   const hasValid = !!data
     && data.terms_accepted
     && data.privacy_accepted
+    && data.disclaimer_accepted
     && data.terms_version === CURRENT_TERMS_VERSION
-    && data.privacy_version === CURRENT_PRIVACY_VERSION;
+    && data.privacy_version === CURRENT_PRIVACY_VERSION
+    && data.disclaimer_version === CURRENT_DISCLAIMER_VERSION;
   return { hasValidConsent: hasValid, isLoading, latestConsent: data };
 }
 
@@ -54,10 +59,12 @@ export function useSaveConsent() {
           user_id: userId,
           terms_accepted: true,
           privacy_accepted: true,
+          disclaimer_accepted: true,
           terms_version: CURRENT_TERMS_VERSION,
           privacy_version: CURRENT_PRIVACY_VERSION,
+          disclaimer_version: CURRENT_DISCLAIMER_VERSION,
           user_agent: navigator.userAgent,
-        });
+        } as any);
       if (error) throw error;
     },
     onSuccess: (_, vars) => {

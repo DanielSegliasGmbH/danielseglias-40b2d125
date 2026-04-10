@@ -283,6 +283,8 @@ export type Database = {
         Row: {
           accepted_at: string
           created_at: string
+          disclaimer_accepted: boolean
+          disclaimer_version: string
           id: string
           ip_address: string | null
           privacy_accepted: boolean
@@ -295,6 +297,8 @@ export type Database = {
         Insert: {
           accepted_at?: string
           created_at?: string
+          disclaimer_accepted?: boolean
+          disclaimer_version?: string
           id?: string
           ip_address?: string | null
           privacy_accepted?: boolean
@@ -307,6 +311,8 @@ export type Database = {
         Update: {
           accepted_at?: string
           created_at?: string
+          disclaimer_accepted?: boolean
+          disclaimer_version?: string
           id?: string
           ip_address?: string | null
           privacy_accepted?: boolean
