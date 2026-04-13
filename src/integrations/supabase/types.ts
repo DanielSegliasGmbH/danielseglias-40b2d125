@@ -217,28 +217,31 @@ export type Database = {
       chat_messages: {
         Row: {
           created_at: string
-          customer_id: string
+          customer_id: string | null
           id: string
           is_read: boolean
           message: string
+          participant_id: string | null
           sender_id: string
           sender_role: string
         }
         Insert: {
           created_at?: string
-          customer_id: string
+          customer_id?: string | null
           id?: string
           is_read?: boolean
           message: string
+          participant_id?: string | null
           sender_id: string
           sender_role?: string
         }
         Update: {
           created_at?: string
-          customer_id?: string
+          customer_id?: string | null
           id?: string
           is_read?: boolean
           message?: string
+          participant_id?: string | null
           sender_id?: string
           sender_role?: string
         }

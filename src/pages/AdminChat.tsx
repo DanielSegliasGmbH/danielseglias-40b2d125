@@ -13,7 +13,6 @@ import {
   useSendMessage,
   useMarkAsRead,
   type ChatMessage,
-  type ChatConversation,
 } from '@/hooks/useChat';
 import { NewChatDialog } from '@/components/admin/NewChatDialog';
 import { cn } from '@/lib/utils';
@@ -25,27 +24,25 @@ import { toast } from 'sonner';
 export default function AdminChat() {
   const { user } = useAuth();
   const { data: conversations = [], isLoading } = useChatConversations();
-  const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
+  const [selectedParticipantId, setSelectedParticipantId] = useState<string | null>(null);
   const [newChatOpen, setNewChatOpen] = useState(false);
   const isMobile = useIsMobile();
 
-  const selectedConversation = conversations.find((c) => c.customer_id === selectedCustomerId);
+  const selectedConversation = conversations.find((c) => c.participant_id === selectedParticipantId);
 
-  // On mobile, show either list or chat
-  const showList = isMobile ? !selectedCustomerId : true;
-  const showChat = isMobile ? !!selectedCustomerId : true;
+  const showList = isMobile ? !selectedParticipantId : true;
+  const showChat = isMobile ? !!selectedParticipantId : true;
 
   return (
     <AppLayout>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-foreground">Nachrichten</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Direkte Kommunikation mit deinen Klienten
+          Direkte Kommunikation mit deinen Benutzern
         </p>
       </div>
 
       <div className="flex gap-4 h-[calc(100vh-220px)] min-h-[400px]">
-        {/* Conversation List */}
         {showList && (
           <Card className={cn('flex flex-col', isMobile ? 'w-full' : 'w-80 shrink-0')}>
             <div className="p-3 border-b border-border flex items-center justify-between">
@@ -66,16 +63,16 @@ export default function AdminChat() {
               ) : (
                 conversations.map((conv) => (
                   <button
-                    key={conv.customer_id}
-                    onClick={() => setSelectedCustomerId(conv.customer_id)}
+                    key={conv.participant_id}
+                    onClick={() => setSelectedParticipantId(conv.participant_id)}
                     className={cn(
                       'w-full text-left px-4 py-3 border-b border-border/50 hover:bg-accent transition-colors',
-                      selectedCustomerId === conv.customer_id && 'bg-accent'
+                      selectedParticipantId === conv.participant_id && 'bg-accent'
                     )}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-medium text-sm text-foreground truncate">
-                        {conv.customer_name}
+                        {conv.participant_name}
                       </span>
                       <span className="text-[10px] text-muted-foreground shrink-0 ml-2">
                         {formatDistanceToNow(new Date(conv.last_message_at), {
@@ -101,15 +98,14 @@ export default function AdminChat() {
           </Card>
         )}
 
-        {/* Chat Detail */}
         {showChat && (
           <Card className="flex-1 flex flex-col">
-            {selectedCustomerId ? (
+            {selectedParticipantId ? (
               <AdminChatDetail
-                customerId={selectedCustomerId}
-                customerName={selectedConversation?.customer_name || ''}
+                participantId={selectedParticipantId}
+                participantName={selectedConversation?.participant_name || ''}
                 userId={user!.id}
-                onBack={isMobile ? () => setSelectedCustomerId(null) : undefined}
+                onBack={isMobile ? () => setSelectedParticipantId(null) : undefined}
               />
             ) : (
               <div className="flex-1 flex items-center justify-center">
@@ -128,32 +124,32 @@ export default function AdminChat() {
       <NewChatDialog
         open={newChatOpen}
         onOpenChange={setNewChatOpen}
-        onChatStarted={(cid) => setSelectedCustomerId(cid)}
+        onChatStarted={(pid) => setSelectedParticipantId(pid)}
       />
     </AppLayout>
   );
 }
 
 function AdminChatDetail({
-  customerId,
-  customerName,
+  participantId,
+  participantName,
   userId,
   onBack,
 }: {
-  customerId: string;
-  customerName: string;
+  participantId: string;
+  participantName: string;
   userId: string;
   onBack?: () => void;
 }) {
-  const { data: messages = [], isLoading } = useChatMessages(customerId);
+  const { data: messages = [], isLoading } = useChatMessages(participantId);
   const sendMessage = useSendMessage();
   const markAsRead = useMarkAsRead();
   const [text, setText] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    markAsRead.mutate(customerId);
-  }, [customerId, markAsRead]);
+    markAsRead.mutate(participantId);
+  }, [participantId, markAsRead]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -163,9 +159,8 @@ function AdminChatDetail({
 
   const handleSend = async () => {
     if (!text.trim()) return;
-
     try {
-      await sendMessage.mutateAsync({ customerId, message: text });
+      await sendMessage.mutateAsync({ participantId, message: text });
       setText('');
     } catch (error) {
       toast.error(
@@ -189,16 +184,12 @@ function AdminChatDetail({
             <ArrowLeft className="h-4 w-4" />
           </Button>
         )}
-        <div>
-          <h3 className="font-semibold text-sm text-foreground">{customerName}</h3>
-        </div>
+        <h3 className="font-semibold text-sm text-foreground">{participantName}</h3>
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
         {isLoading ? (
-          <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-            Laden…
-          </div>
+          <div className="flex items-center justify-center h-full text-sm text-muted-foreground">Laden…</div>
         ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-2 text-center">
             <MessageCircle className="h-10 w-10 text-muted-foreground/20" />
@@ -206,27 +197,15 @@ function AdminChatDetail({
           </div>
         ) : (
           messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={cn('flex', msg.sender_id === userId ? 'justify-end' : 'justify-start')}
-            >
-              <div
-                className={cn(
-                  'max-w-[75%] rounded-2xl px-4 py-2.5 text-sm',
-                  msg.sender_id === userId
-                    ? 'bg-primary text-primary-foreground rounded-br-md'
-                    : 'bg-muted text-foreground rounded-bl-md'
-                )}
-              >
+            <div key={msg.id} className={cn('flex', msg.sender_id === userId ? 'justify-end' : 'justify-start')}>
+              <div className={cn(
+                'max-w-[75%] rounded-2xl px-4 py-2.5 text-sm',
+                msg.sender_id === userId
+                  ? 'bg-primary text-primary-foreground rounded-br-md'
+                  : 'bg-muted text-foreground rounded-bl-md'
+              )}>
                 <p className="whitespace-pre-wrap break-words">{msg.message}</p>
-                <p
-                  className={cn(
-                    'text-[10px] mt-1',
-                    msg.sender_id === userId
-                      ? 'text-primary-foreground/60'
-                      : 'text-muted-foreground'
-                  )}
-                >
+                <p className={cn('text-[10px] mt-1', msg.sender_id === userId ? 'text-primary-foreground/60' : 'text-muted-foreground')}>
                   {format(new Date(msg.created_at), 'dd.MM. HH:mm', { locale: de })}
                 </p>
               </div>
@@ -246,12 +225,7 @@ function AdminChatDetail({
             rows={1}
             disabled={sendMessage.isPending}
           />
-          <Button
-            size="icon"
-            onClick={handleSend}
-            disabled={!text.trim() || sendMessage.isPending}
-            className="shrink-0 h-10 w-10"
-          >
+          <Button size="icon" onClick={handleSend} disabled={!text.trim() || sendMessage.isPending} className="shrink-0 h-10 w-10">
             <Send className="h-4 w-4" />
           </Button>
         </div>
