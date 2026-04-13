@@ -26,6 +26,7 @@ export default function AdminChat() {
   const { user } = useAuth();
   const { data: conversations = [], isLoading } = useChatConversations();
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
+  const [newChatOpen, setNewChatOpen] = useState(false);
   const isMobile = useIsMobile();
 
   const selectedConversation = conversations.find((c) => c.customer_id === selectedCustomerId);
