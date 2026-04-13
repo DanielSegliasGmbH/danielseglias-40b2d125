@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { BottomNavigation } from '@/components/client-portal/BottomNavigation';
 import { MoreSheet } from '@/components/client-portal/MoreSheet';
 import { ChatDrawer } from '@/components/client-portal/ChatDrawer';
+import { FloatingChatBubble } from '@/components/client-portal/FloatingChatBubble';
 import { NotificationBell } from '@/components/client-portal/NotificationBell';
 import { useUnreadCount } from '@/hooks/useChat';
 import {
@@ -74,7 +75,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
   const location = useLocation();
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [chatOpen, setChatOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false); // desktop only
   const { data: settings } = useCustomerPortalSettings();
   const { data: unreadCount = 0 } = useUnreadCount();
   
@@ -214,19 +215,6 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
             <h1 className="text-base font-semibold text-foreground">{t('clientPortal.title')}</h1>
             <div className="flex items-center gap-1">
               <NotificationBell />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative h-8 w-8"
-                onClick={() => setChatOpen(true)}
-              >
-                <MessageCircle className="h-4.5 w-4.5" />
-                {unreadCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-4 min-w-[16px] px-1 text-[10px] flex items-center justify-center">
-                    {unreadCount}
-                  </Badge>
-                )}
-              </Button>
             </div>
           </div>
         </div>
@@ -276,8 +264,11 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
           visibleSections={visibleSections}
         />
 
-        {/* Chat Drawer */}
+        {/* Chat Drawer (desktop) */}
         <ChatDrawer open={chatOpen} onOpenChange={setChatOpen} />
+
+        {/* Floating Chat Bubble (mobile) */}
+        <FloatingChatBubble />
       </div>
     </TooltipProvider>
   );

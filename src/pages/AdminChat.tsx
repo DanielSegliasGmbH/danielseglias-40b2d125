@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Send, MessageCircle, ArrowLeft } from 'lucide-react';
+import { Send, MessageCircle, ArrowLeft, Plus } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import {
   useChatConversations,
@@ -15,6 +15,7 @@ import {
   type ChatMessage,
   type ChatConversation,
 } from '@/hooks/useChat';
+import { NewChatDialog } from '@/components/admin/NewChatDialog';
 import { cn } from '@/lib/utils';
 import { format, formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -25,6 +26,7 @@ export default function AdminChat() {
   const { user } = useAuth();
   const { data: conversations = [], isLoading } = useChatConversations();
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
+  const [newChatOpen, setNewChatOpen] = useState(false);
   const isMobile = useIsMobile();
 
   const selectedConversation = conversations.find((c) => c.customer_id === selectedCustomerId);
@@ -46,8 +48,12 @@ export default function AdminChat() {
         {/* Conversation List */}
         {showList && (
           <Card className={cn('flex flex-col', isMobile ? 'w-full' : 'w-80 shrink-0')}>
-            <div className="p-3 border-b border-border">
+            <div className="p-3 border-b border-border flex items-center justify-between">
               <h2 className="font-semibold text-sm text-foreground">Chats</h2>
+              <Button size="sm" variant="outline" className="h-7 gap-1" onClick={() => setNewChatOpen(true)}>
+                <Plus className="h-3.5 w-3.5" />
+                Neu
+              </Button>
             </div>
             <ScrollArea className="flex-1">
               {isLoading ? (
@@ -118,6 +124,12 @@ export default function AdminChat() {
           </Card>
         )}
       </div>
+
+      <NewChatDialog
+        open={newChatOpen}
+        onOpenChange={setNewChatOpen}
+        onChatStarted={(cid) => setSelectedCustomerId(cid)}
+      />
     </AppLayout>
   );
 }
