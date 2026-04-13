@@ -123,7 +123,8 @@ function App() {
             <PageViewTracker />
             <Routes>
               {/* Public routes (no auth) */}
-              <Route path="/" element={<PublicLanding />} />
+              <Route path="/" element={<MinimalLanding />} />
+              <Route path="/hauptseite" element={<PublicLanding />} />
               <Route path="/contact" element={<PublicContact />} />
               <Route path="/blog" element={<PublicBlog />} />
               <Route path="/blog/:slug" element={<PublicBlogDetail />} />
