@@ -344,7 +344,7 @@ export default function InvestmentConsultingSummary() {
         )}
 
         {/* ── Existing: Pyramid Topic Cards ── */}
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-red-500" />Wichtige Themen</CardTitle>
