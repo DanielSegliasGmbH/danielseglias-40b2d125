@@ -91,6 +91,7 @@ import AdminAnalyticsDashboard from "./pages/AdminAnalyticsDashboard";
 import AdminCtaManagement from "./pages/AdminCtaManagement";
 
 // Public Pages (no auth required)
+import MinimalLanding from "./pages/public/MinimalLanding";
 import PublicLanding from "./pages/public/PublicLanding";
 import PublicContact from "./pages/public/PublicContact";
 import PublicBlog from "./pages/public/PublicBlog";
@@ -122,7 +123,8 @@ function App() {
             <PageViewTracker />
             <Routes>
               {/* Public routes (no auth) */}
-              <Route path="/" element={<PublicLanding />} />
+              <Route path="/" element={<MinimalLanding />} />
+              <Route path="/hauptseite" element={<PublicLanding />} />
               <Route path="/contact" element={<PublicContact />} />
               <Route path="/blog" element={<PublicBlog />} />
               <Route path="/blog/:slug" element={<PublicBlogDetail />} />
