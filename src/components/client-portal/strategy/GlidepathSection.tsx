@@ -24,8 +24,8 @@ export function GlidepathSection({ selected, onSelect, privacyMode }: Props) {
     <section className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
         <div>
-          <h2 className="text-xl md:text-2xl font-bold text-foreground">Ablaufmanagement</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">Ablaufmanagement</h2>
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Modellbasierte Betrachtung verschiedener Gewichtungen über die kommenden Altersjahre.
           </p>
         </div>
@@ -59,9 +59,9 @@ export function GlidepathSection({ selected, onSelect, privacyMode }: Props) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-28">Assetklasse</TableHead>
+                  <TableHead className="w-20 sm:w-28 text-xs sm:text-sm">Assetklasse</TableHead>
                   {profile.rows.map((r) => (
-                    <TableHead key={r.age} className="text-center min-w-[56px]">
+                    <TableHead key={r.age} className="text-center min-w-[40px] sm:min-w-[56px] text-xs sm:text-sm px-1 sm:px-2">
                       {r.age}
                     </TableHead>
                   ))}
@@ -69,9 +69,9 @@ export function GlidepathSection({ selected, onSelect, privacyMode }: Props) {
               </TableHeader>
               <TableBody>
                 <TableRow>
-                  <TableCell className="font-medium text-foreground">Aktien</TableCell>
+                  <TableCell className="font-medium text-foreground text-xs sm:text-sm">Aktien</TableCell>
                   {profile.rows.map((r) => (
-                    <TableCell key={r.age} className="text-center">
+                    <TableCell key={r.age} className="text-center px-1 sm:px-2">
                       {privacyMode ? (
                         <span className="text-xs text-muted-foreground">–</span>
                       ) : (
@@ -88,9 +88,9 @@ export function GlidepathSection({ selected, onSelect, privacyMode }: Props) {
                   ))}
                 </TableRow>
                 <TableRow>
-                  <TableCell className="font-medium text-foreground">Obligationen</TableCell>
+                  <TableCell className="font-medium text-foreground text-xs sm:text-sm">Obligationen</TableCell>
                   {profile.rows.map((r) => (
-                    <TableCell key={r.age} className="text-center">
+                    <TableCell key={r.age} className="text-center px-1 sm:px-2">
                       {privacyMode ? (
                         <span className="text-xs text-muted-foreground">–</span>
                       ) : (
@@ -100,9 +100,9 @@ export function GlidepathSection({ selected, onSelect, privacyMode }: Props) {
                   ))}
                 </TableRow>
                 <TableRow>
-                  <TableCell className="font-medium text-foreground">Liquidität</TableCell>
+                  <TableCell className="font-medium text-foreground text-xs sm:text-sm">Liquidität</TableCell>
                   {profile.rows.map((r) => (
-                    <TableCell key={r.age} className="text-center">
+                    <TableCell key={r.age} className="text-center px-1 sm:px-2">
                       {privacyMode ? (
                         <span className="text-xs text-muted-foreground">–</span>
                       ) : (

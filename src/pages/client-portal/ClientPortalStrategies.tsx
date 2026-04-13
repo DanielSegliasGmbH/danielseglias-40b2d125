@@ -147,14 +147,14 @@ export default function ClientPortalStrategies() {
 
   return (
     <ClientPortalLayout>
-      <div className="max-w-5xl mx-auto space-y-10 pb-12">
+      <div className="max-w-5xl mx-auto space-y-6 sm:space-y-10 pb-24 sm:pb-12 px-1 sm:px-0">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-            <TrendingUp className="h-6 w-6 text-primary" />
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+            <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Anlageberatung</h1>
-            <p className="text-muted-foreground">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground">Anlageberatung</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
               Plattform wählen, Strategie verstehen, Umsetzung nachvollziehen
             </p>
           </div>
@@ -178,15 +178,15 @@ export default function ClientPortalStrategies() {
         />
 
         <section className="space-y-4">
-          <div className="bg-card border rounded-2xl p-8 text-center space-y-4">
-            <h2 className="text-xl md:text-2xl font-bold text-foreground">
+          <div className="bg-card border rounded-2xl p-5 sm:p-8 text-center space-y-3 sm:space-y-4">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
               Diese Strategie auf deine Situation anwenden
             </h2>
-            <p className="text-muted-foreground max-w-lg mx-auto">
+            <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
               Lass uns gemeinsam prüfen, welche Kombination aus Plattform, Strategie und
               Ablaufmanagement optimal zu deiner Situation passt.
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Kontaktiere deinen Berater direkt über den Chat.
             </p>
           </div>
