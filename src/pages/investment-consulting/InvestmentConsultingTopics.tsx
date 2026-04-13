@@ -30,19 +30,19 @@ export default function InvestmentConsultingTopics() {
   return (
     <Wrapper>
       <div className="flex flex-col min-h-screen">
-        <div className="w-full h-[50vh] min-h-[300px] max-h-[500px] relative">
+        <div className="w-full h-[25vh] sm:h-[40vh] min-h-[160px] max-h-[500px] relative">
           <img src={heroImage} alt="Anlageberatung" className="w-full h-full object-cover" />
         </div>
 
-        <div className="flex-1 bg-background p-8 md:p-12">
+        <div className="flex-1 bg-background px-4 py-6 sm:p-8 md:p-12">
           <div className="max-w-3xl mx-auto">
-            <h1 className="text-2xl md:text-3xl font-semibold text-foreground mb-6">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold text-foreground mb-4 sm:mb-6">
               Unsere heutigen Gesprächsthemen
             </h1>
             
-            <ul className="space-y-3 mb-8">
+            <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
               {topics.map((topic, index) => (
-                <li key={index} className="text-foreground/80 text-lg flex items-start">
+                <li key={index} className="text-foreground/80 text-base sm:text-lg flex items-start">
                   <span className="mr-2">-</span>
                   <span>{topic}</span>
                 </li>

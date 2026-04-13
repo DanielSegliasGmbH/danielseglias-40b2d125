@@ -352,17 +352,16 @@ export default function InvestmentConsultingOffer() {
   /* ================================================================ */
   return (
     <AppLayout>
-      <div className="container py-6 space-y-6 max-w-5xl">
+      <div className="container px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 max-w-5xl">
         {/* Header */}
-        <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-semibold">Produkt- & Angebotslogik</h1>
-            <p className="text-muted-foreground mt-1 text-sm">
-              {selectedTileIds.length} Themen ausgewählt · {scored.length} Produkte aktiv ·
-              Schwellenwerte: {'>'}6 Haupt / {'>'}4 Ergänz. / {'>'}2 Optional
+            <h1 className="text-lg sm:text-2xl font-semibold">Produkt- & Angebotslogik</h1>
+            <p className="text-muted-foreground mt-1 text-xs sm:text-sm">
+              {selectedTileIds.length} Themen · {scored.length} Produkte aktiv
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 self-start sm:self-auto">
             <Button variant="ghost" size="sm" onClick={resetAll} className="text-xs gap-1">
               <RotateCcw className="w-3 h-3" /> Reset
             </Button>
@@ -372,7 +371,8 @@ export default function InvestmentConsultingOffer() {
               onClick={() => setShowAdminPanel(!showAdminPanel)}
             >
               <Eye className="w-4 h-4 mr-1" />
-              {showAdminPanel ? 'Steuerung ausblenden' : 'Steuerung einblenden'}
+              <span className="hidden sm:inline">{showAdminPanel ? 'Steuerung ausblenden' : 'Steuerung einblenden'}</span>
+              <span className="sm:hidden">Steuerung</span>
             </Button>
           </div>
         </div>

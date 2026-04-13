@@ -157,23 +157,24 @@ export default function InvestmentConsultingSummary() {
 
   return (
     <AppLayout>
-      <div className="container py-6 space-y-6 max-w-5xl">
+      <div className="container px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 max-w-5xl">
         {/* ── Header ── */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-semibold">
+            <h1 className="text-lg sm:text-2xl font-semibold">
               {t('investmentConsulting.summary', 'Zusammenfassung')}
             </h1>
-            <p className="text-muted-foreground mt-1">Übersicht der Beratungsergebnisse</p>
+            <p className="text-muted-foreground mt-1 text-sm sm:text-base">Übersicht der Beratungsergebnisse</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 self-start sm:self-auto">
             <AutoSaveIndicator status={autoSaveStatus} title={currentTitle || undefined} />
 
             <Dialog open={isCompleteDialogOpen} onOpenChange={setIsCompleteDialogOpen}>
               <DialogTrigger asChild>
-                <Button>
+                <Button size="sm" className="sm:size-default">
                   <CheckCircle className="w-4 h-4 mr-2" />
-                  Beratung abschliessen
+                  <span className="hidden sm:inline">Beratung abschliessen</span>
+                  <span className="sm:hidden">Abschliessen</span>
                 </Button>
               </DialogTrigger>
               <DialogContent>
