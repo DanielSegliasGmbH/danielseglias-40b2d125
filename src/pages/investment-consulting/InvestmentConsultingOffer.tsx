@@ -579,7 +579,7 @@ export default function InvestmentConsultingOffer() {
               {/* Package price overrides */}
               <div className="space-y-3">
                 <Label className="text-xs font-medium">Paketpreise überschreiben</Label>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {packageConfigs.map((cfg) => (
                     <div key={cfg.tier} className="space-y-1">
                       <Label className="text-[11px] text-muted-foreground">{cfg.label}</Label>
@@ -621,7 +621,7 @@ export default function InvestmentConsultingOffer() {
               <Separator />
 
               {/* Internal note & readiness */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <Label className="text-xs">Interne Notiz</Label>
                   <Input
@@ -671,11 +671,11 @@ export default function InvestmentConsultingOffer() {
         </div>
 
         {/* Nav */}
-        <div className="flex justify-between pt-4">
-          <Button variant="outline" onClick={() => navigate('/app/investment-consulting/answers')}>
+        <div className="flex flex-col sm:flex-row justify-between gap-3 pt-4">
+          <Button variant="outline" size="sm" className="sm:size-default" onClick={() => navigate('/app/investment-consulting/answers')}>
             Zurück zu Antworten
           </Button>
-          <Button onClick={() => navigate('/app/investment-consulting/summary')}>
+          <Button size="sm" className="sm:size-default" onClick={() => navigate('/app/investment-consulting/summary')}>
             Weiter zur Zusammenfassung
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
