@@ -450,7 +450,7 @@ export default function InvestmentConsultingOffer() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-1">
-            <div className="grid grid-cols-[1fr_100px_80px_80px_50px] gap-2 text-xs font-medium text-muted-foreground pb-2 border-b">
+            <div className="hidden sm:grid grid-cols-[1fr_100px_80px_80px_50px] gap-2 text-xs font-medium text-muted-foreground pb-2 border-b">
               <span>Produkt</span>
               <span className="text-center">Score</span>
               <span className="text-center">Tier</span>
@@ -468,15 +468,16 @@ export default function InvestmentConsultingOffer() {
                 <div
                   key={product.id}
                   className={cn(
-                    'grid grid-cols-[1fr_100px_80px_80px_50px] gap-2 items-center py-2 border-b border-border/40 text-sm',
+                    'sm:grid sm:grid-cols-[1fr_100px_80px_80px_50px] gap-2 items-center py-3 sm:py-2 border-b border-border/40 text-sm',
+                    'flex flex-col sm:flex-row',
                     isDisabled && 'opacity-40',
                   )}
                 >
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex items-center justify-between sm:block">
                     <p className="truncate font-medium text-xs">{product.name}</p>
                     <p className="truncate text-[11px] text-muted-foreground">{product.category}</p>
                   </div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 w-full sm:w-auto">
                     <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
                       <div
                         className={cn(
@@ -490,7 +491,7 @@ export default function InvestmentConsultingOffer() {
                     </div>
                     <span className="text-[11px] tabular-nums w-8 text-right font-mono">{score}</span>
                   </div>
-                  <div className="text-center">
+                  <div className="text-center hidden sm:block">
                     {tier ? (
                       <Badge
                         variant="outline"
@@ -506,10 +507,10 @@ export default function InvestmentConsultingOffer() {
                       <span className="text-[10px] text-muted-foreground">—</span>
                     )}
                   </div>
-                  <div className="text-center text-xs text-muted-foreground">
+                  <div className="text-center text-xs text-muted-foreground hidden sm:block">
                     {formatCHF(product.baseValue)}
                   </div>
-                  <div className="flex justify-center">
+                  <div className="flex justify-center sm:justify-center self-end sm:self-auto">
                     <Switch
                       checked={!isDisabled}
                       onCheckedChange={() => toggleProduct(product.id)}
