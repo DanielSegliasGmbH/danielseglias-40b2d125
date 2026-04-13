@@ -91,6 +91,7 @@ import AdminAnalyticsDashboard from "./pages/AdminAnalyticsDashboard";
 import AdminCtaManagement from "./pages/AdminCtaManagement";
 
 // Public Pages (no auth required)
+import MinimalLanding from "./pages/public/MinimalLanding";
 import PublicLanding from "./pages/public/PublicLanding";
 import PublicContact from "./pages/public/PublicContact";
 import PublicBlog from "./pages/public/PublicBlog";
