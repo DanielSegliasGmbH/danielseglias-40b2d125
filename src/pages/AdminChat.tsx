@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Send, MessageCircle, ArrowLeft } from 'lucide-react';
+import { Send, MessageCircle, ArrowLeft, Plus } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import {
   useChatConversations,
@@ -15,6 +15,7 @@ import {
   type ChatMessage,
   type ChatConversation,
 } from '@/hooks/useChat';
+import { NewChatDialog } from '@/components/admin/NewChatDialog';
 import { cn } from '@/lib/utils';
 import { format, formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
