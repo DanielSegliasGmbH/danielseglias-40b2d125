@@ -214,11 +214,11 @@ export default function InvestmentConsultingNeeds() {
       <div className="min-h-screen bg-background">
         {/* Header */}
         <div className="border-b bg-card">
-          <div className="container py-6">
-            <div className="flex items-start justify-between gap-4">
+          <div className="container px-4 sm:px-6 py-4 sm:py-6">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
               <div>
-                <h1 className="text-2xl font-bold">Was ist dir bei deiner Vorsorge wirklich wichtig?</h1>
-                <p className="text-muted-foreground mt-1">
+                <h1 className="text-lg sm:text-2xl font-bold">Was ist dir bei deiner Vorsorge wirklich wichtig?</h1>
+                <p className="text-muted-foreground mt-1 text-sm sm:text-base">
                   Wähle gemeinsam mit dem Kunden die wichtigsten Punkte aus. Mehrfachauswahl möglich.
                 </p>
               </div>
@@ -226,7 +226,7 @@ export default function InvestmentConsultingNeeds() {
                 variant={allSelected ? 'outline' : 'default'}
                 size="sm"
                 onClick={toggleAll}
-                className="shrink-0 gap-1.5"
+                className="shrink-0 gap-1.5 self-start"
               >
                 <CheckCheck className="h-4 w-4" />
                 {allSelected ? 'Alle abwählen' : 'Alle auswählen'}
@@ -247,7 +247,7 @@ export default function InvestmentConsultingNeeds() {
           </div>
         </div>
 
-        <div className="container py-8 space-y-8">
+        <div className="container px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
           {/* Category Filter */}
           <div className="flex flex-wrap gap-2">
             <button

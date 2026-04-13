@@ -52,19 +52,19 @@ export default function InvestmentConsultingStart() {
   return (
     <AppLayout>
       <div className="flex flex-col min-h-screen">
-        <div className="w-full h-[40vh] min-h-[250px] max-h-[400px] relative">
+        <div className="w-full h-[25vh] sm:h-[35vh] min-h-[160px] max-h-[400px] relative">
           <img src={heroImage} alt="Anlageberatung" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/80" />
         </div>
 
-        <div className="flex-1 bg-background p-8 md:p-12 -mt-20 relative z-10">
+        <div className="flex-1 bg-background px-4 py-6 sm:p-8 md:p-12 -mt-16 sm:-mt-20 relative z-10">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">Anlageberatung</h1>
-            <p className="text-lg text-muted-foreground mb-8">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-2">Anlageberatung</h1>
+            <p className="text-sm sm:text-lg text-muted-foreground mb-6 sm:mb-8">
               Starte ein neues Beratungsgespräch oder setze eine gespeicherte Beratung fort.
             </p>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
               {/* New consultation */}
               <Card
                 className="border-2 hover:border-primary/50 transition-colors cursor-pointer group"

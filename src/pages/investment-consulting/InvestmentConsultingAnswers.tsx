@@ -214,10 +214,10 @@ export default function InvestmentConsultingAnswers() {
       <div className="min-h-screen bg-background">
         {/* Header */}
         <div className="border-b bg-card">
-          <div className="container py-6">
+          <div className="container px-4 sm:px-6 py-4 sm:py-6">
             <div>
-              <h1 className="text-2xl font-bold">Gemeinsam klären wir deine wichtigsten Fragen</h1>
-              <p className="text-muted-foreground mt-1">
+              <h1 className="text-lg sm:text-2xl font-bold">Gemeinsam klären wir deine wichtigsten Fragen</h1>
+              <p className="text-muted-foreground mt-1 text-sm sm:text-base">
                 Wir gehen Schritt für Schritt durch die Themen, die dir wichtig sind.
               </p>
               <Badge variant="secondary" className="mt-3">
@@ -227,7 +227,7 @@ export default function InvestmentConsultingAnswers() {
           </div>
         </div>
 
-        <div className="container py-8 flex gap-6">
+        <div className="container px-4 sm:px-6 py-6 sm:py-8 flex gap-6">
           {/* Sidebar navigation */}
           <aside className="hidden lg:block w-64 shrink-0">
             <Card>

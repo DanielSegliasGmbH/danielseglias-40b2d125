@@ -64,7 +64,7 @@ export function PresentationBar() {
   };
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+    <div className="fixed bottom-24 lg:bottom-4 left-1/2 -translate-x-1/2 z-50">
       <div className="flex items-center gap-2 bg-card border shadow-lg rounded-full px-4 py-2">
         <Badge variant="default" className="gap-1.5 text-xs">
           <Monitor className="w-3 h-3" />

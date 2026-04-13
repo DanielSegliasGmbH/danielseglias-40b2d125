@@ -65,8 +65,8 @@ export default function InvestmentConsultingPresentation() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* ── Top bar ── */}
-      <div className="border-b bg-card/80 backdrop-blur px-8 py-4">
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+      <div className="border-b bg-card/80 backdrop-blur px-4 sm:px-8 py-3 sm:py-4">
+        <div className="max-w-4xl mx-auto flex items-center justify-between gap-3 sm:gap-4">
           <Badge variant="outline" className="text-xs shrink-0">
             {currentSectionMeta?.label ?? 'Beratung'}
           </Badge>
@@ -79,7 +79,7 @@ export default function InvestmentConsultingPresentation() {
       {/* ── Content with transition ── */}
       <div
         className={cn(
-          'flex-1 flex items-center justify-center p-8 md:p-16 transition-all duration-300',
+          'flex-1 flex items-center justify-center p-4 sm:p-8 md:p-16 transition-all duration-300',
           transitioning ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0',
         )}
       >
