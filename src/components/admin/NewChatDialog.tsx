@@ -5,51 +5,80 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Search, Send } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useSendMessage } from '@/hooks/useChat';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
 
 interface NewChatDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onChatStarted: (customerId: string) => void;
+  onChatStarted: (participantId: string) => void;
 }
 
 export function NewChatDialog({ open, onOpenChange, onChatStarted }: NewChatDialogProps) {
   const [search, setSearch] = useState('');
-  const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<{ id: string; name: string; role: string; customerId?: string } | null>(null);
   const [message, setMessage] = useState('');
   const sendMessage = useSendMessage();
 
-  const { data: customers = [], isLoading } = useQuery({
-    queryKey: ['all-customers-for-chat'],
+  // Fetch all users from profiles + their roles and customer links
+  const { data: users = [], isLoading } = useQuery({
+    queryKey: ['all-users-for-chat'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('customers')
+      const { data: profiles, error } = await supabase
+        .from('profiles')
         .select('id, first_name, last_name')
-        .is('deleted_at', null)
         .order('last_name');
       if (error) throw error;
-      return data || [];
+
+      // Get roles
+      const { data: roles } = await supabase
+        .from('user_roles')
+        .select('user_id, role');
+
+      // Get customer links
+      const { data: customerLinks } = await supabase
+        .from('customer_users')
+        .select('user_id, customer_id');
+
+      const roleMap = new Map<string, string>();
+      for (const r of roles || []) {
+        roleMap.set(r.user_id, r.role);
+      }
+
+      const customerMap = new Map<string, string>();
+      for (const cl of customerLinks || []) {
+        customerMap.set(cl.user_id, cl.customer_id);
+      }
+
+      return (profiles || [])
+        .filter(p => roleMap.get(p.id) !== 'admin') // Don't show admins
+        .map(p => ({
+          id: p.id,
+          name: [p.first_name, p.last_name].filter(Boolean).join(' ') || 'Unbekannt',
+          role: roleMap.get(p.id) || 'user',
+          customerId: customerMap.get(p.id),
+        }));
     },
     enabled: open,
   });
 
-  const filtered = customers.filter(c => {
-    const name = `${c.first_name} ${c.last_name}`.toLowerCase();
-    return name.includes(search.toLowerCase());
-  });
+  const filtered = users.filter(u => u.name.toLowerCase().includes(search.toLowerCase()));
 
   const handleSend = async () => {
-    if (!selectedCustomerId || !message.trim()) return;
+    if (!selectedUser || !message.trim()) return;
     try {
-      await sendMessage.mutateAsync({ customerId: selectedCustomerId, message: message.trim() });
+      await sendMessage.mutateAsync({
+        participantId: selectedUser.id,
+        message: message.trim(),
+        customerId: selectedUser.customerId || null,
+      });
       toast.success('Nachricht gesendet');
-      onChatStarted(selectedCustomerId);
+      onChatStarted(selectedUser.id);
       setSearch('');
-      setSelectedCustomerId(null);
+      setSelectedUser(null);
       setMessage('');
       onOpenChange(false);
     } catch {
@@ -57,7 +86,13 @@ export function NewChatDialog({ open, onOpenChange, onChatStarted }: NewChatDial
     }
   };
 
-  const selectedCustomer = customers.find(c => c.id === selectedCustomerId);
+  const roleLabel = (role: string) => {
+    switch (role) {
+      case 'client': return 'Benutzer';
+      case 'staff': return 'Mitarbeiter';
+      default: return 'Benutzer';
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -66,12 +101,12 @@ export function NewChatDialog({ open, onOpenChange, onChatStarted }: NewChatDial
           <DialogTitle>Neuen Chat starten</DialogTitle>
         </DialogHeader>
 
-        {!selectedCustomerId ? (
+        {!selectedUser ? (
           <div className="space-y-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Kunde suchen…"
+                placeholder="Benutzer suchen…"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="pl-9"
@@ -81,16 +116,19 @@ export function NewChatDialog({ open, onOpenChange, onChatStarted }: NewChatDial
               {isLoading ? (
                 <p className="text-sm text-muted-foreground text-center py-4">Laden…</p>
               ) : filtered.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-4">Keine Kunden gefunden</p>
+                <p className="text-sm text-muted-foreground text-center py-4">Keine Benutzer gefunden</p>
               ) : (
                 <div className="space-y-1">
-                  {filtered.map(c => (
+                  {filtered.map(u => (
                     <button
-                      key={c.id}
-                      onClick={() => setSelectedCustomerId(c.id)}
-                      className="w-full text-left px-3 py-2.5 rounded-lg text-sm hover:bg-accent transition-colors"
+                      key={u.id}
+                      onClick={() => setSelectedUser(u)}
+                      className="w-full text-left px-3 py-2.5 rounded-lg text-sm hover:bg-accent transition-colors flex items-center justify-between"
                     >
-                      {c.first_name} {c.last_name}
+                      <span>{u.name}</span>
+                      <Badge variant="outline" className="text-[10px] font-normal">
+                        {roleLabel(u.role)}
+                      </Badge>
                     </button>
                   ))}
                 </div>
@@ -100,12 +138,8 @@ export function NewChatDialog({ open, onOpenChange, onChatStarted }: NewChatDial
         ) : (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-medium">
-                An: {selectedCustomer?.first_name} {selectedCustomer?.last_name}
-              </p>
-              <Button variant="ghost" size="sm" onClick={() => setSelectedCustomerId(null)}>
-                Ändern
-              </Button>
+              <p className="text-sm font-medium">An: {selectedUser.name}</p>
+              <Button variant="ghost" size="sm" onClick={() => setSelectedUser(null)}>Ändern</Button>
             </div>
             <Textarea
               value={message}
