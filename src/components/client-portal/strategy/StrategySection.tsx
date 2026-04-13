@@ -52,15 +52,15 @@ export function StrategySection({ platformId, privacyMode }: Props) {
   return (
     <section className="space-y-4">
       <div>
-        <h2 className="text-xl md:text-2xl font-bold text-foreground">Modellübersicht</h2>
-        <p className="text-sm text-muted-foreground">
+        <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">Modellübersicht</h2>
+        <p className="text-xs sm:text-sm text-muted-foreground">
           Modellbasierte Betrachtung verschiedener Gewichtungen
         </p>
       </div>
 
       {/* Strategy tabs - only show if more than 1 strategy */}
       {strategies.length > 1 && (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 overflow-x-auto pb-1">
           {strategies.map((s) => (
             <button
               key={s.id}
@@ -115,7 +115,7 @@ export function StrategySection({ platformId, privacyMode }: Props) {
                       ? Math.round(a.weight * 0.95)
                       : a.weight;
                     return (
-                      <div key={a.fundName} className="flex items-start justify-between gap-3">
+                      <div key={a.fundName} className="flex items-start justify-between gap-2">
                       <span className="text-xs sm:text-sm text-foreground leading-snug break-words min-w-0">
                           {privacyMode ? `Baustein ${idx + 1}` : a.fundName}
                         </span>

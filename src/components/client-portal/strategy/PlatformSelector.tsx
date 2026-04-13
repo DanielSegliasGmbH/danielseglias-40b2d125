@@ -16,8 +16,8 @@ export function PlatformSelector({ selected, onSelect, privacyMode }: Props) {
     <section className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
         <div>
-          <h2 className="text-xl md:text-2xl font-bold text-foreground">Mantel</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">Mantel</h2>
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Übersicht möglicher Modellstrategien zu Vorsorgeoptionen.
           </p>
         </div>
