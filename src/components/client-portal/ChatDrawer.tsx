@@ -6,7 +6,6 @@ import { Send, MessageCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import {
   useChatMessages,
-  useClientCustomerId,
   useSendMessage,
   useMarkAsRead,
   type ChatMessage,
@@ -24,24 +23,22 @@ interface ChatDrawerProps {
 
 export function ChatDrawer({ open, onOpenChange }: ChatDrawerProps) {
   const { user } = useAuth();
-  const { data: customerId, isLoading: isCustomerLoading } = useClientCustomerId();
-  const { data: messages = [], isLoading } = useChatMessages(customerId ?? null);
+  // For clients, participant_id = their own user id
+  const participantId = user?.id ?? null;
+  const { data: messages = [], isLoading } = useChatMessages(participantId);
   const sendMessage = useSendMessage();
   const markAsRead = useMarkAsRead();
   const { trackEvent } = useTracking();
   const [text, setText] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
-  const isChatUnavailable = !isCustomerLoading && !customerId;
 
-  // Track chat opened + mark messages as read
   useEffect(() => {
-    if (open && customerId) {
+    if (open && participantId) {
       trackEvent({ eventType: 'chat_opened' });
-      markAsRead.mutate(customerId);
+      markAsRead.mutate(participantId);
     }
-  }, [open, customerId, markAsRead, trackEvent]);
+  }, [open, participantId, markAsRead, trackEvent]);
 
-  // Auto-scroll to bottom
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -49,15 +46,10 @@ export function ChatDrawer({ open, onOpenChange }: ChatDrawerProps) {
   }, [messages]);
 
   const handleSend = async () => {
-    if (!text.trim()) return;
-
-    if (!customerId) {
-      toast.error('Dein Portalzugang ist noch keinem Kundenprofil zugeordnet.');
-      return;
-    }
+    if (!text.trim() || !participantId) return;
 
     try {
-      await sendMessage.mutateAsync({ customerId, message: text });
+      await sendMessage.mutateAsync({ participantId, message: text });
       trackEvent({ eventType: 'chat_message_sent' });
       setText('');
     } catch (error) {
@@ -84,19 +76,10 @@ export function ChatDrawer({ open, onOpenChange }: ChatDrawerProps) {
           </SheetTitle>
         </SheetHeader>
 
-        {/* Messages area */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
-          {isCustomerLoading || isLoading ? (
+          {isLoading ? (
             <div className="flex items-center justify-center h-full">
               <p className="text-sm text-muted-foreground">Laden…</p>
-            </div>
-          ) : isChatUnavailable ? (
-            <div className="flex flex-col items-center justify-center h-full gap-3 text-center px-6">
-              <MessageCircle className="h-12 w-12 text-muted-foreground/30" />
-              <p className="text-sm text-muted-foreground">
-                Dein Login ist noch keinem Kundenprofil zugeordnet. Bitte melde dich kurz bei mir,
-                damit ich den Chat für dich aktiviere.
-              </p>
             </div>
           ) : messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full gap-3 text-center px-6">
@@ -112,7 +95,6 @@ export function ChatDrawer({ open, onOpenChange }: ChatDrawerProps) {
           )}
         </div>
 
-        {/* Input area */}
         <div className="border-t border-border p-3 bg-card">
           <div className="flex gap-2">
             <Textarea
@@ -122,22 +104,17 @@ export function ChatDrawer({ open, onOpenChange }: ChatDrawerProps) {
               placeholder="Nachricht schreiben…"
               className="min-h-[40px] max-h-[120px] resize-none text-sm"
               rows={1}
-              disabled={isChatUnavailable || sendMessage.isPending}
+              disabled={!participantId || sendMessage.isPending}
             />
             <Button
               size="icon"
               onClick={handleSend}
-              disabled={isChatUnavailable || !text.trim() || sendMessage.isPending}
+              disabled={!participantId || !text.trim() || sendMessage.isPending}
               className="shrink-0 h-10 w-10"
             >
               <Send className="h-4 w-4" />
             </Button>
           </div>
-          {isChatUnavailable && (
-            <p className="mt-2 text-xs text-muted-foreground">
-              Senden ist erst möglich, sobald dein Portalzugang korrekt verknüpft ist.
-            </p>
-          )}
         </div>
       </SheetContent>
     </Sheet>
