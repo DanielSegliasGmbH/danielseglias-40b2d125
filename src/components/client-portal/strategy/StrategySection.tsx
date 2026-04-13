@@ -81,13 +81,13 @@ export function StrategySection({ platformId, privacyMode }: Props) {
       {/* Strategy detail */}
       {activeStrategy && (
         <Card>
-          <CardContent className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <CardContent className="p-4 sm:p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
               {/* Left: Chart */}
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div className="text-center">
-                  <h3 className="font-semibold text-foreground">{activeStrategy.name}</h3>
-                  <Badge variant="secondary" className="text-xs mt-1">
+                  <h3 className="font-semibold text-foreground text-sm sm:text-base">{activeStrategy.name}</h3>
+                  <Badge variant="secondary" className="text-[10px] sm:text-xs mt-1">
                     {activeStrategy.subtitle}
                   </Badge>
                 </div>
@@ -97,7 +97,7 @@ export function StrategySection({ platformId, privacyMode }: Props) {
                   avgReturn={activeStrategy.avgReturn}
                   privacyMode={privacyMode}
                 />
-                <p className="text-center text-sm text-muted-foreground">
+                <p className="text-center text-xs sm:text-sm text-muted-foreground">
                   Ø Rendite:{' '}
                   <span className="font-semibold text-foreground">{activeStrategy.avgReturn}</span>
                   <span className="ml-1 text-xs">({activeStrategy.returnSince})</span>
@@ -106,7 +106,7 @@ export function StrategySection({ platformId, privacyMode }: Props) {
 
               {/* Right: Allocations */}
               <div className="space-y-3">
-                <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
                   Zusammensetzung
                 </p>
                 <div className="space-y-2">
@@ -116,7 +116,7 @@ export function StrategySection({ platformId, privacyMode }: Props) {
                       : a.weight;
                     return (
                       <div key={a.fundName} className="flex items-start justify-between gap-3">
-                        <span className="text-sm text-foreground leading-snug">
+                      <span className="text-xs sm:text-sm text-foreground leading-snug break-words min-w-0">
                           {privacyMode ? `Baustein ${idx + 1}` : a.fundName}
                         </span>
                         {!privacyMode && (

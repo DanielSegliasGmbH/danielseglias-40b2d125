@@ -59,9 +59,9 @@ export function GlidepathSection({ selected, onSelect, privacyMode }: Props) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-28">Assetklasse</TableHead>
+                  <TableHead className="w-20 sm:w-28 text-xs sm:text-sm">Assetklasse</TableHead>
                   {profile.rows.map((r) => (
-                    <TableHead key={r.age} className="text-center min-w-[56px]">
+                    <TableHead key={r.age} className="text-center min-w-[40px] sm:min-w-[56px] text-xs sm:text-sm px-1 sm:px-2">
                       {r.age}
                     </TableHead>
                   ))}

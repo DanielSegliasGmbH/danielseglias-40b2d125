@@ -26,7 +26,7 @@ export function PlatformSelector({ selected, onSelect, privacyMode }: Props) {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
         {platforms.map((p) => (
           <PlatformCard
             key={p.id}
@@ -71,7 +71,7 @@ function PlatformCard({
           : 'border-border hover:border-primary/40',
       )}
     >
-      <CardContent className="p-5 space-y-3">
+      <CardContent className="p-4 sm:p-5 space-y-2 sm:space-y-3">
         <div className="flex items-start justify-between gap-2">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
