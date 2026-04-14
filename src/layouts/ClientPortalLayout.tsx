@@ -80,6 +80,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
   const [chatOpen, setChatOpen] = useState(false); // desktop only
   const { data: settings } = useCustomerPortalSettings();
   const { data: unreadCount = 0 } = useUnreadCount();
+  useSmartNotifications();
   
   const previewCustomerId = usePreviewCustomerId();
   const isAdminPreview = role === 'admin' && !!previewCustomerId;
