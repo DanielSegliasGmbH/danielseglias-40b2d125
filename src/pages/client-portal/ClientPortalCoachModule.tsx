@@ -1170,7 +1170,7 @@ export default function ClientPortalCoachModule() {
   }, [moduleKey]);
 
   // Auto-save debounced
-  const saveTimeoutRef = useRef<NodeJS.Timeout>();
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const autoSave = useCallback((overrides?: Record<string, any>) => {
     if (!user || !moduleKey) return;
     if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
