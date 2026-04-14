@@ -1366,6 +1366,17 @@ export default function ClientPortalCoachModule() {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       setReflectionResult(data.content || '');
+
+      // Module completed! Earn badge and show celebration
+      if (moduleKey) {
+        earnBadge.mutate({ moduleKey });
+        autoSave({
+          reflection_result: data.content || '',
+          status: 'completed',
+          completed_at: new Date().toISOString(),
+        });
+        setTimeout(() => setShowCelebration(true), 500);
+      }
     } catch (e: any) {
       toast({ title: 'Fehler bei der Reflexion', description: e.message || 'Bitte versuche es erneut.', variant: 'destructive' });
     } finally {
