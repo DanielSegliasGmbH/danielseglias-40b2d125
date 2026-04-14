@@ -34,7 +34,7 @@ export default function ClientPortalHome() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { settings } = useCustomerPortalSettings();
+  const { data: settings } = useCustomerPortalSettings();
 
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [strategyUnlocked, setStrategyUnlocked] = useState(false);
@@ -46,7 +46,7 @@ export default function ClientPortalHome() {
     lastAwardedPoints, loading: gamLoading,
   } = useGamification();
 
-  const { result: nextStepResult } = useNextBestStep();
+  const { data: nextStepResult } = useNextBestStep();
   const firstName = user?.user_metadata?.first_name || 'Kunde';
 
   useEffect(() => {
