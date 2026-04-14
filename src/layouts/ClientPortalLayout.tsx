@@ -1,5 +1,6 @@
 import { ReactNode, useState } from 'react';
 import { LevelUpCelebration } from '@/components/client-portal/LevelUpCelebration';
+import { useSmartNotifications } from '@/hooks/useSmartNotifications';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
