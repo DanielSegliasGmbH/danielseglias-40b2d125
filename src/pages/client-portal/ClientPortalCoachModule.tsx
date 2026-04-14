@@ -1821,6 +1821,22 @@ export default function ClientPortalCoachModule() {
           </Card>
         )}
 
+        {/* Contextual Links */}
+        {(analysisResult || reflectionResult) && CONTEXTUAL_LINKS[currentModuleKey] && (
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="p-4 space-y-2">
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <ArrowRight className="h-3.5 w-3.5 text-primary" /> Direkt umsetzen
+              </h3>
+              {CONTEXTUAL_LINKS[currentModuleKey].map((link, i) => (
+                <Link key={i} to={link.href} className="block text-sm text-primary font-medium hover:underline">
+                  {link.label}
+                </Link>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Recommendations after analysis */}
         {(analysisResult || reflectionResult) && COACH_MODULE_RECOMMENDATIONS[currentModuleKey] && (
           <RecommendationCards recommendations={COACH_MODULE_RECOMMENDATIONS[currentModuleKey]} />
