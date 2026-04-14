@@ -420,6 +420,84 @@ export type Database = {
         }
         Relationships: []
       }
+      coach_badges: {
+        Row: {
+          badge_type: string
+          earned_at: string
+          id: string
+          module_key: string
+          user_id: string
+        }
+        Insert: {
+          badge_type?: string
+          earned_at?: string
+          id?: string
+          module_key: string
+          user_id: string
+        }
+        Update: {
+          badge_type?: string
+          earned_at?: string
+          id?: string
+          module_key?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      coach_progress: {
+        Row: {
+          analysis_result: string | null
+          answers: string | null
+          completed_at: string | null
+          created_at: string
+          extracted_tasks: Json | null
+          goals_saved: boolean
+          id: string
+          module_key: string
+          reflection_input: string | null
+          reflection_result: string | null
+          status: string
+          structured_data: Json | null
+          tasks_created: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          analysis_result?: string | null
+          answers?: string | null
+          completed_at?: string | null
+          created_at?: string
+          extracted_tasks?: Json | null
+          goals_saved?: boolean
+          id?: string
+          module_key: string
+          reflection_input?: string | null
+          reflection_result?: string | null
+          status?: string
+          structured_data?: Json | null
+          tasks_created?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          analysis_result?: string | null
+          answers?: string | null
+          completed_at?: string | null
+          created_at?: string
+          extracted_tasks?: Json | null
+          goals_saved?: boolean
+          id?: string
+          module_key?: string
+          reflection_input?: string | null
+          reflection_result?: string | null
+          status?: string
+          structured_data?: Json | null
+          tasks_created?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       consent_records: {
         Row: {
           accepted_at: string
