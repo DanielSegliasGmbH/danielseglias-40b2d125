@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { FileBarChart } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, TrendingUp, User, HelpCircle, Globe, Crown, Wallet, PiggyBank, Landmark } from 'lucide-react';
 import {
@@ -34,6 +35,7 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
     { key: 'budget', path: '/app/client-portal/budget', icon: PiggyBank, label: t('clientPortal.budget', 'Mein Budget') },
     { key: 'net-worth', path: '/app/client-portal/net-worth', icon: Landmark, label: 'Mein Vermögen' },
     { key: 'courses', path: '/app/client-portal/courses', icon: GraduationCap, label: t('clientPortal.courses') },
+    { key: 'monthly-report', path: '/app/client-portal/monthly-report', icon: FileBarChart, label: 'Mein Monatsbericht' },
   ];
 
   const visibleContentItems = contentItems.filter(item => 
