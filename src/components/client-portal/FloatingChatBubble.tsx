@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { MessageCircle, X, Minus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ChatDrawer } from './ChatDrawer';
@@ -9,23 +9,14 @@ export function FloatingChatBubble() {
   const { data: unreadCount = 0 } = useUnreadCount();
   const [chatOpen, setChatOpen] = useState(false);
   const [minimized, setMinimized] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [initialized, setInitialized] = useState(false);
+  const [position, setPosition] = useState(() => ({
+    x: typeof window !== 'undefined' ? window.innerWidth - 60 - 16 : 300,
+    y: typeof window !== 'undefined' ? window.innerHeight - 80 - 56 - 16 : 300,
+  }));
   const dragging = useRef(false);
   const dragOffset = useRef({ x: 0, y: 0 });
   const bubbleRef = useRef<HTMLButtonElement>(null);
   const hasMoved = useRef(false);
-
-  // Initialize position to bottom-right above nav
-  useEffect(() => {
-    if (!initialized) {
-      setPosition({
-        x: window.innerWidth - (minimized ? 52 : 60) - 16,
-        y: window.innerHeight - 80 - (minimized ? 36 : 56) - 16,
-      });
-      setInitialized(true);
-    }
-  }, [initialized, minimized]);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     dragging.current = true;
@@ -49,7 +40,6 @@ export function FloatingChatBubble() {
   const handlePointerUp = () => {
     if (!hasMoved.current && !dragging.current) return;
     dragging.current = false;
-    // Snap to nearest edge
     if (bubbleRef.current) {
       const size = minimized ? 36 : 56;
       const mid = window.innerWidth / 2;
@@ -61,7 +51,7 @@ export function FloatingChatBubble() {
   };
 
   const handleClick = () => {
-    if (hasMoved.current) return; // Was a drag, not a click
+    if (hasMoved.current) return;
     setChatOpen(true);
   };
 
@@ -77,7 +67,7 @@ export function FloatingChatBubble() {
         onPointerUp={handlePointerUp}
         onClick={handleClick}
         className={cn(
-          'fixed z-50 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center transition-shadow hover:shadow-xl touch-none select-none lg:hidden',
+          'fixed z-50 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:shadow-xl touch-none select-none lg:hidden',
           bubbleSize
         )}
         style={{
@@ -94,8 +84,7 @@ export function FloatingChatBubble() {
         )}
       </button>
 
-      {/* Toggle minimize on long press or context - use a small button */}
-      {!minimized && initialized && (
+      {!minimized && (
         <button
           onClick={(e) => { e.stopPropagation(); setMinimized(true); }}
           className="fixed z-50 h-5 w-5 rounded-full bg-muted text-muted-foreground flex items-center justify-center shadow-sm lg:hidden"
@@ -108,7 +97,7 @@ export function FloatingChatBubble() {
           <Minus className="h-3 w-3" />
         </button>
       )}
-      {minimized && initialized && (
+      {minimized && (
         <button
           onClick={(e) => { e.stopPropagation(); setMinimized(false); }}
           className="fixed z-50 h-4 w-4 rounded-full bg-muted text-muted-foreground flex items-center justify-center shadow-sm lg:hidden"
