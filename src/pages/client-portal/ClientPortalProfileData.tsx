@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { useMetaProfile, META_FIELD_MAP, MetaFieldKey } from '@/hooks/useMetaProfile';
+import { useGamification } from '@/hooks/useGamification';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -29,6 +30,7 @@ const FINANCIAL_GOALS = [
 export default function ClientPortalProfileData() {
   const { t } = useTranslation();
   const { profile, isLoading, updateFields, confirmProfile, needsCheckup } = useMetaProfile();
+  const { awardPoints } = useGamification();
 
   // Local form state
   const [form, setForm] = useState<Record<string, string | number | null>>({});
@@ -66,7 +68,14 @@ export default function ClientPortalProfileData() {
     }
 
     setIsDirty(false);
-    toast.success('Gespeichert ✓', { duration: 3000 });
+    toast.success('Gespeichert ✓');
+
+    // Check if profile is fully filled → award one-time XP
+    const filledFields = Object.values(form).filter(v => v !== null && v !== '').length;
+    const totalFields = Object.keys(META_FIELD_MAP).length + 4; // finance fields + personal fields
+    if (filledFields >= totalFields * 0.8) {
+      awardPoints('profile_completed', 'profile_full');
+    }
 
     // Confirm separately – don't block success feedback
     try {
