@@ -447,6 +447,14 @@ function App() {
                   </RouteGuard>
                 }
               />
+              <Route
+                path="/app/client-portal/budget"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalBudget />
+                  </RouteGuard>
+                }
+              />
               {/* Protected: Admin only - Courses */}
               <Route
                 path="/app/courses"

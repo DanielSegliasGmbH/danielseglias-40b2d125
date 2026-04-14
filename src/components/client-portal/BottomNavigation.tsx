@@ -35,6 +35,7 @@ export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationPro
     '/app/client-portal/insurances',
     '/app/client-portal/goals',
     '/app/client-portal/tasks',
+    '/app/client-portal/budget',
     '/app/client-portal/courses',
     '/app/client-portal/strategies',
     '/app/client-portal/library',
