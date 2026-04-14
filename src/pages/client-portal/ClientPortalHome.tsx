@@ -204,6 +204,9 @@ export default function ClientPortalHome() {
           <NextStepCard result={nextStepResult} />
         )}
 
+        {/* Net Worth Widget */}
+        <NetWorthWidget />
+
         {/* Contextual CTA */}
         <CtaBanner context="dashboard" />
 
