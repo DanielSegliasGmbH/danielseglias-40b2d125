@@ -36,7 +36,8 @@ export function ChatDrawer({ open, onOpenChange }: ChatDrawerProps) {
       trackEvent({ eventType: 'chat_opened' });
       markAsRead.mutate(participantId);
     }
-  }, [open, participantId, markAsRead, trackEvent]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, participantId]);
 
   useEffect(() => {
     if (scrollRef.current) {
