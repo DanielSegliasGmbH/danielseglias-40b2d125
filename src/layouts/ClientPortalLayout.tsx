@@ -160,7 +160,10 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
         >
           <div className="p-4 border-b border-border flex items-center justify-between gap-2">
             {!sidebarCollapsed && (
-              <h1 className="text-lg font-semibold text-foreground truncate">{t('clientPortal.title')}</h1>
+              <h1 className="text-lg font-semibold text-foreground truncate flex items-center gap-2">
+                <span className="text-primary text-xl leading-none">✦</span>
+                FinLife
+              </h1>
             )}
             <Button
               variant="ghost"

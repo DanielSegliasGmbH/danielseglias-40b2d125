@@ -1,7 +1,7 @@
 {
-  "name": "Digital Finance Coach",
-  "short_name": "Finance Coach",
-  "description": "Professionelle Finanzberatung von Daniel Seglias",
+  "name": "FinLife",
+  "short_name": "FinLife",
+  "description": "FinLife – Dein digitaler Finanz-Coach von Daniel Seglias",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
