@@ -233,7 +233,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
             paddingTop: 'calc(env(safe-area-inset-top, 20px) + 48px)',
             paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 80px)',
           }}
-        )}>
+        >
           <div className="hidden lg:flex items-center justify-end gap-4 p-4 border-b border-border bg-card">
             <NotificationBell />
             <Button
