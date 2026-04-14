@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
@@ -14,10 +14,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useSpeechToText } from '@/hooks/useSpeechToText';
 import { useGamification } from '@/hooks/useGamification';
+import { useModuleProgress, useSaveCoachProgress, useEarnBadge } from '@/hooks/useCoachProgress';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Brain, Eye, Target, LayoutGrid, Shield, Settings2, TrendingUp, Rocket, Star, RotateCcw,
   MessageSquare, BarChart3, CheckSquare, Lightbulb, Info, Mic, MicOff, Loader2, Copy, Share2,
   Sparkles, Play, BookOpen, Trophy, DollarSign, PiggyBank, CreditCard, ClipboardCheck,
+  ArrowRight, PartyPopper, Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { RecommendationCards } from '@/components/client-portal/RecommendationCards';
