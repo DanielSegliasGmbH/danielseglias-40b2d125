@@ -163,7 +163,6 @@ function AdminChatDetail({
 
   const handleSend = async () => {
     if (!text.trim()) return;
-    const cid = customerId ?? undefined;
     try {
       await sendMessage.mutateAsync({ participantId, message: text, customerId });
       setText('');
