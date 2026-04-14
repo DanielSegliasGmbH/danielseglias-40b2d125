@@ -78,6 +78,10 @@ const ACTION_MESSAGES: Partial<Record<ActionType, string[]>> = {
     'Gute Entscheidung – Wissen ist Macht 🧠',
     'Jedes Tool bringt dir mehr Klarheit ✨',
   ],
+  expense_added: [
+    'Ausgabe erfasst – Überblick behalten 📊',
+    'Gut getrackt – so behältst du die Kontrolle 💪',
+  ],
 };
 
 const LEVEL_UP_MESSAGES = [
