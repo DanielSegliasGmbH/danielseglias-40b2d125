@@ -136,7 +136,7 @@ export default function ClientPortalBudget() {
       if (!user) return null;
       const { data } = await supabase
         .from('meta_profiles')
-        .select('income')
+        .select('monthly_income')
         .eq('user_id', user.id)
         .maybeSingle();
       return data;
@@ -144,7 +144,7 @@ export default function ClientPortalBudget() {
     enabled: !!user,
   });
 
-  const monthlyIncome = metaProfile?.income || 0;
+  const monthlyIncome = metaProfile?.monthly_income || 0;
 
   // Compute per-category spending
   const categorySpending = useMemo(() => {
