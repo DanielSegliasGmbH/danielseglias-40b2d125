@@ -11,7 +11,8 @@ export type ActionType =
   | 'profile_completed'
   | 'insurance_added'
   | 'tool_used'
-  | 'video_watched';
+  | 'video_watched'
+  | 'expense_added';
 
 const POINTS_MAP: Record<ActionType, number> = {
   daily_login: 20,
@@ -22,6 +23,7 @@ const POINTS_MAP: Record<ActionType, number> = {
   insurance_added: 40,
   tool_used: 10,
   video_watched: 15,
+  expense_added: 10,
 };
 
 export const LEVELS = [
@@ -75,6 +77,10 @@ const ACTION_MESSAGES: Partial<Record<ActionType, string[]>> = {
   tool_used: [
     'Gute Entscheidung – Wissen ist Macht 🧠',
     'Jedes Tool bringt dir mehr Klarheit ✨',
+  ],
+  expense_added: [
+    'Ausgabe erfasst – Überblick behalten 📊',
+    'Gut getrackt – so behältst du die Kontrolle 💪',
   ],
 };
 

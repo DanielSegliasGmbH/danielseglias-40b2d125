@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronRight, Lock } from 'lucide-react';
+import { ChevronRight, Lock, Wallet } from 'lucide-react';
 import {
   Shield,
   Target,
@@ -37,6 +37,7 @@ const portalSections = [
   { key: 'insurances', path: '/app/client-portal/insurances', icon: Shield, titleKey: 'clientPortal.insurances', descKey: 'clientPortal.insurancesDesc', protected: false },
   { key: 'goals', path: '/app/client-portal/goals', icon: Target, titleKey: 'clientPortal.goals', descKey: 'clientPortal.goalsDesc', protected: false },
   { key: 'tasks', path: '/app/client-portal/tasks', icon: ClipboardList, titleKey: 'clientPortal.tasks', descKey: 'clientPortal.tasksDesc', protected: false },
+  { key: 'budget', path: '/app/client-portal/budget', icon: Wallet, titleKey: 'clientPortal.budget', descKey: 'clientPortal.budgetDesc', protected: false },
   { key: 'courses', path: '/app/client-portal/courses', icon: GraduationCap, titleKey: 'clientPortal.courses', descKey: 'clientPortal.coursesDesc', protected: false },
 ] as const;
 

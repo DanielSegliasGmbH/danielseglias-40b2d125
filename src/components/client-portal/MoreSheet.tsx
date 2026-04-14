@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, TrendingUp, User, HelpCircle, Globe, Crown, Wallet } from 'lucide-react';
+import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, TrendingUp, User, HelpCircle, Globe, Crown, Wallet, PiggyBank } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -31,6 +31,7 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
     { key: 'insurances', path: '/app/client-portal/insurances', icon: Shield, label: t('clientPortal.insurances') },
     { key: 'goals', path: '/app/client-portal/goals', icon: Target, label: t('clientPortal.goals') },
     { key: 'tasks', path: '/app/client-portal/tasks', icon: ClipboardList, label: t('clientPortal.tasks') },
+    { key: 'budget', path: '/app/client-portal/budget', icon: PiggyBank, label: t('clientPortal.budget', 'Mein Budget') },
     { key: 'courses', path: '/app/client-portal/courses', icon: GraduationCap, label: t('clientPortal.courses') },
   ];
 
