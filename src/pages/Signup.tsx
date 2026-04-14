@@ -91,9 +91,9 @@ export default function Signup() {
       {/* Branding */}
       <div className="flex flex-col items-center pt-10 pb-4 px-6">
         <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-          <span className="text-2xl font-bold text-primary">DS</span>
+          <span className="text-3xl text-primary leading-none">✦</span>
         </div>
-        <h1 className="text-2xl font-bold text-foreground mb-1">{t('auth.signupTitle')}</h1>
+        <h1 className="text-2xl font-bold text-foreground mb-1">FinLife</h1>
         <p className="text-sm text-muted-foreground text-center">{t('auth.signupSubtitle')}</p>
       </div>
 

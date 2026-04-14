@@ -18,12 +18,12 @@ export default function MinimalLanding() {
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
         <motion.p
-          className="text-sm font-medium tracking-widest uppercase text-muted-foreground mb-6"
+          className="text-sm font-medium tracking-widest uppercase text-muted-foreground mb-6 flex items-center justify-center gap-2"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.6 }}
         >
-          Digital Finance Coach
+          <span className="text-primary text-lg">✦</span> FinLife
         </motion.p>
 
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6">

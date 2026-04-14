@@ -97,11 +97,13 @@ export default function Login() {
     <div className="min-h-screen flex flex-col bg-background safe-area-inset">
       {/* Top section with branding */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 pt-12 pb-6">
-        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
-          <span className="text-2xl font-bold text-primary">DS</span>
+        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+          <span className="text-3xl text-primary leading-none">✦</span>
         </div>
-        <h1 className="text-2xl font-bold text-foreground mb-1">{t('auth.loginTitle')}</h1>
-        <p className="text-sm text-muted-foreground">{t('auth.loginSubtitle')}</p>
+        <h1 className="text-2xl font-bold text-foreground mb-1 flex items-center gap-2">
+          <span>FinLife</span>
+        </h1>
+        <p className="text-sm text-muted-foreground mb-4">{t('auth.loginSubtitle')}</p>
       </div>
 
       {/* Form */}
