@@ -226,13 +226,10 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
         <main
           className={cn(
             "flex-1 bg-background",
+            "pt-[calc(env(safe-area-inset-top,20px)+48px)] pb-[calc(env(safe-area-inset-bottom,0px)+80px)]",
             "lg:pb-0 lg:pt-0",
             isAdminPreview && "lg:pt-10"
           )}
-          style={{
-            paddingTop: 'calc(env(safe-area-inset-top, 20px) + 48px)',
-            paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 80px)',
-          }}
         >
           <div className="hidden lg:flex items-center justify-end gap-4 p-4 border-b border-border bg-card">
             <NotificationBell />
