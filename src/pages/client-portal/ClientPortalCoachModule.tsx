@@ -1009,12 +1009,100 @@ function ModuleScore({ moduleKey, hasAnswers, hasStructured, hasAnalysis, hasRef
 
 // ─── Main component ──────────────────────────────────────────────
 
+// ─── XP Float Animation ──────────────────────────────────────────
+function XpFloat({ amount }: { amount: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 0, scale: 0.5 }}
+      animate={{ opacity: [0, 1, 1, 0], y: -60, scale: [0.5, 1.2, 1, 0.8] }}
+      transition={{ duration: 1.5, ease: 'easeOut' }}
+      className="fixed top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
+    >
+      <div className="bg-primary text-primary-foreground px-4 py-2 rounded-full font-bold text-lg shadow-lg flex items-center gap-1.5">
+        <Zap className="h-4 w-4" />
+        +{amount} XP
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Module Celebration ──────────────────────────────────────────
+function ModuleCelebration({ title, onClose }: { title: string; onClose: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onClose, 5000);
+    return () => clearTimeout(t);
+  }, [onClose]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 bg-background/90 backdrop-blur-sm flex items-center justify-center"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.5, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', damping: 15, stiffness: 200 }}
+        className="text-center space-y-4 p-8"
+      >
+        <motion.div
+          animate={{ rotate: [0, -10, 10, -10, 10, 0] }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
+          <PartyPopper className="h-16 w-16 text-primary mx-auto" />
+        </motion.div>
+        <h2 className="text-2xl font-bold text-foreground">Modul abgeschlossen!</h2>
+        <p className="text-lg text-primary font-semibold">«{title}»</p>
+        <Badge variant="default" className="text-sm px-3 py-1 gap-1">
+          <Star className="h-3.5 w-3.5" /> Badge erhalten
+        </Badge>
+        <p className="text-sm text-muted-foreground">Tippe, um fortzufahren</p>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ─── Contextual Links ────────────────────────────────────────────
+const CONTEXTUAL_LINKS: Record<string, { label: string; href: string }[]> = {
+  absicherung: [
+    { label: 'Jetzt Versicherung hinterlegen →', href: '/app/client-portal/insurances' },
+  ],
+  klarheit: [
+    { label: 'Sparrate in Finanzprofil aktualisieren →', href: '/app/client-portal/profile-data' },
+  ],
+  optimierung: [
+    { label: 'Sparrate in Finanzprofil aktualisieren →', href: '/app/client-portal/profile-data' },
+  ],
+  struktur: [
+    { label: 'Budget einrichten →', href: '/app/client-portal/budget' },
+  ],
+  ziele: [
+    { label: 'Ziele in «Meine Ziele» verwalten →', href: '/app/client-portal/goals' },
+  ],
+  investment: [
+    { label: 'Vermögen in «Mein Vermögen» erfassen →', href: '/app/client-portal/net-worth' },
+  ],
+};
+
 export default function ClientPortalCoachModule() {
   const { moduleKey } = useParams<{ moduleKey: string }>();
   const { user } = useAuth();
   const { toast } = useToast();
   const { awardPoints } = useGamification();
   const mod = moduleKey ? moduleData[moduleKey] : null;
+  const currentModuleKey = moduleKey || 'mindset';
+
+  // Persistence hooks
+  const { data: savedProgress, isLoading: progressLoading } = useModuleProgress(currentModuleKey);
+  const saveProgress = useSaveCoachProgress();
+  const earnBadge = useEarnBadge();
+
+  // Celebration state
+  const [showXpFloat, setShowXpFloat] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const hasRestoredRef = useRef(false);
 
   // State
   const [answers, setAnswers] = useState('');
@@ -1049,6 +1137,87 @@ export default function ClientPortalCoachModule() {
     incomeType: '', growthPotential: '', additionalSources: '',
   });
 
+  // Restore saved progress
+  useEffect(() => {
+    if (savedProgress && !hasRestoredRef.current) {
+      hasRestoredRef.current = true;
+      if (savedProgress.answers) setAnswers(savedProgress.answers);
+      if (savedProgress.analysis_result) setAnalysisResult(savedProgress.analysis_result);
+      if (savedProgress.reflection_input) setReflectionInput(savedProgress.reflection_input);
+      if (savedProgress.reflection_result) setReflectionResult(savedProgress.reflection_result);
+      if (savedProgress.tasks_created) setTasksCreated(true);
+      if (savedProgress.goals_saved) setGoalsSaved(true);
+      if (savedProgress.extracted_tasks && Array.isArray(savedProgress.extracted_tasks)) {
+        setExtractedTasks(savedProgress.extracted_tasks as any[]);
+      }
+      const sd = savedProgress.structured_data as Record<string, any> | null;
+      if (sd && Object.keys(sd).length > 0) {
+        // Restore structured data based on module
+        if (currentModuleKey === 'klarheit' && sd.income !== undefined) setStructured(sd as any);
+        else if (currentModuleKey === 'ziele' && sd.shortTerm !== undefined) setGoalFields(sd as any);
+        else if (currentModuleKey === 'struktur' && sd.accountCount !== undefined) setStrukturFields(sd as any);
+        else if (currentModuleKey === 'absicherung' && sd.hasHealth !== undefined) setAbsicherungFields(sd as any);
+        else if (currentModuleKey === 'optimierung' && sd.has3a !== undefined) setOptimierungFields(sd as any);
+        else if (currentModuleKey === 'investment' && sd.investsAlready !== undefined) setInvestmentFields(sd as any);
+        else if (currentModuleKey === 'skalierung' && sd.incomeType !== undefined) setSkalierungFields(sd as any);
+      }
+    }
+  }, [savedProgress, currentModuleKey]);
+
+  // Reset ref when moduleKey changes
+  useEffect(() => {
+    hasRestoredRef.current = false;
+  }, [moduleKey]);
+
+  // Auto-save debounced
+  const saveTimeoutRef = useRef<NodeJS.Timeout>();
+  const autoSave = useCallback((overrides?: Record<string, any>) => {
+    if (!user || !moduleKey) return;
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(() => {
+      const getStructuredData = () => {
+        if (currentModuleKey === 'klarheit') return structured;
+        if (currentModuleKey === 'ziele') return goalFields;
+        if (currentModuleKey === 'struktur') return strukturFields;
+        if (currentModuleKey === 'absicherung') return absicherungFields;
+        if (currentModuleKey === 'optimierung') return optimierungFields;
+        if (currentModuleKey === 'investment') return investmentFields;
+        if (currentModuleKey === 'skalierung') return skalierungFields;
+        return {};
+      };
+
+      saveProgress.mutate({
+        moduleKey: currentModuleKey,
+        updates: {
+          status: reflectionResult ? 'completed' : analysisResult ? 'in_progress' : answers.trim().length > 0 ? 'in_progress' : 'not_started',
+          answers,
+          structured_data: getStructuredData(),
+          analysis_result: analysisResult,
+          extracted_tasks: extractedTasks,
+          tasks_created: tasksCreated,
+          goals_saved: goalsSaved,
+          reflection_input: reflectionInput,
+          reflection_result: reflectionResult,
+          ...(reflectionResult ? { completed_at: new Date().toISOString() } : {}),
+          ...overrides,
+        },
+      });
+    }, 1500);
+  }, [user, moduleKey, currentModuleKey, answers, structured, goalFields, strukturFields, absicherungFields, optimierungFields, investmentFields, skalierungFields, analysisResult, extractedTasks, tasksCreated, goalsSaved, reflectionInput, reflectionResult, saveProgress]);
+
+  // Trigger auto-save on state changes (after initial load)
+  const loadedRef = useRef(false);
+  useEffect(() => {
+    if (!hasRestoredRef.current && !savedProgress) {
+      // No saved data, but user might be typing
+      if (answers.trim().length > 0) autoSave();
+    } else if (hasRestoredRef.current) {
+      // After restore, save on changes
+      if (loadedRef.current) autoSave();
+      else loadedRef.current = true;
+    }
+  }, [answers, analysisResult, reflectionInput, reflectionResult, tasksCreated, goalsSaved]);
+
   if (!mod) {
     return (
       <ClientPortalLayout>
@@ -1060,7 +1229,6 @@ export default function ClientPortalCoachModule() {
   }
 
   const Icon = mod.icon;
-  const currentModuleKey = moduleKey || 'mindset';
 
   // ─── Not yet implemented ─────────────────────────────────────
   if (!mod.implemented) {
