@@ -1764,6 +1764,69 @@ export type Database = {
         }
         Relationships: []
       }
+      net_worth_assets: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          last_updated_date: string
+          name: string
+          updated_at: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          last_updated_date?: string
+          name: string
+          updated_at?: string
+          user_id: string
+          value?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          last_updated_date?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
+      net_worth_liabilities: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          category: string
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notes: {
         Row: {
           author_id: string | null
