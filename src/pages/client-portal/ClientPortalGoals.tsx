@@ -18,6 +18,7 @@ import {
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useGamification } from '@/hooks/useGamification';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -48,6 +49,7 @@ interface GoalRow {
 
 export default function ClientPortalGoals() {
   const { user } = useAuth();
+  const { awardPoints } = useGamification();
   const qc = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [title, setTitle] = useState('');
@@ -82,14 +84,15 @@ export default function ClientPortalGoals() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['client-goals'] });
-      toast.success('Ziel hinzugefügt ✓', { duration: 3000 });
+      toast.success('Ziel hinzugefügt ✓');
+      awardPoints('goal_added', `goal_${Date.now()}`);
       setTitle('');
       setTargetAmount('');
       setTargetDate(undefined);
       setCategory('Sonstiges');
       setDialogOpen(false);
     },
-    onError: () => toast.error('Fehler beim Speichern', { duration: 3000 }),
+    onError: () => toast.error('Fehler beim Speichern'),
   });
 
   const deleteGoal = useMutation({

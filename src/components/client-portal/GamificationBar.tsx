@@ -1,14 +1,17 @@
-import { useGamification } from '@/hooks/useGamification';
+import { useGamification, LEVELS } from '@/hooks/useGamification';
 import { useSubscription } from '@/hooks/useSubscription';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Trophy, Star, Zap, Award, Crown, Flame, Sparkles } from 'lucide-react';
+import { Zap, Star, Trophy, Award, Crown, Flame, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const LEVEL_ICONS = [null, Zap, Star, Trophy, Award, Crown];
 
 export function GamificationBar() {
-  const { points, streakDays, level, progressPercent, pointsToNext, maxLevel, lastAwardedPoints, loading } = useGamification();
+  const {
+    points, streakDays, level, levelLabel, progressPercent,
+    pointsToNext, maxLevel, lastAwardedPoints, loading,
+  } = useGamification();
   const { isPremium, isLoading: subLoading } = useSubscription();
   const navigate = useNavigate();
 
@@ -18,11 +21,11 @@ export function GamificationBar() {
 
   return (
     <div className="relative flex items-center gap-2 px-3 py-2.5 bg-card border border-border rounded-2xl overflow-hidden">
-      {/* Animated points popup */}
+      {/* Animated XP popup */}
       <AnimatePresence>
         {lastAwardedPoints !== null && (
           <motion.div
-            key={lastAwardedPoints + '-' + Date.now()}
+            key={lastAwardedPoints.id}
             initial={{ opacity: 1, y: 0 }}
             animate={{ opacity: 0, y: -28 }}
             exit={{ opacity: 0 }}
@@ -30,7 +33,7 @@ export function GamificationBar() {
             className="absolute top-0 left-1/2 -translate-x-1/2 z-10 pointer-events-none"
           >
             <span className="text-sm font-bold text-primary">
-              +{lastAwardedPoints}
+              +{lastAwardedPoints.amount} XP
             </span>
           </motion.div>
         )}
@@ -48,7 +51,7 @@ export function GamificationBar() {
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-0.5">
           <span className="text-xs font-semibold text-foreground">
-            Lv.{level} · {points} Pkt
+            Lv.{level} · {points} XP
           </span>
           {!maxLevel && (
             <span className="text-[10px] text-muted-foreground">
@@ -56,7 +59,7 @@ export function GamificationBar() {
             </span>
           )}
         </div>
-        <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+        <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
           <motion.div
             className="h-full bg-primary rounded-full"
             initial={false}

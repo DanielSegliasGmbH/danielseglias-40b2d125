@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
@@ -11,15 +11,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { EmptyState } from '@/components/EmptyState';
-import {
-  ClipboardList, CheckCircle2, Circle, Trash2, Plus, CalendarIcon, Clock,
-} from 'lucide-react';
+import { ClipboardList, Plus, CalendarIcon, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useGamification } from '@/hooks/useGamification';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
+import { motion, AnimatePresence } from 'framer-motion';
+import { TaskCard } from '@/components/client-portal/TaskCard';
 
 interface TaskRow {
   id: string;
@@ -34,6 +35,7 @@ interface TaskRow {
 export default function ClientPortalTasks() {
   const { user } = useAuth();
   const qc = useQueryClient();
+  const { awardPoints } = useGamification();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
@@ -67,13 +69,13 @@ export default function ClientPortalTasks() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['client-tasks'] });
-      toast.success('Aufgabe hinzugefügt ✓', { duration: 3000 });
+      toast.success('Aufgabe hinzugefügt ✓');
       setTitle('');
       setNotes('');
       setDueDate(undefined);
       setDialogOpen(false);
     },
-    onError: () => toast.error('Fehler beim Speichern', { duration: 3000 }),
+    onError: () => toast.error('Fehler beim Speichern'),
   });
 
   const toggleTask = useMutation({
@@ -86,8 +88,15 @@ export default function ClientPortalTasks() {
         })
         .eq('id', id);
       if (error) throw error;
+      return { id, completed };
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['client-tasks'] }),
+    onSuccess: (result) => {
+      qc.invalidateQueries({ queryKey: ['client-tasks'] });
+      qc.invalidateQueries({ queryKey: ['monthly-completed-tasks'] });
+      if (result.completed) {
+        awardPoints('task_completed', `task_${result.id}`);
+      }
+    },
   });
 
   const deleteTask = useMutation({
@@ -196,51 +205,5 @@ export default function ClientPortalTasks() {
         )}
       </div>
     </ClientPortalLayout>
-  );
-}
-
-function TaskCard({
-  task,
-  overdue,
-  onToggle,
-  onDelete,
-}: {
-  task: TaskRow;
-  overdue: boolean;
-  onToggle: () => void;
-  onDelete: () => void;
-}) {
-  return (
-    <Card className={cn('transition-all', task.is_completed && 'opacity-60', overdue && 'border-destructive/40')}>
-      <CardContent className="p-4">
-        <div className="flex items-start gap-3">
-          <button onClick={onToggle} className="mt-0.5 shrink-0">
-            {task.is_completed
-              ? <CheckCircle2 className="h-5 w-5 text-green-600" />
-              : <Circle className="h-5 w-5 text-muted-foreground" />}
-          </button>
-          <div className="flex-1 min-w-0">
-            <p className={cn('text-sm font-medium text-foreground', task.is_completed && 'line-through text-muted-foreground')}>
-              {task.title}
-            </p>
-            {task.notes && (
-              <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{task.notes}</p>
-            )}
-            <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-              {task.due_date && (
-                <span className={cn('text-[10px] flex items-center gap-0.5', overdue ? 'text-destructive font-medium' : 'text-muted-foreground')}>
-                  <Clock className="h-3 w-3" />
-                  {new Date(task.due_date).toLocaleDateString('de-CH')}
-                  {overdue && ' (überfällig)'}
-                </span>
-              )}
-            </div>
-          </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={onDelete}>
-            <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
   );
 }
