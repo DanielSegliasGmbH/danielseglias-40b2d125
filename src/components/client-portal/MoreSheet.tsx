@@ -35,7 +35,6 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
     { key: 'budget', path: '/app/client-portal/budget', icon: PiggyBank, label: t('clientPortal.budget', 'Mein Budget') },
     { key: 'net-worth', path: '/app/client-portal/net-worth', icon: Landmark, label: 'Mein Vermögen' },
     { key: 'courses', path: '/app/client-portal/courses', icon: GraduationCap, label: t('clientPortal.courses') },
-    { key: 'monthly-report', path: '/app/client-portal/monthly-report', icon: FileBarChart, label: 'Mein Monatsbericht' },
   ];
 
   const visibleContentItems = contentItems.filter(item => 
@@ -88,6 +87,7 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
           <p className="text-xs font-medium text-muted-foreground px-1 mb-2">
             {t('app.accountSettings', 'Konto & Einstellungen')}
           </p>
+          <MoreLink to="/app/client-portal/monthly-report" icon={FileBarChart} label="Mein Monatsbericht" />
           <MoreLink to="/app/client-portal/premium" icon={Crown} label="Premium" />
           <MoreLink to={buildPath('/app/client-portal/profile-data')} icon={Wallet} label="Mein Finanzprofil" />
           <MoreLink to="/app/profile" icon={User} label={t('userManagement.profile')} />
