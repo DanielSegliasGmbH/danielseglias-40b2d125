@@ -12,7 +12,8 @@ export type ActionType =
   | 'insurance_added'
   | 'tool_used'
   | 'video_watched'
-  | 'expense_added';
+  | 'expense_added'
+  | 'asset_added';
 
 const POINTS_MAP: Record<ActionType, number> = {
   daily_login: 20,
@@ -24,6 +25,7 @@ const POINTS_MAP: Record<ActionType, number> = {
   tool_used: 10,
   video_watched: 15,
   expense_added: 10,
+  asset_added: 25,
 };
 
 export const LEVELS = [
@@ -81,6 +83,10 @@ const ACTION_MESSAGES: Partial<Record<ActionType, string[]>> = {
   expense_added: [
     'Ausgabe erfasst – Überblick behalten 📊',
     'Gut getrackt – so behältst du die Kontrolle 💪',
+  ],
+  asset_added: [
+    'Vermögenswert erfasst – dein Überblick wächst 📊',
+    'Super, dein Vermögensbild wird klarer 💎',
   ],
 };
 
