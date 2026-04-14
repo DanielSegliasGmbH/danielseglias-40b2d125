@@ -1489,6 +1489,16 @@ export default function ClientPortalCoachModule() {
 
   return (
     <ClientPortalLayout>
+      {/* XP Float Animation */}
+      <AnimatePresence>{showXpFloat && <XpFloat amount={100} />}</AnimatePresence>
+
+      {/* Module Completion Celebration */}
+      <AnimatePresence>
+        {showCelebration && (
+          <ModuleCelebration title={mod.title} onClose={() => setShowCelebration(false)} />
+        )}
+      </AnimatePresence>
+
       <ScreenHeader title={mod.title} showBack backTo="/app/client-portal/coach" />
 
       <div className="max-w-2xl mx-auto space-y-5 p-4 pb-8">
