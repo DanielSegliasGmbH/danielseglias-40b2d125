@@ -210,7 +210,10 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
         </aside>
 
         {/* Mobile Header - Clean & minimal */}
-        <div className={cn("lg:hidden fixed left-0 right-0 z-50 bg-card border-b border-border", isAdminPreview ? "top-10" : "top-0")}>
+        <div
+          className={cn("lg:hidden fixed left-0 right-0 z-50 bg-card border-b border-border", isAdminPreview ? "top-10" : "top-0")}
+          style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
+        >
           <div className="flex items-center justify-between px-4 h-12">
             <h1 className="text-base font-semibold text-foreground">{t('clientPortal.title')}</h1>
             <div className="flex items-center gap-1">
@@ -220,10 +223,16 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
         </div>
 
         {/* Main Content */}
-        <main className={cn(
-          "flex-1 bg-background",
-          "pt-14 pb-20 lg:pb-0 lg:pt-0", // Mobile: header + bottom nav padding
-          isAdminPreview && "lg:pt-10"
+        <main
+          className={cn(
+            "flex-1 bg-background",
+            "lg:pb-0 lg:pt-0",
+            isAdminPreview && "lg:pt-10"
+          )}
+          style={{
+            paddingTop: 'calc(env(safe-area-inset-top, 20px) + 48px)',
+            paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 80px)',
+          }}
         )}>
           <div className="hidden lg:flex items-center justify-end gap-4 p-4 border-b border-border bg-card">
             <NotificationBell />

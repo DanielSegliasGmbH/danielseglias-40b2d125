@@ -43,7 +43,10 @@ export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationPro
   ].some(p => location.pathname.startsWith(p));
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border lg:hidden safe-area-pb">
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border lg:hidden"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+    >
       <div className="flex items-center justify-around h-16">
         {navItems.map((item) => {
           const isActive = item.key === 'home' 
