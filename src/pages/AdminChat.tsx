@@ -149,7 +149,8 @@ function AdminChatDetail({
 
   useEffect(() => {
     markAsRead.mutate(participantId);
-  }, [participantId, markAsRead]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [participantId]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -159,10 +160,12 @@ function AdminChatDetail({
 
   const handleSend = async () => {
     if (!text.trim()) return;
+    const customerId = selectedConversation?.customer_id ?? undefined;
     try {
-      await sendMessage.mutateAsync({ participantId, message: text });
+      await sendMessage.mutateAsync({ participantId, message: text, customerId });
       setText('');
     } catch (error) {
+      console.error('[AdminChat] Send failed:', error);
       toast.error(
         error instanceof Error ? error.message : 'Nachricht konnte nicht gesendet werden.'
       );
