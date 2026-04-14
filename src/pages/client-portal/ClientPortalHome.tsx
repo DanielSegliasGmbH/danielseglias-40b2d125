@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronRight, Lock, Wallet } from 'lucide-react';
+import { ChevronRight, Lock, Wallet, Landmark } from 'lucide-react';
 import {
   Shield,
   Target,
@@ -26,6 +26,7 @@ import { useMetaProfile } from '@/hooks/useMetaProfile';
 import { useNextBestStep } from '@/hooks/useNextBestStep';
 import { NextStepCard } from '@/components/client-portal/NextStepCard';
 import { CtaBanner } from '@/components/client-portal/CtaBanner';
+import { NetWorthWidget } from '@/components/client-portal/NetWorthWidget';
 import { ProgressWidget } from '@/components/client-portal/ProgressWidget';
 import { AlertTriangle } from 'lucide-react';
 
