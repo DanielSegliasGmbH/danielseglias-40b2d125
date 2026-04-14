@@ -179,7 +179,7 @@ export default function ClientPortalBudget() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses'] });
       toast.success('Ausgabe erfasst ✓');
-      awardPoints('tool_used', `expense_${Date.now()}`);
+      awardPoints('expense_added', `expense_${Date.now()}`);
       setExpAmount('');
       setExpNote('');
       setExpDate(new Date().toISOString().slice(0, 10));
