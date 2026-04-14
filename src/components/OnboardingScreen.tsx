@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Sparkles, Eye, Link2, Rocket, ChevronRight, ChevronLeft, Shield, Lock, EyeOff, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform, useAnimation } from 'framer-motion';
 
 const slides = [
   {
@@ -134,26 +134,126 @@ function PurposePoints() {
   );
 }
 
+/* ── Confetti Canvas ── */
+function ConfettiCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const colors = [
+      'hsl(45, 90%, 55%)',
+      'hsl(160, 70%, 50%)',
+      'hsl(200, 80%, 55%)',
+      'hsl(340, 75%, 55%)',
+      'hsl(280, 60%, 55%)',
+      'hsl(20, 90%, 60%)',
+    ];
+
+    interface Particle {
+      x: number; y: number; w: number; h: number;
+      color: string; vx: number; vy: number; rot: number; vr: number;
+      opacity: number;
+    }
+
+    const particles: Particle[] = Array.from({ length: 80 }, () => ({
+      x: canvas.width / 2 + (Math.random() - 0.5) * 200,
+      y: canvas.height * 0.3,
+      w: 6 + Math.random() * 6,
+      h: 4 + Math.random() * 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: (Math.random() - 0.5) * 8,
+      vy: -(Math.random() * 10 + 4),
+      rot: Math.random() * Math.PI * 2,
+      vr: (Math.random() - 0.5) * 0.3,
+      opacity: 1,
+    }));
+
+    let frame: number;
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let alive = false;
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.18;
+        p.rot += p.vr;
+        p.opacity -= 0.005;
+        if (p.opacity <= 0) continue;
+        alive = true;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.globalAlpha = Math.max(0, p.opacity);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      }
+      if (alive) frame = requestAnimationFrame(animate);
+    };
+    frame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 z-[60] pointer-events-none"
+    />
+  );
+}
+
+/* ── Swipe hook ── */
+function useSwipe(onLeft: () => void, onRight: () => void) {
+  const startX = useRef<number | null>(null);
+  const startY = useRef<number | null>(null);
+
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    startX.current = e.touches[0].clientX;
+    startY.current = e.touches[0].clientY;
+  }, []);
+
+  const onTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (startX.current === null || startY.current === null) return;
+    const dx = e.changedTouches[0].clientX - startX.current;
+    const dy = e.changedTouches[0].clientY - startY.current;
+    startX.current = null;
+    startY.current = null;
+    if (Math.abs(dx) < 50 || Math.abs(dy) > Math.abs(dx)) return;
+    if (dx < 0) onLeft();
+    else onRight();
+  }, [onLeft, onRight]);
+
+  return { onTouchStart, onTouchEnd };
+}
+
 export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
   const [privacyAcknowledged, setPrivacyAcknowledged] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (current < slides.length - 1) {
       setDirection(1);
       setCurrent(current + 1);
     } else {
       onComplete();
     }
-  };
+  }, [current, onComplete]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     if (current > 0) {
       setDirection(-1);
       setCurrent(current - 1);
     }
-  };
+  }, [current]);
 
   const handleSkip = () => {
     onComplete();
@@ -164,7 +264,34 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
   const progress = ((current + 1) / slides.length) * 100;
 
   const isPrivacySlide = slide.isPrivacy === true;
+  const isFinal = slide.isFinal === true;
   const canProceed = !isPrivacySlide || privacyAcknowledged;
+
+  // Trigger confetti on final slide
+  useEffect(() => {
+    if (isFinal) {
+      setShowConfetti(true);
+      const t = setTimeout(() => setShowConfetti(false), 3000);
+      return () => clearTimeout(t);
+    }
+  }, [isFinal]);
+
+  // Swipe: only go next if canProceed
+  const swipeLeft = useCallback(() => {
+    if (canProceed && current < slides.length - 1) {
+      setDirection(1);
+      setCurrent(c => c + 1);
+    }
+  }, [canProceed, current]);
+
+  const swipeRight = useCallback(() => {
+    if (current > 0) {
+      setDirection(-1);
+      setCurrent(c => c - 1);
+    }
+  }, [current]);
+
+  const { onTouchStart, onTouchEnd } = useSwipe(swipeLeft, swipeRight);
 
   const variants = {
     enter: (dir: number) => ({ x: dir > 0 ? 80 : -80, opacity: 0 }),
@@ -173,7 +300,14 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-between px-6 py-10 safe-area-inset">
+    <div
+      className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-between px-6 py-10 safe-area-inset"
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    >
+      {/* Confetti */}
+      {showConfetti && <ConfettiCanvas />}
+
       {/* Top bar */}
       <div className="w-full max-w-sm space-y-4">
         <div className="flex items-center justify-between">
@@ -198,10 +332,14 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
             Überspringen
           </button>
         </div>
+        {/* Progress bar with smooth transition */}
         <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
           <div
-            className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
-            style={{ width: `${progress}%` }}
+            className="h-full bg-primary rounded-full"
+            style={{
+              width: `${progress}%`,
+              transition: 'width 300ms ease',
+            }}
           />
         </div>
       </div>
@@ -282,6 +420,19 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
               </motion.div>
             </div>
           )}
+
+          {/* XP Badge on final slide */}
+          {isFinal && (
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.3, type: 'spring', stiffness: 260, damping: 20 }}
+              className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary/15 text-primary font-bold text-sm"
+            >
+              <Sparkles className="h-4 w-4" />
+              +200 XP
+            </motion.div>
+          )}
         </motion.div>
       </AnimatePresence>
 
@@ -303,11 +454,12 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
           onClick={handleNext}
           disabled={!canProceed}
           className={cn(
-            "w-full h-14 text-base font-semibold rounded-2xl gap-2",
-            slide.isFinal && "animate-pulse"
+            "w-full h-14 text-base font-semibold rounded-2xl gap-2 transition-all duration-300",
+            isPrivacySlide && !privacyAcknowledged && "opacity-50",
+            isFinal && "animate-pulse shadow-lg shadow-primary/30"
           )}
         >
-          {slide.isFinal ? (
+          {isFinal ? (
             'Dashboard entdecken'
           ) : (
             <>Weiter <ChevronRight className="h-5 w-5" /></>
