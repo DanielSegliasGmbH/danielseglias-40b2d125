@@ -104,6 +104,7 @@ export default function AdminChat() {
               <AdminChatDetail
                 participantId={selectedParticipantId}
                 participantName={selectedConversation?.participant_name || ''}
+                customerId={selectedConversation?.customer_id ?? undefined}
                 userId={user!.id}
                 onBack={isMobile ? () => setSelectedParticipantId(null) : undefined}
               />
