@@ -1,46 +1,57 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
-import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronRight, Sparkles, Brain, Eye, Target, LayoutGrid, Shield, Settings2, TrendingUp, Rocket, Star, RotateCcw, Info, Lock } from 'lucide-react';
+import { ChevronRight, Sparkles, Brain, Eye, Target, LayoutGrid, Shield, Settings2, TrendingUp, Rocket, Star, RotateCcw, Info, Lock, CheckCircle, Clock, Play, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSubscription } from '@/hooks/useSubscription';
+import { useAllCoachProgress, useCoachBadges, getModuleStatus } from '@/hooks/useCoachProgress';
 
 const modules = [
-  { id: 1, key: 'mindset', icon: Brain, title: 'Mindset', desc: 'Deine Denkmuster erkennen und bewusst steuern.', status: 'not_started' as const },
-  { id: 2, key: 'klarheit', icon: Eye, title: 'Klarheit', desc: 'Den Überblick über deine aktuelle Situation gewinnen.', status: 'not_started' as const },
-  { id: 3, key: 'ziele', icon: Target, title: 'Ziele', desc: 'Klare, messbare Finanzziele definieren.', status: 'not_started' as const },
-  { id: 4, key: 'struktur', icon: LayoutGrid, title: 'Struktur', desc: 'Deine Finanzen sauber organisieren.', status: 'not_started' as const },
-  { id: 5, key: 'absicherung', icon: Shield, title: 'Absicherung', desc: 'Die wichtigsten Risiken richtig absichern.', status: 'not_started' as const },
-  { id: 6, key: 'optimierung', icon: Settings2, title: 'Optimierung', desc: 'Bestehende Verträge und Kosten verbessern.', status: 'not_started' as const },
-  { id: 7, key: 'investment', icon: TrendingUp, title: 'Investment', desc: 'Dein Geld gezielt für dich arbeiten lassen.', status: 'not_started' as const },
-  { id: 8, key: 'skalierung', icon: Rocket, title: 'Skalierung', desc: 'Dein Vermögensaufbau auf die nächste Stufe bringen.', status: 'not_started' as const },
-  { id: 9, key: 'freiheit', icon: Star, title: 'Freiheit', desc: 'Finanzielle Unabhängigkeit konkret planen.', status: 'not_started' as const },
-  { id: 10, key: 'review', icon: RotateCcw, title: 'Review', desc: 'Regelmässig prüfen, anpassen und wachsen.', status: 'not_started' as const },
+  { id: 1, key: 'mindset', icon: Brain, title: 'Mindset', desc: 'Deine Denkmuster erkennen und bewusst steuern.', xp: 100, time: '15–20 Min.' },
+  { id: 2, key: 'klarheit', icon: Eye, title: 'Klarheit', desc: 'Den Überblick über deine aktuelle Situation gewinnen.', xp: 100, time: '20–25 Min.' },
+  { id: 3, key: 'ziele', icon: Target, title: 'Ziele', desc: 'Klare, messbare Finanzziele definieren.', xp: 100, time: '15–20 Min.' },
+  { id: 4, key: 'struktur', icon: LayoutGrid, title: 'Struktur', desc: 'Deine Finanzen sauber organisieren.', xp: 100, time: '15–20 Min.' },
+  { id: 5, key: 'absicherung', icon: Shield, title: 'Absicherung', desc: 'Die wichtigsten Risiken richtig absichern.', xp: 100, time: '15–20 Min.' },
+  { id: 6, key: 'optimierung', icon: Settings2, title: 'Optimierung', desc: 'Bestehende Verträge und Kosten verbessern.', xp: 100, time: '15–20 Min.' },
+  { id: 7, key: 'investment', icon: TrendingUp, title: 'Investment', desc: 'Dein Geld gezielt für dich arbeiten lassen.', xp: 100, time: '15–20 Min.' },
+  { id: 8, key: 'skalierung', icon: Rocket, title: 'Skalierung', desc: 'Dein Vermögensaufbau auf die nächste Stufe bringen.', xp: 100, time: '15–20 Min.' },
+  { id: 9, key: 'freiheit', icon: Star, title: 'Freiheit', desc: 'Finanzielle Unabhängigkeit konkret planen.', xp: 100, time: '15–20 Min.' },
+  { id: 10, key: 'review', icon: RotateCcw, title: 'Review', desc: 'Regelmässig prüfen, anpassen und wachsen.', xp: 100, time: '10–15 Min.' },
 ];
 
 const statusConfig = {
-  not_started: { label: 'Nicht gestartet', variant: 'muted' as const },
-  in_progress: { label: 'In Bearbeitung', variant: 'warning' as const },
-  completed: { label: 'Abgeschlossen', variant: 'success' as const },
+  not_started: { label: 'Nicht gestartet', variant: 'muted' as const, icon: null },
+  in_progress: { label: 'In Bearbeitung', variant: 'warning' as const, icon: Play },
+  completed: { label: 'Abgeschlossen', variant: 'success' as const, icon: CheckCircle },
 };
 
 export default function ClientPortalCoach() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { isPremium, isLoading: subLoading } = useSubscription();
+  const { data: allProgress = [] } = useAllCoachProgress();
+  const { data: badges = [] } = useCoachBadges();
 
-  // First 3 modules free, rest premium
   const FREE_MODULE_COUNT = 3;
 
-  // Static progress for now
-  const completedCount = modules.filter(m => (m.status as string) === 'completed').length;
+  // Build status map from DB
+  const progressMap = new Map(allProgress.map(p => [p.module_key, p]));
+
+  const completedCount = modules.filter(m => getModuleStatus(progressMap.get(m.key)) === 'completed').length;
   const progressPercent = Math.round((completedCount / modules.length) * 100);
+
+  // Find next recommended module (first non-completed)
+  const nextModuleKey = modules.find(m => {
+    const status = getModuleStatus(progressMap.get(m.key));
+    return status !== 'completed';
+  })?.key;
+
+  // Find resumable module (in_progress)
+  const resumeModule = modules.find(m => getModuleStatus(progressMap.get(m.key)) === 'in_progress');
 
   return (
     <ClientPortalLayout>
@@ -62,33 +73,72 @@ export default function ClientPortalCoach() {
           </p>
         </div>
 
+        {/* Resume Banner */}
+        {resumeModule && (
+          <Card className="border-primary/30 bg-primary/5">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+                    <Play className="h-4 w-4 text-primary" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-foreground">Weiter machen</p>
+                    <p className="text-xs text-muted-foreground truncate">Modul «{resumeModule.title}» fortsetzen</p>
+                  </div>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => navigate(`/app/client-portal/coach/${resumeModule.key}`)}
+                  className="shrink-0 gap-1.5"
+                >
+                  Fortsetzen
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Progress */}
         <Card>
           <CardContent className="p-4 space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold text-foreground">Dein Fortschritt</h2>
-              <span className="text-xs font-medium text-muted-foreground">{progressPercent}%</span>
+              <span className="text-xs font-medium text-muted-foreground">{completedCount}/{modules.length} Module · {progressPercent}%</span>
             </div>
             <Progress value={progressPercent} className="h-2" />
-            <p className="text-xs text-muted-foreground">
-              Du baust Schritt für Schritt dein finanzielles Fundament auf.
-            </p>
+            {badges.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {badges.map(b => (
+                  <Badge key={b.id} variant="secondary" className="text-[10px] gap-1">
+                    <CheckCircle className="h-2.5 w-2.5 text-green-600" />
+                    {modules.find(m => m.key === b.module_key)?.title || b.module_key}
+                  </Badge>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
         {/* Modules */}
         <div className="space-y-2">
           {modules.map((mod, idx) => {
-            const statusInfo = statusConfig[mod.status];
+            const progress = progressMap.get(mod.key);
+            const status = getModuleStatus(progress);
+            const statusInfo = statusConfig[status];
             const Icon = mod.icon;
             const isLocked = !isPremium && !subLoading && idx >= FREE_MODULE_COUNT;
+            const isNext = mod.key === nextModuleKey && !isLocked;
+            const hasBadge = badges.some(b => b.module_key === mod.key);
 
             return (
               <Card
                 key={mod.id}
                 className={cn(
                   "w-full transition-all active:scale-[0.98] touch-manipulation hover:shadow-md cursor-pointer",
-                  isLocked && "opacity-60"
+                  isLocked && "opacity-60",
+                  isNext && !resumeModule && "ring-1 ring-primary/30 shadow-md"
                 )}
                 onClick={() => {
                   if (isLocked) {
@@ -101,31 +151,54 @@ export default function ClientPortalCoach() {
                 <CardContent className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-3 min-w-0 flex-1">
                     <div className={cn(
-                      "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
-                      isLocked ? "bg-muted" : "bg-primary/10"
+                      "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 relative",
+                      isLocked ? "bg-muted" :
+                      status === 'completed' ? "bg-green-100 dark:bg-green-900/30" :
+                      "bg-primary/10"
                     )}>
                       {isLocked ? (
                         <Lock className="h-4 w-4 text-muted-foreground" />
+                      ) : status === 'completed' ? (
+                        <CheckCircle className="h-5 w-5 text-green-600" />
                       ) : (
                         <span className="text-xs font-bold text-primary">{idx + 1}</span>
+                      )}
+                      {hasBadge && status === 'completed' && (
+                        <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-yellow-400 flex items-center justify-center">
+                          <Star className="h-2.5 w-2.5 text-yellow-800" />
+                        </div>
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <Icon className={cn("h-3.5 w-3.5 shrink-0", isLocked ? "text-muted-foreground" : "text-primary")} />
+                        <Icon className={cn("h-3.5 w-3.5 shrink-0", isLocked ? "text-muted-foreground" : status === 'completed' ? "text-green-600" : "text-primary")} />
                         <h3 className="font-semibold text-sm text-foreground truncate">{mod.title}</h3>
                         {isLocked && (
                           <Badge variant="secondary" className="text-[9px] bg-primary/10 text-primary border-0 px-1.5 py-0">
                             Premium
                           </Badge>
                         )}
+                        {isNext && !isLocked && !resumeModule && (
+                          <Badge variant="default" className="text-[9px] px-1.5 py-0">
+                            Empfohlen
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-xs text-muted-foreground line-clamp-1">{mod.desc}</p>
-                      {!isLocked && (
-                        <Badge variant={statusInfo.variant} className="mt-1.5 text-[10px]">
-                          {statusInfo.label}
-                        </Badge>
-                      )}
+                      <div className="flex items-center gap-3 mt-1.5">
+                        {!isLocked && (
+                          <Badge variant={statusInfo.variant} className="text-[10px] gap-1">
+                            {statusInfo.icon && <statusInfo.icon className="h-2.5 w-2.5" />}
+                            {statusInfo.label}
+                          </Badge>
+                        )}
+                        <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                          <Clock className="h-2.5 w-2.5" /> {mod.time}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                          <Zap className="h-2.5 w-2.5" /> +{mod.xp} XP
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 ml-2" />
