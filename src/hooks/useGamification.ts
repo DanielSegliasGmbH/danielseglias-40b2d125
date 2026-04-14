@@ -11,7 +11,8 @@ export type ActionType =
   | 'profile_completed'
   | 'insurance_added'
   | 'tool_used'
-  | 'video_watched';
+  | 'video_watched'
+  | 'expense_added';
 
 const POINTS_MAP: Record<ActionType, number> = {
   daily_login: 20,
@@ -22,6 +23,7 @@ const POINTS_MAP: Record<ActionType, number> = {
   insurance_added: 40,
   tool_used: 10,
   video_watched: 15,
+  expense_added: 10,
 };
 
 export const LEVELS = [
