@@ -26,6 +26,7 @@ import { useMetaProfile } from '@/hooks/useMetaProfile';
 import { useNextBestStep } from '@/hooks/useNextBestStep';
 import { NextStepCard } from '@/components/client-portal/NextStepCard';
 import { CtaBanner } from '@/components/client-portal/CtaBanner';
+import { ProgressWidget } from '@/components/client-portal/ProgressWidget';
 import { AlertTriangle } from 'lucide-react';
 
 const portalSections = [
@@ -154,8 +155,11 @@ export default function ClientPortalHome() {
   return (
     <ClientPortalLayout>
       <div className="max-w-2xl mx-auto space-y-5">
-        {/* Compact gamification */}
+        {/* Compact gamification header */}
         <GamificationBar />
+
+        {/* Progress Widget */}
+        <ProgressWidget />
 
         {/* Meta-Profile Checkup Banner */}
         {needsCheckup && (
