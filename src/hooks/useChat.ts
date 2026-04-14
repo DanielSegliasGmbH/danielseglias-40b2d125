@@ -136,19 +136,31 @@ export function useSendMessage() {
         throw new Error('Bitte gib eine Nachricht ein.');
       }
 
+      const senderRole = role === 'admin' ? 'admin' : 'client';
+      console.log('[useChat] Inserting message:', {
+        participant_id: participantId,
+        sender_id: user.id,
+        sender_role: senderRole,
+        customer_id: customerId || null,
+      });
+
       const { data, error } = await supabase
         .from('chat_messages')
         .insert({
           participant_id: participantId,
           customer_id: customerId || null,
           sender_id: user.id,
-          sender_role: role === 'admin' ? 'admin' : 'client',
+          sender_role: senderRole,
           message: normalizedMessage,
         })
         .select('*')
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('[useChat] Supabase insert error:', error);
+        throw error;
+      }
+      console.log('[useChat] Message inserted:', data?.id);
       return data as ChatMessage;
     },
     onSuccess: (createdMessage, { participantId }) => {

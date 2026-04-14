@@ -45,12 +45,19 @@ export function ChatDrawer({ open, onOpenChange }: ChatDrawerProps) {
   }, [messages]);
 
   const handleSend = async () => {
-    if (!text.trim() || !participantId) return;
+    const trimmed = text.trim();
+    if (!trimmed || !participantId) {
+      console.warn('[ChatDrawer] Send blocked:', { hasText: !!trimmed, participantId });
+      return;
+    }
     try {
-      await sendMessage.mutateAsync({ participantId, message: text });
+      console.log('[ChatDrawer] Sending message…', { participantId, length: trimmed.length });
+      await sendMessage.mutateAsync({ participantId, message: trimmed });
+      console.log('[ChatDrawer] Message sent successfully');
       trackEvent({ eventType: 'chat_message_sent' });
       setText('');
     } catch (error) {
+      console.error('[ChatDrawer] Send failed:', error);
       toast.error(
         error instanceof Error ? error.message : 'Nachricht konnte nicht gesendet werden.'
       );
