@@ -14,7 +14,7 @@ import { useGamification, LEVELS } from '@/hooks/useGamification';
 import { useNextBestStep } from '@/hooks/useNextBestStep';
 import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { NotificationBell } from '@/components/client-portal/NotificationBell';
-import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, Crown, Landmark, Wallet, ClipboardList, TrendingUp } from 'lucide-react';
+import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, Crown, Landmark, Wallet, ClipboardList, TrendingUp, FileBarChart } from 'lucide-react';
 
 const LEVEL_ICONS = [null, Zap, Star, Trophy, Award, Crown];
 
@@ -402,6 +402,26 @@ export default function ClientPortalHome() {
             </Card>
           </motion.div>
         )}
+
+        {/* ── 7. MONATSBERICHT LINK ── */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+          <Link to="/app/client-portal/monthly-report">
+            <Card className="cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98]">
+              <CardContent className="p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="size-9 rounded-xl bg-primary/10 grid place-content-center">
+                    <FileBarChart className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Mein Monatsbericht</p>
+                    <p className="text-[11px] text-muted-foreground">Deine persönliche Monatsübersicht</p>
+                  </div>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground" />
+              </CardContent>
+            </Card>
+          </Link>
+        </motion.div>
       </div>
 
       <StrategyPasswordGate

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { FileBarChart } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, TrendingUp, User, HelpCircle, Globe, Crown, Wallet, PiggyBank, Landmark } from 'lucide-react';
 import {
@@ -86,6 +87,7 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
           <p className="text-xs font-medium text-muted-foreground px-1 mb-2">
             {t('app.accountSettings', 'Konto & Einstellungen')}
           </p>
+          <MoreLink to="/app/client-portal/monthly-report" icon={FileBarChart} label="Mein Monatsbericht" />
           <MoreLink to="/app/client-portal/premium" icon={Crown} label="Premium" />
           <MoreLink to={buildPath('/app/client-portal/profile-data')} icon={Wallet} label="Mein Finanzprofil" />
           <MoreLink to="/app/profile" icon={User} label={t('userManagement.profile')} />
