@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Send, MessageCircle } from 'lucide-react';
+import { Send, MessageCircle, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import {
   useChatMessages,
@@ -23,7 +23,6 @@ interface ChatDrawerProps {
 
 export function ChatDrawer({ open, onOpenChange }: ChatDrawerProps) {
   const { user } = useAuth();
-  // For clients, participant_id = their own user id
   const participantId = user?.id ?? null;
   const { data: messages = [], isLoading } = useChatMessages(participantId);
   const sendMessage = useSendMessage();
@@ -47,7 +46,6 @@ export function ChatDrawer({ open, onOpenChange }: ChatDrawerProps) {
 
   const handleSend = async () => {
     if (!text.trim() || !participantId) return;
-
     try {
       await sendMessage.mutateAsync({ participantId, message: text });
       trackEvent({ eventType: 'chat_message_sent' });
@@ -68,14 +66,31 @@ export function ChatDrawer({ open, onOpenChange }: ChatDrawerProps) {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="flex flex-col p-0 sm:max-w-md w-full">
-        <SheetHeader className="px-4 py-3 border-b border-border">
-          <SheetTitle className="flex items-center gap-2 text-base">
+      <SheetContent
+        className="flex flex-col p-0 sm:max-w-md w-full h-full"
+        side="right"
+      >
+        {/* Header with close button – padded for status bar */}
+        <div
+          className="flex items-center justify-between px-4 py-3 border-b border-border bg-card"
+          style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top, 0.75rem))' }}
+        >
+          <div className="flex items-center gap-2 text-base font-semibold">
             <MessageCircle className="h-5 w-5 text-primary" />
             Direkter Chat
-          </SheetTitle>
-        </SheetHeader>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 shrink-0"
+            onClick={() => onOpenChange(false)}
+          >
+            <X className="h-5 w-5" />
+            <span className="sr-only">Schliessen</span>
+          </Button>
+        </div>
 
+        {/* Messages area */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
           {isLoading ? (
             <div className="flex items-center justify-center h-full">
@@ -95,14 +110,18 @@ export function ChatDrawer({ open, onOpenChange }: ChatDrawerProps) {
           )}
         </div>
 
-        <div className="border-t border-border p-3 bg-card">
-          <div className="flex gap-2">
+        {/* Input bar – sticky bottom with safe area */}
+        <div
+          className="border-t border-border p-3 bg-card shrink-0"
+          style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0.75rem))' }}
+        >
+          <div className="flex gap-2 items-end">
             <Textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Nachricht schreiben…"
-              className="min-h-[40px] max-h-[120px] resize-none text-sm"
+              className="min-h-[40px] max-h-[120px] resize-none text-base sm:text-sm flex-1"
               rows={1}
               disabled={!participantId || sendMessage.isPending}
             />
