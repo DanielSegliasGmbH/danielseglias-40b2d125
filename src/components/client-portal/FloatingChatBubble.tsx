@@ -8,24 +8,14 @@ import { cn } from '@/lib/utils';
 export function FloatingChatBubble() {
   const { data: unreadCount = 0 } = useUnreadCount();
   const [chatOpen, setChatOpen] = useState(false);
-  const [minimized, setMinimized] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [initialized, setInitialized] = useState(false);
+  const [position, setPosition] = useState(() => ({
+    x: typeof window !== 'undefined' ? window.innerWidth - 60 - 16 : 300,
+    y: typeof window !== 'undefined' ? window.innerHeight - 80 - 56 - 16 : 300,
+  }));
   const dragging = useRef(false);
   const dragOffset = useRef({ x: 0, y: 0 });
   const bubbleRef = useRef<HTMLButtonElement>(null);
   const hasMoved = useRef(false);
-
-  // Initialize position to bottom-right above nav
-  useEffect(() => {
-    if (!initialized) {
-      setPosition({
-        x: window.innerWidth - (minimized ? 52 : 60) - 16,
-        y: window.innerHeight - 80 - (minimized ? 36 : 56) - 16,
-      });
-      setInitialized(true);
-    }
-  }, [initialized, minimized]);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     dragging.current = true;
