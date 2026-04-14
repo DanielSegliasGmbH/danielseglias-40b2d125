@@ -134,11 +134,13 @@ export default function AdminChat() {
 function AdminChatDetail({
   participantId,
   participantName,
+  customerId,
   userId,
   onBack,
 }: {
   participantId: string;
   participantName: string;
+  customerId?: string;
   userId: string;
   onBack?: () => void;
 }) {
