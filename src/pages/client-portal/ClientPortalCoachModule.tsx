@@ -1311,10 +1311,16 @@ export default function ClientPortalCoachModule() {
       if (data?.error) throw new Error(data.error);
       setAnalysisResult(data.content || '');
       if (data.tasks?.length) setExtractedTasks(data.tasks);
-      // Award gamification points for completing a coach module
+      // Award gamification points and show XP animation
       if (moduleKey) {
-        awardPoints('coach_module_completed', moduleKey);
+        const awarded = await awardPoints('coach_module_completed', moduleKey);
+        if (awarded) {
+          setShowXpFloat(true);
+          setTimeout(() => setShowXpFloat(false), 2000);
+        }
       }
+      // Auto-save progress
+      autoSave({ analysis_result: data.content || '', status: 'in_progress' });
     } catch (e: any) {
       toast({ title: 'Fehler bei der Analyse', description: e.message || 'Bitte versuche es erneut.', variant: 'destructive' });
     } finally {
