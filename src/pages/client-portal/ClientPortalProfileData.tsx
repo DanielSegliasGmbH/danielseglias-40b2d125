@@ -52,17 +52,27 @@ export default function ClientPortalProfileData() {
   };
 
   const handleSave = async () => {
+    const updates: Record<string, string | number | null> = {};
+    Object.entries(form).forEach(([key, val]) => {
+      updates[key] = val === '' ? null : val;
+    });
+
     try {
-      const updates: Record<string, string | number | null> = {};
-      Object.entries(form).forEach(([key, val]) => {
-        updates[key] = val === '' ? null : val;
-      });
       await updateFields(updates as any, 'profil-seite');
+    } catch (err) {
+      console.error('[ProfileData] Save failed:', err);
+      toast.error('Fehler beim Speichern', { duration: 3000 });
+      return;
+    }
+
+    setIsDirty(false);
+    toast.success('Gespeichert ✓', { duration: 3000 });
+
+    // Confirm separately – don't block success feedback
+    try {
       await confirmProfile();
-      setIsDirty(false);
-      toast.success('Profildaten gespeichert');
-    } catch {
-      toast.error('Fehler beim Speichern');
+    } catch (err) {
+      console.error('[ProfileData] Confirm failed:', err);
     }
   };
 
