@@ -104,6 +104,7 @@ export default function AdminChat() {
               <AdminChatDetail
                 participantId={selectedParticipantId}
                 participantName={selectedConversation?.participant_name || ''}
+                customerId={selectedConversation?.customer_id ?? undefined}
                 userId={user!.id}
                 onBack={isMobile ? () => setSelectedParticipantId(null) : undefined}
               />
@@ -133,11 +134,13 @@ export default function AdminChat() {
 function AdminChatDetail({
   participantId,
   participantName,
+  customerId,
   userId,
   onBack,
 }: {
   participantId: string;
   participantName: string;
+  customerId?: string;
   userId: string;
   onBack?: () => void;
 }) {
@@ -149,7 +152,8 @@ function AdminChatDetail({
 
   useEffect(() => {
     markAsRead.mutate(participantId);
-  }, [participantId, markAsRead]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [participantId]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -160,9 +164,10 @@ function AdminChatDetail({
   const handleSend = async () => {
     if (!text.trim()) return;
     try {
-      await sendMessage.mutateAsync({ participantId, message: text });
+      await sendMessage.mutateAsync({ participantId, message: text, customerId });
       setText('');
     } catch (error) {
+      console.error('[AdminChat] Send failed:', error);
       toast.error(
         error instanceof Error ? error.message : 'Nachricht konnte nicht gesendet werden.'
       );
