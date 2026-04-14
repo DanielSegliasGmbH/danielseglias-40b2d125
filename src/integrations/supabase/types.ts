@@ -2137,6 +2137,45 @@ export type Database = {
         }
         Relationships: []
       }
+      smart_notifications: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          is_read: boolean
+          link_label: string | null
+          link_url: string | null
+          notification_type: string
+          ref_key: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link_label?: string | null
+          link_url?: string | null
+          notification_type: string
+          ref_key: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link_label?: string | null
+          link_url?: string | null
+          notification_type?: string
+          ref_key?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       system_map_edges: {
         Row: {
           created_at: string
