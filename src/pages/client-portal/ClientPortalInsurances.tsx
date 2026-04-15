@@ -529,13 +529,24 @@ export default function ClientPortalInsurances() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="document_url">Dokument / Link (optional)</Label>
+              <Label htmlFor="document_url">Link zur Police (optional)</Label>
               <Input
                 id="document_url"
                 type="url"
                 value={form.document_url}
                 onChange={e => updateField('document_url', e.target.value)}
                 placeholder="https://..."
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="portal_url">Link zum Kundenportal (optional)</Label>
+              <Input
+                id="portal_url"
+                type="url"
+                value={form.portal_url}
+                onChange={e => updateField('portal_url', e.target.value)}
+                placeholder="z.B. https://login.axa.ch"
               />
             </div>
 
