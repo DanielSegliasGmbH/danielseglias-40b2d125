@@ -1836,6 +1836,24 @@ function HistoryCard({ snapshot, previous, onDelete }: { snapshot: any; previous
                   </div>
                 )
               ))}
+              {/* Credits */}
+              {Array.isArray(data.credits) && data.credits.map((c: any, i: number) => (
+                n(c.remaining) > 0 && (
+                  <div key={`cred-${i}`} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">💳 {c.name || 'Kredit'}</span>
+                    <span className="font-medium text-destructive">-CHF {Number(c.remaining).toLocaleString('de-CH')}</span>
+                  </div>
+                )
+              ))}
+              {/* Debts */}
+              {Array.isArray(data.debts) && data.debts.map((d: any, i: number) => (
+                n(d.amount) > 0 && (
+                  <div key={`debt-${i}`} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">📋 {d.description || 'Schuld'}</span>
+                    <span className="font-medium text-destructive">-CHF {Number(d.amount).toLocaleString('de-CH')}</span>
+                  </div>
+                )
+              ))}
               {snapshot.notes && (
                 <div className="pt-2 border-t border-border">
                   <p className="text-xs text-muted-foreground">📝 {snapshot.notes}</p>
