@@ -257,6 +257,7 @@ export default function ClientPortalHome() {
     { icon: Wrench, label: 'Tools', path: '/app/client-portal/tools', emoji: '🔧' },
     { icon: Wallet, label: 'Budget', path: '/app/client-portal/budget', emoji: '💰' },
     { icon: Target, label: 'Ziele', path: '/app/client-portal/goals', emoji: '🎯' },
+    { icon: Camera, label: 'Snapshot', path: '/app/client-portal/snapshot', emoji: '📸' },
   ];
 
   return (
