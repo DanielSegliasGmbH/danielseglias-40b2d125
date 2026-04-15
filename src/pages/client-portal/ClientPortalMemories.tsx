@@ -30,6 +30,7 @@ const TOOL_LABELS: Record<string, string> = {
   'vorsorgecheck': 'Vorsorgecheck',
   'rolex-rechner': 'Rolex-Rechner',
   'was-kostet-das-wirklich': 'Was kostet das wirklich?',
+  'guilty-pleasure-rechner': 'Guilty Pleasure Rechner',
   'lebenzeit-rechner': 'Lebenszeit-Rechner',
   'recovery-analyse': 'Recovery-Analyse',
   'zeitverlust-simulator': 'Zeitverlust-Simulator',

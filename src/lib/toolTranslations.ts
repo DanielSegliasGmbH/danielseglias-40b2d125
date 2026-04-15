@@ -37,6 +37,7 @@ const toolFallbacks: Record<string, { name: string; description: string }> = {
   kvgPraemienvergleich: { name: 'KVG-Prämienvergleich', description: 'Vergleiche Krankenkassenprämien in der Schweiz.' },
   savingsPlan3aComparison: { name: '3a Sparplan-Vergleich', description: 'Vergleiche verschiedene 3a-Sparpläne.' },
   wasKostetDasWirklich: { name: 'Was kostet das wirklich?', description: 'Rechne Ausgaben in Arbeitszeit und Zukunftswert um.' },
+  guiltyPleasureRechner: { name: 'Guilty Pleasure Rechner', description: 'Zeigt die wahren Lebenskosten deiner Gewohnheiten.' },
 };
 
 /**
