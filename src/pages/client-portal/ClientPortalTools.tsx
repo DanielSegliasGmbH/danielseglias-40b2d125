@@ -5,7 +5,7 @@ import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Wrench, Calculator, PieChart, TrendingUp, FileText, ChevronRight, Search, LucideIcon } from 'lucide-react';
+import { Wrench, Calculator, PieChart, TrendingUp, FileText, ChevronRight, Search, LucideIcon, Archive } from 'lucide-react';
 import { useClientToolsFiltered } from '@/hooks/useClientPortal';
 import { groupToolsByCluster } from '@/config/toolClusters';
 import { resolveToolText } from '@/lib/toolTranslations';
@@ -47,9 +47,20 @@ export default function ClientPortalTools() {
     <ClientPortalLayout>
       <div className="max-w-2xl mx-auto space-y-5">
         {/* Header */}
-        <div>
-          <h1 className="text-lg font-bold text-foreground">🔧 Werkzeuge</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Analyse- & Planungstools für deine Finanzen</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-lg font-bold text-foreground">🔧 Werkzeuge</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">Analyse- & Planungstools für deine Finanzen</p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 shrink-0"
+            onClick={() => navigate('/app/client-portal/tool-archive')}
+          >
+            <Archive className="h-3.5 w-3.5" />
+            Mein Archiv
+          </Button>
         </div>
 
         {/* Search */}
