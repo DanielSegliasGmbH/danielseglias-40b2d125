@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowUp, ArrowDown, Shield, Sparkles, TrendingUp } from 'lucide-react';
+import { ArrowLeft, ArrowUp, ArrowDown, Shield, Sparkles, TrendingUp, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { usePeakScore, getPeakScoreGradient, getPeakScoreBorderColor, getRankForScore } from '@/hooks/usePeakScore';
