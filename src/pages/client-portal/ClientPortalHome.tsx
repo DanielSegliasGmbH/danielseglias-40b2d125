@@ -15,6 +15,7 @@ import { useNextBestStep } from '@/hooks/useNextBestStep';
 import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { NotificationBell } from '@/components/client-portal/NotificationBell';
 import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, Crown, Landmark, Wallet, ClipboardList, TrendingUp, FileBarChart, Gift, Film, UserRound, Camera } from 'lucide-react';
+import { PrivateValue } from '@/components/client-portal/PrivateValue';
 import { ActiveChallengeCards } from '@/components/client-portal/ActiveChallengeCard';
 import { useFinanzType } from '@/hooks/useFinanzType';
 import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
@@ -321,7 +322,7 @@ export default function ClientPortalHome() {
               <CardContent className="p-3 flex items-center gap-3">
                 <span className="text-base">🎬</span>
                 <p className="text-xs text-muted-foreground flex-1">
-                  Dein Lebensfilm: <span className="font-bold text-foreground">CHF {lifeFilmDifference.toLocaleString('de-CH')}</span> Potenzial entdeckt.
+                  Dein Lebensfilm: <PrivateValue className="font-bold text-foreground">CHF {lifeFilmDifference.toLocaleString('de-CH')}</PrivateValue> Potenzial entdeckt.
                 </p>
                 <span className="text-xs text-primary font-medium whitespace-nowrap">Nochmal ansehen →</span>
               </CardContent>
@@ -447,9 +448,15 @@ export default function ClientPortalHome() {
                     )}>
                       {card.label}
                     </span>
-                    <span className="text-lg font-bold block mt-1 tracking-tight">
-                      {card.value || '–'}
-                    </span>
+                    {card.label === 'Offene Aufgaben' ? (
+                      <span className="text-lg font-bold block mt-1 tracking-tight">
+                        {card.value || '–'}
+                      </span>
+                    ) : (
+                      <PrivateValue className="text-lg font-bold block mt-1 tracking-tight">
+                        {card.value || '–'}
+                      </PrivateValue>
+                    )}
                   </div>
                 </Link>
               </motion.div>
