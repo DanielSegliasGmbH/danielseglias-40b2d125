@@ -8,6 +8,19 @@ interface PeakScoreCardProps {
   onClick: () => void;
 }
 
+function formatScoreHuman(score: number): { months: number; days: number; text: string } {
+  const months = Math.floor(score);
+  const days = Math.round((score - months) * 30);
+  if (months >= 12) {
+    const years = Math.floor(months / 12);
+    const remainingMonths = months % 12;
+    const text = remainingMonths > 0 ? `${years} Jahr${years > 1 ? 'e' : ''}, ${remainingMonths} Mt.` : `${years} Jahr${years > 1 ? 'e' : ''}`;
+    return { months, days, text };
+  }
+  const text = days > 0 ? `${months} Monate, ${days} Tage` : `${months} Monate`;
+  return { months, days, text };
+}
+
 export function PeakScoreCard({ onClick }: PeakScoreCardProps) {
   const { score, trend, loading, hasData, rank } = usePeakScore();
 
@@ -22,6 +35,7 @@ export function PeakScoreCard({ onClick }: PeakScoreCardProps) {
   const displayScore = score !== null;
   const gradient = displayScore ? getPeakScoreGradient(score) : '';
   const borderColor = displayScore ? getPeakScoreBorderColor(score) : 'border-border';
+  const human = displayScore ? formatScoreHuman(score) : null;
 
   return (
     <motion.div
@@ -43,21 +57,26 @@ export function PeakScoreCard({ onClick }: PeakScoreCardProps) {
             <Shield className="h-5 w-5 text-muted-foreground/60" />
           </div>
 
-          {displayScore ? (
+          {displayScore && human ? (
             <>
-              <motion.span
-                className="text-[48px] leading-none font-extrabold tracking-tight text-foreground"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.15, duration: 0.5, type: 'spring' }}
-              >
-                {score.toFixed(1)}
-              </motion.span>
+              <div className="flex items-baseline gap-1.5">
+                <motion.span
+                  className="text-[48px] leading-none font-extrabold tracking-tight text-foreground"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.15, duration: 0.5, type: 'spring' }}
+                >
+                  {human.months}
+                </motion.span>
+                <span className="text-sm text-muted-foreground font-medium">{human.text.includes('Jahr') ? human.text : human.days > 0 ? `Mt., ${human.days}d` : 'Mt.'}</span>
+              </div>
 
-              <span className="text-xs text-muted-foreground mt-1">Monate</span>
+              <p className="text-[11px] text-muted-foreground mt-2 max-w-[220px] leading-relaxed">
+                So lange könntest du leben, ohne zu arbeiten.
+              </p>
 
-              {/* Rank with emoji */}
-              <span className="text-sm font-semibold text-foreground/80 mt-1">
+              {/* Rank */}
+              <span className="text-sm font-semibold text-foreground/80 mt-1.5">
                 {rank.emoji} {rank.name}
               </span>
 
