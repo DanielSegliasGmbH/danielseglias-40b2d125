@@ -480,9 +480,9 @@ export default function ClientPortalBudget() {
                         <span className="text-sm font-medium">{cat}</span>
                       </div>
                       <div className="text-right">
-                        <span className="text-xs text-muted-foreground">
+                        <PrivateValue className="text-xs text-muted-foreground">
                           CHF {spent.toLocaleString('de-CH')} / {budgetAmount > 0 ? `CHF ${budgetAmount.toLocaleString('de-CH')}` : '–'}
-                        </span>
+                        </PrivateValue>
                       </div>
                     </div>
                     {budgetAmount > 0 && (
@@ -530,9 +530,9 @@ export default function ClientPortalBudget() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0 ml-2">
-                    <span className="text-sm font-semibold text-foreground">
+                    <PrivateValue className="text-sm font-semibold text-foreground">
                       CHF {Number(exp.amount).toLocaleString('de-CH', { minimumFractionDigits: 2 })}
-                    </span>
+                    </PrivateValue>
                     <Button
                       variant="ghost"
                       size="icon"
