@@ -86,6 +86,9 @@ export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationPro
               : "text-muted-foreground hover:text-foreground"
           )}
         >
+          {isMoreActive && (
+            <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-primary" />
+          )}
           <div className="relative">
             <MoreHorizontal className={cn("h-5 w-5 mb-0.5 shrink-0", isMoreActive && "text-primary")} />
             {unreadCount > 0 && (
@@ -96,7 +99,7 @@ export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationPro
           </div>
           <span className={cn(
             "text-[10px] leading-tight font-medium",
-            isMoreActive && "text-primary"
+            isMoreActive ? "text-primary font-semibold" : ""
           )}>
             {t('clientPortal.more')}
           </span>
