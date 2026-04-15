@@ -300,15 +300,32 @@ export default function ClientPortalInsurances() {
 
               {p.document_url && (
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">Dokument / Link</p>
+                  <p className="text-xs text-muted-foreground mb-1">Link zur Police</p>
                   <a
                     href={p.document_url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+                    onClick={(e) => { e.preventDefault(); window.open(p.document_url!, '_blank', 'noopener,noreferrer'); }}
                   >
                     <ExternalLink className="h-3.5 w-3.5" />
-                    Öffnen
+                    Police öffnen
+                  </a>
+                </div>
+              )}
+
+              {p.portal_url && (
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">Kundenportal</p>
+                  <a
+                    href={p.portal_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+                    onClick={(e) => { e.preventDefault(); window.open(p.portal_url!, '_blank', 'noopener,noreferrer'); }}
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    Portal öffnen
                   </a>
                 </div>
               )}
