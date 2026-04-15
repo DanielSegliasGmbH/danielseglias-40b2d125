@@ -278,11 +278,9 @@ function FinanzTypTeaser({ userId, navigate }: { userId?: string; navigate: (pat
   });
 
   const TYPE_LABELS: Record<string, { emoji: string; title: string }> = {
-    sparfuchs: { emoji: '🦊', title: 'Der Sparfuchs' },
-    balancer: { emoji: '⚖️', title: 'Der Balancer' },
-    geniesser: { emoji: '🎉', title: 'Der Geniesser' },
-    stratege: { emoji: '🧠', title: 'Der Stratege' },
-    entdecker: { emoji: '🧭', title: 'Der Entdecker' },
+    skeptiker: { emoji: '🏦', title: 'Der Sparsame Skeptiker' },
+    geniesser: { emoji: '🎢', title: 'Der Planlose Geniesser' },
+    pflichterfueller: { emoji: '✅', title: 'Der Pflichterfüller' },
   };
 
   if (finanzType?.completed && finanzType.finanz_type) {
