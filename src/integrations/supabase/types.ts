@@ -3372,6 +3372,39 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_challenges: {
+        Row: {
+          bonus_claimed: boolean
+          challenges: Json
+          completed_at: string | null
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+          week_key: string
+        }
+        Insert: {
+          bonus_claimed?: boolean
+          challenges?: Json
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          week_key: string
+        }
+        Update: {
+          bonus_claimed?: boolean
+          challenges?: Json
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          week_key?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       customer_portal_settings_client: {
