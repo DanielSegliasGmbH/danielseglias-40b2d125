@@ -1,11 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Send, MessageCircle, ArrowLeft, Plus } from 'lucide-react';
+import { Send, MessageCircle, ArrowLeft, Plus, Loader2, RotateCcw } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import {
   useChatConversations,
@@ -20,6 +20,11 @@ import { format, formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
+
+interface FailedMessage {
+  id: string;
+  text: string;
+}
 
 export default function AdminChat() {
   const { user } = useAuth();
@@ -54,7 +59,10 @@ export default function AdminChat() {
             </div>
             <ScrollArea className="flex-1">
               {isLoading ? (
-                <div className="p-4 text-sm text-muted-foreground text-center">Laden…</div>
+                <div className="p-4 flex items-center justify-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Laden…</span>
+                </div>
               ) : conversations.length === 0 ? (
                 <div className="p-6 text-sm text-muted-foreground text-center">
                   <MessageCircle className="h-8 w-8 mx-auto mb-2 text-muted-foreground/30" />
@@ -148,30 +156,54 @@ function AdminChatDetail({
   const sendMessage = useSendMessage();
   const markAsRead = useMarkAsRead();
   const [text, setText] = useState('');
+  const [failedMessages, setFailedMessages] = useState<FailedMessage[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = useCallback(() => {
+    requestAnimationFrame(() => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      }
+    });
+  }, []);
 
   useEffect(() => {
     markAsRead.mutate(participantId);
+    setText('');
+    setFailedMessages([]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [participantId]);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
 
-  const handleSend = async () => {
-    if (!text.trim()) return;
+  const doSend = async (msgText: string, failedId?: string) => {
+    if (!msgText.trim()) return;
     try {
-      await sendMessage.mutateAsync({ participantId, message: text, customerId });
-      setText('');
+      await sendMessage.mutateAsync({ participantId, message: msgText.trim(), customerId });
+      if (failedId) {
+        setFailedMessages((prev) => prev.filter((f) => f.id !== failedId));
+      }
     } catch (error) {
       console.error('[AdminChat] Send failed:', error);
+      if (!failedId) {
+        setFailedMessages((prev) => [
+          ...prev,
+          { id: crypto.randomUUID(), text: msgText.trim() },
+        ]);
+      }
       toast.error(
         error instanceof Error ? error.message : 'Nachricht konnte nicht gesendet werden.'
       );
     }
+  };
+
+  const handleSend = async () => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    setText('');
+    await doSend(trimmed);
   };
 
   const handleKeyDown = async (e: React.KeyboardEvent) => {
@@ -194,28 +226,52 @@ function AdminChatDetail({
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
         {isLoading ? (
-          <div className="flex items-center justify-center h-full text-sm text-muted-foreground">Laden…</div>
-        ) : messages.length === 0 ? (
+          <div className="flex items-center justify-center h-full gap-2">
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">Nachrichten werden geladen…</span>
+          </div>
+        ) : messages.length === 0 && failedMessages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-2 text-center">
             <MessageCircle className="h-10 w-10 text-muted-foreground/20" />
             <p className="text-sm text-muted-foreground">Noch keine Nachrichten</p>
           </div>
         ) : (
-          messages.map((msg) => (
-            <div key={msg.id} className={cn('flex', msg.sender_id === userId ? 'justify-end' : 'justify-start')}>
-              <div className={cn(
-                'max-w-[75%] rounded-2xl px-4 py-2.5 text-sm',
-                msg.sender_id === userId
-                  ? 'bg-primary text-primary-foreground rounded-br-md'
-                  : 'bg-muted text-foreground rounded-bl-md'
-              )}>
-                <p className="whitespace-pre-wrap break-words">{msg.message}</p>
-                <p className={cn('text-[10px] mt-1', msg.sender_id === userId ? 'text-primary-foreground/60' : 'text-muted-foreground')}>
-                  {format(new Date(msg.created_at), 'dd.MM. HH:mm', { locale: de })}
-                </p>
+          <>
+            {messages.map((msg) => (
+              <div key={msg.id} className={cn('flex', msg.sender_id === userId ? 'justify-end' : 'justify-start')}>
+                <div className={cn(
+                  'max-w-[75%] rounded-2xl px-4 py-2.5 text-sm',
+                  msg.sender_id === userId
+                    ? 'bg-primary text-primary-foreground rounded-br-md'
+                    : 'bg-muted text-foreground rounded-bl-md'
+                )}>
+                  <p className="whitespace-pre-wrap break-words">{msg.message}</p>
+                  <p className={cn('text-[10px] mt-1', msg.sender_id === userId ? 'text-primary-foreground/60' : 'text-muted-foreground')}>
+                    {format(new Date(msg.created_at), 'HH:mm', { locale: de })}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+            {failedMessages.map((fm) => (
+              <div key={fm.id} className="flex justify-end">
+                <div className="max-w-[75%]">
+                  <div className="rounded-2xl rounded-br-md px-4 py-2.5 text-sm bg-destructive/20 text-destructive-foreground border border-destructive/30">
+                    <p className="whitespace-pre-wrap break-words">{fm.text}</p>
+                    <p className="text-[10px] mt-1 text-destructive">Senden fehlgeschlagen</p>
+                  </div>
+                  <div className="flex gap-2 mt-1 justify-end">
+                    <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={() => doSend(fm.text, fm.id)}>
+                      <RotateCcw className="h-3 w-3" />
+                      Erneut senden
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground" onClick={() => setFailedMessages((prev) => prev.filter((f) => f.id !== fm.id))}>
+                      Verwerfen
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </>
         )}
       </div>
 
@@ -231,7 +287,11 @@ function AdminChatDetail({
             disabled={sendMessage.isPending}
           />
           <Button size="icon" onClick={handleSend} disabled={!text.trim() || sendMessage.isPending} className="shrink-0 h-10 w-10">
-            <Send className="h-4 w-4" />
+            {sendMessage.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </div>
