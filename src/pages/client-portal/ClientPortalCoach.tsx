@@ -13,6 +13,7 @@ import { ChevronRight, Sparkles, Brain, Eye, Target, LayoutGrid, Shield, Setting
 import { cn } from '@/lib/utils';
 import { useSubscription } from '@/hooks/useSubscription';
 import { useAllCoachProgress, useCoachBadges, getModuleStatus } from '@/hooks/useCoachProgress';
+import { useFinanzType } from '@/hooks/useFinanzType';
 
 const modules = [
   { id: 1, key: 'mindset', icon: Brain, title: 'Mindset', desc: 'Deine Denkmuster erkennen und bewusst steuern.', xp: 100, time: '15–20 Min.' },
@@ -40,6 +41,7 @@ export default function ClientPortalCoach() {
   const { user } = useAuth();
   const { data: allProgress = [] } = useAllCoachProgress();
   const { data: badges = [] } = useCoachBadges();
+  const { completed: finanzTypCompleted, recommendedModules } = useFinanzType();
 
   const { data: lifeFilmCompleted = false } = useQuery({
     queryKey: ['life-film-completed', user?.id],
