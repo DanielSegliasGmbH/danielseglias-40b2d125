@@ -572,25 +572,11 @@ export default function ClientPortalLifeFilmResult() {
               </CardContent>
             </Card>
 
-            {/* Motivational section */}
-            <Card className="bg-primary/5 border-primary/20">
-              <CardContent className="p-5 text-center space-y-3">
-                <Sparkles className="h-5 w-5 text-primary mx-auto" />
-                <p className="text-sm font-semibold text-foreground">
-                  Aber: Du bist {filmData.age}. Du hast noch {finalCard.yearsLeft} Jahre.
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Mit dem richtigen Plan kannst du die Lücke schliessen — oder sogar übertreffen.
-                </p>
-                <Button
-                  className="w-full gap-2"
-                  onClick={() => navigate('/app/client-portal/coach/mindset')}
-                >
-                  Meinen Plan starten
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </CardContent>
-            </Card>
+            {/* Alternative Timeline */}
+            <AlternativeTimeline
+              filmData={filmData}
+              baseDelay={timeline.length * 0.06 + 0.4}
+            />
           </motion.div>
         )}
       </div>
