@@ -284,6 +284,7 @@ export function VersicherungsCheckTool({ mode = 'internal' }: Props) {
                         {item.hint && <p className="text-[11px] text-muted-foreground">{item.hint}</p>}
                         {item.conditional && <p className="text-[11px] text-muted-foreground italic">{item.conditional}</p>}
                         {item.articleId && <InfoHint text="" articleId={item.articleId} className="mt-0" />}
+                      </div>
                       {item.critical && <span className="text-[10px] font-medium text-destructive bg-destructive/10 rounded px-1.5 py-0.5 shrink-0">Wichtig</span>}
                     </div>
                     <div className="flex gap-2">

@@ -389,17 +389,19 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
 
             {/* Savings rate */}
             {totalIncome > 0 && (
-              <div className="flex items-center justify-center gap-2">
-                <PiggyBank className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">Sparquote:</span>
-                <PrivateValue className={cn(
-                  'text-sm font-bold',
-                  savingsRate >= 20 ? 'text-emerald-600' : savingsRate >= 0 ? 'text-foreground' : 'text-destructive'
-                )}>
-                  {savingsRate}%
-                </PrivateValue>
-              </div>
-              <InfoHint text="Eine Sparquote von 20% oder mehr gilt als gesund und stärkt deinen PeakScore nachhaltig." articleId="case-junge-familie" />
+              <>
+                <div className="flex items-center justify-center gap-2">
+                  <PiggyBank className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Sparquote:</span>
+                  <PrivateValue className={cn(
+                    'text-sm font-bold',
+                    savingsRate >= 20 ? 'text-emerald-600' : savingsRate >= 0 ? 'text-foreground' : 'text-destructive'
+                  )}>
+                    {savingsRate}%
+                  </PrivateValue>
+                </div>
+                <InfoHint text="Eine Sparquote von 20% oder mehr gilt als gesund und stärkt deinen PeakScore nachhaltig." articleId="case-junge-familie" />
+              </>
             )}
 
             {/* PeakScore impact */}
