@@ -28,6 +28,7 @@ import { useGamification } from '@/hooks/useGamification';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { InfoHint } from '@/components/client-portal/InfoHint';
+import { formatSnapshotTrend } from '@/lib/peakScoreFormat';
 
 // ── Types ──────────────────────────────────────────
 
@@ -2258,8 +2259,9 @@ function SnapshotDetail({
 
 // ── Snapshot Comparison ────────────────────────────
 
-function SnapshotComparison({ older, newer }: { older: Record<string, unknown>; newer: Record<string, unknown> }) {
-  const olderData = (older.snapshot_data || {}) as Record<string, unknown>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function SnapshotComparison({ older, newer }: { older: any; newer: any }) {
+  const olderData = older.snapshot_data || {};
   const newerData = (newer.snapshot_data || {}) as Record<string, unknown>;
   const fmtCHF = (v: number) => `CHF ${v.toLocaleString('de-CH')}`;
 
