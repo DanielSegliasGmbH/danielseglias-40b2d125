@@ -27,6 +27,7 @@ import { de } from 'date-fns/locale';
 import { useGamification } from '@/hooks/useGamification';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { InfoHint } from '@/components/client-portal/InfoHint';
 
 // ── Types ──────────────────────────────────────────
 
