@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { UserRound } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent } from '@/components/ui/card';
@@ -90,6 +91,9 @@ export default function ClientPortalCoach() {
             Nicht durch Theorie, sondern durch klare Entscheidungen, persönliche Reflexion und konkrete Umsetzung.
           </p>
         </div>
+
+        {/* Finanz-Typ CTA */}
+        <FinanzTypTeaser userId={user?.id} navigate={navigate} />
 
         {/* Lebensfilm CTA */}
         {!lifeFilmCompleted && (
@@ -255,5 +259,68 @@ export default function ClientPortalCoach() {
         </div>
       </div>
     </ClientPortalLayout>
+  );
+}
+
+function FinanzTypTeaser({ userId, navigate }: { userId?: string; navigate: (path: string) => void }) {
+  const { data: finanzType } = useQuery({
+    queryKey: ['finanz-type', userId],
+    queryFn: async () => {
+      if (!userId) return null;
+      const { data } = await supabase
+        .from('finanz_type_results')
+        .select('finanz_type, completed')
+        .eq('user_id', userId)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!userId,
+  });
+
+  const TYPE_LABELS: Record<string, { emoji: string; title: string }> = {
+    sparfuchs: { emoji: '🦊', title: 'Der Sparfuchs' },
+    balancer: { emoji: '⚖️', title: 'Der Balancer' },
+    geniesser: { emoji: '🎉', title: 'Der Geniesser' },
+    stratege: { emoji: '🧠', title: 'Der Stratege' },
+    entdecker: { emoji: '🧭', title: 'Der Entdecker' },
+  };
+
+  if (finanzType?.completed && finanzType.finanz_type) {
+    const info = TYPE_LABELS[finanzType.finanz_type];
+    if (!info) return null;
+    return (
+      <Card
+        className="cursor-pointer active:scale-[0.98] transition-transform hover:shadow-md"
+        onClick={() => navigate('/app/client-portal/finanz-typ')}
+      >
+        <CardContent className="p-3 flex items-center gap-3">
+          <span className="text-2xl">{info.emoji}</span>
+          <p className="text-sm text-foreground flex-1">
+            Dein Finanz-Typ: <span className="font-semibold">{info.title}</span>
+          </p>
+          <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card
+      className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent cursor-pointer active:scale-[0.98] transition-transform hover:shadow-md"
+      onClick={() => navigate('/app/client-portal/finanz-typ')}
+    >
+      <CardContent className="p-4 flex items-center gap-4">
+        <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+          <UserRound className="h-5 w-5 text-primary" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h3 className="font-semibold text-sm text-foreground">Dein Finanz-Typ 🧠</h3>
+          <p className="text-xs text-muted-foreground">Finde heraus, welcher Finanz-Typ du bist — in 1 Minute</p>
+        </div>
+        <Badge variant="secondary" className="shrink-0 text-[10px] gap-1">
+          <Zap className="h-2.5 w-2.5" /> +200 XP
+        </Badge>
+      </CardContent>
+    </Card>
   );
 }
