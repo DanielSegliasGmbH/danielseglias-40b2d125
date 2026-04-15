@@ -153,13 +153,15 @@ export default function ClientPortalFriends() {
   const leaderboard: FriendEntry[] = useMemo(() => {
     const myEntry: FriendEntry = {
       id: user?.id || 'me',
-      name: myProfile ? `${myProfile.first_name} ${(myProfile as any).last_name?.charAt(0) || ''}.` : 'Du',
+      name: myProfile ? `${myProfile.first_name} ${(myProfile as FriendProfile & { last_name?: string }).last_name?.charAt(0) || ''}.` : 'Du',
       peakScore: myPeak.score ?? 0,
       rank: myPeak.rank,
       trend: myPeak.trend,
       isMe: true,
     };
-    return [...friends, myEntry].sort((a, b) => b.peakScore - a.peakScore);
+    // Filter out friends who opted out of leaderboard
+    const visibleFriends = friends.filter(f => !f.isHidden);
+    return [...visibleFriends, myEntry].sort((a, b) => b.peakScore - a.peakScore);
   }, [friends, user?.id, myProfile, myPeak.score, myPeak.rank, myPeak.trend]);
 
   // Schweiz tab: anonymous aggregate stats
