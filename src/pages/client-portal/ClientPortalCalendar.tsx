@@ -212,8 +212,8 @@ export default function ClientPortalCalendar() {
   const nextDeadline = upcomingEvents[0];
 
   // 3a remaining amount
-  const maxSaeule3a = 7056; // 2024 max
-  const remaining3a = profile?.third_pillar ? Math.max(0, maxSaeule3a - Number(profile.third_pillar)) : maxSaeule3a;
+    const maxSaeule3a = 7056;
+    const remaining3a = maxSaeule3a;
 
   return (
     <ClientPortalLayout>
