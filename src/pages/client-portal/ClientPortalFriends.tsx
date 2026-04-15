@@ -11,11 +11,14 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Copy, MessageCircle, Mail, Users, UserPlus, Crown, TrendingUp, TrendingDown, Minus, Trophy, Globe } from 'lucide-react';
+import { Copy, MessageCircle, Mail, Users, UserPlus, Crown, TrendingUp, TrendingDown, Minus, Trophy, Globe, Swords } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getRankForScore, usePeakScore } from '@/hooks/usePeakScore';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
+import { useChallenges } from '@/hooks/useChallenges';
+import { ChallengeDialog } from '@/components/client-portal/ChallengeDialog';
+import { ActiveChallengeCards } from '@/components/client-portal/ActiveChallengeCard';
 
 const INVITE_MESSAGE = (code: string) =>
   `Hey! Ich tracke meinen PeakScore mit FinLife. Was ist deiner? 🔥 Nutze meinen Code ${code} und wir können uns vergleichen! finlife.ch`;
@@ -55,7 +58,9 @@ export default function ClientPortalFriends() {
   const queryClient = useQueryClient();
   const [friendCode, setFriendCode] = useState('');
   const [connecting, setConnecting] = useState(false);
+  const [challengeTarget, setChallengeTarget] = useState<FriendEntry | null>(null);
   const myPeak = usePeakScore();
+  const { canCreateChallenge, createChallenge } = useChallenges();
 
   // Fetch own referral code
   const { data: myProfile } = useQuery({
@@ -374,19 +379,30 @@ export default function ClientPortalFriends() {
                           <p className="text-xs text-muted-foreground">{entry.rank.name}</p>
                         </div>
 
-                        {/* Score + Trend */}
-                        <div className="text-right shrink-0">
-                          <p className="text-sm font-bold text-foreground">{entry.peakScore}</p>
-                          <div className="flex items-center gap-0.5 justify-end">
-                            <TrendIcon trend={entry.trend} />
-                            {entry.trend !== null && entry.trend !== 0 && (
-                              <span className={cn(
-                                "text-[10px]",
-                                entry.trend > 0 ? "text-emerald-500" : "text-red-500"
-                              )}>
-                                {entry.trend > 0 ? '+' : ''}{entry.trend}
-                              </span>
-                            )}
+                        {/* Score + Trend + Challenge */}
+                        <div className="flex items-center gap-2 shrink-0">
+                          {!entry.isMe && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setChallengeTarget(entry); }}
+                              className="w-7 h-7 rounded-full bg-muted hover:bg-primary/10 flex items-center justify-center transition-colors"
+                              title="Challenge starten"
+                            >
+                              <Swords className="h-3.5 w-3.5 text-muted-foreground" />
+                            </button>
+                          )}
+                          <div className="text-right">
+                            <p className="text-sm font-bold text-foreground">{entry.peakScore}</p>
+                            <div className="flex items-center gap-0.5 justify-end">
+                              <TrendIcon trend={entry.trend} />
+                              {entry.trend !== null && entry.trend !== 0 && (
+                                <span className={cn(
+                                  "text-[10px]",
+                                  entry.trend > 0 ? "text-emerald-500" : "text-red-500"
+                                )}>
+                                  {entry.trend > 0 ? '+' : ''}{entry.trend}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </CardContent>
@@ -475,7 +491,25 @@ export default function ClientPortalFriends() {
             </div>
           </TabsContent>
         </Tabs>
+        {/* Active Challenges */}
+        <ActiveChallengeCards />
       </div>
+
+      {/* Challenge Dialog */}
+      <ChallengeDialog
+        open={!!challengeTarget}
+        onOpenChange={(open) => !open && setChallengeTarget(null)}
+        friendName={challengeTarget?.name || ''}
+        disabled={!canCreateChallenge}
+        loading={createChallenge.isPending}
+        onConfirm={() => {
+          if (!challengeTarget) return;
+          createChallenge.mutate(
+            { friendId: challengeTarget.id, myScore: myPeak.score ?? 0, friendScore: challengeTarget.peakScore },
+            { onSuccess: () => setChallengeTarget(null) }
+          );
+        }}
+      />
     </ClientPortalLayout>
   );
 }

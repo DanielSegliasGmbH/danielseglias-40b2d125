@@ -15,6 +15,7 @@ import { useNextBestStep } from '@/hooks/useNextBestStep';
 import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { NotificationBell } from '@/components/client-portal/NotificationBell';
 import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, Crown, Landmark, Wallet, ClipboardList, TrendingUp, FileBarChart, Gift, Film, UserRound } from 'lucide-react';
+import { ActiveChallengeCards } from '@/components/client-portal/ActiveChallengeCard';
 import { useFinanzType } from '@/hooks/useFinanzType';
 import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
 import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
@@ -454,6 +455,9 @@ export default function ClientPortalHome() {
             ))}
           </div>
         </div>
+
+        {/* ── 3.5 ACTIVE CHALLENGES ── */}
+        <ActiveChallengeCards />
 
         {/* ── 4. NÄCHSTE QUEST ── */}
         {nextStepResult?.primary && (
