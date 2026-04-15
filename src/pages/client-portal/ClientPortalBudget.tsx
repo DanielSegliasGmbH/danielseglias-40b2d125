@@ -505,13 +505,29 @@ export default function ClientPortalBudget() {
                   <div className="flex items-center gap-2.5 min-w-0">
                     <span className="text-base">{CATEGORY_ICONS[exp.category as Category] || '📦'}</span>
                     <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">{exp.note || exp.category}</p>
+                      <p className="text-sm font-medium truncate flex items-center gap-1">
+                        {exp.is_recurring && <RefreshCw className="h-3 w-3 text-muted-foreground shrink-0" />}
+                        {exp.note || exp.category}
+                        {exp.is_recurring && (
+                          <span className="text-[10px] text-muted-foreground font-normal">Fixkosten</span>
+                        )}
+                      </p>
                       <p className="text-[11px] text-muted-foreground">{new Date(exp.expense_date).toLocaleDateString('de-CH')}</p>
                     </div>
                   </div>
-                  <span className="text-sm font-semibold text-foreground shrink-0 ml-2">
-                    CHF {Number(exp.amount).toLocaleString('de-CH', { minimumFractionDigits: 2 })}
-                  </span>
+                  <div className="flex items-center gap-2 shrink-0 ml-2">
+                    <span className="text-sm font-semibold text-foreground">
+                      CHF {Number(exp.amount).toLocaleString('de-CH', { minimumFractionDigits: 2 })}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                      onClick={() => deleteExpense.mutate(exp.id)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
