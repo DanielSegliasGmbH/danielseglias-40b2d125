@@ -68,9 +68,9 @@ export default function PublicTools() {
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
                         <Wrench className="h-5 w-5 text-primary" />
                       </div>
-                      <CardTitle className="text-lg">{t(tool.name_key)}</CardTitle>
+                      <CardTitle className="text-lg">{resolveToolText(t, tool.name_key, 'name')}</CardTitle>
                       {tool.description_key && (
-                        <CardDescription>{t(tool.description_key)}</CardDescription>
+                        <CardDescription>{resolveToolText(t, tool.description_key, 'description')}</CardDescription>
                       )}
                     </CardHeader>
                     <CardContent>

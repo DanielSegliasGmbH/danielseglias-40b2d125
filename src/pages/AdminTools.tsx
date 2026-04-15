@@ -113,7 +113,7 @@ export default function AdminTools() {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                <h3 className="font-medium text-foreground text-sm sm:text-base">{t(tool.name_key)}</h3>
+                                <h3 className="font-medium text-foreground text-sm sm:text-base">{resolveToolText(t, tool.name_key, 'name')}</h3>
                                 {isPlanned && (
                                   <Badge variant="secondary" className="text-xs">
                                     <Clock className="h-3 w-3 mr-1" />
@@ -124,7 +124,7 @@ export default function AdminTools() {
                                   <Badge variant="outline" className="text-xs">Öffentlich</Badge>
                                 )}
                               </div>
-                              <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{t(tool.description_key)}</p>
+                              <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{resolveToolText(t, tool.description_key, 'description')}</p>
                             </div>
                           </div>
                           <div className="flex items-center gap-3 sm:gap-4 shrink-0">
