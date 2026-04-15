@@ -134,7 +134,7 @@ export default function ClientPortalInvite() {
                 className="h-14 rounded-xl gap-2 text-sm"
                 onClick={handleWhatsApp}
               >
-                <MessageCircle className="h-5 w-5 text-green-600" />
+                <MessageCircle className="h-5 w-5 text-success" />
                 WhatsApp
               </Button>
               <Button
