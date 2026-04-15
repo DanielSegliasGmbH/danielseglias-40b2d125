@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { formatToolImpact } from '@/lib/peakScoreFormat';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -408,9 +409,9 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
             {cashflow > 0 && totalExpenses > 0 && (
               <div className="p-3 rounded-xl bg-primary/5 border border-primary/20">
                 <p className="text-xs text-muted-foreground text-center">
-                  💡 Bei dieser Sparquote verbessert sich dein PeakScore um ca.{' '}
-                  <span className="font-bold text-primary">{peakScoreImpactPerYear} Monate</span>{' '}
-                  pro Jahr. Jeder gesparte Franken = mehr Freiheit.
+                  💡 Bei dieser Sparquote gewinnst du ca.{' '}
+                  <span className="font-bold text-primary">{formatToolImpact(peakScoreImpactMonths)}</span>.{' '}
+                  Jeder gesparte Franken = mehr Freiheit.
                 </p>
               </div>
             )}
