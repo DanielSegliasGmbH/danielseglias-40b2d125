@@ -491,7 +491,25 @@ export default function ClientPortalFriends() {
             </div>
           </TabsContent>
         </Tabs>
+        {/* Active Challenges */}
+        <ActiveChallengeCards />
       </div>
+
+      {/* Challenge Dialog */}
+      <ChallengeDialog
+        open={!!challengeTarget}
+        onOpenChange={(open) => !open && setChallengeTarget(null)}
+        friendName={challengeTarget?.name || ''}
+        disabled={!canCreateChallenge}
+        loading={createChallenge.isPending}
+        onConfirm={() => {
+          if (!challengeTarget) return;
+          createChallenge.mutate(
+            { friendId: challengeTarget.id, myScore: myPeak.score ?? 0, friendScore: challengeTarget.peakScore },
+            { onSuccess: () => setChallengeTarget(null) }
+          );
+        }}
+      />
     </ClientPortalLayout>
   );
 }
