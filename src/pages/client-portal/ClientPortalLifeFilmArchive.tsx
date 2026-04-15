@@ -7,26 +7,28 @@ import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Film, Plus, Calendar, TrendingUp, ChevronRight, GitCompare } from 'lucide-react';
 import { PrivateValue } from '@/components/client-portal/PrivateValue';
+import { Json } from '@/integrations/supabase/types';
+
+interface FilmData {
+  age: number;
+  monthly_income: number;
+  monthly_expenses: number;
+  total_savings: number;
+  life_goals: string[];
+  desired_children: string;
+  target_retirement_age: number;
+  truth_mode: string;
+  projected_difference?: number;
+  peak_score_at_retirement?: number;
+}
 
 interface ArchiveEntry {
   id: string;
-  film_data: {
-    age: number;
-    monthly_income: number;
-    monthly_expenses: number;
-    total_savings: number;
-    life_goals: string[];
-    desired_children: string;
-    target_retirement_age: number;
-    truth_mode: string;
-    projected_difference?: number;
-    peak_score_at_retirement?: number;
-  };
+  film_data: FilmData;
   saved_at: string;
 }
 
@@ -38,13 +40,28 @@ const fmtDate = (dateStr: string) => {
   return d.toLocaleDateString('de-CH', { day: 'numeric', month: 'long', year: 'numeric' });
 };
 
-// Simple net worth projection for display
-function projectNetWorth(data: ArchiveEntry['film_data']): number {
+function projectNetWorth(data: FilmData): number {
   const yearsToRetirement = (data.target_retirement_age || 65) - (data.age || 30);
   const monthlySavings = (data.monthly_income || 0) - (data.monthly_expenses || 0);
   const r = 0.04;
   return (data.total_savings || 0) * Math.pow(1 + r, yearsToRetirement) +
     Math.max(0, monthlySavings) * 12 * ((Math.pow(1 + r, yearsToRetirement) - 1) / r);
+}
+
+function parseFilmData(raw: Json): FilmData {
+  const obj = raw as Record<string, unknown>;
+  return {
+    age: (obj.age as number) || 0,
+    monthly_income: (obj.monthly_income as number) || 0,
+    monthly_expenses: (obj.monthly_expenses as number) || 0,
+    total_savings: (obj.total_savings as number) || 0,
+    life_goals: (obj.life_goals as string[]) || [],
+    desired_children: (obj.desired_children as string) || '0',
+    target_retirement_age: (obj.target_retirement_age as number) || 65,
+    truth_mode: (obj.truth_mode as string) || 'optimistic',
+    projected_difference: obj.projected_difference as number | undefined,
+    peak_score_at_retirement: obj.peak_score_at_retirement as number | undefined,
+  };
 }
 
 export default function ClientPortalLifeFilmArchive() {
@@ -63,15 +80,18 @@ export default function ClientPortalLifeFilmArchive() {
         .eq('user_id', user.id)
         .order('saved_at', { ascending: false });
       if (error) throw error;
-      return (data || []) as ArchiveEntry[];
+      return (data || []).map(row => ({
+        id: row.id,
+        film_data: parseFilmData(row.film_data),
+        saved_at: row.saved_at,
+      })) as ArchiveEntry[];
     },
     enabled: !!user,
   });
 
-  // Calculate deltas between consecutive entries
   const archivesWithDelta = useMemo(() => {
     return archives.map((entry, idx) => {
-      const prev = archives[idx + 1]; // next in array = previous chronologically
+      const prev = archives[idx + 1];
       let deltaNetWorth: number | null = null;
       let deltaPct: number | null = null;
       if (prev) {
@@ -84,7 +104,6 @@ export default function ClientPortalLifeFilmArchive() {
     });
   }, [archives]);
 
-  // Check if last snapshot > 3 months old
   const showReminder = useMemo(() => {
     if (archives.length === 0) return false;
     const last = new Date(archives[0].saved_at);
@@ -112,6 +131,14 @@ export default function ClientPortalLifeFilmArchive() {
     return selectedIds.map(id => archives.find(a => a.id === id)).filter(Boolean) as ArchiveEntry[];
   }, [selectedIds, archives]);
 
+  const COMPARE_ROWS = [
+    { label: 'Alter', key: 'age' as const, fmt: (v: number) => `${v} J.`, isFinancial: false },
+    { label: 'Einkommen', key: 'monthly_income' as const, fmt: fmtCHF, isFinancial: true },
+    { label: 'Ausgaben', key: 'monthly_expenses' as const, fmt: fmtCHF, isFinancial: true },
+    { label: 'Erspartes', key: 'total_savings' as const, fmt: fmtCHF, isFinancial: true },
+    { label: 'Pension mit', key: 'target_retirement_age' as const, fmt: (v: number) => `${v} J.`, isFinancial: false },
+  ];
+
   return (
     <ClientPortalLayout>
       <div className="max-w-lg mx-auto pb-12">
@@ -127,19 +154,17 @@ export default function ClientPortalLifeFilmArchive() {
             </div>
             <p className="text-xs text-muted-foreground">{archives.length} gespeicherte Filme</p>
           </div>
-          <div className="flex gap-2">
-            {archives.length >= 2 && (
-              <Button
-                variant={compareMode ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => { setCompareMode(!compareMode); setSelectedIds([]); }}
-                className="gap-1"
-              >
-                <GitCompare className="h-3.5 w-3.5" />
-                {compareMode ? 'Abbrechen' : 'Vergleichen'}
-              </Button>
-            )}
-          </div>
+          {archives.length >= 2 && (
+            <Button
+              variant={compareMode ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => { setCompareMode(!compareMode); setSelectedIds([]); }}
+              className="gap-1"
+            >
+              <GitCompare className="h-3.5 w-3.5" />
+              {compareMode ? 'Abbrechen' : 'Vergleichen'}
+            </Button>
+          )}
         </div>
 
         {/* Reminder banner */}
@@ -174,25 +199,19 @@ export default function ClientPortalLifeFilmArchive() {
                   <div className="font-medium text-muted-foreground">{fmtDate(selectedEntries[0].saved_at)}</div>
                   <div className="font-medium text-muted-foreground">{fmtDate(selectedEntries[1].saved_at)}</div>
 
-                  {[
-                    { label: 'Alter', key: 'age', fmt: (v: number) => `${v} J.` },
-                    { label: 'Einkommen', key: 'monthly_income', fmt: fmtCHF },
-                    { label: 'Ausgaben', key: 'monthly_expenses', fmt: fmtCHF },
-                    { label: 'Erspartes', key: 'total_savings', fmt: fmtCHF },
-                    { label: 'Pension mit', key: 'target_retirement_age', fmt: (v: number) => `${v} J.` },
-                  ].map(row => {
-                    const v1 = (selectedEntries[0].film_data as Record<string, number>)[row.key] || 0;
-                    const v2 = (selectedEntries[1].film_data as Record<string, number>)[row.key] || 0;
+                  {COMPARE_ROWS.map(row => {
+                    const v1 = selectedEntries[0].film_data[row.key] as number || 0;
+                    const v2 = selectedEntries[1].film_data[row.key] as number || 0;
                     const delta = v1 - v2;
                     return (
                       <div key={row.key} className="contents">
                         <div className="text-left font-medium text-muted-foreground py-1">{row.label}</div>
                         <div className="py-1">
-                          <PrivateValue value={row.fmt(v1)} />
+                          <PrivateValue>{row.fmt(v1)}</PrivateValue>
                         </div>
                         <div className="py-1">
-                          <PrivateValue value={row.fmt(v2)} />
-                          {delta !== 0 && row.key !== 'age' && row.key !== 'target_retirement_age' && (
+                          <PrivateValue>{row.fmt(v2)}</PrivateValue>
+                          {delta !== 0 && row.isFinancial && (
                             <span className={cn(
                               'block text-[10px] font-medium',
                               delta > 0 ? 'text-emerald-600' : 'text-destructive'
@@ -254,7 +273,7 @@ export default function ClientPortalLifeFilmArchive() {
                       if (compareMode) {
                         toggleSelect(entry.id);
                       } else {
-                        navigate(`/app/client-portal/life-film-result`, {
+                        navigate('/app/client-portal/life-film-result', {
                           state: { archiveId: entry.id, archiveData: entry.film_data, readOnly: true }
                         });
                       }
@@ -283,7 +302,7 @@ export default function ClientPortalLifeFilmArchive() {
                           <div className="flex items-center gap-2 mt-2">
                             <TrendingUp className="h-3 w-3 text-primary shrink-0" />
                             <span className="text-xs font-medium text-foreground">
-                              <PrivateValue value={fmtCHF(nw)} />
+                              <PrivateValue>{fmtCHF(nw)}</PrivateValue>
                             </span>
                             {entry.deltaNetWorth !== null && (
                               <Badge
