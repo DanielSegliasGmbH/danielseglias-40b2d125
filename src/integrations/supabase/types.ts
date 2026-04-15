@@ -1599,6 +1599,36 @@ export type Database = {
         }
         Relationships: []
       }
+      income_sources: {
+        Row: {
+          amount: number
+          created_at: string
+          frequency: string
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          frequency?: string
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          frequency?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       insurance_consultations: {
         Row: {
           consultation_data: Json

@@ -14,7 +14,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
-import { Plus, ChevronLeft, ChevronRight, Pencil, Wallet, TrendingDown, PiggyBank, Percent, Trash2, RefreshCw } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Plus, ChevronLeft, ChevronRight, Pencil, Wallet, TrendingDown, PiggyBank, Percent, Trash2, RefreshCw, ArrowLeftRight } from 'lucide-react';
 import { PrivateValue } from '@/components/client-portal/PrivateValue';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -22,6 +23,7 @@ import { motion } from 'framer-motion';
 import { useGamification } from '@/hooks/useGamification';
 import { usePeakScore } from '@/hooks/usePeakScore';
 import { PeakScoreImpact } from '@/components/client-portal/PeakScoreImpact';
+import { CashflowTab } from '@/components/client-portal/CashflowTab';
 
 const CATEGORIES = [
   'Wohnen',
@@ -157,14 +159,14 @@ export default function ClientPortalBudget() {
     enabled: !!user,
   });
 
-  // Fetch meta profile income
+  // Fetch meta profile income & fixed costs
   const { data: metaProfile } = useQuery({
     queryKey: ['meta-profile-budget', user?.id],
     queryFn: async () => {
       if (!user) return null;
       const { data } = await supabase
         .from('meta_profiles')
-        .select('monthly_income')
+        .select('monthly_income, fixed_costs')
         .eq('user_id', user.id)
         .maybeSingle();
       return data;
@@ -173,6 +175,8 @@ export default function ClientPortalBudget() {
   });
 
   const monthlyIncome = metaProfile?.monthly_income || 0;
+  const fixedCosts = metaProfile?.fixed_costs || 0;
+  const [activeTab, setActiveTab] = useState('budget');
 
   // Compute per-category spending
   const categorySpending = useMemo(() => {
@@ -289,6 +293,28 @@ export default function ClientPortalBudget() {
     <ClientPortalLayout>
       <PageTransition>
       <div className="max-w-2xl mx-auto space-y-5">
+        {/* Tab navigation */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="w-full">
+            <TabsTrigger value="budget" className="flex-1 gap-1.5">
+              <Wallet className="h-3.5 w-3.5" />
+              Budget
+            </TabsTrigger>
+            <TabsTrigger value="cashflow" className="flex-1 gap-1.5">
+              <ArrowLeftRight className="h-3.5 w-3.5" />
+              Cashflow
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="cashflow" className="mt-4">
+            <CashflowTab
+              monthlyIncome={monthlyIncome}
+              fixedCosts={fixedCosts}
+              totalVariableExpenses={totalSpent}
+            />
+          </TabsContent>
+
+          <TabsContent value="budget" className="mt-4 space-y-5">
         {/* Month navigator */}
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="icon" onClick={() => setSelectedMonth(shiftMonth(selectedMonth, -1))}>
@@ -560,6 +586,8 @@ export default function ClientPortalBudget() {
             </CardContent>
           </Card>
         )}
+          </TabsContent>
+        </Tabs>
       </div>
       </PageTransition>
     </ClientPortalLayout>
