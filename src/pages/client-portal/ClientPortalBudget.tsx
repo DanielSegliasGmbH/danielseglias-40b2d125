@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { useGamification } from '@/hooks/useGamification';
+import { useRecalculatePeakScore } from '@/hooks/usePeakScore';
 
 const CATEGORIES = [
   'Wohnen',
