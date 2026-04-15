@@ -6,6 +6,7 @@ interface Props {
   cryptoEnabled?: boolean;
   avgReturn?: string;
   privacyMode?: boolean;
+  mini?: boolean;
 }
 
 export function DonutChart({ allocations, cryptoEnabled, avgReturn, privacyMode }: Props) {
