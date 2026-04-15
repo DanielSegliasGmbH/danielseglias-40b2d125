@@ -45,6 +45,9 @@ interface FriendEntry {
   rank: ReturnType<typeof getRankForScore>;
   trend: number | null;
   isMe?: boolean;
+  isHidden?: boolean;
+  scoreHidden?: boolean;
+  challengesAllowed?: boolean;
 }
 
 const PODIUM_COLORS = [
