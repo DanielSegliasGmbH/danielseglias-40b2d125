@@ -288,34 +288,36 @@ export default function ClientPortalHome() {
         </motion.div>
 
         {/* ── 3. FINANZ-COCKPIT ── */}
-        <div className="grid grid-cols-2 gap-2 px-0">
-          {cockpitCards.map((card, i) => (
-            <motion.div
-              key={card.label}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + i * 0.04 }}
-            >
-              <Link to={card.path}>
-                <div className={cn(
-                  "p-4 rounded-2xl transition-shadow hover:shadow-md min-h-[80px] flex flex-col justify-center",
-                  card.highlight
-                    ? "bg-foreground text-background"
-                    : "bg-card border border-border"
-                )}>
-                  <span className={cn(
-                    "text-[11px]",
-                    card.highlight ? "opacity-70" : "text-muted-foreground"
+        <div className="px-4">
+          <div className="grid grid-cols-2 gap-2">
+            {cockpitCards.map((card, i) => (
+              <motion.div
+                key={card.label}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + i * 0.04 }}
+              >
+                <Link to={card.path}>
+                  <div className={cn(
+                    "p-3 rounded-2xl transition-shadow hover:shadow-md min-h-[80px] flex flex-col justify-center",
+                    card.highlight
+                      ? "bg-foreground text-background"
+                      : "bg-card border border-border"
                   )}>
-                    {card.label}
-                  </span>
-                  <span className="text-lg font-semibold block mt-1 tracking-tight">
-                    {card.value || '–'}
-                  </span>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+                    <span className={cn(
+                      "text-[11px] leading-tight",
+                      card.highlight ? "opacity-70" : "text-muted-foreground"
+                    )}>
+                      {card.label}
+                    </span>
+                    <span className="text-lg font-bold block mt-1 tracking-tight">
+                      {card.value || '–'}
+                    </span>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
         </div>
 
         {/* ── 4. NÄCHSTE QUEST ── */}
