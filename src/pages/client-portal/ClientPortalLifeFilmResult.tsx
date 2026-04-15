@@ -589,6 +589,12 @@ export default function ClientPortalLifeFilmResult() {
               filmData={filmData}
               baseDelay={timeline.length * 0.06 + 0.4}
             />
+
+            {/* Swiss Comparison */}
+            <SwissComparison
+              filmData={filmData}
+              baseDelay={timeline.length * 0.06 + 1.2}
+            />
           </motion.div>
         )}
       </div>
