@@ -427,11 +427,35 @@ export default function ClientPortalInsurances() {
                         <p className="text-xs text-muted-foreground mt-0.5">{p.provider}</p>
                       )}
                     </div>
-                    {p.price != null && (
-                      <p className="text-sm font-medium text-foreground">
-                        {formatPrice(p.price, p.payment_interval)}
-                      </p>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {p.price != null && (
+                        <p className="text-sm font-medium text-foreground flex-1">
+                          {formatPrice(p.price, p.payment_interval)}
+                        </p>
+                      )}
+                      {(p.document_url || p.portal_url) && (
+                        <div className="flex gap-1">
+                          {p.document_url && (
+                            <button
+                              className="p-1 rounded hover:bg-primary/10 transition-colors"
+                              onClick={(e) => { e.stopPropagation(); window.open(p.document_url!, '_blank', 'noopener,noreferrer'); }}
+                              title="Police öffnen"
+                            >
+                              <ExternalLink className="h-3.5 w-3.5 text-primary" />
+                            </button>
+                          )}
+                          {p.portal_url && (
+                            <button
+                              className="p-1 rounded hover:bg-primary/10 transition-colors"
+                              onClick={(e) => { e.stopPropagation(); window.open(p.portal_url!, '_blank', 'noopener,noreferrer'); }}
+                              title="Kundenportal öffnen"
+                            >
+                              <ExternalLink className="h-3.5 w-3.5 text-primary" />
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               );
