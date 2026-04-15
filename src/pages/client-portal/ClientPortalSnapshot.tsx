@@ -1,5 +1,4 @@
-import { useState, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,80 +11,197 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Progress } from '@/components/ui/progress';
 import { toast } from '@/hooks/use-toast';
-import { Camera, History, TrendingUp, TrendingDown, Minus, ArrowLeft, Loader2, Trash2, ChevronRight } from 'lucide-react';
-import { motion } from 'framer-motion';
+import {
+  Camera, History, TrendingUp, TrendingDown, Minus,
+  ArrowLeft, ArrowRight, Loader2, Trash2, ChevronRight,
+  Info, ExternalLink,
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useGamification } from '@/hooks/useGamification';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 
-interface SnapshotFormData {
-  monthly_income: string;
-  monthly_expenses: string;
-  total_savings: string;
-  total_investments: string;
-  total_debt: string;
-  real_estate_value: string;
-  pension_1st_pillar: string;
-  pension_2nd_pillar: string;
-  pension_3a: string;
-  insurance_monthly: string;
-  emergency_fund: string;
+// ── Types ──────────────────────────────────────────
+
+interface SnapshotFieldValue {
+  amount: string;
+  provider?: string;
+  link?: string;
+  skipped: boolean;
+}
+
+interface SnapshotDraft {
+  // Step 0: Vorsorge
+  pillar_3a: SnapshotFieldValue;
+  freizuegigkeit: SnapshotFieldValue;
+  pensionskasse: SnapshotFieldValue;
+  ahv_annual: SnapshotFieldValue;
+  // Step 1: Vermögen
+  savings: SnapshotFieldValue;
+  investments: SnapshotFieldValue;
+  real_estate: SnapshotFieldValue;
+  emergency_fund: SnapshotFieldValue;
+  // Step 2: Verbindlichkeiten
+  mortgage: SnapshotFieldValue;
+  consumer_debt: SnapshotFieldValue;
+  other_debt: SnapshotFieldValue;
+  // Step 3: Einkommen & Ausgaben
+  monthly_income: SnapshotFieldValue;
+  monthly_expenses: SnapshotFieldValue;
+  insurance_monthly: SnapshotFieldValue;
+  // Step 4: Notizen & Zusammenfassung
   notes: string;
 }
 
-const EMPTY_FORM: SnapshotFormData = {
-  monthly_income: '',
-  monthly_expenses: '',
-  total_savings: '',
-  total_investments: '',
-  total_debt: '',
-  real_estate_value: '',
-  pension_1st_pillar: '',
-  pension_2nd_pillar: '',
-  pension_3a: '',
-  insurance_monthly: '',
-  emergency_fund: '',
+const DEFAULT_FIELD: SnapshotFieldValue = { amount: '', provider: '', link: '', skipped: false };
+
+const EMPTY_DRAFT: SnapshotDraft = {
+  pillar_3a: { ...DEFAULT_FIELD },
+  freizuegigkeit: { ...DEFAULT_FIELD },
+  pensionskasse: { ...DEFAULT_FIELD },
+  ahv_annual: { ...DEFAULT_FIELD },
+  savings: { ...DEFAULT_FIELD },
+  investments: { ...DEFAULT_FIELD },
+  real_estate: { ...DEFAULT_FIELD },
+  emergency_fund: { ...DEFAULT_FIELD },
+  mortgage: { ...DEFAULT_FIELD },
+  consumer_debt: { ...DEFAULT_FIELD },
+  other_debt: { ...DEFAULT_FIELD },
+  monthly_income: { ...DEFAULT_FIELD },
+  monthly_expenses: { ...DEFAULT_FIELD },
+  insurance_monthly: { ...DEFAULT_FIELD },
   notes: '',
 };
 
-const FIELD_LABELS: Record<keyof Omit<SnapshotFormData, 'notes'>, { label: string; emoji: string; group: string }> = {
-  monthly_income: { label: 'Monatliches Einkommen', emoji: '💰', group: 'Einkommen & Ausgaben' },
-  monthly_expenses: { label: 'Monatliche Ausgaben', emoji: '🛒', group: 'Einkommen & Ausgaben' },
-  total_savings: { label: 'Ersparnisse (Konten)', emoji: '🏦', group: 'Vermögen' },
-  total_investments: { label: 'Investitionen (Aktien, ETFs etc.)', emoji: '📈', group: 'Vermögen' },
-  real_estate_value: { label: 'Immobilien (Marktwert)', emoji: '🏠', group: 'Vermögen' },
-  emergency_fund: { label: 'Notgroschen', emoji: '🛡️', group: 'Vermögen' },
-  total_debt: { label: 'Schulden & Hypothek', emoji: '📉', group: 'Verbindlichkeiten' },
-  pension_1st_pillar: { label: '1. Säule (AHV geschätzt)', emoji: '🇨🇭', group: 'Vorsorge' },
-  pension_2nd_pillar: { label: '2. Säule (Pensionskasse)', emoji: '🏛️', group: 'Vorsorge' },
-  pension_3a: { label: '3a Guthaben', emoji: '💎', group: 'Vorsorge' },
-  insurance_monthly: { label: 'Versicherungen (monatlich)', emoji: '🔒', group: 'Versicherungen' },
-};
+// ── Step definitions ───────────────────────────────
 
-function computeNetWorth(data: SnapshotFormData): number {
-  const n = (v: string) => Number(v) || 0;
-  return n(data.total_savings) + n(data.total_investments) + n(data.real_estate_value) + n(data.emergency_fund) + n(data.pension_3a) - n(data.total_debt);
+interface FieldConfig {
+  key: keyof Omit<SnapshotDraft, 'notes'>;
+  label: string;
+  emoji: string;
+  hint?: string;
+  moreLink?: string;
+  showProvider?: boolean;
+  showLink?: boolean;
+  isCHF?: boolean;
+  defaultSuggestion?: string;
 }
 
-function computeSavingsRate(data: SnapshotFormData): number {
-  const income = Number(data.monthly_income) || 0;
-  const expenses = Number(data.monthly_expenses) || 0;
-  if (income <= 0) return 0;
-  return Math.round(((income - expenses) / income) * 100);
+interface StepConfig {
+  title: string;
+  emoji: string;
+  fields: FieldConfig[];
 }
+
+const STEPS: StepConfig[] = [
+  {
+    title: 'Vorsorge',
+    emoji: '🏛️',
+    fields: [
+      {
+        key: 'pillar_3a',
+        label: 'Säule 3a',
+        emoji: '💎',
+        hint: 'Du findest den Betrag auf deinem 3a-Kontoauszug oder im Online-Portal.',
+        moreLink: '/app/client-portal/library',
+        showProvider: true,
+        showLink: true,
+        isCHF: true,
+      },
+      {
+        key: 'freizuegigkeit',
+        label: 'Freizügigkeit',
+        emoji: '🔄',
+        hint: 'Falls du in der Vergangenheit die Stelle gewechselt hast, könnte hier Geld liegen.',
+        moreLink: '/app/client-portal/library',
+        showProvider: true,
+        showLink: true,
+        isCHF: true,
+      },
+      {
+        key: 'pensionskasse',
+        label: 'Pensionskasse (BVG)',
+        emoji: '🏛️',
+        hint: "Diesen Betrag findest du auf deinem Pensionskassenausweis unter 'Austrittsleistung' oder 'Freizügigkeitsleistung'.",
+        moreLink: '/app/client-portal/library',
+        showProvider: true,
+        showLink: true,
+        isCHF: true,
+      },
+      {
+        key: 'ahv_annual',
+        label: 'AHV (geschätzte Jahresrente)',
+        emoji: '🇨🇭',
+        hint: 'Deine AHV-Rente wird basierend auf deinem Einkommen geschätzt. Du kannst den genauen Betrag bei deiner Ausgleichskasse anfragen.',
+        isCHF: true,
+      },
+    ],
+  },
+  {
+    title: 'Vermögen',
+    emoji: '💰',
+    fields: [
+      { key: 'savings', label: 'Ersparnisse (Konten)', emoji: '🏦', isCHF: true, showProvider: true, showLink: true },
+      { key: 'investments', label: 'Investitionen (Aktien, ETFs etc.)', emoji: '📈', isCHF: true, showProvider: true, showLink: true },
+      { key: 'real_estate', label: 'Immobilien (Marktwert)', emoji: '🏠', isCHF: true },
+      { key: 'emergency_fund', label: 'Notgroschen', emoji: '🛡️', isCHF: true, hint: 'Dein finanzielles Sicherheitspolster für Notfälle.' },
+    ],
+  },
+  {
+    title: 'Verbindlichkeiten',
+    emoji: '📉',
+    fields: [
+      { key: 'mortgage', label: 'Hypothek', emoji: '🏠', isCHF: true, showProvider: true },
+      { key: 'consumer_debt', label: 'Konsumschulden / Leasing', emoji: '💳', isCHF: true },
+      { key: 'other_debt', label: 'Sonstige Schulden', emoji: '📋', isCHF: true },
+    ],
+  },
+  {
+    title: 'Einkommen & Ausgaben',
+    emoji: '💸',
+    fields: [
+      { key: 'monthly_income', label: 'Monatliches Nettoeinkommen', emoji: '💰', isCHF: true },
+      { key: 'monthly_expenses', label: 'Monatliche Ausgaben (gesamt)', emoji: '🛒', isCHF: true },
+      { key: 'insurance_monthly', label: 'Versicherungen (monatlich)', emoji: '🔒', isCHF: true },
+    ],
+  },
+];
+
+const TOTAL_STEPS = STEPS.length + 1; // +1 for summary
+
+// ── Helpers ────────────────────────────────────────
+
+function n(v: string | undefined): number { return Number(v) || 0; }
+
+function computeNetWorth(d: SnapshotDraft): number {
+  return n(d.savings.amount) + n(d.investments.amount) + n(d.real_estate.amount) + n(d.emergency_fund.amount) + n(d.pillar_3a.amount) + n(d.freizuegigkeit.amount) + n(d.pensionskasse.amount) - n(d.mortgage.amount) - n(d.consumer_debt.amount) - n(d.other_debt.amount);
+}
+
+// ── Field labels for history display ───────────────
+const ALL_FIELD_LABELS: Record<string, { label: string; emoji: string }> = {};
+STEPS.forEach(step => step.fields.forEach(f => {
+  ALL_FIELD_LABELS[f.key] = { label: f.label, emoji: f.emoji };
+}));
+
+// ── Main component ────────────────────────────────
 
 export default function ClientPortalSnapshot() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { awardPoints } = useGamification();
-  const [form, setForm] = useState<SnapshotFormData>(EMPTY_FORM);
+  const [draft, setDraft] = useState<SnapshotDraft>(EMPTY_DRAFT);
+  const [step, setStep] = useState(0);
   const [tab, setTab] = useState('new');
   const [saving, setSaving] = useState(false);
+  const autoSaveTimeout = useRef<ReturnType<typeof setTimeout>>();
 
+  // ── Load snapshots ──
   const { data: snapshots = [], isLoading } = useQuery({
     queryKey: ['financial-snapshots', user?.id],
     queryFn: async () => {
@@ -100,35 +216,109 @@ export default function ClientPortalSnapshot() {
     enabled: !!user,
   });
 
-  const lastSnapshot = snapshots[0] || null;
+  // ── Load draft ──
+  const { data: savedDraft } = useQuery({
+    queryKey: ['snapshot-draft', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase
+        .from('snapshot_drafts')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!user,
+  });
 
-  const handleChange = (field: keyof SnapshotFormData, value: string) => {
-    if (field === 'notes') {
-      setForm(prev => ({ ...prev, notes: value }));
-      return;
+  // ── Load meta profile for AHV suggestion ──
+  const { data: metaProfile } = useQuery({
+    queryKey: ['meta-profile-snapshot', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase.from('meta_profiles').select('monthly_income').eq('user_id', user.id).maybeSingle();
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  // Restore draft on load
+  useEffect(() => {
+    if (savedDraft?.draft_data) {
+      try {
+        const parsed = savedDraft.draft_data as unknown as SnapshotDraft;
+        // Merge with defaults to fill any missing fields
+        const merged = { ...EMPTY_DRAFT };
+        for (const key of Object.keys(EMPTY_DRAFT) as (keyof SnapshotDraft)[]) {
+          if (key === 'notes') {
+            merged.notes = (parsed.notes as string) || '';
+          } else if (parsed[key] && typeof parsed[key] === 'object') {
+            merged[key] = { ...DEFAULT_FIELD, ...(parsed[key] as SnapshotFieldValue) };
+          }
+        }
+        setDraft(merged);
+        setStep(savedDraft.current_step || 0);
+      } catch { /* ignore parse errors */ }
     }
-    // Allow only numbers and dots
-    const cleaned = value.replace(/[^0-9.]/g, '');
-    setForm(prev => ({ ...prev, [field]: cleaned }));
+  }, [savedDraft]);
+
+  // ── Auto-save draft ──
+  const saveDraft = useCallback(async (d: SnapshotDraft, currentStep: number) => {
+    if (!user) return;
+    await supabase.from('snapshot_drafts').upsert({
+      user_id: user.id,
+      draft_data: d as any,
+      current_step: currentStep,
+    }, { onConflict: 'user_id' });
+  }, [user]);
+
+  const debouncedSave = useCallback((d: SnapshotDraft, currentStep: number) => {
+    if (autoSaveTimeout.current) clearTimeout(autoSaveTimeout.current);
+    autoSaveTimeout.current = setTimeout(() => saveDraft(d, currentStep), 1500);
+  }, [saveDraft]);
+
+  // ── Field updaters ──
+  const updateField = (key: keyof Omit<SnapshotDraft, 'notes'>, field: keyof SnapshotFieldValue, value: string | boolean) => {
+    setDraft(prev => {
+      const updated = {
+        ...prev,
+        [key]: { ...prev[key], [field]: value },
+      };
+      debouncedSave(updated, step);
+      return updated;
+    });
   };
 
+  const updateAmount = (key: keyof Omit<SnapshotDraft, 'notes'>, value: string) => {
+    const cleaned = value.replace(/[^0-9.]/g, '');
+    updateField(key, 'amount', cleaned);
+  };
+
+  const lastSnapshot = snapshots[0] || null;
+
+  // ── Save final snapshot ──
   const handleSave = async () => {
     if (!user) return;
-    const netWorth = computeNetWorth(form);
+    const netWorth = computeNetWorth(draft);
     setSaving(true);
     try {
       const { error } = await supabase.from('financial_snapshots').insert({
         user_id: user.id,
-        snapshot_data: form as any,
+        snapshot_data: draft as any,
         net_worth: netWorth,
-        notes: form.notes || null,
+        notes: draft.notes || null,
       });
       if (error) throw error;
+
+      // Delete draft
+      await supabase.from('snapshot_drafts').delete().eq('user_id', user.id);
+      queryClient.invalidateQueries({ queryKey: ['snapshot-draft'] });
 
       await awardPoints('snapshot_completed', 'snapshot_' + Date.now());
       queryClient.invalidateQueries({ queryKey: ['financial-snapshots'] });
       toast({ title: 'Snapshot gespeichert! 📸', description: '+100 XP verdient' });
-      setForm(EMPTY_FORM);
+      setDraft(EMPTY_DRAFT);
+      setStep(0);
       setTab('history');
     } catch {
       toast({ title: 'Fehler', description: 'Snapshot konnte nicht gespeichert werden.', variant: 'destructive' });
@@ -148,21 +338,14 @@ export default function ClientPortalSnapshot() {
     },
   });
 
-  const fmtCHF = (v: number) => `CHF ${v.toLocaleString('de-CH', { minimumFractionDigits: 0 })}`;
+  const progressPercent = ((step + 1) / TOTAL_STEPS) * 100;
+  const isLastFieldStep = step === STEPS.length - 1;
+  const isSummary = step === STEPS.length;
+  const currentStepConfig = STEPS[step] || null;
 
-  // Group fields for the form
-  const groups = useMemo(() => {
-    const g: Record<string, (keyof Omit<SnapshotFormData, 'notes'>)[]> = {};
-    for (const [key, meta] of Object.entries(FIELD_LABELS)) {
-      if (!g[meta.group]) g[meta.group] = [];
-      g[meta.group].push(key as keyof Omit<SnapshotFormData, 'notes'>);
-    }
-    return g;
-  }, []);
-
-  const netWorth = computeNetWorth(form);
-  const savingsRate = computeSavingsRate(form);
-  const hasData = Object.entries(form).some(([k, v]) => k !== 'notes' && v !== '');
+  const ahvSuggestion = metaProfile?.monthly_income
+    ? Math.round(Number(metaProfile.monthly_income) * 12 * 0.044).toString()
+    : undefined;
 
   return (
     <ClientPortalLayout>
@@ -196,90 +379,96 @@ export default function ClientPortalSnapshot() {
             </TabsTrigger>
           </TabsList>
 
-          {/* Tab 1: New Snapshot */}
+          {/* ── TAB: Neuer Snapshot ── */}
           <TabsContent value="new" className="space-y-4 mt-4">
-            {/* Live preview */}
-            {hasData && (
-              <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
-                <Card className="border-primary/20 bg-primary/5">
-                  <CardContent className="p-4">
-                    <p className="text-xs font-medium text-muted-foreground mb-2">Live-Vorschau</p>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <p className="text-[10px] text-muted-foreground">Nettovermögen</p>
-                        <p className={cn("text-lg font-bold", netWorth >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-destructive")}>
-                          {fmtCHF(netWorth)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-[10px] text-muted-foreground">Sparquote</p>
-                        <p className="text-lg font-bold text-foreground">{savingsRate}%</p>
-                      </div>
+            {/* Progress bar */}
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-[10px] text-muted-foreground">
+                <span>Schritt {step + 1} von {TOTAL_STEPS}</span>
+                <span>{Math.round(progressPercent)}%</span>
+              </div>
+              <Progress value={progressPercent} className="h-1.5" />
+              <div className="flex gap-1">
+                {STEPS.map((s, i) => (
+                  <button
+                    key={i}
+                    onClick={() => { saveDraft(draft, i); setStep(i); }}
+                    className={cn(
+                      "flex-1 text-[9px] py-1 rounded transition-colors text-center",
+                      i === step ? "bg-primary/15 text-primary font-semibold" : i < step ? "bg-muted text-muted-foreground" : "text-muted-foreground/50"
+                    )}
+                  >
+                    {s.emoji} {s.title}
+                  </button>
+                ))}
+                <button
+                  onClick={() => { saveDraft(draft, STEPS.length); setStep(STEPS.length); }}
+                  className={cn(
+                    "flex-1 text-[9px] py-1 rounded transition-colors text-center",
+                    isSummary ? "bg-primary/15 text-primary font-semibold" : "text-muted-foreground/50"
+                  )}
+                >
+                  ✅ Fertig
+                </button>
+              </div>
+            </div>
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+              >
+                {!isSummary && currentStepConfig ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">{currentStepConfig.emoji}</span>
+                      <h2 className="text-base font-bold text-foreground">{currentStepConfig.title}</h2>
                     </div>
-                  </CardContent>
-                </Card>
+
+                    {currentStepConfig.fields.map((field) => (
+                      <SnapshotFieldCard
+                        key={field.key}
+                        config={field}
+                        value={draft[field.key]}
+                        onChange={(f, v) => updateField(field.key, f, v)}
+                        onAmountChange={(v) => updateAmount(field.key, v)}
+                        ahvSuggestion={field.key === 'ahv_annual' ? ahvSuggestion : undefined}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <SummaryStep draft={draft} onNotesChange={(v) => setDraft(prev => ({ ...prev, notes: v }))} />
+                )}
               </motion.div>
-            )}
+            </AnimatePresence>
 
-            {/* Form groups */}
-            {Object.entries(groups).map(([groupName, fields]) => (
-              <Card key={groupName}>
-                <CardContent className="p-4 space-y-3">
-                  <h3 className="text-sm font-semibold text-foreground">{groupName}</h3>
-                  {fields.map((field) => {
-                    const meta = FIELD_LABELS[field];
-                    return (
-                      <div key={field} className="space-y-1">
-                        <Label className="text-xs flex items-center gap-1.5">
-                          <span>{meta.emoji}</span> {meta.label}
-                        </Label>
-                        <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
-                          <Input
-                            type="text"
-                            inputMode="decimal"
-                            value={form[field]}
-                            onChange={(e) => handleChange(field, e.target.value)}
-                            placeholder="0"
-                            className="pl-11 text-right"
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </CardContent>
-              </Card>
-            ))}
-
-            {/* Notes */}
-            <Card>
-              <CardContent className="p-4 space-y-2">
-                <Label className="text-xs">📝 Notizen (optional)</Label>
-                <Textarea
-                  value={form.notes}
-                  onChange={(e) => handleChange('notes', e.target.value)}
-                  placeholder="z.B. Bonus erhalten, Hypothek abgeschlossen..."
-                  rows={3}
-                  maxLength={500}
-                />
-              </CardContent>
-            </Card>
-
-            {/* Save */}
-            <Button
-              onClick={handleSave}
-              disabled={saving || !hasData}
-              className="w-full h-12 text-base font-semibold"
-            >
-              {saving ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Wird gespeichert...</>
-              ) : (
-                <>📸 Snapshot speichern · +100 XP</>
+            {/* Navigation */}
+            <div className="flex gap-3 pt-2">
+              {step > 0 && (
+                <Button variant="outline" className="flex-1" onClick={() => { saveDraft(draft, step - 1); setStep(step - 1); }}>
+                  <ArrowLeft className="h-4 w-4 mr-1" /> Zurück
+                </Button>
               )}
-            </Button>
+              {!isSummary ? (
+                <Button className="flex-1" onClick={() => { saveDraft(draft, step + 1); setStep(step + 1); }}>
+                  Weiter <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              ) : (
+                <Button className="flex-1 h-12 text-base font-semibold" onClick={handleSave} disabled={saving}>
+                  {saving ? (
+                    <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Wird gespeichert...</>
+                  ) : (
+                    <>📸 Snapshot speichern · +100 XP</>
+                  )}
+                </Button>
+              )}
+            </div>
           </TabsContent>
 
-          {/* Tab 2: History */}
+          {/* ── TAB: Verlauf ── */}
           <TabsContent value="history" className="space-y-4 mt-4">
             {isLoading ? (
               <div className="flex justify-center py-12">
@@ -293,20 +482,14 @@ export default function ClientPortalSnapshot() {
                   <p className="text-sm text-muted-foreground mb-4">
                     Erstelle deinen ersten Finanz-Snapshot und verfolge deine Entwicklung.
                   </p>
-                  <Button variant="outline" onClick={() => setTab('new')}>
-                    Jetzt starten
-                  </Button>
+                  <Button variant="outline" onClick={() => setTab('new')}>Jetzt starten</Button>
                 </CardContent>
               </Card>
             ) : (
               <>
-                {/* Comparison banner if 2+ snapshots */}
-                {snapshots.length >= 2 && (
-                  <ComparisonBanner current={snapshots[0]} previous={snapshots[1]} />
-                )}
-
+                {snapshots.length >= 2 && <ComparisonBanner current={snapshots[0]} previous={snapshots[1]} />}
                 {snapshots.map((snap: any, idx: number) => (
-                  <SnapshotCard
+                  <HistoryCard
                     key={snap.id}
                     snapshot={snap}
                     previous={snapshots[idx + 1] || null}
@@ -322,6 +505,192 @@ export default function ClientPortalSnapshot() {
   );
 }
 
+// ── Field Card ─────────────────────────────────────
+
+function SnapshotFieldCard({
+  config, value, onChange, onAmountChange, ahvSuggestion,
+}: {
+  config: FieldConfig;
+  value: SnapshotFieldValue;
+  onChange: (field: keyof SnapshotFieldValue, val: string | boolean) => void;
+  onAmountChange: (val: string) => void;
+  ahvSuggestion?: string;
+}) {
+  const navigate = useNavigate();
+  const isSkipped = value.skipped;
+
+  return (
+    <Card className={cn(isSkipped && "opacity-60")}>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+            <span>{config.emoji}</span> {config.label}
+          </h3>
+          <label className="flex items-center gap-1.5 cursor-pointer">
+            <Checkbox
+              checked={isSkipped}
+              onCheckedChange={(v) => onChange('skipped', !!v)}
+              className="h-3.5 w-3.5"
+            />
+            <span className="text-[10px] text-muted-foreground">Nicht bekannt</span>
+          </label>
+        </div>
+
+        {/* Amount */}
+        <div className="space-y-1">
+          <Label className="text-xs text-muted-foreground">Betrag</Label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+            <Input
+              type="text"
+              inputMode="decimal"
+              value={value.amount}
+              onChange={(e) => onAmountChange(e.target.value)}
+              placeholder={ahvSuggestion ? `ca. ${ahvSuggestion}` : '0'}
+              className="pl-11 text-right"
+              disabled={isSkipped}
+            />
+          </div>
+          {ahvSuggestion && !value.amount && !isSkipped && (
+            <button
+              className="text-[10px] text-primary hover:underline"
+              onClick={() => onAmountChange(ahvSuggestion)}
+            >
+              Vorschlag übernehmen: CHF {Number(ahvSuggestion).toLocaleString('de-CH')}
+            </button>
+          )}
+        </div>
+
+        {/* Provider */}
+        {config.showProvider && (
+          <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground">Anbieter</Label>
+            <Input
+              type="text"
+              value={value.provider || ''}
+              onChange={(e) => onChange('provider', e.target.value)}
+              placeholder="z.B. Swiss Life, VIAC, UBS..."
+              disabled={isSkipped}
+              maxLength={100}
+            />
+          </div>
+        )}
+
+        {/* Link */}
+        {config.showLink && (
+          <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground flex items-center gap-1">
+              <ExternalLink className="h-3 w-3" /> Link zum Portal (optional)
+            </Label>
+            <Input
+              type="url"
+              value={value.link || ''}
+              onChange={(e) => onChange('link', e.target.value)}
+              placeholder="https://..."
+              disabled={isSkipped}
+              maxLength={500}
+            />
+          </div>
+        )}
+
+        {/* Hint */}
+        {config.hint && (
+          <div className="flex gap-2 bg-muted/50 rounded-lg p-2.5">
+            <Info className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
+            <p className="text-[11px] text-muted-foreground leading-relaxed">{config.hint}</p>
+          </div>
+        )}
+
+        {/* More link */}
+        {config.moreLink && (
+          <button
+            onClick={() => navigate(config.moreLink!)}
+            className="text-xs text-primary hover:underline font-medium"
+          >
+            Mehr dazu →
+          </button>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+// ── Summary step ───────────────────────────────────
+
+function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesChange: (v: string) => void }) {
+  const netWorth = computeNetWorth(draft);
+  const income = n(draft.monthly_income.amount);
+  const expenses = n(draft.monthly_expenses.amount);
+  const savingsRate = income > 0 ? Math.round(((income - expenses) / income) * 100) : 0;
+  const totalAssets = n(draft.savings.amount) + n(draft.investments.amount) + n(draft.real_estate.amount) + n(draft.emergency_fund.amount);
+  const totalPension = n(draft.pillar_3a.amount) + n(draft.freizuegigkeit.amount) + n(draft.pensionskasse.amount);
+  const totalDebt = n(draft.mortgage.amount) + n(draft.consumer_debt.amount) + n(draft.other_debt.amount);
+  const fmtCHF = (v: number) => `CHF ${v.toLocaleString('de-CH')}`;
+
+  const summaryItems = [
+    { label: 'Nettovermögen', value: fmtCHF(netWorth), highlight: true, positive: netWorth >= 0 },
+    { label: 'Sparquote', value: income > 0 ? `${savingsRate}%` : '–' },
+    { label: 'Vermögen (ohne Vorsorge)', value: fmtCHF(totalAssets) },
+    { label: 'Vorsorge Total', value: fmtCHF(totalPension) },
+    { label: 'Schulden Total', value: fmtCHF(totalDebt) },
+    { label: 'Einkommen mtl.', value: income > 0 ? fmtCHF(income) : '–' },
+    { label: 'Ausgaben mtl.', value: expenses > 0 ? fmtCHF(expenses) : '–' },
+  ];
+
+  const skippedCount = Object.entries(draft)
+    .filter(([k]) => k !== 'notes')
+    .filter(([, v]) => typeof v === 'object' && (v as SnapshotFieldValue).skipped)
+    .length;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <span className="text-xl">✅</span>
+        <h2 className="text-base font-bold text-foreground">Zusammenfassung</h2>
+      </div>
+
+      <Card className="border-primary/20 bg-primary/5">
+        <CardContent className="p-4 space-y-2.5">
+          {summaryItems.map((item) => (
+            <div key={item.label} className="flex justify-between items-center">
+              <span className="text-xs text-muted-foreground">{item.label}</span>
+              <span className={cn(
+                "text-sm font-semibold",
+                item.highlight
+                  ? item.positive ? "text-primary" : "text-destructive"
+                  : "text-foreground"
+              )}>
+                {item.value}
+              </span>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      {skippedCount > 0 && (
+        <p className="text-[11px] text-muted-foreground text-center">
+          {skippedCount} Feld(er) übersprungen — du kannst sie jederzeit nachträglich ausfüllen.
+        </p>
+      )}
+
+      <Card>
+        <CardContent className="p-4 space-y-2">
+          <Label className="text-xs">📝 Notizen (optional)</Label>
+          <Textarea
+            value={draft.notes}
+            onChange={(e) => onNotesChange(e.target.value)}
+            placeholder="z.B. Bonus erhalten, Hypothek abgeschlossen..."
+            rows={3}
+            maxLength={500}
+          />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// ── History components ─────────────────────────────
+
 function ComparisonBanner({ current, previous }: { current: any; previous: any }) {
   const diff = (current.net_worth || 0) - (previous.net_worth || 0);
   const positive = diff >= 0;
@@ -329,17 +698,14 @@ function ComparisonBanner({ current, previous }: { current: any; previous: any }
 
   return (
     <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
-      <Card className={cn("border-0", positive ? "bg-emerald-50 dark:bg-emerald-950/30" : "bg-red-50 dark:bg-red-950/30")}>
+      <Card className={cn("border-0", positive ? "bg-primary/5" : "bg-destructive/5")}>
         <CardContent className="p-4 flex items-center gap-3">
-          <div className={cn(
-            "w-10 h-10 rounded-xl flex items-center justify-center",
-            positive ? "bg-emerald-100 dark:bg-emerald-900/50" : "bg-red-100 dark:bg-red-900/50"
-          )}>
-            <Icon className={cn("h-5 w-5", positive ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400")} />
+          <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", positive ? "bg-primary/10" : "bg-destructive/10")}>
+            <Icon className={cn("h-5 w-5", positive ? "text-primary" : "text-destructive")} />
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Seit letztem Snapshot</p>
-            <p className={cn("font-bold", positive ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400")}>
+            <p className={cn("font-bold", positive ? "text-primary" : "text-destructive")}>
               {positive ? '+' : ''}CHF {diff.toLocaleString('de-CH')}
             </p>
           </div>
@@ -349,7 +715,7 @@ function ComparisonBanner({ current, previous }: { current: any; previous: any }
   );
 }
 
-function SnapshotCard({ snapshot, previous, onDelete }: { snapshot: any; previous: any; onDelete: () => void }) {
+function HistoryCard({ snapshot, previous, onDelete }: { snapshot: any; previous: any; onDelete: () => void }) {
   const [expanded, setExpanded] = useState(false);
   const data = snapshot.snapshot_data || {};
   const netWorth = snapshot.net_worth || 0;
@@ -374,7 +740,7 @@ function SnapshotCard({ snapshot, previous, onDelete }: { snapshot: any; previou
                 Nettovermögen: <span className="font-medium text-foreground">CHF {netWorth.toLocaleString('de-CH')}</span>
               </p>
               {diff !== null && (
-                <span className={cn("text-[10px] font-medium", diff >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500")}>
+                <span className={cn("text-[10px] font-medium", diff >= 0 ? "text-primary" : "text-destructive")}>
                   {diff >= 0 ? '↑' : '↓'} {Math.abs(diff).toLocaleString('de-CH')}
                 </span>
               )}
@@ -387,13 +753,19 @@ function SnapshotCard({ snapshot, previous, onDelete }: { snapshot: any; previou
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="overflow-hidden">
             <Separator />
             <div className="p-4 space-y-2">
-              {Object.entries(FIELD_LABELS).map(([key, meta]) => {
-                const val = data[key];
-                if (!val && val !== 0) return null;
+              {Object.entries(ALL_FIELD_LABELS).map(([key, meta]) => {
+                const fieldData = data[key];
+                if (!fieldData) return null;
+                const amount = typeof fieldData === 'object' ? fieldData.amount : fieldData;
+                if (!amount && amount !== 0) return null;
+                const provider = typeof fieldData === 'object' ? fieldData.provider : null;
                 return (
                   <div key={key} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">{meta.emoji} {meta.label}</span>
-                    <span className="font-medium text-foreground">CHF {Number(val).toLocaleString('de-CH')}</span>
+                    <span className="text-muted-foreground">
+                      {meta.emoji} {meta.label}
+                      {provider && <span className="text-[10px] ml-1">({provider})</span>}
+                    </span>
+                    <span className="font-medium text-foreground">CHF {Number(amount).toLocaleString('de-CH')}</span>
                   </div>
                 );
               })}
