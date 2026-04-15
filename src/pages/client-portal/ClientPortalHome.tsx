@@ -57,6 +57,21 @@ export default function ClientPortalHome() {
   const { score, rank: peakRank } = usePeakScore();
   const firstName = user?.user_metadata?.first_name || 'Kunde';
 
+  const { data: lifeFilmCompleted = false } = useQuery({
+    queryKey: ['life-film-completed', user?.id],
+    queryFn: async () => {
+      if (!user) return false;
+      const { data } = await supabase
+        .from('life_film_data')
+        .select('completed')
+        .eq('user_id', user.id)
+        .eq('completed', true)
+        .maybeSingle();
+      return !!data;
+    },
+    enabled: !!user,
+  });
+
   useEffect(() => {
     const done = localStorage.getItem('client_onboarding_complete');
     if (!done) setShowOnboarding(true);
