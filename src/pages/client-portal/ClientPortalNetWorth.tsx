@@ -488,6 +488,10 @@ export default function ClientPortalNetWorth() {
                   </Select>
                 </div>
                 <div><Label>Wert (CHF)</Label><Input type="number" min="0" step="100" value={assetValue} onChange={e => setAssetValue(e.target.value)} placeholder="0" /></div>
+                <div>
+                  <Label className="flex items-center gap-1.5"><ExternalLink className="h-3.5 w-3.5" /> Link zur Plattform (optional)</Label>
+                  <Input type="url" value={assetUrl} onChange={e => setAssetUrl(e.target.value)} placeholder="z.B. https://login.ubs.com" />
+                </div>
                 <Button onClick={() => addAsset.mutate()} disabled={!assetName || !assetValue || parseFloat(assetValue) <= 0 || addAsset.isPending} className="w-full">Speichern</Button>
               </div>
             </DialogContent>
