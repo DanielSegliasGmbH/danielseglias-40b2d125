@@ -1467,6 +1467,30 @@ export type Database = {
         }
         Relationships: []
       }
+      friends: {
+        Row: {
+          created_at: string
+          id: string
+          status: string
+          user_id_1: string
+          user_id_2: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          status?: string
+          user_id_1: string
+          user_id_2: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          status?: string
+          user_id_1?: string
+          user_id_2?: string
+        }
+        Relationships: []
+      }
       gamification_actions: {
         Row: {
           action_ref: string
