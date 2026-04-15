@@ -3096,6 +3096,36 @@ export type Database = {
           },
         ]
       }
+      tool_snapshots: {
+        Row: {
+          created_at: string
+          id: string
+          peak_score_effect: number | null
+          snapshot_data: Json
+          tool_name: string
+          tool_slug: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          peak_score_effect?: number | null
+          snapshot_data?: Json
+          tool_name: string
+          tool_slug: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          peak_score_effect?: number | null
+          snapshot_data?: Json
+          tool_name?: string
+          tool_slug?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       tools: {
         Row: {
           created_at: string
