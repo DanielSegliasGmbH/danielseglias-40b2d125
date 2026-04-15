@@ -72,7 +72,7 @@ export function useChallenges() {
       toast.success('Challenge gesendet! ⚔️');
       queryClient.invalidateQueries({ queryKey: ['challenges'] });
     },
-    onError: () => toast.error('Challenge konnte nicht erstellt werden.'),
+    onError: (err: Error) => toast.error(err.message || 'Challenge konnte nicht erstellt werden.'),
   });
 
   const respondChallenge = useMutation({
