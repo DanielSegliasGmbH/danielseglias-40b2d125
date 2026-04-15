@@ -91,6 +91,25 @@ export default function ClientPortalCoach() {
           </p>
         </div>
 
+        {/* Lebensfilm CTA */}
+        {!lifeFilmCompleted && (
+          <Card
+            className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent cursor-pointer active:scale-[0.98] transition-transform hover:shadow-md"
+            onClick={() => navigate('/app/client-portal/life-film')}
+          >
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+                <Film className="h-5 w-5 text-primary" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="font-semibold text-sm text-foreground">Dein Lebensfilm 🎬</h3>
+                <p className="text-xs text-muted-foreground">Entdecke deine finanzielle Zukunft — in nur 2 Minuten</p>
+              </div>
+              <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+            </CardContent>
+          </Card>
+        )}
+
         {/* Resume Banner */}
         {resumeModule && (
           <Card className="border-primary/30 bg-primary/5">
