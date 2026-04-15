@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Sparkles, Eye, Link2, Rocket, ChevronRight, ChevronLeft, Shield, Lock, EyeOff, Target } from 'lucide-react';
+import { Sparkles, Eye, Link2, Rocket, ChevronRight, ChevronLeft, Shield, Lock, EyeOff, Target, UserRound } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence, useMotionValue, useTransform, useAnimation } from 'framer-motion';
 
@@ -44,6 +44,12 @@ const slides = [
     title: 'Starte hier',
     description: 'Entdecke dein Dashboard und beginne deinen Weg zu mehr Klarheit, Kontrolle und finanzieller Freiheit.',
     isFinal: true,
+  },
+  {
+    icon: UserRound,
+    title: 'Noch eine Sache...',
+    description: '',
+    isFinanzTypGateway: true,
   },
 ];
 
@@ -233,7 +239,7 @@ function useSwipe(onLeft: () => void, onRight: () => void) {
   return { onTouchStart, onTouchEnd };
 }
 
-export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
+export function OnboardingScreen({ onComplete, onStartFinanzTyp }: { onComplete: () => void; onStartFinanzTyp?: () => void }) {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
   const [privacyAcknowledged, setPrivacyAcknowledged] = useState(false);
@@ -265,6 +271,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
 
   const isPrivacySlide = slide.isPrivacy === true;
   const isFinal = slide.isFinal === true;
+  const isFinanzTypGateway = (slide as typeof slides[number] & { isFinanzTypGateway?: boolean }).isFinanzTypGateway === true;
   const canProceed = !isPrivacySlide || privacyAcknowledged;
 
   // Trigger confetti on final slide
@@ -433,6 +440,30 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
               +200 XP
             </motion.div>
           )}
+
+          {/* Finanz-Typ Gateway slide */}
+          {isFinanzTypGateway && (
+            <div className="flex flex-col items-center w-full">
+              <h2 className="text-lg font-bold text-foreground mb-2">Welcher Finanz-Typ bist du?</h2>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-3xl">🏦</span>
+                <span className="text-3xl">🎢</span>
+                <span className="text-3xl">✅</span>
+              </div>
+              <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+                In 60 Sekunden findest du es heraus. Dein persönlicher Fahrplan wartet.
+              </p>
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2, type: 'spring', stiffness: 260, damping: 20 }}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary/15 text-primary font-bold text-sm"
+              >
+                <Sparkles className="h-4 w-4" />
+                +100 XP
+              </motion.div>
+            </div>
+          )}
         </motion.div>
       </AnimatePresence>
 
@@ -450,21 +481,38 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
           ))}
         </div>
 
-        <Button
-          onClick={handleNext}
-          disabled={!canProceed}
-          className={cn(
-            "w-full h-14 text-base font-semibold rounded-2xl gap-2 transition-all duration-300",
-            isPrivacySlide && !privacyAcknowledged && "opacity-50",
-            isFinal && "animate-pulse shadow-lg shadow-primary/30"
-          )}
-        >
-          {isFinal ? (
-            'Dashboard entdecken'
-          ) : (
-            <>Weiter <ChevronRight className="h-5 w-5" /></>
-          )}
-        </Button>
+        {isFinanzTypGateway ? (
+          <div className="space-y-3">
+            <Button
+              onClick={() => onStartFinanzTyp?.()}
+              className="w-full h-14 text-base font-semibold rounded-2xl gap-2"
+            >
+              Los geht's <ChevronRight className="h-5 w-5" />
+            </Button>
+            <button
+              onClick={onComplete}
+              className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
+            >
+              Später
+            </button>
+          </div>
+        ) : (
+          <Button
+            onClick={handleNext}
+            disabled={!canProceed}
+            className={cn(
+              "w-full h-14 text-base font-semibold rounded-2xl gap-2 transition-all duration-300",
+              isPrivacySlide && !privacyAcknowledged && "opacity-50",
+              isFinal && "animate-pulse shadow-lg shadow-primary/30"
+            )}
+          >
+            {isFinal ? (
+              'Dashboard entdecken'
+            ) : (
+              <>Weiter <ChevronRight className="h-5 w-5" /></>
+            )}
+          </Button>
+        )}
       </div>
     </div>
   );
