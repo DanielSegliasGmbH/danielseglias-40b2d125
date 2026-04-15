@@ -238,6 +238,10 @@ export default function PublicToolDetail() {
                 <div className="mb-8">
                   <AboAuditTool mode="public" />
                 </div>
+              ) : slug === 'lohnerhoher' ? (
+                <div className="mb-8">
+                  <LohnerhoherTool mode="public" />
+                </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
                   <CardContent className="py-6 prose prose-neutral dark:prose-invert max-w-none">
