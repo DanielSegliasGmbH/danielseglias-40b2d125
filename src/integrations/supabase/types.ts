@@ -2168,6 +2168,7 @@ export type Database = {
           last_name: string
           phone: string | null
           plan: string
+          referral_code: string | null
           updated_at: string
           user_type: string
         }
@@ -2180,6 +2181,7 @@ export type Database = {
           last_name: string
           phone?: string | null
           plan?: string
+          referral_code?: string | null
           updated_at?: string
           user_type?: string
         }
@@ -2192,6 +2194,7 @@ export type Database = {
           last_name?: string
           phone?: string | null
           plan?: string
+          referral_code?: string | null
           updated_at?: string
           user_type?: string
         }
@@ -2266,6 +2269,36 @@ export type Database = {
           token?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          referred_user_id: string
+          referrer_id: string
+          status: string
+          xp_awarded: boolean
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          referred_user_id: string
+          referrer_id: string
+          status?: string
+          xp_awarded?: boolean
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          referred_user_id?: string
+          referrer_id?: string
+          status?: string
+          xp_awarded?: boolean
         }
         Relationships: []
       }
