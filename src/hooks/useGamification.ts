@@ -16,6 +16,7 @@ export type ActionType =
   | 'asset_added'
   | 'life_film_completed'
   | 'life_film_viewed'
+  | 'life_film_archived'
   | 'snapshot_completed';
 
 const POINTS_MAP: Record<ActionType, number> = {
@@ -31,6 +32,7 @@ const POINTS_MAP: Record<ActionType, number> = {
   asset_added: 25,
   life_film_completed: 150,
   life_film_viewed: 100,
+  life_film_archived: 50,
   snapshot_completed: 100,
 };
 

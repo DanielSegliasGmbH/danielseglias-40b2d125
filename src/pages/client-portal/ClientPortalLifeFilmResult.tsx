@@ -1,7 +1,7 @@
-import { useMemo, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useMemo, useEffect, useRef, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,10 +10,11 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Film, TrendingUp, AlertTriangle, CheckCircle, Sparkles } from 'lucide-react';
+import { ArrowLeft, Film, TrendingUp, AlertTriangle, Save, Archive } from 'lucide-react';
 import { AlternativeTimeline } from '@/components/client-portal/life-film/AlternativeTimeline';
 import { SwissComparison } from '@/components/client-portal/life-film/SwissComparison';
 import { useGamification } from '@/hooks/useGamification';
+import { toast } from 'sonner';
 
 // ── Constants ──
 const INFLATION = 0.02;
@@ -345,12 +346,20 @@ const DOT_STYLES = {
 
 export default function ClientPortalLifeFilmResult() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const firstName = user?.user_metadata?.first_name || 'Du';
   const { awardPoints } = useGamification();
   const xpAwarded = useRef(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const { data: filmData, isLoading } = useQuery({
+  // Check if viewing an archived film (read-only)
+  const archiveState = location.state as { archiveData?: LifeFilmData; readOnly?: boolean } | null;
+  const isReadOnly = archiveState?.readOnly === true;
+  const archivedFilmData = archiveState?.archiveData;
+
+  const { data: liveFilmData, isLoading } = useQuery({
     queryKey: ['life-film-data', user?.id],
     queryFn: async () => {
       if (!user) return null;
@@ -362,8 +371,32 @@ export default function ClientPortalLifeFilmResult() {
         .maybeSingle();
       return data as LifeFilmData | null;
     },
-    enabled: !!user,
+    enabled: !!user && !isReadOnly,
   });
+
+  const filmData = isReadOnly && archivedFilmData ? archivedFilmData : liveFilmData;
+
+  const handleSaveToArchive = async () => {
+    if (!user || !filmData || isSaving) return;
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('life_film_archives')
+        .insert([{
+          user_id: user.id,
+          film_data: JSON.parse(JSON.stringify(filmData)),
+          saved_at: new Date().toISOString(),
+        }]);
+      if (error) throw error;
+      queryClient.invalidateQueries({ queryKey: ['life-film-archives'] });
+      awardPoints('life_film_archived', `archive_${Date.now()}`);
+      toast.success('Lebensfilm gespeichert ✓');
+    } catch {
+      toast.error('Fehler beim Speichern');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const timeline = useMemo(() => {
     if (!filmData || !filmData.age) return [];
@@ -595,6 +628,52 @@ export default function ClientPortalLifeFilmResult() {
               filmData={filmData}
               baseDelay={timeline.length * 0.06 + 1.2}
             />
+
+            {/* Save & Archive buttons */}
+            {!isReadOnly && (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: timeline.length * 0.06 + 1.8 }}
+                className="space-y-3 mt-8"
+              >
+                <Separator />
+                <Button
+                  className="w-full gap-2"
+                  size="lg"
+                  onClick={handleSaveToArchive}
+                  disabled={isSaving}
+                >
+                  <Save className="h-4 w-4" />
+                  {isSaving ? 'Wird gespeichert...' : 'Lebensfilm speichern 📸'}
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full gap-2"
+                  onClick={() => navigate('/app/client-portal/life-film-archive')}
+                >
+                  <Archive className="h-4 w-4" />
+                  Archiv anzeigen
+                </Button>
+              </motion.div>
+            )}
+
+            {isReadOnly && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="mt-8"
+              >
+                <Button
+                  variant="outline"
+                  className="w-full gap-2"
+                  onClick={() => navigate('/app/client-portal/life-film-archive')}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Zurück zum Archiv
+                </Button>
+              </motion.div>
+            )}
           </motion.div>
         )}
       </div>
