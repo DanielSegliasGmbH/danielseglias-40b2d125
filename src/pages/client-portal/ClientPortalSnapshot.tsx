@@ -1382,9 +1382,13 @@ function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesCh
   const bankTotal = draft.bank_accounts_skipped ? 0 : sumBankAccounts(draft.bank_accounts);
   const cashTotal = draft.cash.skipped ? 0 : n(draft.cash.amount);
   const valuablesTotal = draft.valuables_skipped ? 0 : sumValuables(draft.valuables);
-  const totalAssets = bankTotal + cashTotal + valuablesTotal + n(draft.investments.amount) + n(draft.real_estate.amount) + n(draft.emergency_fund.amount);
+  const investTotal = draft.investment_positions_skipped ? 0 : sumInvestments(draft.investment_positions);
+  const cryptoTotal = draft.crypto_positions_skipped ? 0 : sumCrypto(draft.crypto_positions);
+  const propertyTotal = draft.owns_property ? sumPropertyValue(draft.properties) : 0;
+  const propertyMortgages = draft.owns_property ? sumPropertyMortgages(draft.properties) : 0;
+  const otherTotal = draft.other_assets_skipped ? 0 : sumOtherAssets(draft.other_assets);
   const totalPension = n(draft.pillar_3a.amount) + n(draft.freizuegigkeit.amount) + n(draft.pensionskasse.amount);
-  const totalDebt = n(draft.mortgage.amount) + n(draft.consumer_debt.amount) + n(draft.other_debt.amount);
+  const totalDebt = n(draft.mortgage.amount) + n(draft.consumer_debt.amount) + n(draft.other_debt.amount) + propertyMortgages;
   const fmtCHF = (v: number) => `CHF ${v.toLocaleString('de-CH')}`;
 
   const summaryItems = [
@@ -1392,7 +1396,10 @@ function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesCh
     { label: 'Sparquote', value: income > 0 ? `${savingsRate}%` : '–' },
     { label: 'Bankkonten', value: fmtCHF(bankTotal) },
     { label: 'Bargeld & Wertgegenstände', value: fmtCHF(cashTotal + valuablesTotal) },
-    { label: 'Vermögen (Investitionen etc.)', value: fmtCHF(n(draft.investments.amount) + n(draft.real_estate.amount) + n(draft.emergency_fund.amount)) },
+    { label: 'Investments (Aktien, ETFs)', value: fmtCHF(investTotal) },
+    { label: 'Kryptowährungen', value: fmtCHF(cryptoTotal) },
+    ...(propertyTotal > 0 ? [{ label: 'Immobilien (Marktwert)', value: fmtCHF(propertyTotal) }] : []),
+    ...(otherTotal > 0 ? [{ label: 'Sonstiges Vermögen', value: fmtCHF(otherTotal) }] : []),
     { label: 'Vorsorge Total', value: fmtCHF(totalPension) },
     { label: 'Schulden Total', value: fmtCHF(totalDebt) },
     { label: 'Einkommen mtl.', value: income > 0 ? fmtCHF(income) : '–' },
@@ -1401,10 +1408,16 @@ function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesCh
 
   // Count skipped fields
   const simpleSkipped = (['pillar_3a', 'freizuegigkeit', 'pensionskasse', 'ahv_annual', 'cash',
-    'investments', 'real_estate', 'emergency_fund', 'mortgage', 'consumer_debt', 'other_debt',
+    'mortgage', 'consumer_debt', 'other_debt',
     'monthly_income', 'monthly_expenses', 'insurance_monthly'] as (keyof SnapshotDraft)[])
-    .filter(k => (draft[k] as SnapshotFieldValue).skipped).length;
-  const skippedCount = simpleSkipped + (draft.bank_accounts_skipped ? 1 : 0) + (draft.valuables_skipped ? 1 : 0);
+    .filter(k => {
+      const val = draft[k];
+      return val && typeof val === 'object' && 'skipped' in val && (val as SnapshotFieldValue).skipped;
+    }).length;
+  const skippedCount = simpleSkipped +
+    (draft.bank_accounts_skipped ? 1 : 0) + (draft.valuables_skipped ? 1 : 0) +
+    (draft.investment_positions_skipped ? 1 : 0) + (draft.crypto_positions_skipped ? 1 : 0) +
+    (draft.other_assets_skipped ? 1 : 0);
 
   return (
     <div className="space-y-4">
