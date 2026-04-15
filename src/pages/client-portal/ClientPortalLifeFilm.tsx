@@ -35,7 +35,7 @@ export default function ClientPortalLifeFilm() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const { data: metaProfile } = useMetaProfile();
+  const { profile: metaProfile } = useMetaProfile();
   const { awardPoints } = useGamification();
 
   const [step, setStep] = useState(0);
