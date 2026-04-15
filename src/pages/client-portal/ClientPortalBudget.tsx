@@ -74,6 +74,24 @@ function getStatusText(spent: number, budget: number): string {
   return 'Im Rahmen';
 }
 
+function computeNextDate(dateStr: string, frequency: string): string {
+  const d = new Date(dateStr);
+  switch (frequency) {
+    case 'quartalsweise': d.setMonth(d.getMonth() + 3); break;
+    case 'halbjaehrlich': d.setMonth(d.getMonth() + 6); break;
+    case 'jaehrlich': d.setFullYear(d.getFullYear() + 1); break;
+    default: d.setMonth(d.getMonth() + 1); break;
+  }
+  return d.toISOString().slice(0, 10);
+}
+
+const FREQUENCY_OPTIONS = [
+  { value: 'monatlich', label: 'Monatlich' },
+  { value: 'quartalsweise', label: 'Quartalsweise' },
+  { value: 'halbjaehrlich', label: 'Halbjährlich' },
+  { value: 'jaehrlich', label: 'Jährlich' },
+];
+
 export default function ClientPortalBudget() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
