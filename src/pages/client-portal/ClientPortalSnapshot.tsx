@@ -947,6 +947,321 @@ function BankCashStep({
   );
 }
 
+// ── Investments & Immobilien Step ──────────────────
+
+function InvestmentsStep({
+  draft, updateDraft,
+}: {
+  draft: SnapshotDraft;
+  updateDraft: (fn: (prev: SnapshotDraft) => SnapshotDraft) => void;
+}) {
+  const cleanNum = (v: string) => v.replace(/[^0-9.]/g, '');
+
+  // Investment helpers
+  const addInvestment = () => updateDraft(d => ({ ...d, investment_positions: [...d.investment_positions, newInvestment()] }));
+  const removeInvestment = (id: string) => updateDraft(d => ({ ...d, investment_positions: d.investment_positions.filter(i => i.id !== id) }));
+  const updateInv = (id: string, field: keyof InvestmentPosition, value: string) => updateDraft(d => ({
+    ...d, investment_positions: d.investment_positions.map(i => i.id === id ? { ...i, [field]: field === 'value' ? cleanNum(value) : value } : i),
+  }));
+
+  // Crypto helpers
+  const addCrypto = () => updateDraft(d => ({ ...d, crypto_positions: [...d.crypto_positions, newCrypto()] }));
+  const removeCrypto = (id: string) => updateDraft(d => ({ ...d, crypto_positions: d.crypto_positions.filter(c => c.id !== id) }));
+  const updateCryp = (id: string, field: keyof CryptoPosition, value: string) => updateDraft(d => ({
+    ...d, crypto_positions: d.crypto_positions.map(c => c.id === id ? { ...c, [field]: field === 'value' ? cleanNum(value) : value } : c),
+  }));
+
+  // Property helpers
+  const addProperty = () => updateDraft(d => ({ ...d, properties: [...d.properties, newProperty()] }));
+  const removeProperty = (id: string) => updateDraft(d => ({ ...d, properties: d.properties.filter(p => p.id !== id) }));
+  const updateProp = (id: string, field: keyof Property, value: string) => updateDraft(d => ({
+    ...d, properties: d.properties.map(p => p.id === id ? {
+      ...p,
+      [field]: ['market_value', 'equity_invested', 'mortgage_amount', 'mortgage_rate'].includes(field) ? cleanNum(value) : value,
+    } : p),
+  }));
+
+  // Other assets helpers
+  const addOther = () => updateDraft(d => ({ ...d, other_assets: [...d.other_assets, newOtherAsset()] }));
+  const removeOther = (id: string) => updateDraft(d => ({ ...d, other_assets: d.other_assets.filter(a => a.id !== id) }));
+  const updateOther = (id: string, field: keyof OtherAsset, value: string) => updateDraft(d => ({
+    ...d, other_assets: d.other_assets.map(a => a.id === id ? { ...a, [field]: field === 'value' ? cleanNum(value) : value } : a),
+  }));
+
+  const toggleProperty = (on: boolean) => {
+    updateDraft(d => ({
+      ...d,
+      owns_property: on,
+      properties: on && d.properties.length === 0 ? [newProperty()] : d.properties,
+    }));
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <span className="text-xl">📈</span>
+        <h2 className="text-base font-bold text-foreground">Investments & Immobilien</h2>
+      </div>
+
+      {/* ── Aktien, ETFs & Fonds ── */}
+      <Card className={cn(draft.investment_positions_skipped && "opacity-60")}>
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <span>📊</span> Aktien, ETFs & Fonds
+            </h3>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <Checkbox
+                checked={draft.investment_positions_skipped}
+                onCheckedChange={(v) => updateDraft(d => ({ ...d, investment_positions_skipped: !!v }))}
+                className="h-3.5 w-3.5"
+              />
+              <span className="text-[10px] text-muted-foreground">Nicht bekannt</span>
+            </label>
+          </div>
+
+          {!draft.investment_positions_skipped && (
+            <>
+              {draft.investment_positions.map((inv, idx) => (
+                <div key={inv.id} className="space-y-2 p-3 bg-muted/30 rounded-lg relative">
+                  <button onClick={() => removeInvestment(inv.id)} className="absolute top-2 right-2 p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                  <p className="text-[10px] font-medium text-muted-foreground">Position {idx + 1}</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Name</Label>
+                      <Input value={inv.name} onChange={(e) => updateInv(inv.id, 'name', e.target.value)} placeholder="z.B. Swissquote Depot" maxLength={100} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Plattform/Broker</Label>
+                      <Input value={inv.platform} onChange={(e) => updateInv(inv.id, 'platform', e.target.value)} placeholder="z.B. Swissquote" maxLength={100} />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Aktueller Wert</Label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                      <Input type="text" inputMode="decimal" value={inv.value} onChange={(e) => updateInv(inv.id, 'value', e.target.value)} placeholder="0" className="pl-11 text-right" />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground flex items-center gap-1"><ExternalLink className="h-3 w-3" /> Link (optional)</Label>
+                    <Input type="url" value={inv.link} onChange={(e) => updateInv(inv.id, 'link', e.target.value)} placeholder="https://..." maxLength={500} />
+                  </div>
+                </div>
+              ))}
+              {draft.investment_positions.length === 0 && (
+                <p className="text-[11px] text-muted-foreground text-center py-2">Keine Positionen erfasst.</p>
+              )}
+              <Button variant="outline" size="sm" onClick={addInvestment} className="w-full gap-1.5 text-xs">
+                <Plus className="h-3.5 w-3.5" /> Position hinzufügen
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* ── Kryptowährungen ── */}
+      <Card className={cn(draft.crypto_positions_skipped && "opacity-60")}>
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <span>🪙</span> Kryptowährungen
+            </h3>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <Checkbox
+                checked={draft.crypto_positions_skipped}
+                onCheckedChange={(v) => updateDraft(d => ({ ...d, crypto_positions_skipped: !!v }))}
+                className="h-3.5 w-3.5"
+              />
+              <span className="text-[10px] text-muted-foreground">Nicht bekannt</span>
+            </label>
+          </div>
+
+          {!draft.crypto_positions_skipped && (
+            <>
+              {draft.crypto_positions.map((cry, idx) => (
+                <div key={cry.id} className="space-y-2 p-3 bg-muted/30 rounded-lg relative">
+                  <button onClick={() => removeCrypto(cry.id)} className="absolute top-2 right-2 p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                  <p className="text-[10px] font-medium text-muted-foreground">Krypto {idx + 1}</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Name</Label>
+                      <Input value={cry.name} onChange={(e) => updateCryp(cry.id, 'name', e.target.value)} placeholder="z.B. Bitcoin" maxLength={100} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Plattform</Label>
+                      <Input value={cry.platform} onChange={(e) => updateCryp(cry.id, 'platform', e.target.value)} placeholder="z.B. Binance" maxLength={100} />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Aktueller Wert</Label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                      <Input type="text" inputMode="decimal" value={cry.value} onChange={(e) => updateCryp(cry.id, 'value', e.target.value)} placeholder="0" className="pl-11 text-right" />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground flex items-center gap-1"><ExternalLink className="h-3 w-3" /> Link (optional)</Label>
+                    <Input type="url" value={cry.link} onChange={(e) => updateCryp(cry.id, 'link', e.target.value)} placeholder="https://..." maxLength={500} />
+                  </div>
+                </div>
+              ))}
+              {draft.crypto_positions.length === 0 && (
+                <p className="text-[11px] text-muted-foreground text-center py-2">Keine Kryptowährungen erfasst.</p>
+              )}
+              <Button variant="outline" size="sm" onClick={addCrypto} className="w-full gap-1.5 text-xs">
+                <Plus className="h-3.5 w-3.5" /> Krypto hinzufügen
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* ── Immobilien ── */}
+      <Card>
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <span>🏠</span> Immobilien
+            </h3>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Label className="text-xs text-muted-foreground">Besitzt du Wohneigentum?</Label>
+            <div className="flex gap-2">
+              <Button size="sm" variant={draft.owns_property ? "default" : "outline"} className="h-7 text-xs px-3" onClick={() => toggleProperty(true)}>Ja</Button>
+              <Button size="sm" variant={!draft.owns_property ? "default" : "outline"} className="h-7 text-xs px-3" onClick={() => toggleProperty(false)}>Nein</Button>
+            </div>
+          </div>
+
+          {draft.owns_property && (
+            <>
+              {draft.properties.map((prop, idx) => {
+                const equity = n(prop.market_value) - n(prop.mortgage_amount);
+                return (
+                  <div key={prop.id} className="space-y-2 p-3 bg-muted/30 rounded-lg relative">
+                    {draft.properties.length > 1 && (
+                      <button onClick={() => removeProperty(prop.id)} className="absolute top-2 right-2 p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                    <p className="text-[10px] font-medium text-muted-foreground">Immobilie {idx + 1}</p>
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Beschreibung</Label>
+                      <Input value={prop.description} onChange={(e) => updateProp(prop.id, 'description', e.target.value)} placeholder="z.B. 3.5-Zi-Wohnung Zürich" maxLength={200} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <Label className="text-xs text-muted-foreground">Aktueller Marktwert</Label>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                          <Input type="text" inputMode="decimal" value={prop.market_value} onChange={(e) => updateProp(prop.id, 'market_value', e.target.value)} placeholder="0" className="pl-11 text-right" />
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs text-muted-foreground">Eigenmittel eingebracht</Label>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                          <Input type="text" inputMode="decimal" value={prop.equity_invested} onChange={(e) => updateProp(prop.id, 'equity_invested', e.target.value)} placeholder="0" className="pl-11 text-right" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <Label className="text-xs text-muted-foreground">Hypothek Betrag</Label>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                          <Input type="text" inputMode="decimal" value={prop.mortgage_amount} onChange={(e) => updateProp(prop.id, 'mortgage_amount', e.target.value)} placeholder="0" className="pl-11 text-right" />
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs text-muted-foreground">Hypothekarzins (% p.a.)</Label>
+                        <div className="relative">
+                          <Input type="text" inputMode="decimal" value={prop.mortgage_rate} onChange={(e) => updateProp(prop.id, 'mortgage_rate', e.target.value)} placeholder="1.5" className="text-right" />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">%</span>
+                        </div>
+                      </div>
+                    </div>
+                    {(n(prop.market_value) > 0 || n(prop.mortgage_amount) > 0) && (
+                      <div className="flex gap-2 bg-primary/5 rounded-lg p-2.5">
+                        <Info className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                        <p className="text-[11px] text-primary font-medium">
+                          Dein Eigenkapitalanteil: CHF {equity.toLocaleString('de-CH')}
+                        </p>
+                      </div>
+                    )}
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground flex items-center gap-1"><ExternalLink className="h-3 w-3" /> Link zum Hypothekaranbieter (optional)</Label>
+                      <Input type="url" value={prop.link} onChange={(e) => updateProp(prop.id, 'link', e.target.value)} placeholder="https://..." maxLength={500} />
+                    </div>
+                  </div>
+                );
+              })}
+              <Button variant="outline" size="sm" onClick={addProperty} className="w-full gap-1.5 text-xs">
+                <Plus className="h-3.5 w-3.5" /> Weitere Immobilie hinzufügen
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* ── Sonstiges Vermögen ── */}
+      <Card className={cn(draft.other_assets_skipped && "opacity-60")}>
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <span>📦</span> Sonstiges Vermögen
+            </h3>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <Checkbox
+                checked={draft.other_assets_skipped}
+                onCheckedChange={(v) => updateDraft(d => ({ ...d, other_assets_skipped: !!v }))}
+                className="h-3.5 w-3.5"
+              />
+              <span className="text-[10px] text-muted-foreground">Nicht bekannt</span>
+            </label>
+          </div>
+
+          {!draft.other_assets_skipped && (
+            <>
+              {draft.other_assets.map((asset, idx) => (
+                <div key={asset.id} className="space-y-2 p-3 bg-muted/30 rounded-lg relative">
+                  <button onClick={() => removeOther(asset.id)} className="absolute top-2 right-2 p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Bezeichnung</Label>
+                      <Input value={asset.name} onChange={(e) => updateOther(asset.id, 'name', e.target.value)} placeholder="z.B. Darlehen an Freund" maxLength={100} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Wert</Label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                        <Input type="text" inputMode="decimal" value={asset.value} onChange={(e) => updateOther(asset.id, 'value', e.target.value)} placeholder="0" className="pl-11 text-right" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {draft.other_assets.length === 0 && (
+                <p className="text-[11px] text-muted-foreground text-center py-2">Keine sonstigen Vermögenswerte erfasst.</p>
+              )}
+              <Button variant="outline" size="sm" onClick={addOther} className="w-full gap-1.5 text-xs">
+                <Plus className="h-3.5 w-3.5" /> Hinzufügen
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 // ── Field Card ─────────────────────────────────────
 
 function SnapshotFieldCard({
