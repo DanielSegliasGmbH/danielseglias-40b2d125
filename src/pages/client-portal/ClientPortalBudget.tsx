@@ -293,6 +293,28 @@ export default function ClientPortalBudget() {
     <ClientPortalLayout>
       <PageTransition>
       <div className="max-w-2xl mx-auto space-y-5">
+        {/* Tab navigation */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="w-full">
+            <TabsTrigger value="budget" className="flex-1 gap-1.5">
+              <Wallet className="h-3.5 w-3.5" />
+              Budget
+            </TabsTrigger>
+            <TabsTrigger value="cashflow" className="flex-1 gap-1.5">
+              <ArrowLeftRight className="h-3.5 w-3.5" />
+              Cashflow
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="cashflow" className="mt-4">
+            <CashflowTab
+              monthlyIncome={monthlyIncome}
+              fixedCosts={fixedCosts}
+              totalVariableExpenses={totalSpent}
+            />
+          </TabsContent>
+
+          <TabsContent value="budget" className="mt-4 space-y-5">
         {/* Month navigator */}
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="icon" onClick={() => setSelectedMonth(shiftMonth(selectedMonth, -1))}>
