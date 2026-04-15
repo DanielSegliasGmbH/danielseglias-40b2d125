@@ -45,6 +45,9 @@ interface FriendEntry {
   rank: ReturnType<typeof getRankForScore>;
   trend: number | null;
   isMe?: boolean;
+  isHidden?: boolean;
+  scoreHidden?: boolean;
+  challengesAllowed?: boolean;
 }
 
 const PODIUM_COLORS = [
@@ -99,7 +102,7 @@ export default function ClientPortalFriends() {
 
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, first_name, last_name, current_rank')
+        .select('id, first_name, last_name, current_rank, leaderboard_visible, peak_score_visible, challenges_allowed')
         .in('id', friendIds);
 
       const { data: scores } = await supabase
@@ -122,18 +125,24 @@ export default function ClientPortalFriends() {
       });
 
       return friendIds.map(fid => {
-        const profile = (profiles as FriendProfile[] | null)?.find(p => p.id === fid);
+        const profile = (profiles as Array<FriendProfile & { leaderboard_visible?: boolean; peak_score_visible?: boolean; challenges_allowed?: boolean }> | null)?.find(p => p.id === fid);
         const scoreRow = (scores as Array<{ user_id: string; score: number }> | null)?.find(s => s.user_id === fid);
         const peakScore = scoreRow?.score ?? 0;
         const rank = getRankForScore(peakScore);
         const lastScore = snapshotMap.get(fid);
         const trend = lastScore !== undefined ? Math.round((peakScore - lastScore) * 10) / 10 : null;
+        const isHidden = profile?.leaderboard_visible === false;
+        const scoreHidden = profile?.peak_score_visible === false;
+        const challengesAllowed = profile?.challenges_allowed !== false;
         return {
           id: fid,
           name: profile ? `${profile.first_name} ${profile.last_name?.charAt(0) || ''}.` : 'Unbekannt',
-          peakScore,
-          rank,
-          trend,
+          peakScore: scoreHidden ? 0 : peakScore,
+          rank: scoreHidden ? getRankForScore(0) : rank,
+          trend: scoreHidden ? null : trend,
+          isHidden,
+          scoreHidden,
+          challengesAllowed,
         };
       });
     },
@@ -144,13 +153,15 @@ export default function ClientPortalFriends() {
   const leaderboard: FriendEntry[] = useMemo(() => {
     const myEntry: FriendEntry = {
       id: user?.id || 'me',
-      name: myProfile ? `${myProfile.first_name} ${(myProfile as any).last_name?.charAt(0) || ''}.` : 'Du',
+      name: myProfile ? `${myProfile.first_name} ${(myProfile as unknown as { last_name?: string }).last_name?.charAt(0) || ''}.` : 'Du',
       peakScore: myPeak.score ?? 0,
       rank: myPeak.rank,
       trend: myPeak.trend,
       isMe: true,
     };
-    return [...friends, myEntry].sort((a, b) => b.peakScore - a.peakScore);
+    // Filter out friends who opted out of leaderboard
+    const visibleFriends = friends.filter(f => !f.isHidden);
+    return [...visibleFriends, myEntry].sort((a, b) => b.peakScore - a.peakScore);
   }, [friends, user?.id, myProfile, myPeak.score, myPeak.rank, myPeak.trend]);
 
   // Schweiz tab: anonymous aggregate stats
@@ -381,7 +392,7 @@ export default function ClientPortalFriends() {
 
                         {/* Score + Trend + Challenge */}
                         <div className="flex items-center gap-2 shrink-0">
-                          {!entry.isMe && (
+                          {!entry.isMe && entry.challengesAllowed !== false && (
                             <button
                               onClick={(e) => { e.stopPropagation(); setChallengeTarget(entry); }}
                               className="w-7 h-7 rounded-full bg-muted hover:bg-primary/10 flex items-center justify-center transition-colors"
@@ -391,18 +402,24 @@ export default function ClientPortalFriends() {
                             </button>
                           )}
                           <div className="text-right">
-                            <p className="text-sm font-bold text-foreground">{entry.peakScore}</p>
-                            <div className="flex items-center gap-0.5 justify-end">
-                              <TrendIcon trend={entry.trend} />
-                              {entry.trend !== null && entry.trend !== 0 && (
-                                <span className={cn(
-                                  "text-[10px]",
-                                  entry.trend > 0 ? "text-emerald-500" : "text-red-500"
-                                )}>
-                                  {entry.trend > 0 ? '+' : ''}{entry.trend}
-                                </span>
-                              )}
-                            </div>
+                            {entry.scoreHidden && !entry.isMe ? (
+                              <p className="text-sm font-bold text-muted-foreground">🔒</p>
+                            ) : (
+                              <>
+                                <p className="text-sm font-bold text-foreground">{entry.peakScore}</p>
+                                <div className="flex items-center gap-0.5 justify-end">
+                                  <TrendIcon trend={entry.trend} />
+                                  {entry.trend !== null && entry.trend !== 0 && (
+                                    <span className={cn(
+                                      "text-[10px]",
+                                      entry.trend > 0 ? "text-emerald-500" : "text-red-500"
+                                    )}>
+                                      {entry.trend > 0 ? '+' : ''}{entry.trend}
+                                    </span>
+                                  )}
+                                </div>
+                              </>
+                            )}
                           </div>
                         </div>
                       </CardContent>

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { FileBarChart } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, TrendingUp, User, Users, HelpCircle, Globe, Crown, Wallet, PiggyBank, Landmark, Gift } from 'lucide-react';
+import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, TrendingUp, User, Users, HelpCircle, Globe, Crown, Wallet, PiggyBank, Landmark, Gift, Settings } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -11,8 +11,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { ThemeSwitcher } from '@/components/ThemeSwitcher';
-import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 interface MoreSheetProps {
   open: boolean;
@@ -93,22 +91,7 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
           <MoreLink to="/app/client-portal/premium" icon={Crown} label="Premium" />
           <MoreLink to={buildPath('/app/client-portal/profile-data')} icon={Wallet} label="Mein Finanzprofil" />
           <MoreLink to="/app/profile" icon={User} label={t('userManagement.profile')} />
-          
-          {/* Theme & Language compact row */}
-          <div className="flex items-center justify-between px-4 py-3 bg-muted/30 rounded-xl">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Globe className="h-4.5 w-4.5 text-primary" />
-              </div>
-              <span className="text-sm font-medium text-foreground">
-                {t('app.displaySettings', 'Darstellung')}
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <ThemeSwitcher />
-              <LanguageSwitcher />
-            </div>
-          </div>
+          <MoreLink to="/app/client-portal/settings" icon={Settings} label="Einstellungen" />
         </div>
 
         <Separator className="my-3" />

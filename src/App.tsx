@@ -66,6 +66,7 @@ import ClientPortalPeakScore from "./pages/client-portal/ClientPortalPeakScore";
 import ClientPortalLifeFilm from "./pages/client-portal/ClientPortalLifeFilm";
 import ClientPortalLifeFilmResult from "./pages/client-portal/ClientPortalLifeFilmResult";
 import ClientPortalFinanzTyp from "./pages/client-portal/ClientPortalFinanzTyp";
+import ClientPortalSettings from "./pages/client-portal/ClientPortalSettings";
 
 // Insurance Consulting Pages
 import InsuranceConsultingStart from "./pages/insurance-consulting/InsuranceConsultingStart";
@@ -516,6 +517,14 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['client', 'admin']}>
                     <ClientPortalFriends />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/settings"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalSettings />
                   </RouteGuard>
                 }
               />

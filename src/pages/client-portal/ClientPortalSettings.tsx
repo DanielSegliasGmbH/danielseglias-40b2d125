@@ -1,0 +1,342 @@
+import { useState, useCallback } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
+import { ScreenHeader } from '@/components/ScreenHeader';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { toast } from 'sonner';
+import { Shield, Download, Trash2, AlertTriangle, Eye, Swords, FileBarChart, Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+
+interface PrivacySettings {
+  leaderboard_visible: boolean;
+  peak_score_visible: boolean;
+  challenges_allowed: boolean;
+  auto_monthly_report: boolean;
+}
+
+const PRIVACY_TOGGLES: {
+  key: keyof PrivacySettings;
+  label: string;
+  description: string;
+  icon: typeof Eye;
+}[] = [
+  {
+    key: 'leaderboard_visible',
+    label: 'In Rangliste sichtbar',
+    description: 'Dein Name und Rang erscheinen in der Freunde-Rangliste',
+    icon: Eye,
+  },
+  {
+    key: 'peak_score_visible',
+    label: 'PeakScore für Freunde sichtbar',
+    description: 'Freunde können deinen PeakScore sehen',
+    icon: Shield,
+  },
+  {
+    key: 'challenges_allowed',
+    label: 'Challenges erlauben',
+    description: 'Du kannst Challenges senden und empfangen',
+    icon: Swords,
+  },
+  {
+    key: 'auto_monthly_report',
+    label: 'Monatsbericht automatisch erstellen',
+    description: 'Am Monatsanfang wird ein Rückblick erstellt',
+    icon: FileBarChart,
+  },
+];
+
+export default function ClientPortalSettings() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState('');
+  const [exporting, setExporting] = useState(false);
+
+  // Fetch privacy settings from profile
+  const { data: settings, isLoading } = useQuery({
+    queryKey: ['privacy-settings', user?.id],
+    queryFn: async (): Promise<PrivacySettings> => {
+      if (!user) return { leaderboard_visible: true, peak_score_visible: true, challenges_allowed: true, auto_monthly_report: true };
+      const { data } = await supabase
+        .from('profiles')
+        .select('leaderboard_visible, peak_score_visible, challenges_allowed, auto_monthly_report')
+        .eq('id', user.id)
+        .maybeSingle();
+      return {
+        leaderboard_visible: data?.leaderboard_visible ?? true,
+        peak_score_visible: data?.peak_score_visible ?? true,
+        challenges_allowed: data?.challenges_allowed ?? true,
+        auto_monthly_report: data?.auto_monthly_report ?? true,
+      };
+    },
+    enabled: !!user,
+  });
+
+  const updateSetting = useMutation({
+    mutationFn: async ({ key, value }: { key: keyof PrivacySettings; value: boolean }) => {
+      if (!user) throw new Error('Not authenticated');
+      const { error } = await supabase
+        .from('profiles')
+        .update({ [key]: value })
+        .eq('id', user.id);
+      if (error) throw error;
+    },
+    onMutate: async ({ key, value }) => {
+      // Optimistic update
+      await queryClient.cancelQueries({ queryKey: ['privacy-settings', user?.id] });
+      const prev = queryClient.getQueryData<PrivacySettings>(['privacy-settings', user?.id]);
+      queryClient.setQueryData(['privacy-settings', user?.id], (old: PrivacySettings | undefined) => ({
+        ...old,
+        [key]: value,
+      }));
+      return { prev };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.prev) queryClient.setQueryData(['privacy-settings', user?.id], context.prev);
+      toast.error('Einstellung konnte nicht gespeichert werden');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['privacy-settings', user?.id] });
+    },
+  });
+
+  // Data export
+  const handleExport = useCallback(async () => {
+    if (!user) return;
+    setExporting(true);
+    try {
+      // Fetch all user data in parallel
+      const [
+        { data: profile },
+        { data: metaProfile },
+        { data: goals },
+        { data: tasks },
+        { data: budgetCats },
+        { data: budgetExp },
+        { data: memories },
+        { data: peakScores },
+        { data: gamification },
+        { data: coachProgress },
+        { data: lifeFilm },
+        { data: finanzType },
+      ] = await Promise.all([
+        supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
+        supabase.from('meta_profiles').select('*').eq('user_id', user.id).maybeSingle(),
+        supabase.from('client_goals').select('*').eq('user_id', user.id),
+        supabase.from('client_tasks').select('*').eq('user_id', user.id),
+        supabase.from('budget_categories').select('*').eq('user_id', user.id),
+        supabase.from('budget_expenses').select('*').eq('user_id', user.id),
+        supabase.from('memories').select('*').eq('user_id', user.id),
+        supabase.from('peak_scores').select('*').eq('user_id', user.id),
+        supabase.from('gamification_actions').select('*').eq('user_id', user.id),
+        supabase.from('coach_progress').select('*').eq('user_id', user.id),
+        supabase.from('life_film_data').select('*').eq('user_id', user.id).maybeSingle(),
+        supabase.from('finanz_type_results').select('*').eq('user_id', user.id).maybeSingle(),
+      ]);
+
+      const exportData = {
+        exportedAt: new Date().toISOString(),
+        profile,
+        metaProfile,
+        goals: goals || [],
+        tasks: tasks || [],
+        budgetCategories: budgetCats || [],
+        budgetExpenses: budgetExp || [],
+        memories: memories || [],
+        peakScores: peakScores || [],
+        gamificationActions: gamification || [],
+        coachProgress: coachProgress || [],
+        lifeFilmData: lifeFilm,
+        finanzType,
+      };
+
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `finlife-daten-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success('Daten exportiert');
+    } catch {
+      toast.error('Export fehlgeschlagen');
+    } finally {
+      setExporting(false);
+    }
+  }, [user]);
+
+  // Account deletion
+  const requestDeletion = useMutation({
+    mutationFn: async () => {
+      if (!user) throw new Error('Not authenticated');
+      const { error } = await supabase
+        .from('profiles')
+        .update({ deletion_requested_at: new Date().toISOString() })
+        .eq('id', user.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('Löschanfrage eingereicht. Dein Account wird innerhalb von 30 Tagen gelöscht.');
+      setDeleteOpen(false);
+      setDeleteConfirm('');
+    },
+    onError: () => toast.error('Anfrage fehlgeschlagen'),
+  });
+
+  if (isLoading || !settings) {
+    return (
+      <ClientPortalLayout>
+        <div className="max-w-2xl mx-auto p-4">
+          <div className="animate-pulse space-y-4">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="h-16 bg-muted rounded-xl" />
+            ))}
+          </div>
+        </div>
+      </ClientPortalLayout>
+    );
+  }
+
+  return (
+    <ClientPortalLayout>
+      <div className="max-w-2xl mx-auto space-y-6">
+        <ScreenHeader title="Einstellungen" />
+
+        {/* Darstellung */}
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-muted-foreground px-1">Darstellung</p>
+          <Card>
+            <CardContent className="p-4 flex items-center justify-between">
+              <span className="text-sm font-medium text-foreground">Theme & Sprache</span>
+              <div className="flex items-center gap-1.5">
+                <ThemeSwitcher />
+                <LanguageSwitcher />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Separator />
+
+        {/* Privatsphäre */}
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-muted-foreground px-1">Privatsphäre</p>
+          <div className="space-y-2">
+            {PRIVACY_TOGGLES.map(toggle => {
+              const Icon = toggle.icon;
+              return (
+                <Card key={toggle.key}>
+                  <CardContent className="p-4 flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <Icon className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground">{toggle.label}</p>
+                      <p className="text-[11px] text-muted-foreground leading-tight">{toggle.description}</p>
+                    </div>
+                    <Switch
+                      checked={settings[toggle.key]}
+                      onCheckedChange={(checked) => updateSetting.mutate({ key: toggle.key, value: checked })}
+                    />
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+
+        <Separator />
+
+        {/* Daten */}
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-muted-foreground px-1">Daten</p>
+
+          <Card>
+            <CardContent className="p-4 space-y-3">
+              <Button
+                variant="outline"
+                className="w-full gap-2"
+                onClick={handleExport}
+                disabled={exporting}
+              >
+                {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                Meine Daten exportieren
+              </Button>
+
+              <Button
+                variant="ghost"
+                className="w-full gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+                onClick={() => setDeleteOpen(true)}
+              >
+                <Trash2 className="h-4 w-4" />
+                Account löschen
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Delete confirmation dialog */}
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <div className="mx-auto w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center mb-2">
+              <AlertTriangle className="h-6 w-6 text-destructive" />
+            </div>
+            <DialogTitle className="text-center">Account löschen</DialogTitle>
+            <DialogDescription className="text-center">
+              Achtung: Alle deine Daten werden unwiderruflich gelöscht. Dieser Vorgang kann nicht rückgängig gemacht werden.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground text-center">
+              Tippe <span className="font-bold text-destructive">LÖSCHEN</span> ein, um zu bestätigen:
+            </p>
+            <Input
+              value={deleteConfirm}
+              onChange={(e) => setDeleteConfirm(e.target.value)}
+              placeholder="LÖSCHEN"
+              className="text-center font-mono"
+              maxLength={10}
+            />
+          </div>
+
+          <div className="flex gap-2 mt-2">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => { setDeleteOpen(false); setDeleteConfirm(''); }}
+            >
+              Abbrechen
+            </Button>
+            <Button
+              variant="destructive"
+              className="flex-1"
+              disabled={deleteConfirm !== 'LÖSCHEN' || requestDeletion.isPending}
+              onClick={() => requestDeletion.mutate()}
+            >
+              {requestDeletion.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Endgültig löschen'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </ClientPortalLayout>
+  );
+}
