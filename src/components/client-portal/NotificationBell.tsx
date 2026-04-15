@@ -18,8 +18,9 @@ import {
   useMarkAllSmartNotificationsRead,
 } from '@/hooks/useSmartNotifications';
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
+import { format, isToday, isThisWeek } from 'date-fns';
 import { de } from 'date-fns/locale';
+import { motion } from 'framer-motion';
 
 interface UnifiedNotification {
   id: string;
@@ -32,6 +33,59 @@ interface UnifiedNotification {
   is_read: boolean;
   date: string;
   source: 'broadcast' | 'smart';
+}
+
+type ColorDot = 'blue' | 'green' | 'orange' | 'red';
+
+function getCategoryDotColor(category: string): ColorDot {
+  switch (category) {
+    case 'update':
+    case 'general':
+      return 'blue';
+    case 'new_tool':
+    case 'new_content':
+    case 'goal_milestone':
+      return 'green';
+    case 'task_due':
+    case 'weekly_budget':
+    case 'streak_reminder':
+      return 'orange';
+    case 'personal':
+      return 'red';
+    default:
+      return 'blue';
+  }
+}
+
+const dotColors: Record<ColorDot, string> = {
+  blue: 'bg-blue-500',
+  green: 'bg-green-500',
+  orange: 'bg-orange-500',
+  red: 'bg-red-500',
+};
+
+interface GroupedNotifications {
+  label: string;
+  items: UnifiedNotification[];
+}
+
+function groupNotifications(items: UnifiedNotification[]): GroupedNotifications[] {
+  const today: UnifiedNotification[] = [];
+  const thisWeek: UnifiedNotification[] = [];
+  const older: UnifiedNotification[] = [];
+
+  items.forEach(n => {
+    const d = new Date(n.date);
+    if (isToday(d)) today.push(n);
+    else if (isThisWeek(d, { weekStartsOn: 1 })) thisWeek.push(n);
+    else older.push(n);
+  });
+
+  const groups: GroupedNotifications[] = [];
+  if (today.length) groups.push({ label: 'Heute', items: today });
+  if (thisWeek.length) groups.push({ label: 'Diese Woche', items: thisWeek });
+  if (older.length) groups.push({ label: 'Älter', items: older });
+  return groups;
 }
 
 export function NotificationBell() {
@@ -80,6 +134,7 @@ export function NotificationBell() {
   }, [broadcastNotifs, smartNotifs]);
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
+  const grouped = groupNotifications(notifications);
 
   const handleClick = (n: UnifiedNotification) => {
     if (!n.is_read) {
@@ -93,17 +148,7 @@ export function NotificationBell() {
     markAllSmartRead.mutate();
   };
 
-  const getTypeLabel = (n: UnifiedNotification) => {
-    if (n.source === 'broadcast') return getCategoryLabel(n.category || 'general');
-    const smartLabels: Record<string, string> = {
-      streak_reminder: 'Streak',
-      weekly_budget: 'Budget',
-      task_due: 'Aufgabe',
-      goal_milestone: 'Ziel',
-      monthly_report: 'Bericht',
-    };
-    return smartLabels[n.category || ''] || 'Hinweis';
-  };
+  let globalIdx = 0;
 
   return (
     <>
@@ -120,16 +165,16 @@ export function NotificationBell() {
         <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col">
           <SheetHeader className="px-5 pb-3 border-b border-border shrink-0" style={{ paddingTop: 'calc(max(env(safe-area-inset-top, 0px), 44px) + 8px)' }}>
             <div className="flex items-center justify-between">
-              <SheetTitle className="text-base">Benachrichtigungen</SheetTitle>
+              <SheetTitle className="text-base">🔔 Erinnerungen</SheetTitle>
               {unreadCount > 0 && (
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-xs gap-1.5 h-7"
+                  className="text-xs gap-1.5 h-7 text-primary"
                   onClick={handleMarkAllRead}
                 >
                   <CheckCheck className="h-3.5 w-3.5" />
-                  Alle gelesen
+                  Alle als gelesen markieren
                 </Button>
               )}
             </div>
@@ -137,49 +182,55 @@ export function NotificationBell() {
 
           <div className="overflow-y-auto flex-1" style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 20px)' }}>
             {!notifications.length ? (
-              <div className="text-center py-16 px-4">
-                <Bell className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-                <p className="text-sm font-medium text-foreground mb-1">Keine Benachrichtigungen</p>
-                <p className="text-xs text-muted-foreground">Neue Mitteilungen erscheinen hier.</p>
+              <div className="text-center py-20 px-6">
+                <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">✅</span>
+                </div>
+                <p className="text-sm font-semibold text-foreground mb-1">Keine neuen Erinnerungen</p>
+                <p className="text-xs text-muted-foreground">Du bist auf dem Laufenden!</p>
               </div>
             ) : (
-              <div className="divide-y divide-border">
-                {notifications.map(n => (
-                  <div
-                    key={`${n.source}-${n.id}`}
-                    onClick={() => handleClick(n)}
-                    className={cn(
-                      "px-5 py-4 transition-colors cursor-pointer",
-                      !n.is_read && "bg-primary/5"
-                    )}
-                  >
-                    <div className="flex items-start gap-3">
-                      {!n.is_read && <div className="w-2 h-2 rounded-full bg-primary mt-1.5 shrink-0" />}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <h4 className={cn("text-sm truncate", !n.is_read ? "font-semibold text-foreground" : "font-medium text-foreground")}>{n.title}</h4>
-                          <Badge variant="outline" className="text-[10px] shrink-0 h-4 px-1.5">{getTypeLabel(n)}</Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground line-clamp-2">{n.body}</p>
-                        {n.description && (
-                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{n.description}</p>
-                        )}
-                        {n.link_url && n.link_label && (
-                          <Link
-                            to={n.link_url}
-                            onClick={(e) => { e.stopPropagation(); handleClick(n); setOpen(false); }}
-                            className="text-xs text-primary font-medium mt-2 inline-block hover:underline"
-                          >
-                            {n.link_label} →
-                          </Link>
-                        )}
-                        {n.date && (
-                          <p className="text-[11px] text-muted-foreground mt-1.5">
-                            {format(new Date(n.date), 'dd. MMMM yyyy, HH:mm', { locale: de })}
-                          </p>
-                        )}
-                      </div>
-                    </div>
+              <div className="py-2">
+                {grouped.map((group) => (
+                  <div key={group.label}>
+                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-5 pt-4 pb-1.5">
+                      {group.label}
+                    </p>
+                    {group.items.map(n => {
+                      const idx = globalIdx++;
+                      const dotColor = getCategoryDotColor(n.category || 'general');
+                      return (
+                        <motion.div
+                          key={`${n.source}-${n.id}`}
+                          initial={{ opacity: 0, y: 4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.15, delay: idx * 0.02 }}
+                        >
+                          {n.link_url ? (
+                            <Link
+                              to={n.link_url}
+                              onClick={() => { handleClick(n); setOpen(false); }}
+                              className={cn(
+                                "flex items-start gap-3 px-5 py-3 transition-colors",
+                                !n.is_read ? "bg-primary/[0.04]" : "hover:bg-muted/50"
+                              )}
+                            >
+                              <NotificationRow n={n} dotColor={dotColor} />
+                            </Link>
+                          ) : (
+                            <div
+                              onClick={() => handleClick(n)}
+                              className={cn(
+                                "flex items-start gap-3 px-5 py-3 transition-colors cursor-pointer",
+                                !n.is_read ? "bg-primary/[0.04]" : "hover:bg-muted/50"
+                              )}
+                            >
+                              <NotificationRow n={n} dotColor={dotColor} />
+                            </div>
+                          )}
+                        </motion.div>
+                      );
+                    })}
                   </div>
                 ))}
               </div>
@@ -187,6 +238,34 @@ export function NotificationBell() {
           </div>
         </SheetContent>
       </Sheet>
+    </>
+  );
+}
+
+function NotificationRow({ n, dotColor }: { n: UnifiedNotification; dotColor: ColorDot }) {
+  return (
+    <>
+      <div className={cn("w-2 h-2 rounded-full mt-[7px] shrink-0", dotColors[dotColor])} />
+      <div className="flex-1 min-w-0">
+        <p className={cn(
+          "text-[15px] leading-snug",
+          !n.is_read ? "font-semibold text-foreground" : "font-medium text-foreground/80"
+        )}>
+          {n.title}
+        </p>
+        <p className="text-[13px] text-muted-foreground line-clamp-2 mt-0.5">{n.body}</p>
+        {n.link_label && (
+          <span className="text-xs text-primary font-medium mt-1 inline-block">
+            {n.link_label} →
+          </span>
+        )}
+        <p className="text-[11px] text-muted-foreground/60 mt-1">
+          {format(new Date(n.date), 'dd. MMM, HH:mm', { locale: de })}
+        </p>
+      </div>
+      {!n.is_read && (
+        <div className="w-2 h-2 rounded-full bg-primary mt-[7px] shrink-0" />
+      )}
     </>
   );
 }
