@@ -21,6 +21,7 @@ import {
   Info, ExternalLink, Plus, Zap, CheckCircle,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useGamification } from '@/hooks/useGamification';
@@ -753,34 +754,12 @@ export default function ClientPortalSnapshot() {
 
           {/* ── TAB: Verlauf ── */}
           <TabsContent value="history" className="space-y-4 mt-4">
-            {isLoading ? (
-              <div className="flex justify-center py-12">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-              </div>
-            ) : snapshots.length === 0 ? (
-              <Card>
-                <CardContent className="p-8 text-center">
-                  <Camera className="h-10 w-10 mx-auto text-muted-foreground/40 mb-3" />
-                  <p className="font-semibold text-foreground mb-1">Noch kein Snapshot</p>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Erstelle deinen ersten Finanz-Snapshot und verfolge deine Entwicklung.
-                  </p>
-                  <Button variant="outline" onClick={() => setTab('new')}>Jetzt starten</Button>
-                </CardContent>
-              </Card>
-            ) : (
-              <>
-                {snapshots.length >= 2 && <ComparisonBanner current={snapshots[0]} previous={snapshots[1]} />}
-                {snapshots.map((snap: any, idx: number) => (
-                  <HistoryCard
-                    key={snap.id}
-                    snapshot={snap}
-                    previous={snapshots[idx + 1] || null}
-                    onDelete={() => deleteSnapshot.mutate(snap.id)}
-                  />
-                ))}
-              </>
-            )}
+            <SnapshotHistory
+              snapshots={snapshots}
+              isLoading={isLoading}
+              onCreateNew={() => setTab('new')}
+              onDelete={(id) => deleteSnapshot.mutate(id)}
+            />
           </TabsContent>
         </Tabs>
       </div>
@@ -1842,177 +1821,446 @@ function SummaryStep({ draft, onNotesChange, onEdit }: { draft: SnapshotDraft; o
 
 // ── History components ─────────────────────────────
 
-function ComparisonBanner({ current, previous }: { current: any; previous: any }) {
-  const diff = (current.net_worth || 0) - (previous.net_worth || 0);
-  const positive = diff >= 0;
-  const Icon = diff > 0 ? TrendingUp : diff < 0 ? TrendingDown : Minus;
+function SnapshotHistory({
+  snapshots,
+  isLoading,
+  onCreateNew,
+  onDelete,
+}: {
+  snapshots: any[];
+  isLoading: boolean;
+  onCreateNew: () => void;
+  onDelete: (id: string) => void;
+}) {
+  const [compareMode, setCompareMode] = useState(false);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [detailId, setDetailId] = useState<string | null>(null);
 
-  return (
-    <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
-      <Card className={cn("border-0", positive ? "bg-primary/5" : "bg-destructive/5")}>
-        <CardContent className="p-4 flex items-center gap-3">
-          <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", positive ? "bg-primary/10" : "bg-destructive/10")}>
-            <Icon className={cn("h-5 w-5", positive ? "text-primary" : "text-destructive")} />
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground">Seit letztem Snapshot</p>
-            <p className={cn("font-bold", positive ? "text-primary" : "text-destructive")}>
-              {positive ? '+' : ''}CHF {diff.toLocaleString('de-CH')}
-            </p>
-          </div>
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-12">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (snapshots.length === 0) {
+    return (
+      <Card>
+        <CardContent className="p-8 text-center">
+          <Camera className="h-10 w-10 mx-auto text-muted-foreground/40 mb-3" />
+          <p className="font-semibold text-foreground mb-1">Noch kein Snapshot</p>
+          <p className="text-sm text-muted-foreground mb-4">
+            Erstelle deinen ersten Finanz-Snapshot und verfolge deine Entwicklung.
+          </p>
+          <Button variant="outline" onClick={onCreateNew}>Jetzt starten</Button>
         </CardContent>
       </Card>
-    </motion.div>
+    );
+  }
+
+  // Reminder banner
+  const lastDate = new Date(snapshots[0].created_at);
+  const monthsAgo = Math.floor((Date.now() - lastDate.getTime()) / (1000 * 60 * 60 * 24 * 30));
+
+  // Compare mode toggle
+  const toggleSelect = (id: string) => {
+    setSelected(prev =>
+      prev.includes(id)
+        ? prev.filter(x => x !== id)
+        : prev.length < 2 ? [...prev, id] : [prev[1], id]
+    );
+  };
+
+  // Detail view
+  if (detailId) {
+    const snap = snapshots.find(s => s.id === detailId);
+    if (!snap) { setDetailId(null); return null; }
+    return <SnapshotDetail snapshot={snap} onBack={() => setDetailId(null)} onDelete={() => { onDelete(snap.id); setDetailId(null); }} />;
+  }
+
+  // Compare view
+  if (compareMode && selected.length === 2) {
+    const [s1, s2] = selected.map(id => snapshots.find(s => s.id === id)!).sort(
+      (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    );
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" onClick={() => { setCompareMode(false); setSelected([]); }}>
+            <ArrowLeft className="h-4 w-4 mr-1" /> Zurück
+          </Button>
+          <h3 className="text-sm font-bold text-foreground">Snapshot-Vergleich</h3>
+        </div>
+        <SnapshotComparison older={s1} newer={s2} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Reminder banner */}
+      {monthsAgo >= 3 && (
+        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
+          <Card className="border-accent/30 bg-accent/5">
+            <CardContent className="p-4 flex items-center gap-3">
+              <span className="text-2xl">⏰</span>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-foreground">
+                  Dein letzter Snapshot ist {monthsAgo} Monate alt.
+                </p>
+                <p className="text-xs text-muted-foreground">Zeit für ein Update!</p>
+              </div>
+              <Button size="sm" onClick={onCreateNew} className="shrink-0 text-xs">
+                Neuen Snapshot erstellen →
+              </Button>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+
+      {/* Net Worth Chart */}
+      {snapshots.length >= 2 && (
+        <NetWorthChart snapshots={snapshots} onPointClick={(id) => setDetailId(id)} />
+      )}
+
+      {/* Compare button */}
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-bold text-foreground">Snapshot-Verlauf</h3>
+        {snapshots.length >= 2 && (
+          <Button
+            variant={compareMode ? "default" : "outline"}
+            size="sm"
+            className="text-xs h-8"
+            onClick={() => { setCompareMode(!compareMode); setSelected([]); }}
+          >
+            {compareMode ? 'Abbrechen' : 'Vergleichen'}
+          </Button>
+        )}
+      </div>
+
+      {compareMode && selected.length < 2 && (
+        <p className="text-xs text-muted-foreground text-center">
+          Wähle 2 Snapshots zum Vergleichen ({selected.length}/2 gewählt)
+        </p>
+      )}
+
+      {/* Timeline */}
+      {snapshots.map((snap: any, idx: number) => {
+        const prev = snapshots[idx + 1] || null;
+        const nw = snap.net_worth || 0;
+        const diff = prev ? nw - (prev.net_worth || 0) : null;
+        const diffPct = diff !== null && prev?.net_worth ? ((diff / Math.abs(prev.net_worth)) * 100) : null;
+        const data = snap.snapshot_data || {};
+
+        // Completeness calculation
+        const TOTAL_FIELDS = 15;
+        const fieldKeys = ['pillar_3a', 'freizuegigkeit', 'pensionskasse', 'ahv_annual', 'cash',
+          'monthly_income', 'monthly_expenses', 'insurance_monthly'];
+        const simpleSkipped = fieldKeys.filter(k => data[k]?.skipped).length;
+        const listSkipped = ['bank_accounts_skipped', 'valuables_skipped', 'investment_positions_skipped',
+          'crypto_positions_skipped', 'other_assets_skipped', 'credits_skipped', 'debts_skipped']
+          .filter(k => data[k]).length;
+        const skipped = simpleSkipped + listSkipped;
+        const filled = TOTAL_FIELDS - skipped;
+
+        const isSelected = selected.includes(snap.id);
+
+        return (
+          <motion.div key={snap.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}>
+            <Card
+              className={cn(
+                "overflow-hidden cursor-pointer transition-all active:scale-[0.98]",
+                compareMode && isSelected && "ring-2 ring-primary",
+              )}
+              onClick={() => compareMode ? toggleSelect(snap.id) : setDetailId(snap.id)}
+            >
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3">
+                  {compareMode && (
+                    <Checkbox checked={isSelected} className="mt-1 shrink-0" />
+                  )}
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <span className="text-lg">📸</span>
+                  </div>
+                  <div className="flex-1 min-w-0 space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-semibold text-foreground">
+                        {format(new Date(snap.created_at), 'dd. MMMM yyyy', { locale: de })}
+                      </p>
+                      {!compareMode && <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Nettovermögen: <span className="font-medium text-foreground">CHF {nw.toLocaleString('de-CH')}</span>
+                    </p>
+                    {diff !== null && (
+                      <span className={cn("text-[11px] font-medium inline-flex items-center gap-0.5",
+                        diff >= 0 ? "text-primary" : "text-destructive"
+                      )}>
+                        {diff >= 0 ? '+' : ''}CHF {diff.toLocaleString('de-CH')}
+                        {diffPct !== null && ` (${diff >= 0 ? '↑' : '↓'} ${Math.abs(diffPct).toFixed(1)}%)`}
+                      </span>
+                    )}
+                    <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+                      <span>{filled} von {TOTAL_FIELDS} Felder ausgefüllt</span>
+                      {snap.peak_score != null && <span>PeakScore: {snap.peak_score}</span>}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        );
+      })}
+
+      {/* Compare button at bottom when 2 selected */}
+      {compareMode && selected.length === 2 && (
+        <Button className="w-full" onClick={() => {}}>
+          Snapshots vergleichen
+        </Button>
+      )}
+    </div>
   );
 }
 
-function HistoryCard({ snapshot, previous, onDelete }: { snapshot: any; previous: any; onDelete: () => void }) {
-  const [expanded, setExpanded] = useState(false);
-  const data = snapshot.snapshot_data || {};
-  const netWorth = snapshot.net_worth || 0;
-  const diff = previous ? netWorth - (previous.net_worth || 0) : null;
+// ── Net Worth Chart ────────────────────────────────
+
+function NetWorthChart({
+  snapshots,
+  onPointClick,
+}: {
+  snapshots: Array<{ id: string; created_at: string; net_worth: number }>;
+  onPointClick: (id: string) => void;
+}) {
+  // Reverse to chronological order
+  const chartData = [...snapshots].reverse().map(s => ({
+    id: s.id,
+    date: format(new Date(s.created_at), 'dd.MM.yy', { locale: de }),
+    value: s.net_worth || 0,
+  }));
 
   return (
-    <Card className="overflow-hidden">
-      <CardContent className="p-0">
-        <div
-          className="p-4 flex items-center gap-3 cursor-pointer active:bg-muted/30 transition-colors"
-          onClick={() => setExpanded(!expanded)}
-        >
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-            <span className="text-lg">📸</span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-foreground">
-              {format(new Date(snapshot.created_at), 'dd. MMMM yyyy', { locale: de })}
-            </p>
-            <div className="flex items-center gap-2">
-              <p className="text-xs text-muted-foreground">
-                Nettovermögen: <span className="font-medium text-foreground">CHF {netWorth.toLocaleString('de-CH')}</span>
-              </p>
-              {diff !== null && (
-                <span className={cn("text-[10px] font-medium", diff >= 0 ? "text-primary" : "text-destructive")}>
-                  {diff >= 0 ? '↑' : '↓'} {Math.abs(diff).toLocaleString('de-CH')}
-                </span>
-              )}
-            </div>
-          </div>
-          <ChevronRight className={cn("h-4 w-4 text-muted-foreground transition-transform", expanded && "rotate-90")} />
+    <Card>
+      <CardContent className="p-4 space-y-2">
+        <h3 className="text-sm font-bold text-foreground flex items-center gap-1.5">
+          <TrendingUp className="h-4 w-4 text-primary" /> Nettovermögen-Entwicklung
+        </h3>
+        <div className="h-48">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 0 }}
+              onClick={(e) => {
+                if (e?.activePayload?.[0]?.payload?.id) {
+                  onPointClick(e.activePayload[0].payload.id);
+                }
+              }}
+            >
+              <defs>
+                <linearGradient id="nwGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis dataKey="date" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
+              <YAxis
+                tick={{ fontSize: 10 }}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
+                width={40}
+              />
+              <Tooltip
+                contentStyle={{
+                  background: 'hsl(var(--card))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '8px',
+                  fontSize: '12px',
+                }}
+                formatter={(value: number) => [`CHF ${value.toLocaleString('de-CH')}`, 'Nettovermögen']}
+              />
+              <Area
+                type="monotone"
+                dataKey="value"
+                stroke="hsl(var(--primary))"
+                strokeWidth={2}
+                fill="url(#nwGrad)"
+                dot={{ r: 4, fill: 'hsl(var(--primary))', strokeWidth: 2, stroke: 'hsl(var(--background))' }}
+                activeDot={{ r: 6, cursor: 'pointer' }}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
-
-        {expanded && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="overflow-hidden">
-            <Separator />
-            <div className="p-4 space-y-2">
-              {/* Static fields */}
-              {Object.entries(STATIC_FIELD_LABELS).map(([key, meta]) => {
-                const fieldData = data[key];
-                if (!fieldData) return null;
-                const amount = typeof fieldData === 'object' ? fieldData.amount : fieldData;
-                if (!amount && amount !== 0) return null;
-                const provider = typeof fieldData === 'object' ? fieldData.provider : null;
-                return (
-                  <div key={key} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      {meta.emoji} {meta.label}
-                      {provider && <span className="text-[10px] ml-1">({provider})</span>}
-                    </span>
-                    <span className="font-medium text-foreground">CHF {Number(amount).toLocaleString('de-CH')}</span>
-                  </div>
-                );
-              })}
-              {/* Bank accounts */}
-              {Array.isArray(data.bank_accounts) && data.bank_accounts.map((a: any, i: number) => (
-                n(a.balance) > 0 && (
-                  <div key={i} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      🏦 {a.name || 'Konto'}{a.bank && <span className="text-[10px] ml-1">({a.bank})</span>}
-                    </span>
-                    <span className="font-medium text-foreground">CHF {Number(a.balance).toLocaleString('de-CH')}</span>
-                  </div>
-                )
-              ))}
-              {/* Valuables */}
-              {Array.isArray(data.valuables) && data.valuables.map((v: any, i: number) => (
-                n(v.value) > 0 && (
-                  <div key={`v-${i}`} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">💍 {v.name || 'Wertgegenstand'}</span>
-                    <span className="font-medium text-foreground">CHF {Number(v.value).toLocaleString('de-CH')}</span>
-                  </div>
-                )
-              ))}
-              {/* Investments */}
-              {Array.isArray(data.investment_positions) && data.investment_positions.map((inv: any, i: number) => (
-                n(inv.value) > 0 && (
-                  <div key={`inv-${i}`} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      📊 {inv.name || 'Investment'}{inv.platform && <span className="text-[10px] ml-1">({inv.platform})</span>}
-                    </span>
-                    <span className="font-medium text-foreground">CHF {Number(inv.value).toLocaleString('de-CH')}</span>
-                  </div>
-                )
-              ))}
-              {/* Crypto */}
-              {Array.isArray(data.crypto_positions) && data.crypto_positions.map((c: any, i: number) => (
-                n(c.value) > 0 && (
-                  <div key={`cry-${i}`} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      🪙 {c.name || 'Krypto'}{c.platform && <span className="text-[10px] ml-1">({c.platform})</span>}
-                    </span>
-                    <span className="font-medium text-foreground">CHF {Number(c.value).toLocaleString('de-CH')}</span>
-                  </div>
-                )
-              ))}
-              {/* Properties */}
-              {Array.isArray(data.properties) && data.properties.map((p: any, i: number) => (
-                n(p.market_value) > 0 && (
-                  <div key={`prop-${i}`} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">🏠 {p.description || 'Immobilie'}</span>
-                    <span className="font-medium text-foreground">CHF {Number(p.market_value).toLocaleString('de-CH')}</span>
-                  </div>
-                )
-              ))}
-              {/* Other assets */}
-              {Array.isArray(data.other_assets) && data.other_assets.map((a: any, i: number) => (
-                n(a.value) > 0 && (
-                  <div key={`oth-${i}`} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">📦 {a.name || 'Sonstiges'}</span>
-                    <span className="font-medium text-foreground">CHF {Number(a.value).toLocaleString('de-CH')}</span>
-                  </div>
-                )
-              ))}
-              {/* Credits */}
-              {Array.isArray(data.credits) && data.credits.map((c: any, i: number) => (
-                n(c.remaining) > 0 && (
-                  <div key={`cred-${i}`} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">💳 {c.name || 'Kredit'}</span>
-                    <span className="font-medium text-destructive">-CHF {Number(c.remaining).toLocaleString('de-CH')}</span>
-                  </div>
-                )
-              ))}
-              {/* Debts */}
-              {Array.isArray(data.debts) && data.debts.map((d: any, i: number) => (
-                n(d.amount) > 0 && (
-                  <div key={`debt-${i}`} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">📋 {d.description || 'Schuld'}</span>
-                    <span className="font-medium text-destructive">-CHF {Number(d.amount).toLocaleString('de-CH')}</span>
-                  </div>
-                )
-              ))}
-              {snapshot.notes && (
-                <div className="pt-2 border-t border-border">
-                  <p className="text-xs text-muted-foreground">📝 {snapshot.notes}</p>
-                </div>
-              )}
-              <div className="pt-2">
-                <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive text-xs h-8" onClick={onDelete}>
-                  <Trash2 className="h-3.5 w-3.5 mr-1" /> Löschen
-                </Button>
-              </div>
-            </div>
-          </motion.div>
-        )}
       </CardContent>
     </Card>
+  );
+}
+
+// ── Snapshot Detail ────────────────────────────────
+
+function SnapshotDetail({
+  snapshot,
+  onBack,
+  onDelete,
+}: {
+  snapshot: any;
+  onBack: () => void;
+  onDelete: () => void;
+}) {
+  const data = snapshot.snapshot_data || {};
+  const netWorth = snapshot.net_worth || 0;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <Button variant="ghost" size="sm" onClick={onBack}>
+          <ArrowLeft className="h-4 w-4 mr-1" /> Zurück
+        </Button>
+        <div className="flex-1">
+          <h3 className="text-sm font-bold text-foreground">
+            Snapshot vom {format(new Date(snapshot.created_at), 'dd. MMMM yyyy', { locale: de })}
+          </h3>
+        </div>
+      </div>
+
+      <Card className={cn("border-2", netWorth >= 0 ? "border-primary/30" : "border-destructive/30")}>
+        <CardContent className="p-4 text-center">
+          <p className="text-xs text-muted-foreground">Nettovermögen</p>
+          <p className={cn("text-2xl font-bold", netWorth >= 0 ? "text-primary" : "text-destructive")}>
+            CHF {netWorth.toLocaleString('de-CH')}
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* All fields */}
+      <Card>
+        <CardContent className="p-4 space-y-2">
+          {Object.entries(STATIC_FIELD_LABELS).map(([key, meta]) => {
+            const fieldData = data[key];
+            if (!fieldData) return null;
+            const amount = typeof fieldData === 'object' ? fieldData.amount : fieldData;
+            if (!amount && amount !== 0) return null;
+            const provider = typeof fieldData === 'object' ? fieldData.provider : null;
+            return (
+              <div key={key} className="flex justify-between text-sm">
+                <span className="text-muted-foreground">
+                  {meta.emoji} {meta.label}
+                  {provider && <span className="text-[10px] ml-1">({provider})</span>}
+                </span>
+                <span className="font-medium text-foreground">CHF {Number(amount).toLocaleString('de-CH')}</span>
+              </div>
+            );
+          })}
+          {Array.isArray(data.bank_accounts) && data.bank_accounts.map((a: any, i: number) => (
+            n(a.balance) > 0 && (
+              <div key={`ba-${i}`} className="flex justify-between text-sm">
+                <span className="text-muted-foreground">🏦 {a.name || 'Konto'}{a.bank && <span className="text-[10px] ml-1">({a.bank})</span>}</span>
+                <span className="font-medium text-foreground">CHF {Number(a.balance).toLocaleString('de-CH')}</span>
+              </div>
+            )
+          ))}
+          {Array.isArray(data.investment_positions) && data.investment_positions.map((inv: any, i: number) => (
+            n(inv.value) > 0 && (
+              <div key={`inv-${i}`} className="flex justify-between text-sm">
+                <span className="text-muted-foreground">📊 {inv.name || 'Investment'}</span>
+                <span className="font-medium text-foreground">CHF {Number(inv.value).toLocaleString('de-CH')}</span>
+              </div>
+            )
+          ))}
+          {Array.isArray(data.crypto_positions) && data.crypto_positions.map((c: any, i: number) => (
+            n(c.value) > 0 && (
+              <div key={`cry-${i}`} className="flex justify-between text-sm">
+                <span className="text-muted-foreground">🪙 {c.name || 'Krypto'}</span>
+                <span className="font-medium text-foreground">CHF {Number(c.value).toLocaleString('de-CH')}</span>
+              </div>
+            )
+          ))}
+          {Array.isArray(data.properties) && data.properties.map((p: any, i: number) => (
+            n(p.market_value) > 0 && (
+              <div key={`p-${i}`} className="flex justify-between text-sm">
+                <span className="text-muted-foreground">🏠 {p.description || 'Immobilie'}</span>
+                <span className="font-medium text-foreground">CHF {Number(p.market_value).toLocaleString('de-CH')}</span>
+              </div>
+            )
+          ))}
+          {Array.isArray(data.credits) && data.credits.map((c: any, i: number) => (
+            n(c.remaining) > 0 && (
+              <div key={`cr-${i}`} className="flex justify-between text-sm">
+                <span className="text-muted-foreground">💳 {c.name || 'Kredit'}</span>
+                <span className="font-medium text-destructive">-CHF {Number(c.remaining).toLocaleString('de-CH')}</span>
+              </div>
+            )
+          ))}
+          {Array.isArray(data.debts) && data.debts.map((d: any, i: number) => (
+            n(d.amount) > 0 && (
+              <div key={`db-${i}`} className="flex justify-between text-sm">
+                <span className="text-muted-foreground">📋 {d.description || 'Schuld'}</span>
+                <span className="font-medium text-destructive">-CHF {Number(d.amount).toLocaleString('de-CH')}</span>
+              </div>
+            )
+          ))}
+          {snapshot.notes && (
+            <div className="pt-2 border-t border-border">
+              <p className="text-xs text-muted-foreground">📝 {snapshot.notes}</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive text-xs" onClick={onDelete}>
+        <Trash2 className="h-3.5 w-3.5 mr-1" /> Snapshot löschen
+      </Button>
+    </div>
+  );
+}
+
+// ── Snapshot Comparison ────────────────────────────
+
+function SnapshotComparison({ older, newer }: { older: any; newer: any }) {
+  const olderData = older.snapshot_data || {};
+  const newerData = newer.snapshot_data || {};
+  const fmtCHF = (v: number) => `CHF ${v.toLocaleString('de-CH')}`;
+
+  const categories = [
+    { label: 'Nettovermögen', oldVal: older.net_worth || 0, newVal: newer.net_worth || 0 },
+    { label: '3a Guthaben', oldVal: n(olderData.pillar_3a?.amount), newVal: n(newerData.pillar_3a?.amount) },
+    { label: 'Freizügigkeit', oldVal: n(olderData.freizuegigkeit?.amount), newVal: n(newerData.freizuegigkeit?.amount) },
+    { label: 'Pensionskasse', oldVal: n(olderData.pensionskasse?.amount), newVal: n(newerData.pensionskasse?.amount) },
+    { label: 'Bankkonten', oldVal: Array.isArray(olderData.bank_accounts) ? sumBankAccounts(olderData.bank_accounts) : 0, newVal: Array.isArray(newerData.bank_accounts) ? sumBankAccounts(newerData.bank_accounts) : 0 },
+    { label: 'Bargeld', oldVal: n(olderData.cash?.amount), newVal: n(newerData.cash?.amount) },
+    { label: 'Investments', oldVal: Array.isArray(olderData.investment_positions) ? sumInvestments(olderData.investment_positions) : 0, newVal: Array.isArray(newerData.investment_positions) ? sumInvestments(newerData.investment_positions) : 0 },
+    { label: 'Krypto', oldVal: Array.isArray(olderData.crypto_positions) ? sumCrypto(olderData.crypto_positions) : 0, newVal: Array.isArray(newerData.crypto_positions) ? sumCrypto(newerData.crypto_positions) : 0 },
+    { label: 'Kredite', oldVal: Array.isArray(olderData.credits) ? sumCredits(olderData.credits) : 0, newVal: Array.isArray(newerData.credits) ? sumCredits(newerData.credits) : 0 },
+    { label: 'Einkommen mtl.', oldVal: n(olderData.monthly_income?.amount), newVal: n(newerData.monthly_income?.amount) },
+    { label: 'Ausgaben mtl.', oldVal: n(olderData.monthly_expenses?.amount), newVal: n(newerData.monthly_expenses?.amount) },
+  ];
+
+  return (
+    <div className="space-y-3">
+      {/* Header row */}
+      <div className="grid grid-cols-4 gap-2 text-[10px] font-medium text-muted-foreground px-2">
+        <span>Kategorie</span>
+        <span className="text-right">{format(new Date(older.created_at), 'dd.MM.yy')}</span>
+        <span className="text-right">{format(new Date(newer.created_at), 'dd.MM.yy')}</span>
+        <span className="text-right">Δ</span>
+      </div>
+
+      {categories.map(cat => {
+        const delta = cat.newVal - cat.oldVal;
+        if (cat.oldVal === 0 && cat.newVal === 0) return null;
+        return (
+          <Card key={cat.label} className="overflow-hidden">
+            <CardContent className="p-3 grid grid-cols-4 gap-2 items-center">
+              <span className="text-xs font-medium text-foreground">{cat.label}</span>
+              <span className="text-xs text-muted-foreground text-right">{fmtCHF(cat.oldVal)}</span>
+              <span className="text-xs text-foreground font-medium text-right">{fmtCHF(cat.newVal)}</span>
+              <span className={cn("text-xs font-semibold text-right",
+                delta > 0 ? "text-primary" : delta < 0 ? "text-destructive" : "text-muted-foreground"
+              )}>
+                {delta > 0 ? '+' : ''}{fmtCHF(delta)}
+              </span>
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
   );
 }
