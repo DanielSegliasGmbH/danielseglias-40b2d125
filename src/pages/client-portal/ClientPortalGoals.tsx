@@ -176,11 +176,14 @@ export default function ClientPortalGoals() {
           </DialogContent>
         </Dialog>
 
+        {/* Error state */}
+        {isError && <ErrorState onRetry={() => refetch()} />}
+
         {/* Loading */}
         {isLoading && [1, 2].map(i => <div key={i} className="h-24 bg-muted animate-pulse rounded-xl" />)}
 
         {/* Empty state */}
-        {!isLoading && goals.length === 0 && (
+        {!isLoading && !isError && goals.length === 0 && (
           <Card>
             <CardContent className="p-6 flex flex-col items-center justify-center text-center">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
@@ -210,6 +213,7 @@ export default function ClientPortalGoals() {
           </div>
         )}
       </div>
+      </PageTransition>
     </ClientPortalLayout>
   );
 }
