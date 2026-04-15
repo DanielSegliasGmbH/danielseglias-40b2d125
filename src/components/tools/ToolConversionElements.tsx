@@ -1,5 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { MessageCircle, ShieldCheck } from 'lucide-react';
+import { MessageCircle, ShieldCheck, Flame } from 'lucide-react';
+import { formatToolImpact } from '@/lib/peakScoreFormat';
 
 interface ToolReflectionProps {
   /** The main reflection question */
@@ -97,6 +98,41 @@ export function ToolSoftCta({
           <p className="text-xs text-muted-foreground pt-1">
             Unverbindlich · Du entscheidest jederzeit selbst
           </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+interface ToolPeakScoreEffektProps {
+  /** Estimated PeakScore impact in months per year if recommendation is followed */
+  monthsPerYear: number;
+  /** Optional explanatory text */
+  explanation?: string;
+}
+
+/**
+ * Shows a "PeakScore-Effekt" box at the bottom of a tool,
+ * translating the impact into human-readable freedom terms.
+ */
+export function ToolPeakScoreEffekt({ monthsPerYear, explanation }: ToolPeakScoreEffektProps) {
+  if (monthsPerYear <= 0) return null;
+
+  return (
+    <Card className="border-primary/20 bg-primary/5" data-pdf-hide="true">
+      <CardContent className="py-4 px-5">
+        <div className="flex gap-3 items-start">
+          <Flame className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">PeakScore-Effekt</p>
+            <p className="text-sm font-medium text-foreground">
+              Wenn du diese Empfehlung umsetzt:{' '}
+              <span className="text-primary font-bold">{formatToolImpact(monthsPerYear)}</span>
+            </p>
+            {explanation && (
+              <p className="text-xs text-muted-foreground">{explanation}</p>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>
