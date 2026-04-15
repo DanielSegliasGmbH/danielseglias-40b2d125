@@ -13,7 +13,7 @@ import { CostBreakdownChart } from './CostBreakdownChart';
 import { RecommendationBlock } from './RecommendationBlock';
 import { LinksSection } from './LinksSection';
 import { generateOnePager, generateReport } from './pdfExport';
-import { ToolReflection, ToolTrustNote } from '../ToolConversionElements';
+import { ToolReflection, ToolTrustNote, ToolPeakScoreEffekt } from '../ToolConversionElements';
 import { ToolNextStep } from '../ToolNextStep';
 import { useMemorySnapshot } from '@/hooks/useMemories';
 
@@ -112,6 +112,14 @@ export function Mini3aKurzcheckTool({ mode = 'internal' }: Mini3aKurzcheckToolPr
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* PeakScore Effect */}
+      {result.gesamtscore < 70 && result.costBreakdown && (
+        <ToolPeakScoreEffekt
+          monthsPerYear={Math.max(0.5, (100 - result.gesamtscore) / 20)}
+          explanation="Basierend auf dem Optimierungspotenzial deiner aktuellen 3a-Lösung."
+        />
       )}
 
       {/* Trust Note */}
