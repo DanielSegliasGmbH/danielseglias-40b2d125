@@ -444,10 +444,16 @@ export default function ClientPortalSnapshot() {
           merged.bank_accounts = parsed.bank_accounts;
         }
         merged.bank_accounts_skipped = !!parsed.bank_accounts_skipped;
-        if (Array.isArray(parsed.valuables)) {
-          merged.valuables = parsed.valuables;
-        }
+        if (Array.isArray(parsed.valuables)) merged.valuables = parsed.valuables;
         merged.valuables_skipped = !!parsed.valuables_skipped;
+        if (Array.isArray(parsed.investment_positions)) merged.investment_positions = parsed.investment_positions;
+        merged.investment_positions_skipped = !!parsed.investment_positions_skipped;
+        if (Array.isArray(parsed.crypto_positions)) merged.crypto_positions = parsed.crypto_positions;
+        merged.crypto_positions_skipped = !!parsed.crypto_positions_skipped;
+        if (Array.isArray(parsed.properties)) merged.properties = parsed.properties;
+        merged.owns_property = !!parsed.owns_property;
+        if (Array.isArray(parsed.other_assets)) merged.other_assets = parsed.other_assets;
+        merged.other_assets_skipped = !!parsed.other_assets_skipped;
         setDraft(merged);
         setStep(savedDraft.current_step || 0);
       } catch { /* ignore parse errors */ }
