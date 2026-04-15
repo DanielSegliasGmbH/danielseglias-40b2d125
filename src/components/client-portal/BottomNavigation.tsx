@@ -58,16 +58,19 @@ export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationPro
               key={item.key}
               to={buildPath(item.path)}
               className={cn(
-                "flex flex-col items-center justify-center flex-1 h-full min-w-0 py-2 px-0.5 transition-colors",
+                "flex flex-col items-center justify-center flex-1 h-full min-w-0 py-2 px-0.5 transition-colors relative",
                 isActive
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
+              {isActive && (
+                <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-primary" />
+              )}
               <item.icon className={cn("h-5 w-5 mb-0.5 shrink-0", isActive && "text-primary")} />
               <span className={cn(
-                "text-[10px] leading-tight font-medium truncate max-w-[60px] text-center",
-                isActive && "text-primary"
+                "text-[10px] leading-tight font-medium truncate max-w-[64px] text-center",
+                isActive ? "text-primary font-semibold" : ""
               )}>
                 {item.label}
               </span>
