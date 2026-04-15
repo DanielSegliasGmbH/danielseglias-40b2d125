@@ -347,6 +347,8 @@ export default function ClientPortalLifeFilmResult() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const firstName = user?.user_metadata?.first_name || 'Du';
+  const { awardXP } = useGamification();
+  const xpAwarded = useRef(false);
 
   const { data: filmData, isLoading } = useQuery({
     queryKey: ['life-film-data', user?.id],
@@ -371,6 +373,14 @@ export default function ClientPortalLifeFilmResult() {
   const finalCard = useMemo(() => {
     if (!filmData || !filmData.age) return null;
     return computeFinalCard(filmData);
+  }, [filmData]);
+
+  // Award +100 XP for viewing the complete Lebensfilm (once)
+  useEffect(() => {
+    if (filmData && filmData.age && !xpAwarded.current) {
+      xpAwarded.current = true;
+      awardXP('life_film_viewed', 'life-film-result');
+    }
   }, [filmData]);
 
   if (isLoading) {
