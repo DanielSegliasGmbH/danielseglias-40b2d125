@@ -41,8 +41,8 @@ export function PeakScoreImpact({ impact, show, className, context = 'generic' }
           className={cn(
             'inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg',
             positive
-              ? 'text-emerald-700 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30'
-              : 'text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-950/30',
+              ? 'text-primary bg-primary/10'
+              : 'text-destructive bg-destructive/10',
             className
           )}
         >
