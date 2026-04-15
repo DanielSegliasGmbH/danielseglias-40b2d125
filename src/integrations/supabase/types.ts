@@ -2368,12 +2368,17 @@ export type Database = {
       profiles: {
         Row: {
           account_status: string
+          auto_monthly_report: boolean
+          challenges_allowed: boolean
           created_at: string
           current_rank: number
+          deletion_requested_at: string | null
           first_name: string
           has_strategy_access: boolean
           id: string
           last_name: string
+          leaderboard_visible: boolean
+          peak_score_visible: boolean
           phone: string | null
           plan: string
           referral_code: string | null
@@ -2383,12 +2388,17 @@ export type Database = {
         }
         Insert: {
           account_status?: string
+          auto_monthly_report?: boolean
+          challenges_allowed?: boolean
           created_at?: string
           current_rank?: number
+          deletion_requested_at?: string | null
           first_name: string
           has_strategy_access?: boolean
           id: string
           last_name: string
+          leaderboard_visible?: boolean
+          peak_score_visible?: boolean
           phone?: string | null
           plan?: string
           referral_code?: string | null
@@ -2398,12 +2408,17 @@ export type Database = {
         }
         Update: {
           account_status?: string
+          auto_monthly_report?: boolean
+          challenges_allowed?: boolean
           created_at?: string
           current_rank?: number
+          deletion_requested_at?: string | null
           first_name?: string
           has_strategy_access?: boolean
           id?: string
           last_name?: string
+          leaderboard_visible?: boolean
+          peak_score_visible?: boolean
           phone?: string | null
           plan?: string
           referral_code?: string | null
