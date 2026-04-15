@@ -237,6 +237,7 @@ export default function ClientPortalNetWorth() {
       queryClient.invalidateQueries({ queryKey: ['net-worth-snapshots'] });
       toast.success('Vermögenswert hinzugefügt ✓');
       awardPoints('asset_added', `asset_${Date.now()}`);
+      recalcPeakScore.mutate();
       resetAssetForm();
       setAssetDialogOpen(false);
     },
@@ -260,6 +261,7 @@ export default function ClientPortalNetWorth() {
       queryClient.invalidateQueries({ queryKey: ['net-worth-liabilities'] });
       queryClient.invalidateQueries({ queryKey: ['net-worth-snapshots'] });
       toast.success('Verbindlichkeit hinzugefügt ✓');
+      recalcPeakScore.mutate();
       resetLiabForm();
       setLiabilityDialogOpen(false);
     },
@@ -289,6 +291,7 @@ export default function ClientPortalNetWorth() {
       queryClient.invalidateQueries({ queryKey: ['entry-snapshots'] });
       toast.success('Wert aktualisiert ✓');
       awardPoints('asset_added', `update_${vars.id}_${Date.now()}`);
+      recalcPeakScore.mutate();
       setXpFlashId(vars.id);
       setTimeout(() => setXpFlashId(null), 1500);
       setQuickUpdateId(null);
@@ -306,6 +309,7 @@ export default function ClientPortalNetWorth() {
       queryClient.invalidateQueries({ queryKey: ['net-worth-assets'] });
       queryClient.invalidateQueries({ queryKey: ['net-worth-snapshots'] });
       toast.success('Eintrag gelöscht');
+      recalcPeakScore.mutate();
       setDetailEntry(null);
     },
   });
@@ -319,6 +323,7 @@ export default function ClientPortalNetWorth() {
       queryClient.invalidateQueries({ queryKey: ['net-worth-liabilities'] });
       queryClient.invalidateQueries({ queryKey: ['net-worth-snapshots'] });
       toast.success('Eintrag gelöscht');
+      recalcPeakScore.mutate();
       setDetailEntry(null);
     },
   });
