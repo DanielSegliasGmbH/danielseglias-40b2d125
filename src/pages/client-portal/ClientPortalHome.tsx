@@ -14,7 +14,7 @@ import { useGamification, LEVELS } from '@/hooks/useGamification';
 import { useNextBestStep } from '@/hooks/useNextBestStep';
 import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { NotificationBell } from '@/components/client-portal/NotificationBell';
-import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, Crown, Landmark, Wallet, ClipboardList, TrendingUp, FileBarChart, Gift, Film, UserRound, Camera } from 'lucide-react';
+import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, Crown, Landmark, Wallet, ClipboardList, TrendingUp, FileBarChart, Gift, Film, UserRound, Camera, CalendarDays } from 'lucide-react';
 import { PrivateValue } from '@/components/client-portal/PrivateValue';
 import { ActiveChallengeCards } from '@/components/client-portal/ActiveChallengeCard';
 import { useFinanzType } from '@/hooks/useFinanzType';
@@ -258,7 +258,7 @@ export default function ClientPortalHome() {
     { icon: Sparkles, label: 'Coach', path: '/app/client-portal/coach', emoji: '✨' },
     { icon: Wrench, label: 'Tools', path: '/app/client-portal/tools', emoji: '🔧' },
     { icon: Wallet, label: 'Budget', path: '/app/client-portal/budget', emoji: '💰' },
-    { icon: Target, label: 'Ziele', path: '/app/client-portal/goals', emoji: '🎯' },
+    { icon: CalendarDays, label: 'Kalender', path: '/app/client-portal/calendar', emoji: '📅' },
     { icon: Camera, label: 'Snapshot', path: '/app/client-portal/snapshot', emoji: '📸' },
   ];
 

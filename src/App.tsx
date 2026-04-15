@@ -557,6 +557,14 @@ function App() {
                 }
               />
               <Route
+                path="/app/client-portal/calendar"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalCalendar />
+                  </RouteGuard>
+                }
+              />
+              <Route
                 path="/app/client-portal/peak-score"
                 element={
                   <RouteGuard allowedRoles={['client', 'admin']}>
