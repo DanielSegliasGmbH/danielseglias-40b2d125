@@ -2231,54 +2231,6 @@ function SnapshotDetail({
               </div>
             )
           ))}
-          {Array.isArray(data.bank_accounts) && data.bank_accounts.map((a: any, i: number) => (
-            n(a.balance) > 0 && (
-              <div key={`ba-${i}`} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">🏦 {a.name || 'Konto'}{a.bank && <span className="text-[10px] ml-1">({a.bank})</span>}</span>
-                <span className="font-medium text-foreground">CHF {Number(a.balance).toLocaleString('de-CH')}</span>
-              </div>
-            )
-          ))}
-          {Array.isArray(data.investment_positions) && data.investment_positions.map((inv: any, i: number) => (
-            n(inv.value) > 0 && (
-              <div key={`inv-${i}`} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">📊 {inv.name || 'Investment'}</span>
-                <span className="font-medium text-foreground">CHF {Number(inv.value).toLocaleString('de-CH')}</span>
-              </div>
-            )
-          ))}
-          {Array.isArray(data.crypto_positions) && data.crypto_positions.map((c: any, i: number) => (
-            n(c.value) > 0 && (
-              <div key={`cry-${i}`} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">🪙 {c.name || 'Krypto'}</span>
-                <span className="font-medium text-foreground">CHF {Number(c.value).toLocaleString('de-CH')}</span>
-              </div>
-            )
-          ))}
-          {Array.isArray(data.properties) && data.properties.map((p: any, i: number) => (
-            n(p.market_value) > 0 && (
-              <div key={`p-${i}`} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">🏠 {p.description || 'Immobilie'}</span>
-                <span className="font-medium text-foreground">CHF {Number(p.market_value).toLocaleString('de-CH')}</span>
-              </div>
-            )
-          ))}
-          {Array.isArray(data.credits) && data.credits.map((c: any, i: number) => (
-            n(c.remaining) > 0 && (
-              <div key={`cr-${i}`} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">💳 {c.name || 'Kredit'}</span>
-                <span className="font-medium text-destructive">-CHF {Number(c.remaining).toLocaleString('de-CH')}</span>
-              </div>
-            )
-          ))}
-          {Array.isArray(data.debts) && data.debts.map((d: any, i: number) => (
-            n(d.amount) > 0 && (
-              <div key={`db-${i}`} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">📋 {d.description || 'Schuld'}</span>
-                <span className="font-medium text-destructive">-CHF {Number(d.amount).toLocaleString('de-CH')}</span>
-              </div>
-            )
-          ))}
           {snapshot.notes && (
             <div className="pt-2 border-t border-border">
               <p className="text-xs text-muted-foreground">📝 {snapshot.notes}</p>
