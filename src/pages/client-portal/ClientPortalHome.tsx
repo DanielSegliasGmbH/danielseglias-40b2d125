@@ -423,6 +423,26 @@ export default function ClientPortalHome() {
             </Card>
           </Link>
         </motion.div>
+
+        {/* ── 8. REFERRAL TEASER ── */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+          <Link to="/app/client-portal/invite">
+            <Card className="cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98] border-primary/20 bg-primary/5">
+              <CardContent className="p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="size-9 rounded-xl bg-primary/10 grid place-content-center">
+                    <Gift className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Freunde einladen = +500 XP pro Freund 🎁</p>
+                    <p className="text-[11px] text-muted-foreground">Teile deinen Code und sammle Bonus-XP</p>
+                  </div>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground" />
+              </CardContent>
+            </Card>
+          </Link>
+        </motion.div>
       </div>
 
       <StrategyPasswordGate
