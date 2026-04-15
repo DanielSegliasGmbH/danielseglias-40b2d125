@@ -24,6 +24,7 @@ import { RankWarningBanner } from '@/components/client-portal/RankWarningBanner'
 import { RankChangeOverlay } from '@/components/client-portal/RankChangeOverlay';
 import { useRankSystem } from '@/hooks/useRankSystem';
 import { usePeakScore } from '@/hooks/usePeakScore';
+import { FreedomCountdown } from '@/components/client-portal/FreedomCountdown';
 
 const LEVEL_ICONS = [null, Zap, Star, Trophy, Award, Crown];
 
@@ -285,6 +286,7 @@ export default function ClientPortalHome() {
 
         {/* ── PEAKSCORE HERO ── */}
         <PeakScoreCard onClick={() => navigate('/app/client-portal/peak-score')} />
+        <FreedomCountdown />
         <RankWarningBanner />
 
         {/* ── LEBENSFILM CTA ── */}
