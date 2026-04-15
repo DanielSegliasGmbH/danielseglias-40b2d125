@@ -87,6 +87,8 @@ export default function ClientPortalBudget() {
   const [expCategory, setExpCategory] = useState<string>(CATEGORIES[0]);
   const [expDate, setExpDate] = useState(new Date().toISOString().slice(0, 10));
   const [expNote, setExpNote] = useState('');
+  const [expRecurring, setExpRecurring] = useState(false);
+  const [expFrequency, setExpFrequency] = useState<string>('monatlich');
 
   // Budget edit state
   const [budgetAmounts, setBudgetAmounts] = useState<Record<string, string>>({});
