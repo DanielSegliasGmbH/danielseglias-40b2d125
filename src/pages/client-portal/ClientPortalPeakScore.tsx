@@ -33,7 +33,7 @@ function PeakScoreTooltip({ active, payload }: any) {
 export default function ClientPortalPeakScore() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { score, totalAssets, totalLiabilities, monthlyExpenses, trend, hasData, rank } = usePeakScore();
+  const { score, totalAssets, totalLiabilities, monthlyExpenses, trend, hasData, rank, assetCount, liabilityCount, expenseSource } = usePeakScore();
 
   const { data: history = [] } = useQuery({
     queryKey: ['peak-score-history', user?.id],
