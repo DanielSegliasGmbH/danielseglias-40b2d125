@@ -13,7 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
-import { Plus, ChevronLeft, ChevronRight, Pencil, Wallet, TrendingDown, PiggyBank, Percent } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Plus, ChevronLeft, ChevronRight, Pencil, Wallet, TrendingDown, PiggyBank, Percent, Trash2, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
