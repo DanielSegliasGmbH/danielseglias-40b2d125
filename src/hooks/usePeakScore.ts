@@ -45,6 +45,9 @@ export interface PeakScoreData {
   rank: RankDef;
   savedRank: number;
   rankBuffer: { isWarning: boolean; buffer: number };
+  assetCount: number;
+  liabilityCount: number;
+  expenseSource: 'budget' | 'profile' | 'none';
 }
 
 export function usePeakScore(): PeakScoreData {
