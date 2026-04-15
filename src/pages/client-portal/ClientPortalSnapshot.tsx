@@ -95,11 +95,15 @@ interface SnapshotDraft {
   cash: SnapshotFieldValue;
   valuables: Valuable[];
   valuables_skipped: boolean;
-  // Step 2: Vermögen
-  savings: SnapshotFieldValue;
-  investments: SnapshotFieldValue;
-  real_estate: SnapshotFieldValue;
-  emergency_fund: SnapshotFieldValue;
+  // Step 2: Investments & Immobilien
+  investment_positions: InvestmentPosition[];
+  investment_positions_skipped: boolean;
+  crypto_positions: CryptoPosition[];
+  crypto_positions_skipped: boolean;
+  properties: Property[];
+  owns_property: boolean;
+  other_assets: OtherAsset[];
+  other_assets_skipped: boolean;
   // Step 3: Verbindlichkeiten
   mortgage: SnapshotFieldValue;
   consumer_debt: SnapshotFieldValue;
@@ -108,6 +112,11 @@ interface SnapshotDraft {
   monthly_income: SnapshotFieldValue;
   monthly_expenses: SnapshotFieldValue;
   insurance_monthly: SnapshotFieldValue;
+  // Legacy (kept for backward compat with old snapshots)
+  savings?: SnapshotFieldValue;
+  investments?: SnapshotFieldValue;
+  real_estate?: SnapshotFieldValue;
+  emergency_fund?: SnapshotFieldValue;
   // Summary
   notes: string;
 }
