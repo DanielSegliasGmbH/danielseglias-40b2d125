@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Plus, TrendingUp, TrendingDown, Landmark, Trash2, RefreshCw, ArrowUpRight, ArrowDownRight, ChevronRight, Calendar, ExternalLink, Link2 } from 'lucide-react';
+import { PrivateValue } from '@/components/client-portal/PrivateValue';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -359,31 +360,31 @@ export default function ClientPortalNetWorth() {
           <Card>
             <CardContent className="text-center py-6">
               <p className="text-xs text-muted-foreground mb-1">Nettovermögen</p>
-              <p className={cn(
+              <PrivateValue className={cn(
                 "text-3xl font-bold",
                 netWorth >= 0 ? "text-primary" : "text-destructive"
               )}>
                 {fmtCHF(netWorth)}
-              </p>
+              </PrivateValue>
               {changeInfo && (
                 <div className={cn(
                   "flex items-center justify-center gap-1 mt-1.5 text-xs font-medium",
                   changeInfo.up ? "text-primary" : "text-destructive"
                 )}>
                   {changeInfo.up ? <ArrowUpRight className="h-3.5 w-3.5" /> : <ArrowDownRight className="h-3.5 w-3.5" />}
-                  <span>{changeInfo.up ? '+' : ''}{fmtCHF(changeInfo.diff)} ({changeInfo.up ? '↑' : '↓'} {Math.abs(changeInfo.pct).toFixed(1)}%)</span>
+                  <PrivateValue>{changeInfo.up ? '+' : ''}{fmtCHF(changeInfo.diff)} ({changeInfo.up ? '↑' : '↓'} {Math.abs(changeInfo.pct).toFixed(1)}%)</PrivateValue>
                 </div>
               )}
               <div className="flex justify-center gap-6 mt-3">
                 <div className="text-center">
                   <TrendingUp className="h-4 w-4 text-primary mx-auto mb-0.5" />
                   <p className="text-xs text-muted-foreground">Vermögen</p>
-                  <p className="text-sm font-semibold">{fmtCHF(totalAssets)}</p>
+                  <PrivateValue className="text-sm font-semibold">{fmtCHF(totalAssets)}</PrivateValue>
                 </div>
                 <div className="text-center">
                   <TrendingDown className="h-4 w-4 text-destructive mx-auto mb-0.5" />
                   <p className="text-xs text-muted-foreground">Schulden</p>
-                  <p className="text-sm font-semibold">{fmtCHF(totalLiabilities)}</p>
+                  <PrivateValue className="text-sm font-semibold">{fmtCHF(totalLiabilities)}</PrivateValue>
                 </div>
               </div>
             </CardContent>
