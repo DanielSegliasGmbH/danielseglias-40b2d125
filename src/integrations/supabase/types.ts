@@ -2169,6 +2169,7 @@ export type Database = {
           phone: string | null
           plan: string
           referral_code: string | null
+          theme_preference: string
           updated_at: string
           user_type: string
         }
@@ -2182,6 +2183,7 @@ export type Database = {
           phone?: string | null
           plan?: string
           referral_code?: string | null
+          theme_preference?: string
           updated_at?: string
           user_type?: string
         }
@@ -2195,6 +2197,7 @@ export type Database = {
           phone?: string | null
           plan?: string
           referral_code?: string | null
+          theme_preference?: string
           updated_at?: string
           user_type?: string
         }

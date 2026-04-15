@@ -138,37 +138,37 @@ html {
 
   .dark {
     /* 
-      DARK MODE - Neutrale Grautöne
-      Dunkle Stufen für Hintergründe, helle für Text
+      DARK MODE - #1a1a1a Basis
+      Angepasste Palette für optimale Lesbarkeit
     */
     
-    /* Hintergründe: dunkle Grautöne */
-    --background: 0 0% 12%;            /* Dunkles Grau */
-    --background-soft: 0 0% 15%;       /* Etwas heller */
-    --foreground: 0 0% 90%;            /* Helles Grau für Text */
+    /* Hintergründe: #1a1a1a = hsl(0 0% 10%) */
+    --background: 0 0% 10%;            /* #1a1a1a */
+    --background-soft: 0 0% 13%;       /* Etwas heller */
+    --foreground: 0 0% 94%;            /* #f0f0f0 */
     
-    /* Card & Surfaces */
-    --card: 0 0% 16%;                  /* Kartenfarbe */
-    --card-foreground: 0 0% 90%;       /* Heller Text */
+    /* Card & Surfaces: #2a2a2a = hsl(0 0% 16.5%) */
+    --card: 0 0% 16.5%;               /* #2a2a2a */
+    --card-foreground: 0 0% 94%;       /* #f0f0f0 */
     
-    --popover: 0 0% 16%;               /* Popover */
-    --popover-foreground: 0 0% 90%;    /* Heller Text */
+    --popover: 0 0% 16.5%;            /* #2a2a2a */
+    --popover-foreground: 0 0% 94%;   /* #f0f0f0 */
     
-    /* Primary = Grundfarbe (leicht aufgehellt im Dark Mode) */
-    --primary: 60 10% 55%;             /* Scale aufgehellt */
-    --primary-foreground: 0 0% 12%;    /* Dunkler Text */
+    /* Primary = Olive/Grundfarbe (aufgehellt für Dark Mode) */
+    --primary: 60 10% 55%;             /* Olive aufgehellt */
+    --primary-foreground: 0 0% 10%;    /* Dunkler Text */
     
     /* Secondary */
     --secondary: 0 0% 18%;             /* Sekundär */
-    --secondary-foreground: 0 0% 90%;  /* Heller Text */
+    --secondary-foreground: 0 0% 94%;  /* #f0f0f0 */
     
-    /* Muted */
+    /* Muted: #a0a0a0 = hsl(0 0% 63%) für Text */
     --muted: 0 0% 20%;                 /* Gedämpft */
-    --muted-foreground: 0 0% 60%;      /* Mittlerer Text */
+    --muted-foreground: 0 0% 63%;      /* #a0a0a0 */
     
     /* Accent */
     --accent: 0 0% 22%;                /* Akzent */
-    --accent-foreground: 0 0% 90%;     /* Heller Text */
+    --accent-foreground: 0 0% 94%;     /* #f0f0f0 */
     
     /* Status Colors */
     --destructive: 0 60% 50%;          /* Rot für Fehler */
@@ -178,21 +178,21 @@ html {
     --success-foreground: 0 0% 100%;
     
     --warning: 40 80% 50%;             /* Orange für Warnung */
-    --warning-foreground: 0 0% 12%;
+    --warning-foreground: 0 0% 10%;
     
-    /* Borders & Input */
-    --border: 0 0% 25%;                /* Rahmen */
-    --input: 0 0% 25%;                 /* Input */
-    --ring: 60 10% 55%;                /* Focus Ring */
+    /* Borders & Input: #3a3a3a = hsl(0 0% 23%) */
+    --border: 0 0% 23%;                /* #3a3a3a */
+    --input: 0 0% 23%;                 /* #3a3a3a */
+    --ring: 60 10% 55%;                /* Focus Ring Olive */
     
     /* Sidebar */
-    --sidebar-background: 0 0% 10%;            /* Dunkel */
-    --sidebar-foreground: 0 0% 90%;            /* Hell */
-    --sidebar-primary: 60 10% 55%;             /* Grundfarbe */
-    --sidebar-primary-foreground: 0 0% 12%;    /* Dunkel */
+    --sidebar-background: 0 0% 8%;             /* Dunkler als bg */
+    --sidebar-foreground: 0 0% 94%;            /* #f0f0f0 */
+    --sidebar-primary: 60 10% 55%;             /* Olive */
+    --sidebar-primary-foreground: 0 0% 10%;    /* Dunkel */
     --sidebar-accent: 0 0% 18%;                /* Akzent */
-    --sidebar-accent-foreground: 0 0% 90%;     /* Hell */
-    --sidebar-border: 0 0% 22%;                /* Rahmen */
+    --sidebar-accent-foreground: 0 0% 94%;     /* #f0f0f0 */
+    --sidebar-border: 0 0% 23%;                /* #3a3a3a */
     --sidebar-ring: 60 10% 55%;                /* Ring */
     --sidebar-muted-foreground: 0 0% 55%;      /* Gedämpfter Text */
   }
