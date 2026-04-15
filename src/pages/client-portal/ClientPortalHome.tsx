@@ -434,6 +434,7 @@ export default function ClientPortalHome() {
           navigate('/app/client-portal/strategies');
         }}
       />
+      <QuickActionFAB />
     </ClientPortalLayout>
   );
 }
