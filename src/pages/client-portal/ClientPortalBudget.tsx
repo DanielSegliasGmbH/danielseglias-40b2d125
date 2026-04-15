@@ -98,9 +98,12 @@ export default function ClientPortalBudget() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { awardPoints } = useGamification();
+  const { monthlyExpenses } = usePeakScore();
   const [selectedMonth, setSelectedMonth] = useState(getMonthKey());
   const [expenseDialogOpen, setExpenseDialogOpen] = useState(false);
   const [budgetDialogOpen, setBudgetDialogOpen] = useState(false);
+  const [lastExpenseImpact, setLastExpenseImpact] = useState<number | null>(null);
+  const [showExpenseImpact, setShowExpenseImpact] = useState(false);
 
   // Expense form state
   const [expAmount, setExpAmount] = useState('');

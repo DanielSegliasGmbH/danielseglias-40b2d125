@@ -79,6 +79,7 @@ export default function ClientPortalNetWorth() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { awardPoints } = useGamification();
+  const { monthlyExpenses } = usePeakScore();
   const [assetDialogOpen, setAssetDialogOpen] = useState(false);
   const [liabilityDialogOpen, setLiabilityDialogOpen] = useState(false);
   const [detailEntry, setDetailEntry] = useState<any>(null);
@@ -86,6 +87,8 @@ export default function ClientPortalNetWorth() {
   const [quickUpdateId, setQuickUpdateId] = useState<string | null>(null);
   const [quickUpdateValue, setQuickUpdateValue] = useState('');
   const [xpFlashId, setXpFlashId] = useState<string | null>(null);
+  const [lastAssetImpact, setLastAssetImpact] = useState<number | null>(null);
+  const [showAssetImpact, setShowAssetImpact] = useState(false);
 
   // Asset form
   const [assetName, setAssetName] = useState('');
