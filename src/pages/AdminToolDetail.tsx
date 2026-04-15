@@ -36,6 +36,7 @@ import { GuiltyPleasureRechnerTool } from '@/components/tools/guilty-pleasure-re
 import { NotfallCheckTool } from '@/components/tools/notfall-check/NotfallCheckTool';
 import { AboAuditTool } from '@/components/tools/abo-audit/AboAuditTool';
 import { LohnerhoherTool } from '@/components/tools/lohnerhoher/LohnerhoherTool';
+import { MeinFinanzplanTool } from '@/components/tools/mein-finanzplan/MeinFinanzplanTool';
 import { VersicherungsCheckTool } from '@/components/tools/versicherungs-check/VersicherungsCheckTool';
 
 // Icon mapping
@@ -169,6 +170,8 @@ export default function AdminToolDetail() {
         return <AboAuditTool mode="internal" />;
       case 'lohnerhoher':
         return <LohnerhoherTool mode="internal" />;
+      case 'mein-finanzplan':
+        return <MeinFinanzplanTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">
