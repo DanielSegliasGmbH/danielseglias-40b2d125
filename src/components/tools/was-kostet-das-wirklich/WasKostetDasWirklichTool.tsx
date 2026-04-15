@@ -81,7 +81,7 @@ export function WasKostetDasWirklichTool({ mode = 'internal' }: Props) {
   };
 
   return (
-    <PdfExportWrapper title="Was kostet das wirklich?">
+    <PdfExportWrapper toolName="Was kostet das wirklich">
       <div className="space-y-4">
         {/* Inputs */}
         <Card>
@@ -324,10 +324,14 @@ export function WasKostetDasWirklichTool({ mode = 'internal' }: Props) {
               context="Oft verwechseln wir Wünsche mit Bedürfnissen. Nimm dir einen Moment."
             />
             <ToolNextStep
-              toolSlug="was-kostet-das-wirklich"
-              primaryAction={{ label: 'Mein Budget prüfen', route: '/app/client-portal/budget' }}
+              primary={{
+                question: 'Wie steht es um dein Budget?',
+                description: 'Prüfe deine Einnahmen und Ausgaben.',
+                targetSlug: 'budget',
+                buttonLabel: 'Mein Budget prüfen',
+              }}
             />
-            <ToolTrustNote />
+            <ToolTrustNote text="Unabhängige Berechnung – keine Produktempfehlung." />
           </>
         )}
       </div>
