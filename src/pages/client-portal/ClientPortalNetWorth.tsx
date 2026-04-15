@@ -517,6 +517,10 @@ export default function ClientPortalNetWorth() {
                   </Select>
                 </div>
                 <div><Label>Betrag (CHF)</Label><Input type="number" min="0" step="100" value={liabAmount} onChange={e => setLiabAmount(e.target.value)} placeholder="0" /></div>
+                <div>
+                  <Label className="flex items-center gap-1.5"><ExternalLink className="h-3.5 w-3.5" /> Link zur Plattform (optional)</Label>
+                  <Input type="url" value={liabUrl} onChange={e => setLiabUrl(e.target.value)} placeholder="z.B. https://www.postfinance.ch" />
+                </div>
                 <Button onClick={() => addLiability.mutate()} disabled={!liabName || !liabAmount || parseFloat(liabAmount) <= 0 || addLiability.isPending} className="w-full">Speichern</Button>
               </div>
             </DialogContent>
