@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { useGamification, getLevel, LEVELS } from '@/hooks/useGamification';
 import { usePeakScore } from '@/hooks/usePeakScore';
+import { useFinanzType } from '@/hooks/useFinanzType';
 import { supabase } from '@/integrations/supabase/client';
 import { AppLayout } from '@/components/AppLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
@@ -111,6 +112,21 @@ function ProfileRankBadge() {
   return (
     <Badge variant="outline" className="text-xs gap-1">
       {rank.emoji} {rank.name}
+    </Badge>
+  );
+}
+
+function ProfileFinanzTypBadge() {
+  const navigate = useNavigate();
+  const { completed, info } = useFinanzType();
+  if (!completed || !info) return null;
+  return (
+    <Badge
+      variant="outline"
+      className="text-xs gap-1 cursor-pointer hover:bg-accent"
+      onClick={() => navigate('/app/client-portal/finanz-typ')}
+    >
+      {info.emoji} {info.shortTitle}
     </Badge>
   );
 }
@@ -224,6 +240,7 @@ export default function Profile() {
                   <Award className="h-3 w-3" /> {levelLabel}
                 </Badge>
                 <ProfileRankBadge />
+                <ProfileFinanzTypBadge />
               </div>
               <div className="flex items-center justify-center gap-3 mt-2 text-xs text-muted-foreground">
                 {memberSince && <span>Mitglied seit {memberSince}</span>}
