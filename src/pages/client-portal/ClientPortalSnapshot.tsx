@@ -2139,16 +2139,98 @@ function SnapshotDetail({
             const amount = typeof fieldData === 'object' ? fieldData.amount : fieldData;
             if (!amount && amount !== 0) return null;
             const provider = typeof fieldData === 'object' ? fieldData.provider : null;
+            const link = typeof fieldData === 'object' ? fieldData.link : null;
             return (
-              <div key={key} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">
+              <div key={key} className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground flex items-center gap-1">
                   {meta.emoji} {meta.label}
-                  {provider && <span className="text-[10px] ml-1">({provider})</span>}
+                  {provider && <span className="text-[10px]">({provider})</span>}
+                  {link && (
+                    <button onClick={() => window.open(link, '_blank', 'noopener,noreferrer')} className="p-0.5 rounded hover:bg-primary/10">
+                      <ExternalLink className="h-3 w-3 text-primary" />
+                    </button>
+                  )}
                 </span>
                 <span className="font-medium text-foreground">CHF {Number(amount).toLocaleString('de-CH')}</span>
               </div>
             );
           })}
+          {Array.isArray(data.bank_accounts) && data.bank_accounts.map((a: any, i: number) => (
+            n(a.balance) > 0 && (
+              <div key={`ba-${i}`} className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground flex items-center gap-1">
+                  🏦 {a.name || 'Konto'}{a.bank && <span className="text-[10px]">({a.bank})</span>}
+                  {a.link && (
+                    <button onClick={() => window.open(a.link, '_blank', 'noopener,noreferrer')} className="p-0.5 rounded hover:bg-primary/10">
+                      <ExternalLink className="h-3 w-3 text-primary" />
+                    </button>
+                  )}
+                </span>
+                <span className="font-medium text-foreground">CHF {Number(a.balance).toLocaleString('de-CH')}</span>
+              </div>
+            )
+          ))}
+          {Array.isArray(data.investment_positions) && data.investment_positions.map((inv: any, i: number) => (
+            n(inv.value) > 0 && (
+              <div key={`inv-${i}`} className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground flex items-center gap-1">
+                  📊 {inv.name || 'Investment'}
+                  {inv.link && (
+                    <button onClick={() => window.open(inv.link, '_blank', 'noopener,noreferrer')} className="p-0.5 rounded hover:bg-primary/10">
+                      <ExternalLink className="h-3 w-3 text-primary" />
+                    </button>
+                  )}
+                </span>
+                <span className="font-medium text-foreground">CHF {Number(inv.value).toLocaleString('de-CH')}</span>
+              </div>
+            )
+          ))}
+          {Array.isArray(data.crypto_positions) && data.crypto_positions.map((c: any, i: number) => (
+            n(c.value) > 0 && (
+              <div key={`cry-${i}`} className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground flex items-center gap-1">
+                  🪙 {c.name || 'Krypto'}
+                  {c.link && (
+                    <button onClick={() => window.open(c.link, '_blank', 'noopener,noreferrer')} className="p-0.5 rounded hover:bg-primary/10">
+                      <ExternalLink className="h-3 w-3 text-primary" />
+                    </button>
+                  )}
+                </span>
+                <span className="font-medium text-foreground">CHF {Number(c.value).toLocaleString('de-CH')}</span>
+              </div>
+            )
+          ))}
+          {Array.isArray(data.properties) && data.properties.map((p: any, i: number) => (
+            n(p.market_value) > 0 && (
+              <div key={`p-${i}`} className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground flex items-center gap-1">
+                  🏠 {p.description || 'Immobilie'}
+                  {p.link && (
+                    <button onClick={() => window.open(p.link, '_blank', 'noopener,noreferrer')} className="p-0.5 rounded hover:bg-primary/10">
+                      <ExternalLink className="h-3 w-3 text-primary" />
+                    </button>
+                  )}
+                </span>
+                <span className="font-medium text-foreground">CHF {Number(p.market_value).toLocaleString('de-CH')}</span>
+              </div>
+            )
+          ))}
+          {Array.isArray(data.credits) && data.credits.map((c: any, i: number) => (
+            n(c.remaining) > 0 && (
+              <div key={`cr-${i}`} className="flex justify-between text-sm">
+                <span className="text-muted-foreground">💳 {c.name || 'Kredit'}</span>
+                <span className="font-medium text-destructive">-CHF {Number(c.remaining).toLocaleString('de-CH')}</span>
+              </div>
+            )
+          ))}
+          {Array.isArray(data.debts) && data.debts.map((d: any, i: number) => (
+            n(d.amount) > 0 && (
+              <div key={`db-${i}`} className="flex justify-between text-sm">
+                <span className="text-muted-foreground">📋 {d.description || 'Schuld'}</span>
+                <span className="font-medium text-destructive">-CHF {Number(d.amount).toLocaleString('de-CH')}</span>
+              </div>
+            )
+          ))}
           {Array.isArray(data.bank_accounts) && data.bank_accounts.map((a: any, i: number) => (
             n(a.balance) > 0 && (
               <div key={`ba-${i}`} className="flex justify-between text-sm">
