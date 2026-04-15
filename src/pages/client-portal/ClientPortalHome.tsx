@@ -16,6 +16,7 @@ import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { NotificationBell } from '@/components/client-portal/NotificationBell';
 import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, Crown, Landmark, Wallet, ClipboardList, TrendingUp, FileBarChart, Gift } from 'lucide-react';
 import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
+import { usePeakScore, usePeakScoreDailyCheck } from '@/hooks/usePeakScore';
 
 const LEVEL_ICONS = [null, Zap, Star, Trophy, Award, Crown];
 
@@ -48,11 +49,19 @@ export default function ClientPortalHome() {
   } = useGamification();
 
   const { data: nextStepResult } = useNextBestStep();
+  const { data: peakScoreData } = usePeakScore();
+  const checkPeakScore = usePeakScoreDailyCheck();
   const firstName = user?.user_metadata?.first_name || 'Kunde';
 
   useEffect(() => {
     const done = localStorage.getItem('client_onboarding_complete');
     if (!done) setShowOnboarding(true);
+  }, []);
+
+  // Daily PeakScore recalculation on login
+  useEffect(() => {
+    checkPeakScore();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Data queries for cockpit cards ──
@@ -182,21 +191,25 @@ export default function ClientPortalHome() {
     );
   }
 
+  const peakScoreDisplay = peakScoreData
+    ? `${peakScoreData.score} Mt.`
+    : '–';
+
   const cockpitCards = [
     {
-      label: 'Nettovermögen',
-      value: assets.length > 0 || liabilities.length > 0 ? fmtCHF(netWorth) : '–',
+      label: 'PeakScore',
+      value: peakScoreDisplay,
       path: '/app/client-portal/net-worth',
       highlight: true,
     },
     {
-      label: 'Budget übrig',
-      value: monthlyIncome > 0 ? fmtCHF(budgetRemaining) : '–',
-      path: '/app/client-portal/budget',
+      label: 'Nettovermögen',
+      value: assets.length > 0 || liabilities.length > 0 ? fmtCHF(netWorth) : '–',
+      path: '/app/client-portal/net-worth',
     },
     {
-      label: 'Sparquote',
-      value: monthlyIncome > 0 ? `${savingsRate}%` : '–',
+      label: 'Budget übrig',
+      value: monthlyIncome > 0 ? fmtCHF(budgetRemaining) : '–',
       path: '/app/client-portal/budget',
     },
     {

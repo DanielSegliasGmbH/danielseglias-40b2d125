@@ -2164,6 +2164,30 @@ export type Database = {
           },
         ]
       }
+      peak_scores: {
+        Row: {
+          calculated_at: string
+          id: string
+          is_snapshot: boolean
+          score: number
+          user_id: string
+        }
+        Insert: {
+          calculated_at?: string
+          id?: string
+          is_snapshot?: boolean
+          score?: number
+          user_id: string
+        }
+        Update: {
+          calculated_at?: string
+          id?: string
+          is_snapshot?: boolean
+          score?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           account_status: string
