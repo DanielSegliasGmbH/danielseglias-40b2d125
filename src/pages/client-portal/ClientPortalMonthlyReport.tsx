@@ -555,6 +555,25 @@ export default function ClientPortalMonthlyReport() {
           </div>
         )}
       </div>
+
+      {/* Share Card Dialog */}
+      <ShareCardGenerator
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        title={`Mein ${monthLabel}`}
+        subtitle="Monatsrückblick"
+        stats={[
+          { label: 'PeakScore', value: `${currentScore}` },
+          { label: 'Sparquote', value: `${savingsRate}%` },
+          { label: 'XP', value: `${xpThisMonth}` },
+          { label: 'Streak', value: `🔥 ${streakDays}` },
+        ]}
+        rank={{ emoji: currentRank.emoji, name: currentRank.name }}
+        theme="dark"
+        format="story"
+        fileName={`finlife-rueckblick-${monthKey}`}
+        cta="Was ist dein PeakScore?"
+      />
     </ClientPortalLayout>
   );
 }
