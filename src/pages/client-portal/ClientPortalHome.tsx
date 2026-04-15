@@ -288,21 +288,17 @@ export default function ClientPortalHome() {
         </motion.div>
 
         {/* ── 3. FINANZ-COCKPIT ── */}
-        <div
-          className="flex gap-3 overflow-x-auto pb-1 snap-x"
-          style={{ scrollbarWidth: 'none' }}
-        >
+        <div className="grid grid-cols-2 gap-2 px-0">
           {cockpitCards.map((card, i) => (
             <motion.div
               key={card.label}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.04 }}
-              className="snap-start"
             >
               <Link to={card.path}>
                 <div className={cn(
-                  "min-w-[150px] p-4 rounded-2xl transition-shadow hover:shadow-md",
+                  "p-4 rounded-2xl transition-shadow hover:shadow-md min-h-[80px] flex flex-col justify-center",
                   card.highlight
                     ? "bg-foreground text-background"
                     : "bg-card border border-border"
@@ -314,7 +310,7 @@ export default function ClientPortalHome() {
                     {card.label}
                   </span>
                   <span className="text-lg font-semibold block mt-1 tracking-tight">
-                    {card.value}
+                    {card.value || '–'}
                   </span>
                 </div>
               </Link>
