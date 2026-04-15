@@ -239,7 +239,7 @@ function useSwipe(onLeft: () => void, onRight: () => void) {
   return { onTouchStart, onTouchEnd };
 }
 
-export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
+export function OnboardingScreen({ onComplete, onStartFinanzTyp }: { onComplete: () => void; onStartFinanzTyp?: () => void }) {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
   const [privacyAcknowledged, setPrivacyAcknowledged] = useState(false);
@@ -271,6 +271,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
 
   const isPrivacySlide = slide.isPrivacy === true;
   const isFinal = slide.isFinal === true;
+  const isFinanzTypGateway = (slide as typeof slides[number] & { isFinanzTypGateway?: boolean }).isFinanzTypGateway === true;
   const canProceed = !isPrivacySlide || privacyAcknowledged;
 
   // Trigger confetti on final slide
