@@ -291,7 +291,7 @@ export default function ClientPortalFinanzTyp() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { awardPoints } = useGamification();
-  const { metaProfile } = useMetaProfile();
+  const { profile } = useMetaProfile();
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [result, setResult] = useState<FinanzType | null>(null);
@@ -301,7 +301,7 @@ export default function ClientPortalFinanzTyp() {
   const totalSteps = QUESTIONS.length;
   const currentQ = QUESTIONS[step];
   const progressPercent = result ? 100 : Math.round((step / totalSteps) * 100);
-  const monthlyIncome = metaProfile?.income ?? 6000;
+  const monthlyIncome = (profile?.monthly_income as number) ?? 6000;
 
   const selectAnswer = useCallback((value: string) => {
     setAnswers(prev => ({ ...prev, [currentQ.id]: value }));
