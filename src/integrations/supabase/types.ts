@@ -1905,6 +1905,36 @@ export type Database = {
         }
         Relationships: []
       }
+      net_worth_snapshots: {
+        Row: {
+          created_at: string
+          entry_id: string
+          entry_type: string
+          id: string
+          snapshot_date: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          entry_id: string
+          entry_type: string
+          id?: string
+          snapshot_date?: string
+          user_id: string
+          value?: number
+        }
+        Update: {
+          created_at?: string
+          entry_id?: string
+          entry_type?: string
+          id?: string
+          snapshot_date?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
       notes: {
         Row: {
           author_id: string | null
