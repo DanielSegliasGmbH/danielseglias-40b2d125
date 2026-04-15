@@ -191,21 +191,25 @@ export default function ClientPortalHome() {
     );
   }
 
+  const peakScoreDisplay = peakScoreData
+    ? `${peakScoreData.score} Mt.`
+    : '–';
+
   const cockpitCards = [
     {
-      label: 'Nettovermögen',
-      value: assets.length > 0 || liabilities.length > 0 ? fmtCHF(netWorth) : '–',
+      label: 'PeakScore',
+      value: peakScoreDisplay,
       path: '/app/client-portal/net-worth',
       highlight: true,
     },
     {
-      label: 'Budget übrig',
-      value: monthlyIncome > 0 ? fmtCHF(budgetRemaining) : '–',
-      path: '/app/client-portal/budget',
+      label: 'Nettovermögen',
+      value: assets.length > 0 || liabilities.length > 0 ? fmtCHF(netWorth) : '–',
+      path: '/app/client-portal/net-worth',
     },
     {
-      label: 'Sparquote',
-      value: monthlyIncome > 0 ? `${savingsRate}%` : '–',
+      label: 'Budget übrig',
+      value: monthlyIncome > 0 ? fmtCHF(budgetRemaining) : '–',
       path: '/app/client-portal/budget',
     },
     {
