@@ -2192,6 +2192,7 @@ export type Database = {
         Row: {
           account_status: string
           created_at: string
+          current_rank: number
           first_name: string
           has_strategy_access: boolean
           id: string
@@ -2206,6 +2207,7 @@ export type Database = {
         Insert: {
           account_status?: string
           created_at?: string
+          current_rank?: number
           first_name: string
           has_strategy_access?: boolean
           id: string
@@ -2220,6 +2222,7 @@ export type Database = {
         Update: {
           account_status?: string
           created_at?: string
+          current_rank?: number
           first_name?: string
           has_strategy_access?: boolean
           id?: string

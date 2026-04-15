@@ -2,20 +2,49 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 
+// ── Rank definitions ──
+export interface RankDef {
+  rank: number;
+  name: string;
+  emoji: string;
+  minScore: number;
+  maxScore: number;
+}
+
+export const RANKS: RankDef[] = [
+  { rank: 1, name: 'Wanderer',  emoji: '🥾', minScore: 0,   maxScore: 3 },
+  { rank: 2, name: 'Knappe',    emoji: '🛡️', minScore: 3,   maxScore: 6 },
+  { rank: 3, name: 'Ritter',    emoji: '⚔️', minScore: 6,   maxScore: 12 },
+  { rank: 4, name: 'Edelmann',  emoji: '🏰', minScore: 12,  maxScore: 36 },
+  { rank: 5, name: 'Fürst',     emoji: '👑', minScore: 36,  maxScore: 120 },
+  { rank: 6, name: 'Souverän',  emoji: '🌟', minScore: 120, maxScore: Infinity },
+];
+
+export function getRankForScore(score: number): RankDef {
+  return RANKS.find(r => score >= r.minScore && score < r.maxScore) || RANKS[0];
+}
+
+export function getRankBuffer(score: number): { isWarning: boolean; buffer: number } {
+  const rank = getRankForScore(score);
+  if (rank.rank <= 1) return { isWarning: false, buffer: score };
+  const buffer = score - rank.minScore;
+  const range = rank.maxScore === Infinity ? 100 : rank.maxScore - rank.minScore;
+  const isWarning = buffer / range < 0.1 && buffer < 1;
+  return { isWarning, buffer: Math.round(buffer * 10) / 10 };
+}
+
+// ── PeakScore data ──
 export interface PeakScoreData {
   score: number | null;
   totalAssets: number;
   totalLiabilities: number;
   monthlyExpenses: number;
-  trend: number | null; // change vs last month
+  trend: number | null;
   loading: boolean;
   hasData: boolean;
-}
-
-function getMonthKey(offset = 0): string {
-  const d = new Date();
-  d.setMonth(d.getMonth() - offset);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  rank: RankDef;
+  savedRank: number;
+  rankBuffer: { isWarning: boolean; buffer: number };
 }
 
 export function usePeakScore(): PeakScoreData {
@@ -51,7 +80,6 @@ export function usePeakScore(): PeakScoreData {
     enabled: !!user,
   });
 
-  // Average of last 3 months expenses
   const { data: avgExpenses = 0, isLoading: l4 } = useQuery({
     queryKey: ['peak-avg-expenses', user?.id],
     queryFn: async () => {
@@ -71,7 +99,6 @@ export function usePeakScore(): PeakScoreData {
     enabled: !!user,
   });
 
-  // Last month's snapshot for trend
   const { data: lastSnapshot } = useQuery({
     queryKey: ['peak-last-snapshot', user?.id],
     queryFn: async () => {
@@ -89,21 +116,38 @@ export function usePeakScore(): PeakScoreData {
     enabled: !!user,
   });
 
+  // Fetch saved rank from profile
+  const { data: profileRank = 1 } = useQuery({
+    queryKey: ['profile-rank', user?.id],
+    queryFn: async () => {
+      if (!user) return 1;
+      const { data } = await supabase
+        .from('profiles')
+        .select('current_rank')
+        .eq('id', user.id)
+        .maybeSingle();
+      return data?.current_rank || 1;
+    },
+    enabled: !!user,
+  });
+
   const totalAssets = assets.reduce((s: number, a: any) => s + Number(a.value), 0);
   const totalLiabilities = liabilities.reduce((s: number, l: any) => s + Number(l.amount), 0);
   const monthlyExpenses = avgExpenses > 0 ? avgExpenses : (metaProfile?.fixed_costs || 0);
-  
+
   const hasData = totalAssets > 0 || totalLiabilities > 0 || monthlyExpenses > 0;
-  
+
   let score: number | null = null;
   if (hasData && monthlyExpenses > 0) {
     score = Math.max(0, (totalAssets - totalLiabilities) / monthlyExpenses);
     score = Math.round(score * 10) / 10;
   } else if (hasData && monthlyExpenses === 0) {
-    score = null; // can't calculate without expenses
+    score = null;
   }
 
   const trend = score !== null && lastSnapshot ? Math.round((score - Number(lastSnapshot.score)) * 10) / 10 : null;
+  const rank = score !== null ? getRankForScore(score) : RANKS[0];
+  const rankBuffer = score !== null ? getRankBuffer(score) : { isWarning: false, buffer: 0 };
 
   return {
     score,
@@ -113,16 +157,10 @@ export function usePeakScore(): PeakScoreData {
     trend,
     loading: l1 || l2 || l3 || l4,
     hasData,
+    rank,
+    savedRank: profileRank,
+    rankBuffer,
   };
-}
-
-export function getPeakScoreRank(score: number): string {
-  if (score >= 36) return 'Finanzielle Freiheit';
-  if (score >= 24) return 'Souverän';
-  if (score >= 12) return 'Stabil';
-  if (score >= 6) return 'Aufbauend';
-  if (score >= 3) return 'Grundlage';
-  return 'Startphase';
 }
 
 export function getPeakScoreGradient(score: number): string {

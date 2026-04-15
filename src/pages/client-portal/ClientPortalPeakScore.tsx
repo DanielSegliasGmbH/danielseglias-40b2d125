@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowUp, ArrowDown, Shield, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { usePeakScore, getPeakScoreRank, getPeakScoreGradient, getPeakScoreBorderColor } from '@/hooks/usePeakScore';
+import { usePeakScore, getPeakScoreGradient, getPeakScoreBorderColor } from '@/hooks/usePeakScore';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,9 +13,8 @@ import { supabase } from '@/integrations/supabase/client';
 export default function ClientPortalPeakScore() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { score, totalAssets, totalLiabilities, monthlyExpenses, trend, hasData } = usePeakScore();
+  const { score, totalAssets, totalLiabilities, monthlyExpenses, trend, hasData, rank } = usePeakScore();
 
-  // Historical snapshots
   const { data: history = [] } = useQuery({
     queryKey: ['peak-score-history', user?.id],
     queryFn: async () => {
@@ -42,13 +41,11 @@ export default function ClientPortalPeakScore() {
     { label: 'Mtl. Ausgaben', value: fmtCHF(monthlyExpenses), color: 'text-muted-foreground' },
   ];
 
-  // Simple bar chart from history
   const maxScore = Math.max(...history.map((h: any) => Number(h.score)), score || 0, 1);
 
   return (
     <ClientPortalLayout>
       <div className="max-w-2xl mx-auto space-y-5">
-        {/* Header */}
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate('/app/client-portal')}>
             <ArrowLeft className="h-5 w-5" />
@@ -56,7 +53,6 @@ export default function ClientPortalPeakScore() {
           <h1 className="text-lg font-semibold text-foreground">PeakScore</h1>
         </div>
 
-        {/* Hero */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <Card className={cn(
             'rounded-2xl border overflow-hidden',
@@ -69,8 +65,8 @@ export default function ClientPortalPeakScore() {
               </span>
               <span className="text-sm text-muted-foreground mt-1">Monate</span>
               {displayScore && (
-                <span className="text-base font-semibold text-foreground/80 mt-1">
-                  {getPeakScoreRank(score)}
+                <span className="text-lg font-bold text-foreground/80 mt-1">
+                  {rank.emoji} {rank.name}
                 </span>
               )}
               {trend !== null && trend !== 0 && (
@@ -86,7 +82,6 @@ export default function ClientPortalPeakScore() {
           </Card>
         </motion.div>
 
-        {/* Breakdown */}
         <Card>
           <CardContent className="p-5">
             <h3 className="text-sm font-semibold text-foreground mb-3">Score-Zusammensetzung</h3>
@@ -109,7 +104,6 @@ export default function ClientPortalPeakScore() {
           </CardContent>
         </Card>
 
-        {/* History chart */}
         {history.length > 1 && (
           <Card>
             <CardContent className="p-5">
@@ -139,7 +133,6 @@ export default function ClientPortalPeakScore() {
           </Card>
         )}
 
-        {/* Coach link */}
         <Card
           className="cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98]"
           onClick={() => navigate('/app/client-portal/coach')}
