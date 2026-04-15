@@ -117,8 +117,8 @@ export function NotificationBell() {
       </Button>
 
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="right" className="w-full sm:max-w-md p-0">
-          <SheetHeader className="px-5 pt-5 pb-3 border-b border-border">
+        <SheetContent side="right" className="w-full sm:max-w-md p-0" style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 12px)' }}>
+          <SheetHeader className="px-5 pt-[50px] pb-3 border-b border-border">
             <div className="flex items-center justify-between">
               <SheetTitle className="text-base">Benachrichtigungen</SheetTitle>
               {unreadCount > 0 && (
@@ -135,7 +135,7 @@ export function NotificationBell() {
             </div>
           </SheetHeader>
 
-          <div className="overflow-y-auto max-h-[calc(100vh-5rem)]">
+          <div className="overflow-y-auto max-h-[calc(100vh-8rem)]" style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 20px)' }}>
             {!notifications.length ? (
               <div className="text-center py-16 px-4">
                 <Bell className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
