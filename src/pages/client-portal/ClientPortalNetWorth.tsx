@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Plus, TrendingUp, TrendingDown, Landmark, Trash2, RefreshCw, ArrowUpRight, ArrowDownRight, ChevronRight, Calendar } from 'lucide-react';
+import { Plus, TrendingUp, TrendingDown, Landmark, Trash2, RefreshCw, ArrowUpRight, ArrowDownRight, ChevronRight, Calendar, ExternalLink, Link2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -94,11 +94,13 @@ export default function ClientPortalNetWorth() {
   const [assetName, setAssetName] = useState('');
   const [assetCategory, setAssetCategory] = useState<string>(ASSET_CATEGORIES[0]);
   const [assetValue, setAssetValue] = useState('');
+  const [assetUrl, setAssetUrl] = useState('');
 
   // Liability form
   const [liabName, setLiabName] = useState('');
   const [liabCategory, setLiabCategory] = useState<string>(LIABILITY_CATEGORIES[0]);
   const [liabAmount, setLiabAmount] = useState('');
+  const [liabUrl, setLiabUrl] = useState('');
 
   const { data: assets = [] } = useQuery({
     queryKey: ['net-worth-assets', user?.id],
