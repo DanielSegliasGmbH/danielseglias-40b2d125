@@ -58,7 +58,9 @@ export default function ClientPortalFriends() {
   const queryClient = useQueryClient();
   const [friendCode, setFriendCode] = useState('');
   const [connecting, setConnecting] = useState(false);
+  const [challengeTarget, setChallengeTarget] = useState<FriendEntry | null>(null);
   const myPeak = usePeakScore();
+  const { canCreateChallenge, createChallenge } = useChallenges();
 
   // Fetch own referral code
   const { data: myProfile } = useQuery({
