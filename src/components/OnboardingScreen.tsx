@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Sparkles, Eye, Link2, Rocket, ChevronRight, ChevronLeft, Shield, Lock, EyeOff, Target } from 'lucide-react';
+import { Sparkles, Eye, Link2, Rocket, ChevronRight, ChevronLeft, Shield, Lock, EyeOff, Target, UserRound } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence, useMotionValue, useTransform, useAnimation } from 'framer-motion';
 
@@ -44,6 +44,12 @@ const slides = [
     title: 'Starte hier',
     description: 'Entdecke dein Dashboard und beginne deinen Weg zu mehr Klarheit, Kontrolle und finanzieller Freiheit.',
     isFinal: true,
+  },
+  {
+    icon: UserRound,
+    title: 'Noch eine Sache...',
+    description: '',
+    isFinanzTypGateway: true,
   },
 ];
 
