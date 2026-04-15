@@ -31,7 +31,7 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
     { key: 'tasks', path: '/app/client-portal/tasks', icon: ClipboardList, label: t('clientPortal.tasks') },
     { key: 'budget', path: '/app/client-portal/budget', icon: PiggyBank, label: t('clientPortal.budget', 'Mein Budget') },
     { key: 'net-worth', path: '/app/client-portal/net-worth', icon: Landmark, label: 'Mein Vermögen' },
-    { key: 'snapshot', path: '/app/client-portal/snapshot', icon: FileBarChart, label: 'Mein Snapshot' },
+    { key: 'snapshot', path: '/app/client-portal/snapshot', icon: Camera, label: 'Mein Snapshot' },
     { key: 'courses', path: '/app/client-portal/courses', icon: GraduationCap, label: t('clientPortal.courses') },
   ];
 
