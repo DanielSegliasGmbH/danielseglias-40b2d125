@@ -40,6 +40,7 @@ import { GuiltyPleasureRechnerTool } from '@/components/tools/guilty-pleasure-re
 import { NotfallCheckTool } from '@/components/tools/notfall-check/NotfallCheckTool';
 import { AboAuditTool } from '@/components/tools/abo-audit/AboAuditTool';
 import { LohnerhoherTool } from '@/components/tools/lohnerhoher/LohnerhoherTool';
+import { MeinFinanzplanTool } from '@/components/tools/mein-finanzplan/MeinFinanzplanTool';
 import { RecommendationCards } from '@/components/client-portal/RecommendationCards';
 import { TOOL_RECOMMENDATIONS } from '@/config/recommendationConfig';
 
@@ -151,6 +152,8 @@ export default function ClientPortalToolDetail() {
         return <AboAuditTool mode="internal" />;
       case 'lohnerhoher':
         return <LohnerhoherTool mode="internal" />;
+      case 'mein-finanzplan':
+        return <MeinFinanzplanTool mode="internal" />;
       default:
         return (
           <Card>

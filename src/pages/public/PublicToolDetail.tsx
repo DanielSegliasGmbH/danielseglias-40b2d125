@@ -35,6 +35,7 @@ import { GuiltyPleasureRechnerTool } from '@/components/tools/guilty-pleasure-re
 import { NotfallCheckTool } from '@/components/tools/notfall-check/NotfallCheckTool';
 import { AboAuditTool } from '@/components/tools/abo-audit/AboAuditTool';
 import { LohnerhoherTool } from '@/components/tools/lohnerhoher/LohnerhoherTool';
+import { MeinFinanzplanTool } from '@/components/tools/mein-finanzplan/MeinFinanzplanTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -241,6 +242,10 @@ export default function PublicToolDetail() {
               ) : slug === 'lohnerhoher' ? (
                 <div className="mb-8">
                   <LohnerhoherTool mode="public" />
+                </div>
+              ) : slug === 'mein-finanzplan' ? (
+                <div className="mb-8">
+                  <MeinFinanzplanTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">

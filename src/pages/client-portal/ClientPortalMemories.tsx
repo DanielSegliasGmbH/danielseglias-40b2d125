@@ -34,6 +34,7 @@ const TOOL_LABELS: Record<string, string> = {
   'notfall-check': 'Notfall-Check',
   'abo-audit': 'Abo-Audit',
   'lohnerhoher': 'Lohnerhöher',
+  'mein-finanzplan': 'Mein Finanzplan',
   'lebenzeit-rechner': 'Lebenszeit-Rechner',
   'recovery-analyse': 'Recovery-Analyse',
   'zeitverlust-simulator': 'Zeitverlust-Simulator',
