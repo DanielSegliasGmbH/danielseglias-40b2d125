@@ -51,6 +51,12 @@ export function useChallenges() {
   const createChallenge = useMutation({
     mutationFn: async ({ friendId, myScore, friendScore }: { friendId: string; myScore: number; friendScore: number }) => {
       if (!user?.id) throw new Error('Not authenticated');
+      // Check both users allow challenges
+      const { data: myProfile } = await supabase.from('profiles').select('challenges_allowed').eq('id', user.id).maybeSingle();
+      if (myProfile?.challenges_allowed === false) throw new Error('Du hast Challenges deaktiviert.');
+      const { data: friendProfile } = await supabase.from('profiles').select('challenges_allowed').eq('id', friendId).maybeSingle();
+      if (friendProfile?.challenges_allowed === false) throw new Error('Dein Freund hat Challenges deaktiviert.');
+
       const { error } = await supabase.from('challenges').insert({
         challenger_id: user.id,
         challenged_id: friendId,
