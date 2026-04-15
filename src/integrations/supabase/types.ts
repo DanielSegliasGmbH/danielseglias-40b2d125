@@ -1437,6 +1437,36 @@ export type Database = {
         }
         Relationships: []
       }
+      finanz_type_results: {
+        Row: {
+          answers: Json
+          completed: boolean
+          created_at: string
+          finanz_type: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          answers?: Json
+          completed?: boolean
+          created_at?: string
+          finanz_type?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          completed?: boolean
+          created_at?: string
+          finanz_type?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       gamification_actions: {
         Row: {
           action_ref: string
