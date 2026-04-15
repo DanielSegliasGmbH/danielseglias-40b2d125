@@ -208,7 +208,9 @@ export type Database = {
           created_at: string
           expense_date: string
           id: string
+          is_recurring: boolean
           note: string | null
+          recurring_frequency: string | null
           updated_at: string
           user_id: string
         }
@@ -218,7 +220,9 @@ export type Database = {
           created_at?: string
           expense_date?: string
           id?: string
+          is_recurring?: boolean
           note?: string | null
+          recurring_frequency?: string | null
           updated_at?: string
           user_id: string
         }
@@ -228,7 +232,9 @@ export type Database = {
           created_at?: string
           expense_date?: string
           id?: string
+          is_recurring?: boolean
           note?: string | null
+          recurring_frequency?: string | null
           updated_at?: string
           user_id?: string
         }
