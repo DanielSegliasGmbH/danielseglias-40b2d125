@@ -36,6 +36,7 @@ interface Product {
   payment_interval: string;
   notes: string | null;
   document_url: string | null;
+  portal_url: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -48,6 +49,7 @@ type ProductFormData = {
   payment_interval: string;
   notes: string;
   document_url: string;
+  portal_url: string;
 };
 
 const EMPTY_FORM: ProductFormData = {
@@ -58,6 +60,7 @@ const EMPTY_FORM: ProductFormData = {
   payment_interval: 'monatlich',
   notes: '',
   document_url: '',
+  portal_url: '',
 };
 
 // ─── Constants ─────────────────────────────────────────────────
@@ -168,6 +171,7 @@ export default function ClientPortalInsurances() {
         payment_interval: data.payment_interval,
         notes: data.notes || null,
         document_url: data.document_url || null,
+        portal_url: data.portal_url || null,
         customer_id: customerId!,
         user_id: user!.id,
       };
@@ -227,6 +231,7 @@ export default function ClientPortalInsurances() {
       payment_interval: p.payment_interval,
       notes: p.notes || '',
       document_url: p.document_url || '',
+      portal_url: p.portal_url || '',
     });
     setDialogOpen(true);
   };
