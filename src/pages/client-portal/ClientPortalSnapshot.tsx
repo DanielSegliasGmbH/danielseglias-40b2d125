@@ -2292,10 +2292,7 @@ function SnapshotComparison({ older, newer }: { older: any; newer: any }) {
           'p-3 rounded-xl text-xs font-medium text-center',
           freedomMonths > 0 ? 'bg-primary/10 text-primary' : 'bg-destructive/10 text-destructive'
         )}>
-          {freedomMonths > 0
-            ? `Seit deinem letzten Snapshot: +${formatSnapshotTrend(freedomMonths).replace('Seit deinem letzten Snapshot: +', '')}` 
-            : formatSnapshotTrend(freedomMonths)
-          }
+          {formatSnapshotTrend(freedomMonths)}
         </div>
       )}
 
