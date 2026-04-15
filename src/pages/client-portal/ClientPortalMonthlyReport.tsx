@@ -8,9 +8,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Minus, Share2, Download, Sparkles, ArrowLeft } from 'lucide-react';
-import html2canvas from 'html2canvas';
+import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Minus, Share2, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
+import { ShareCardGenerator } from '@/components/client-portal/ShareCardGenerator';
 import { getRankForScore, usePeakScore } from '@/hooks/usePeakScore';
 import { Link, useSearchParams } from 'react-router-dom';
 
@@ -513,52 +513,20 @@ export default function ClientPortalMonthlyReport() {
 
               {/* SCREEN 5: Teilen */}
               {slide === 4 && (
-                <div className="space-y-4">
-                  <div ref={shareRef}>
-                    <Card className="bg-foreground text-background overflow-hidden">
-                      <CardContent className="p-6 space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Sparkles className="h-4 w-4" />
-                            <span className="text-xs font-medium opacity-60">FinLife ✦</span>
-                          </div>
-                          <span className="text-[10px] opacity-40">{monthLabel}</span>
-                        </div>
-
-                        <div className="text-center py-3">
-                          <p className="text-4xl mb-2">{currentRank.emoji}</p>
-                          <p className="text-2xl font-bold">{currentScore} Monate</p>
-                          <p className="text-sm opacity-60 mt-1">{currentRank.name}</p>
-                        </div>
-
-                        <div className="grid grid-cols-3 gap-2 bg-background/10 rounded-xl p-3">
-                          <div className="text-center">
-                            <p className="text-lg font-bold">{savingsRate}%</p>
-                            <p className="text-[9px] opacity-50">Sparquote</p>
-                          </div>
-                          <div className="text-center">
-                            <p className="text-lg font-bold">{xpThisMonth}</p>
-                            <p className="text-[9px] opacity-50">XP</p>
-                          </div>
-                          <div className="text-center">
-                            <p className="text-lg font-bold">🔥 {streakDays}</p>
-                            <p className="text-[9px] opacity-50">Streak</p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Button onClick={handleWhatsApp} className="w-full gap-2">
-                      <Share2 className="h-4 w-4" />
-                      Auf WhatsApp teilen
-                    </Button>
-                    <Button onClick={handleShare} variant="outline" className="w-full gap-2">
-                      <Download className="h-4 w-4" />
-                      Screenshot speichern
-                    </Button>
-                  </div>
+                <div className="space-y-4 text-center">
+                  <Card className="bg-muted/50">
+                    <CardContent className="p-6 space-y-3">
+                      <p className="text-3xl">📤</p>
+                      <p className="text-base font-bold text-foreground">Teile deinen Rückblick</p>
+                      <p className="text-sm text-muted-foreground">
+                        Zeige deinen Freunden, wie dein {MONTHS[m - 1]} war!
+                      </p>
+                      <Button className="w-full gap-2" onClick={() => setShareOpen(true)}>
+                        <Share2 className="h-4 w-4" />
+                        Share-Card erstellen
+                      </Button>
+                    </CardContent>
+                  </Card>
                 </div>
               )}
             </motion.div>
