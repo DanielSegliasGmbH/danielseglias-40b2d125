@@ -518,7 +518,7 @@ export default function ClientPortalHome() {
         )}
 
         {/* ── 5. SCHNELLZUGRIFF ── */}
-        <div className="grid grid-cols-4 gap-2.5">
+        <div className="grid grid-cols-5 gap-2">
           {quickAccess.map((item, i) => (
             <motion.div
               key={item.label}
