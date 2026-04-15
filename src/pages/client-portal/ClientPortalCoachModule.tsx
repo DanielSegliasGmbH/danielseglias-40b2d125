@@ -20,7 +20,7 @@ import {
   Brain, Eye, Target, LayoutGrid, Shield, Settings2, TrendingUp, Rocket, Star, RotateCcw,
   MessageSquare, BarChart3, CheckSquare, Lightbulb, Info, Mic, MicOff, Loader2, Copy, Share2,
   Sparkles, Play, BookOpen, Trophy, DollarSign, PiggyBank, CreditCard, ClipboardCheck,
-  ArrowRight, PartyPopper, Zap, Shield,
+  ArrowRight, PartyPopper, Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { RecommendationCards } from '@/components/client-portal/RecommendationCards';
