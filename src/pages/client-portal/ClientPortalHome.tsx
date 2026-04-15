@@ -57,20 +57,40 @@ export default function ClientPortalHome() {
   const { score, rank: peakRank } = usePeakScore();
   const firstName = user?.user_metadata?.first_name || 'Kunde';
 
-  const { data: lifeFilmCompleted = false } = useQuery({
-    queryKey: ['life-film-completed', user?.id],
+  const { data: lifeFilmData } = useQuery({
+    queryKey: ['life-film-status', user?.id],
     queryFn: async () => {
-      if (!user) return false;
+      if (!user) return null;
       const { data } = await supabase
         .from('life_film_data')
-        .select('completed')
+        .select('completed, monthly_income, monthly_expenses, total_savings, age, target_retirement_age')
         .eq('user_id', user.id)
         .eq('completed', true)
         .maybeSingle();
-      return !!data;
+      return data;
     },
     enabled: !!user,
   });
+
+  const lifeFilmCompleted = !!lifeFilmData;
+
+  // Compute potential difference for completed film summary
+  const lifeFilmDifference = useMemo(() => {
+    if (!lifeFilmData) return 0;
+    const { monthly_income, monthly_expenses, total_savings, age, target_retirement_age } = lifeFilmData;
+    const years = (target_retirement_age || 65) - (age || 30);
+    const monthlySavings = (monthly_income || 0) - (monthly_expenses || 0);
+    const discretionaryReduction = (monthly_expenses || 0) * 0.4 * 0.2;
+    const additionalSavings = (monthly_income || 0) * 0.1;
+    const extra3a = 7258 / 12;
+    const extraKK = 600 / 12;
+    const optimizedSavings = monthlySavings + discretionaryReduction + additionalSavings + extra3a + extraKK;
+    const currentWealth = (total_savings || 0) * Math.pow(1.04, years) +
+      Math.max(0, monthlySavings) * 12 * ((Math.pow(1.04, years) - 1) / 0.04);
+    const optimizedWealth = (total_savings || 0) * Math.pow(1.05, years) +
+      Math.max(0, optimizedSavings) * 12 * ((Math.pow(1.05, years) - 1) / 0.05);
+    return Math.max(0, Math.round(optimizedWealth - currentWealth));
+  }, [lifeFilmData]);
 
   useEffect(() => {
     const done = localStorage.getItem('client_onboarding_complete');
@@ -263,27 +283,47 @@ export default function ClientPortalHome() {
         <RankWarningBanner />
 
         {/* ── LEBENSFILM CTA ── */}
-        {!lifeFilmCompleted && (
+        {!lifeFilmCompleted ? (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
             <Card
-              className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent cursor-pointer active:scale-[0.99] transition-transform"
+              className="overflow-hidden cursor-pointer active:scale-[0.99] transition-transform border-0"
               onClick={() => navigate('/app/client-portal/life-film')}
             >
-              <CardContent className="p-4 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
-                  <Film className="h-5 w-5 text-primary" />
+              <CardContent className="p-0">
+                <div className="bg-gradient-to-r from-foreground to-primary/80 p-5 flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-background/15 flex items-center justify-center shrink-0">
+                    <span className="text-2xl">🎬</span>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <h3 className="font-bold text-sm text-background">Dein Lebensfilm</h3>
+                      <span className="text-[10px] font-bold bg-background/20 text-background px-1.5 py-0.5 rounded-full">+150 XP</span>
+                    </div>
+                    <p className="text-xs text-background/70 line-clamp-2">
+                      Erfahre, wie deine finanzielle Zukunft aussehen könnte – in 2 Minuten.
+                    </p>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-background/60 shrink-0" />
                 </div>
-                <div className="min-w-0 flex-1">
-                  <h3 className="font-semibold text-sm text-foreground">Dein Lebensfilm 🎬</h3>
-                  <p className="text-xs text-muted-foreground line-clamp-1">Entdecke deine finanzielle Zukunft in 2 Minuten</p>
-                </div>
-                <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+              </CardContent>
+            </Card>
+          </motion.div>
+        ) : (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
+            <Card
+              className="cursor-pointer active:scale-[0.99] transition-transform border-border/50"
+              onClick={() => navigate('/app/client-portal/life-film-result')}
+            >
+              <CardContent className="p-3 flex items-center gap-3">
+                <span className="text-base">🎬</span>
+                <p className="text-xs text-muted-foreground flex-1">
+                  Dein Lebensfilm: <span className="font-bold text-foreground">CHF {lifeFilmDifference.toLocaleString('de-CH')}</span> Potenzial entdeckt.
+                </p>
+                <span className="text-xs text-primary font-medium whitespace-nowrap">Nochmal ansehen →</span>
               </CardContent>
             </Card>
           </motion.div>
         )}
-
-        {/* ── 2. LEVEL & STREAK BAR ── */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
