@@ -292,10 +292,6 @@ export default function ClientPortalFriends() {
                         </p>
                       </div>
                       <div className="text-right shrink-0">
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <Flame className="h-3 w-3 text-orange-500" />
-                          <span>{friend.streak}d</span>
-                        </div>
                         {idx === 0 && friends.length > 1 && (
                           <Badge variant="default" className="text-[9px] px-1.5 py-0 mt-1">
                             #1
