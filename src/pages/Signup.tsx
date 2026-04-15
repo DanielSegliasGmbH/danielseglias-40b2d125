@@ -72,6 +72,22 @@ export default function Signup() {
       const uid = sessionData?.session?.user?.id;
       if (uid) {
         saveConsent.mutate({ userId: uid });
+
+        // Process referral code if provided
+        if (referralCode.trim()) {
+          const { data: referrer } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('referral_code', referralCode.trim().toUpperCase())
+            .maybeSingle();
+          if (referrer) {
+            await supabase.from('referrals').insert({
+              referrer_id: referrer.id,
+              referred_user_id: uid,
+              status: 'pending',
+            });
+          }
+        }
       }
       toast({ title: t('auth.signup'), description: t('auth.signupSuccess') });
     }
