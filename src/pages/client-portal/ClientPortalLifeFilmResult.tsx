@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Film, TrendingUp, AlertTriangle, CheckCircle, Sparkles } from 'lucide-react';
+import { AlternativeTimeline } from '@/components/client-portal/life-film/AlternativeTimeline';
 
 // ── Constants ──
 const INFLATION = 0.02;
