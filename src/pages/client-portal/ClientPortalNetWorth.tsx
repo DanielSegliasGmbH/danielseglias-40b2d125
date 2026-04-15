@@ -386,6 +386,10 @@ export default function ClientPortalNetWorth() {
           </Card>
         </motion.div>
 
+        {/* PeakScore impact after asset add */}
+        <PeakScoreImpact impact={lastAssetImpact} show={showAssetImpact} className="px-1" />
+        </motion.div>
+
         {/* Net worth chart */}
         {validChartData.length >= 2 && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
