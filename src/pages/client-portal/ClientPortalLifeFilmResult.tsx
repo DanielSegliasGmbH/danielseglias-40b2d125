@@ -346,12 +346,20 @@ const DOT_STYLES = {
 
 export default function ClientPortalLifeFilmResult() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const firstName = user?.user_metadata?.first_name || 'Du';
   const { awardPoints } = useGamification();
   const xpAwarded = useRef(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const { data: filmData, isLoading } = useQuery({
+  // Check if viewing an archived film (read-only)
+  const archiveState = location.state as { archiveData?: LifeFilmData; readOnly?: boolean } | null;
+  const isReadOnly = archiveState?.readOnly === true;
+  const archivedFilmData = archiveState?.archiveData;
+
+  const { data: liveFilmData, isLoading } = useQuery({
     queryKey: ['life-film-data', user?.id],
     queryFn: async () => {
       if (!user) return null;
@@ -363,8 +371,32 @@ export default function ClientPortalLifeFilmResult() {
         .maybeSingle();
       return data as LifeFilmData | null;
     },
-    enabled: !!user,
+    enabled: !!user && !isReadOnly,
   });
+
+  const filmData = isReadOnly && archivedFilmData ? archivedFilmData : liveFilmData;
+
+  const handleSaveToArchive = async () => {
+    if (!user || !filmData || isSaving) return;
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('life_film_archives')
+        .insert({
+          user_id: user.id,
+          film_data: filmData as unknown as Record<string, unknown>,
+          saved_at: new Date().toISOString(),
+        });
+      if (error) throw error;
+      queryClient.invalidateQueries({ queryKey: ['life-film-archives'] });
+      awardPoints('life_film_archived', `archive_${Date.now()}`);
+      toast.success('Lebensfilm gespeichert ✓');
+    } catch {
+      toast.error('Fehler beim Speichern');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const timeline = useMemo(() => {
     if (!filmData || !filmData.age) return [];
