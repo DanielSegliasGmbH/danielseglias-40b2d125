@@ -125,7 +125,7 @@ export default function ClientPortalSnapshot() {
       });
       if (error) throw error;
 
-      await awardPoints('snapshot_completed', 100);
+      await awardPoints('snapshot_completed', 'snapshot_' + Date.now());
       queryClient.invalidateQueries({ queryKey: ['financial-snapshots'] });
       toast({ title: 'Snapshot gespeichert! 📸', description: '+100 XP verdient' });
       setForm(EMPTY_FORM);
