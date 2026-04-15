@@ -14,7 +14,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
-import { Plus, ChevronLeft, ChevronRight, Pencil, Wallet, TrendingDown, PiggyBank, Percent, Trash2, RefreshCw } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Plus, ChevronLeft, ChevronRight, Pencil, Wallet, TrendingDown, PiggyBank, Percent, Trash2, RefreshCw, ArrowLeftRight } from 'lucide-react';
 import { PrivateValue } from '@/components/client-portal/PrivateValue';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -22,6 +23,7 @@ import { motion } from 'framer-motion';
 import { useGamification } from '@/hooks/useGamification';
 import { usePeakScore } from '@/hooks/usePeakScore';
 import { PeakScoreImpact } from '@/components/client-portal/PeakScoreImpact';
+import { CashflowTab } from '@/components/client-portal/CashflowTab';
 
 const CATEGORIES = [
   'Wohnen',
