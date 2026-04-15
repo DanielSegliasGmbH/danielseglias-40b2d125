@@ -105,7 +105,17 @@ const ACHIEVEMENTS: AchievementDef[] = [
   },
 ];
 
-export default function Profile() {
+function ProfileRankBadge() {
+  const { score, rank } = usePeakScore();
+  if (score === null) return null;
+  return (
+    <Badge variant="outline" className="text-xs gap-1">
+      {rank.emoji} {rank.name}
+    </Badge>
+  );
+}
+
+
   const { t } = useTranslation();
   const { user, role, signOut } = useAuth();
   const navigate = useNavigate();
