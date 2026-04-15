@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { PageTransition } from '@/components/PageTransition';
 import { useNavigate } from 'react-router-dom';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
@@ -83,6 +84,7 @@ export default function ClientPortalMemories() {
 
   return (
     <ClientPortalLayout>
+      <PageTransition>
       <ScreenHeader title={t('clientPortal.memories', 'Erinnerungen')} />
       <p className="text-sm text-muted-foreground mb-6">{t('clientPortal.memoriesDesc', 'Dein persönliches Aktivitäts-Logbuch')}</p>
 
@@ -275,6 +277,7 @@ export default function ClientPortalMemories() {
           )}
         </DialogContent>
       </Dialog>
+      </PageTransition>
     </ClientPortalLayout>
   );
 }

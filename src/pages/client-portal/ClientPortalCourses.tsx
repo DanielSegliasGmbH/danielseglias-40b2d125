@@ -133,8 +133,14 @@ export default function ClientPortalCourses() {
 
         {modules?.length === 0 && !modulesLoading && (
           <Card>
-            <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground">Noch keine Module vorhanden.</p>
+            <CardContent className="py-12 flex flex-col items-center justify-center text-center">
+              <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mb-4">
+                <GraduationCap className="h-7 w-7 text-muted-foreground" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">Noch keine Module vorhanden</h3>
+              <p className="text-sm text-muted-foreground max-w-xs">
+                Dein Berater wird hier bald Inhalte für dich freischalten.
+              </p>
             </CardContent>
           </Card>
         )}
