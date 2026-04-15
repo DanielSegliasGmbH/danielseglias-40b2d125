@@ -248,6 +248,7 @@ interface FieldConfig {
   emoji: string;
   hint?: string;
   moreLink?: string;
+  articleId?: string;
   showProvider?: boolean;
   showLink?: boolean;
   isCHF?: boolean;
@@ -271,7 +272,7 @@ const STEPS: StepConfig[] = [
         label: 'Säule 3a',
         emoji: '💎',
         hint: 'Du findest den Betrag auf deinem 3a-Kontoauszug oder im Online-Portal.',
-        moreLink: '/app/client-portal/library',
+        articleId: '3a-steuervorteile',
         showProvider: true,
         showLink: true,
         isCHF: true,
@@ -281,7 +282,7 @@ const STEPS: StepConfig[] = [
         label: 'Freizügigkeit',
         emoji: '🔄',
         hint: 'Falls du in der Vergangenheit die Stelle gewechselt hast, könnte hier Geld liegen.',
-        moreLink: '/app/client-portal/library',
+        articleId: 'vorsorgeluecke',
         showProvider: true,
         showLink: true,
         isCHF: true,
@@ -291,7 +292,7 @@ const STEPS: StepConfig[] = [
         label: 'Pensionskasse (BVG)',
         emoji: '🏛️',
         hint: "Diesen Betrag findest du auf deinem Pensionskassenausweis unter 'Austrittsleistung' oder 'Freizügigkeitsleistung'.",
-        moreLink: '/app/client-portal/library',
+        articleId: 'drei-saeulen-system',
         showProvider: true,
         showLink: true,
         isCHF: true,
@@ -301,6 +302,7 @@ const STEPS: StepConfig[] = [
         label: 'AHV (geschätzte Jahresrente)',
         emoji: '🇨🇭',
         hint: 'Deine AHV-Rente wird basierend auf deinem Einkommen geschätzt. Du kannst den genauen Betrag bei deiner Ausgleichskasse anfragen.',
+        articleId: 'ahv-grundlagen',
         isCHF: true,
       },
     ],
