@@ -65,6 +65,7 @@ import ClientPortalFriends from "./pages/client-portal/ClientPortalFriends";
 import ClientPortalPeakScore from "./pages/client-portal/ClientPortalPeakScore";
 import ClientPortalLifeFilm from "./pages/client-portal/ClientPortalLifeFilm";
 import ClientPortalLifeFilmResult from "./pages/client-portal/ClientPortalLifeFilmResult";
+import ClientPortalLifeFilmArchive from "./pages/client-portal/ClientPortalLifeFilmArchive";
 import ClientPortalFinanzTyp from "./pages/client-portal/ClientPortalFinanzTyp";
 import ClientPortalSettings from "./pages/client-portal/ClientPortalSettings";
 import ClientPortalSnapshot from "./pages/client-portal/ClientPortalSnapshot";

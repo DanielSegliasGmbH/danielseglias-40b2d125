@@ -628,6 +628,52 @@ export default function ClientPortalLifeFilmResult() {
               filmData={filmData}
               baseDelay={timeline.length * 0.06 + 1.2}
             />
+
+            {/* Save & Archive buttons */}
+            {!isReadOnly && (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: timeline.length * 0.06 + 1.8 }}
+                className="space-y-3 mt-8"
+              >
+                <Separator />
+                <Button
+                  className="w-full gap-2"
+                  size="lg"
+                  onClick={handleSaveToArchive}
+                  disabled={isSaving}
+                >
+                  <Save className="h-4 w-4" />
+                  {isSaving ? 'Wird gespeichert...' : 'Lebensfilm speichern 📸'}
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full gap-2"
+                  onClick={() => navigate('/app/client-portal/life-film-archive')}
+                >
+                  <Archive className="h-4 w-4" />
+                  Archiv anzeigen
+                </Button>
+              </motion.div>
+            )}
+
+            {isReadOnly && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="mt-8"
+              >
+                <Button
+                  variant="outline"
+                  className="w-full gap-2"
+                  onClick={() => navigate('/app/client-portal/life-film-archive')}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Zurück zum Archiv
+                </Button>
+              </motion.div>
+            )}
           </motion.div>
         )}
       </div>
