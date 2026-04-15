@@ -970,6 +970,10 @@
     "steuerCheck": {
       "name": "Steuer-Check",
       "description": "Finde Steueroptimierungen: 3a-Potenzial, PK-Einkauf und vergessene Abzüge."
+    },
+    "versicherungsCheck": {
+      "name": "Versicherungs-Check",
+      "description": "Identifiziere Versicherungslücken und finde heraus, wo du gut abgesichert bist."
     }
   }
 }
