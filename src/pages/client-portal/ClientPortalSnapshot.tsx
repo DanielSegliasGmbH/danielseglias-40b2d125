@@ -603,6 +603,30 @@ export default function ClientPortalSnapshot() {
 
   return (
     <ClientPortalLayout>
+      {/* Confetti celebration */}
+      {showConfetti && (
+        <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+          {Array.from({ length: 50 }).map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 rounded-full"
+              style={{
+                left: `${Math.random() * 100}%`,
+                backgroundColor: ['hsl(var(--primary))', '#FFD700', '#FF6B35', '#4CAF50', '#E91E63'][i % 5],
+              }}
+              initial={{ top: '-5%', opacity: 1, scale: 1, rotate: 0 }}
+              animate={{
+                top: '110%',
+                opacity: [1, 1, 0],
+                scale: [1, 1.5, 0.5],
+                rotate: Math.random() * 720 - 360,
+                x: (Math.random() - 0.5) * 200,
+              }}
+              transition={{ duration: 2 + Math.random(), delay: i * 0.04, ease: 'easeOut' }}
+            />
+          ))}
+        </div>
+      )}
       <div className="max-w-2xl mx-auto space-y-4">
         {/* Header */}
         <div className="flex items-center gap-3">
