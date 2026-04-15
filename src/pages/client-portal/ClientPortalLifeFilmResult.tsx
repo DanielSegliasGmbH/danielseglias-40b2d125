@@ -384,7 +384,7 @@ export default function ClientPortalLifeFilmResult() {
         .from('life_film_archives')
         .insert([{
           user_id: user.id,
-          film_data: filmData as unknown as Record<string, unknown>,
+          film_data: JSON.parse(JSON.stringify(filmData)),
           saved_at: new Date().toISOString(),
         }]);
       if (error) throw error;
