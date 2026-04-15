@@ -99,7 +99,7 @@ export default function ClientPortalFriends() {
 
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, first_name, last_name, current_rank')
+        .select('id, first_name, last_name, current_rank, leaderboard_visible, peak_score_visible, challenges_allowed')
         .in('id', friendIds);
 
       const { data: scores } = await supabase
@@ -122,18 +122,24 @@ export default function ClientPortalFriends() {
       });
 
       return friendIds.map(fid => {
-        const profile = (profiles as FriendProfile[] | null)?.find(p => p.id === fid);
+        const profile = (profiles as Array<FriendProfile & { leaderboard_visible?: boolean; peak_score_visible?: boolean; challenges_allowed?: boolean }> | null)?.find(p => p.id === fid);
         const scoreRow = (scores as Array<{ user_id: string; score: number }> | null)?.find(s => s.user_id === fid);
         const peakScore = scoreRow?.score ?? 0;
         const rank = getRankForScore(peakScore);
         const lastScore = snapshotMap.get(fid);
         const trend = lastScore !== undefined ? Math.round((peakScore - lastScore) * 10) / 10 : null;
+        const isHidden = profile?.leaderboard_visible === false;
+        const scoreHidden = profile?.peak_score_visible === false;
+        const challengesAllowed = profile?.challenges_allowed !== false;
         return {
           id: fid,
           name: profile ? `${profile.first_name} ${profile.last_name?.charAt(0) || ''}.` : 'Unbekannt',
-          peakScore,
-          rank,
-          trend,
+          peakScore: scoreHidden ? 0 : peakScore,
+          rank: scoreHidden ? getRankForScore(0) : rank,
+          trend: scoreHidden ? null : trend,
+          isHidden,
+          scoreHidden,
+          challengesAllowed,
         };
       });
     },
