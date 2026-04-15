@@ -33,6 +33,7 @@ import { ThreeAAnalyzerTool } from '@/components/tools/three-a-analyzer/ThreeAAn
 import { SteuerCheckTool } from '@/components/tools/steuer-check/SteuerCheckTool';
 import { WasKostetDasWirklichTool } from '@/components/tools/was-kostet-das-wirklich/WasKostetDasWirklichTool';
 import { GuiltyPleasureRechnerTool } from '@/components/tools/guilty-pleasure-rechner/GuiltyPleasureRechnerTool';
+import { NotfallCheckTool } from '@/components/tools/notfall-check/NotfallCheckTool';
 import { VersicherungsCheckTool } from '@/components/tools/versicherungs-check/VersicherungsCheckTool';
 
 // Icon mapping
@@ -160,6 +161,8 @@ export default function AdminToolDetail() {
         return <WasKostetDasWirklichTool mode="internal" />;
       case 'guilty-pleasure-rechner':
         return <GuiltyPleasureRechnerTool mode="internal" />;
+      case 'notfall-check':
+        return <NotfallCheckTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">

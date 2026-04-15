@@ -37,6 +37,7 @@ import { SteuerCheckTool } from '@/components/tools/steuer-check/SteuerCheckTool
 import { VersicherungsCheckTool } from '@/components/tools/versicherungs-check/VersicherungsCheckTool';
 import { WasKostetDasWirklichTool } from '@/components/tools/was-kostet-das-wirklich/WasKostetDasWirklichTool';
 import { GuiltyPleasureRechnerTool } from '@/components/tools/guilty-pleasure-rechner/GuiltyPleasureRechnerTool';
+import { NotfallCheckTool } from '@/components/tools/notfall-check/NotfallCheckTool';
 import { RecommendationCards } from '@/components/client-portal/RecommendationCards';
 import { TOOL_RECOMMENDATIONS } from '@/config/recommendationConfig';
 
@@ -142,6 +143,8 @@ export default function ClientPortalToolDetail() {
         return <WasKostetDasWirklichTool mode="internal" />;
       case 'guilty-pleasure-rechner':
         return <GuiltyPleasureRechnerTool mode="internal" />;
+      case 'notfall-check':
+        return <NotfallCheckTool mode="internal" />;
       default:
         return (
           <Card>
