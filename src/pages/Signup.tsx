@@ -23,6 +23,7 @@ export default function Signup() {
   const [isLoading, setIsLoading] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [referralCode, setReferralCode] = useState('');
   const saveConsent = useSaveConsent();
   const { signUp, user, role, loading } = useAuth();
   const navigate = useNavigate();
@@ -71,6 +72,22 @@ export default function Signup() {
       const uid = sessionData?.session?.user?.id;
       if (uid) {
         saveConsent.mutate({ userId: uid });
+
+        // Process referral code if provided
+        if (referralCode.trim()) {
+          const { data: referrer } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('referral_code', referralCode.trim().toUpperCase())
+            .maybeSingle();
+          if (referrer) {
+            await supabase.from('referrals').insert({
+              referrer_id: referrer.id,
+              referred_user_id: uid,
+              status: 'pending',
+            });
+          }
+        }
       }
       toast({ title: t('auth.signup'), description: t('auth.signupSuccess') });
     }
@@ -193,6 +210,19 @@ export default function Signup() {
                 {' '}gelesen und akzeptiere sie (Version {CURRENT_PRIVACY_VERSION}).
               </label>
             </div>
+          </div>
+
+          {/* Referral code (optional) */}
+          <div className="space-y-2">
+            <Label htmlFor="referralCode">Einladungscode (optional)</Label>
+            <Input
+              id="referralCode"
+              placeholder="z.B. DANIEL202600"
+              value={referralCode}
+              onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+              disabled={isLoading}
+              className="h-14 rounded-2xl text-base px-4 font-mono tracking-wide"
+            />
           </div>
 
           <Button type="submit" className="w-full h-14 rounded-2xl text-base font-semibold" disabled={isLoading || !isFormValid}>
