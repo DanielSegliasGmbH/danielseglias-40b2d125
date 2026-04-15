@@ -33,6 +33,7 @@ import { VersicherungsCheckTool } from '@/components/tools/versicherungs-check/V
 import { WasKostetDasWirklichTool } from '@/components/tools/was-kostet-das-wirklich/WasKostetDasWirklichTool';
 import { GuiltyPleasureRechnerTool } from '@/components/tools/guilty-pleasure-rechner/GuiltyPleasureRechnerTool';
 import { NotfallCheckTool } from '@/components/tools/notfall-check/NotfallCheckTool';
+import { AboAuditTool } from '@/components/tools/abo-audit/AboAuditTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -231,6 +232,10 @@ export default function PublicToolDetail() {
               ) : slug === 'notfall-check' ? (
                 <div className="mb-8">
                   <NotfallCheckTool mode="public" />
+                </div>
+              ) : slug === 'abo-audit' ? (
+                <div className="mb-8">
+                  <AboAuditTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
