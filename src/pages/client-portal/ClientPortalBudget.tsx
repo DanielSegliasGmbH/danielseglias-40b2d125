@@ -220,6 +220,7 @@ export default function ClientPortalBudget() {
       queryClient.invalidateQueries({ queryKey: ['expenses'] });
       toast.success('Ausgabe erfasst ✓');
       awardPoints('expense_added', `expense_${Date.now()}`);
+      recalcPeakScore.mutate();
       setExpAmount('');
       setExpNote('');
       setExpDate(new Date().toISOString().slice(0, 10));
