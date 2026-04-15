@@ -1,11 +1,14 @@
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronRight, Sparkles, Brain, Eye, Target, LayoutGrid, Shield, Settings2, TrendingUp, Rocket, Star, RotateCcw, Info, Lock, CheckCircle, Clock, Play, Zap } from 'lucide-react';
+import { ChevronRight, Sparkles, Brain, Eye, Target, LayoutGrid, Shield, Settings2, TrendingUp, Rocket, Star, RotateCcw, Info, Lock, CheckCircle, Clock, Play, Zap, Film, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSubscription } from '@/hooks/useSubscription';
 import { useAllCoachProgress, useCoachBadges, getModuleStatus } from '@/hooks/useCoachProgress';
@@ -33,9 +36,24 @@ export default function ClientPortalCoach() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { isPremium, isLoading: subLoading } = useSubscription();
+  const { user } = useAuth();
   const { data: allProgress = [] } = useAllCoachProgress();
   const { data: badges = [] } = useCoachBadges();
 
+  const { data: lifeFilmCompleted = false } = useQuery({
+    queryKey: ['life-film-completed', user?.id],
+    queryFn: async () => {
+      if (!user) return false;
+      const { data } = await supabase
+        .from('life_film_data')
+        .select('completed')
+        .eq('user_id', user.id)
+        .eq('completed', true)
+        .maybeSingle();
+      return !!data;
+    },
+    enabled: !!user,
+  });
   const FREE_MODULE_COUNT = 3;
 
   // Build status map from DB
@@ -72,6 +90,25 @@ export default function ClientPortalCoach() {
             Nicht durch Theorie, sondern durch klare Entscheidungen, persönliche Reflexion und konkrete Umsetzung.
           </p>
         </div>
+
+        {/* Lebensfilm CTA */}
+        {!lifeFilmCompleted && (
+          <Card
+            className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent cursor-pointer active:scale-[0.98] transition-transform hover:shadow-md"
+            onClick={() => navigate('/app/client-portal/life-film')}
+          >
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+                <Film className="h-5 w-5 text-primary" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="font-semibold text-sm text-foreground">Dein Lebensfilm 🎬</h3>
+                <p className="text-xs text-muted-foreground">Entdecke deine finanzielle Zukunft — in nur 2 Minuten</p>
+              </div>
+              <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+            </CardContent>
+          </Card>
+        )}
 
         {/* Resume Banner */}
         {resumeModule && (

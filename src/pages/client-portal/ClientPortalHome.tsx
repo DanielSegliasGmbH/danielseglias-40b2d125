@@ -14,7 +14,7 @@ import { useGamification, LEVELS } from '@/hooks/useGamification';
 import { useNextBestStep } from '@/hooks/useNextBestStep';
 import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { NotificationBell } from '@/components/client-portal/NotificationBell';
-import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, Crown, Landmark, Wallet, ClipboardList, TrendingUp, FileBarChart, Gift } from 'lucide-react';
+import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, Crown, Landmark, Wallet, ClipboardList, TrendingUp, FileBarChart, Gift, Film } from 'lucide-react';
 import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
 import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
 import { RankWarningBanner } from '@/components/client-portal/RankWarningBanner';
@@ -56,6 +56,21 @@ export default function ClientPortalHome() {
   const { rankChange, dismissRankChange } = useRankSystem();
   const { score, rank: peakRank } = usePeakScore();
   const firstName = user?.user_metadata?.first_name || 'Kunde';
+
+  const { data: lifeFilmCompleted = false } = useQuery({
+    queryKey: ['life-film-completed', user?.id],
+    queryFn: async () => {
+      if (!user) return false;
+      const { data } = await supabase
+        .from('life_film_data')
+        .select('completed')
+        .eq('user_id', user.id)
+        .eq('completed', true)
+        .maybeSingle();
+      return !!data;
+    },
+    enabled: !!user,
+  });
 
   useEffect(() => {
     const done = localStorage.getItem('client_onboarding_complete');
@@ -246,6 +261,27 @@ export default function ClientPortalHome() {
         {/* ── PEAKSCORE HERO ── */}
         <PeakScoreCard onClick={() => navigate('/app/client-portal/peak-score')} />
         <RankWarningBanner />
+
+        {/* ── LEBENSFILM CTA ── */}
+        {!lifeFilmCompleted && (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
+            <Card
+              className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent cursor-pointer active:scale-[0.99] transition-transform"
+              onClick={() => navigate('/app/client-portal/life-film')}
+            >
+              <CardContent className="p-4 flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <Film className="h-5 w-5 text-primary" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-semibold text-sm text-foreground">Dein Lebensfilm 🎬</h3>
+                  <p className="text-xs text-muted-foreground line-clamp-1">Entdecke deine finanzielle Zukunft in 2 Minuten</p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
 
         {/* ── 2. LEVEL & STREAK BAR ── */}
         <motion.div

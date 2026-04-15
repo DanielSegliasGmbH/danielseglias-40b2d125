@@ -1701,6 +1701,54 @@ export type Database = {
         }
         Relationships: []
       }
+      life_film_data: {
+        Row: {
+          age: number | null
+          completed: boolean
+          created_at: string
+          desired_children: string | null
+          id: string
+          life_goals: string[] | null
+          monthly_expenses: number | null
+          monthly_income: number | null
+          target_retirement_age: number | null
+          total_savings: number | null
+          truth_mode: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          age?: number | null
+          completed?: boolean
+          created_at?: string
+          desired_children?: string | null
+          id?: string
+          life_goals?: string[] | null
+          monthly_expenses?: number | null
+          monthly_income?: number | null
+          target_retirement_age?: number | null
+          total_savings?: number | null
+          truth_mode?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          age?: number | null
+          completed?: boolean
+          created_at?: string
+          desired_children?: string | null
+          id?: string
+          life_goals?: string[] | null
+          monthly_expenses?: number | null
+          monthly_income?: number | null
+          target_retirement_age?: number | null
+          total_savings?: number | null
+          truth_mode?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       meetings: {
         Row: {
           case_id: string
