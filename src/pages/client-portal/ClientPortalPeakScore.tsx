@@ -78,13 +78,46 @@ export default function ClientPortalPeakScore() {
 
   const fmtCHF = (v: number) => `CHF ${v.toLocaleString('de-CH', { maximumFractionDigits: 0 })}`;
   const displayScore = score !== null;
+  const netWorth = totalAssets - totalLiabilities;
 
-  const breakdownItems = [
-    { label: 'Vermögen', value: fmtCHF(totalAssets), color: 'text-emerald-600' },
-    { label: 'Verbindlichkeiten', value: `- ${fmtCHF(totalLiabilities)}`, color: 'text-red-500' },
-    { label: 'Netto', value: fmtCHF(totalAssets - totalLiabilities), color: 'text-foreground' },
-    { label: 'Mtl. Ausgaben', value: fmtCHF(monthlyExpenses), color: 'text-muted-foreground' },
-  ];
+  const expenseSourceLabel = expenseSource === 'budget'
+    ? 'Durchschnitt letzte 3 Monate'
+    : expenseSource === 'profile'
+    ? 'aus Finanzprofil'
+    : '';
+
+  // Generate improvement tips
+  const tips = useMemo(() => {
+    const t: { emoji: string; text: string; cta: string; route: string }[] = [];
+    if (monthlyExpenses > 0) {
+      const reduction = 200;
+      const newScore = netWorth / Math.max(1, monthlyExpenses - reduction);
+      const gain = Math.round((newScore - (score || 0)) * 10) / 10;
+      if (gain > 0) {
+        t.push({
+          emoji: '💸',
+          text: `Reduziere deine Ausgaben um CHF 200/Monat → +${gain} PeakScore`,
+          cta: 'Budget öffnen',
+          route: '/app/client-portal/budget',
+        });
+      }
+    }
+    if (totalAssets === 0) {
+      t.push({
+        emoji: '📈',
+        text: 'Beginne zu investieren → Starte den Finanz-Coach',
+        cta: 'Finanz-Coach starten',
+        route: '/app/client-portal/coach',
+      });
+    }
+    t.push({
+      emoji: '🏦',
+      text: 'Zahle in die Säule 3a ein → Spare zusätzlich Steuern',
+      cta: '3a-Check starten',
+      route: '/app/client-portal/tools/mini-3a-kurzcheck',
+    });
+    return t.slice(0, 3);
+  }, [monthlyExpenses, totalAssets, netWorth, score]);
 
   return (
     <ClientPortalLayout>
