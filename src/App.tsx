@@ -61,6 +61,7 @@ import ClientPortalBudget from "./pages/client-portal/ClientPortalBudget";
 import ClientPortalNetWorth from "./pages/client-portal/ClientPortalNetWorth";
 import ClientPortalMonthlyReport from "./pages/client-portal/ClientPortalMonthlyReport";
 import ClientPortalInvite from "./pages/client-portal/ClientPortalInvite";
+import ClientPortalFriends from "./pages/client-portal/ClientPortalFriends";
 import ClientPortalPeakScore from "./pages/client-portal/ClientPortalPeakScore";
 import ClientPortalLifeFilm from "./pages/client-portal/ClientPortalLifeFilm";
 import ClientPortalLifeFilmResult from "./pages/client-portal/ClientPortalLifeFilmResult";
@@ -507,6 +508,14 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['client', 'admin']}>
                     <ClientPortalInvite />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/friends"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalFriends />
                   </RouteGuard>
                 }
               />
