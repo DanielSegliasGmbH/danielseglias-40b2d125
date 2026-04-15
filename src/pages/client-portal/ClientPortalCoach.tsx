@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { UserRound } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent } from '@/components/ui/card';
@@ -90,6 +91,9 @@ export default function ClientPortalCoach() {
             Nicht durch Theorie, sondern durch klare Entscheidungen, persönliche Reflexion und konkrete Umsetzung.
           </p>
         </div>
+
+        {/* Finanz-Typ CTA */}
+        <FinanzTypTeaser userId={user?.id} navigate={navigate} />
 
         {/* Lebensfilm CTA */}
         {!lifeFilmCompleted && (
