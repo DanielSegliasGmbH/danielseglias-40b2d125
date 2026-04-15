@@ -136,6 +136,7 @@ export function usePeakScore(): PeakScoreData {
 
   const totalAssets = assets.reduce((s: number, a: any) => s + Number(a.value), 0);
   const totalLiabilities = liabilities.reduce((s: number, l: any) => s + Number(l.amount), 0);
+  const expenseSource: 'budget' | 'profile' | 'none' = avgExpenses > 0 ? 'budget' : (metaProfile?.fixed_costs ? 'profile' : 'none');
   const monthlyExpenses = avgExpenses > 0 ? avgExpenses : (metaProfile?.fixed_costs || 0);
 
   const hasData = totalAssets > 0 || totalLiabilities > 0 || monthlyExpenses > 0;
@@ -163,6 +164,9 @@ export function usePeakScore(): PeakScoreData {
     rank,
     savedRank: profileRank,
     rankBuffer,
+    assetCount: assets.length,
+    liabilityCount: liabilities.length,
+    expenseSource,
   };
 }
 
