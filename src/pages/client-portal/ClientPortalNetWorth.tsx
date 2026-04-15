@@ -695,6 +695,19 @@ export default function ClientPortalNetWorth() {
                 <span>Zuletzt aktualisiert: {new Date(detailEntry.updated_at).toLocaleDateString('de-CH')}</span>
               </div>
 
+              {/* Platform link */}
+              {detailEntry.platform_url && (
+                <a
+                  href={detailEntry.platform_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+                  onClick={(e) => { e.preventDefault(); window.open(detailEntry.platform_url, '_blank', 'noopener,noreferrer'); }}
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  Plattform öffnen
+                </a>
+              )}
               {/* Mini history chart */}
               {detailChartData.length >= 2 && (
                 <Card>
