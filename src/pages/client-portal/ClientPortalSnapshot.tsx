@@ -138,6 +138,38 @@ const newValuable = (): Valuable => ({
   category: '',
 });
 
+const newInvestment = (): InvestmentPosition => ({
+  id: crypto.randomUUID(),
+  name: '',
+  platform: '',
+  value: '',
+  link: '',
+});
+
+const newCrypto = (): CryptoPosition => ({
+  id: crypto.randomUUID(),
+  name: '',
+  platform: '',
+  value: '',
+  link: '',
+});
+
+const newProperty = (): Property => ({
+  id: crypto.randomUUID(),
+  description: '',
+  market_value: '',
+  equity_invested: '',
+  mortgage_amount: '',
+  mortgage_rate: '',
+  link: '',
+});
+
+const newOtherAsset = (): OtherAsset => ({
+  id: crypto.randomUUID(),
+  name: '',
+  value: '',
+});
+
 const EMPTY_DRAFT: SnapshotDraft = {
   pillar_3a: { ...DEFAULT_FIELD },
   freizuegigkeit: { ...DEFAULT_FIELD },
@@ -148,10 +180,14 @@ const EMPTY_DRAFT: SnapshotDraft = {
   cash: { ...DEFAULT_FIELD },
   valuables: [],
   valuables_skipped: false,
-  savings: { ...DEFAULT_FIELD },
-  investments: { ...DEFAULT_FIELD },
-  real_estate: { ...DEFAULT_FIELD },
-  emergency_fund: { ...DEFAULT_FIELD },
+  investment_positions: [],
+  investment_positions_skipped: false,
+  crypto_positions: [],
+  crypto_positions_skipped: false,
+  properties: [],
+  owns_property: false,
+  other_assets: [],
+  other_assets_skipped: false,
   mortgage: { ...DEFAULT_FIELD },
   consumer_debt: { ...DEFAULT_FIELD },
   other_debt: { ...DEFAULT_FIELD },
