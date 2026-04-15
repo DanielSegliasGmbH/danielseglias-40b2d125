@@ -23,6 +23,7 @@ export default function Signup() {
   const [isLoading, setIsLoading] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [referralCode, setReferralCode] = useState('');
   const saveConsent = useSaveConsent();
   const { signUp, user, role, loading } = useAuth();
   const navigate = useNavigate();
