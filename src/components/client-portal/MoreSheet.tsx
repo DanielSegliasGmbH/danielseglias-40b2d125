@@ -63,7 +63,7 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="rounded-t-3xl pb-safe max-h-[80vh]">
+      <SheetContent side="bottom" className="rounded-t-3xl max-h-[85vh] overflow-y-auto" style={{ paddingBottom: 'calc(40px + env(safe-area-inset-bottom, 0px))' }}>
         <SheetHeader className="pb-3">
           <SheetTitle className="text-base">{t('clientPortal.more')}</SheetTitle>
         </SheetHeader>
