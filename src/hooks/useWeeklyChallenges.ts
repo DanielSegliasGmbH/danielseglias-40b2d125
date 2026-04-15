@@ -4,11 +4,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useGamification } from '@/hooks/useGamification';
 import { toast } from 'sonner';
 import type { Json } from '@/integrations/supabase/types';
-import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
-import { useGamification } from '@/hooks/useGamification';
-import { toast } from 'sonner';
-import { useCallback } from 'react';
 
 export interface MicroChallenge {
   id: string;
