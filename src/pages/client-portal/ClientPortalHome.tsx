@@ -470,11 +470,8 @@ export default function ClientPortalHome() {
         {/* ── 3.5 ACTIVE CHALLENGES ── */}
         <ActiveChallengeCards />
 
-        {/* ── WEEKLY QUESTS ── */}
-        <WeeklyQuestsCard />
-
-        {/* ── HABIT TRACKER ── */}
-        <HabitTrackerCard />
+        {/* ── DEINE WOCHE (Quests + Habits) ── */}
+        <WeeklyOverviewCard />
 
         {/* ── 3.6 MONTHLY REPORT TEASER (1st of month) ── */}
         {new Date().getDate() <= 7 && (() => {
