@@ -299,6 +299,9 @@ export default function ClientPortalBudget() {
           </Button>
         </div>
 
+        {/* PeakScore impact after expense */}
+        <PeakScoreImpact impact={lastExpenseImpact} show={showExpenseImpact} className="px-1" />
+
         {/* Monthly summary */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
           <Card>
