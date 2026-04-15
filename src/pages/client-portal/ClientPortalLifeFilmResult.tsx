@@ -382,11 +382,11 @@ export default function ClientPortalLifeFilmResult() {
     try {
       const { error } = await supabase
         .from('life_film_archives')
-        .insert({
+        .insert([{
           user_id: user.id,
           film_data: filmData as unknown as Record<string, unknown>,
           saved_at: new Date().toISOString(),
-        });
+        }]);
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['life-film-archives'] });
       awardPoints('life_film_archived', `archive_${Date.now()}`);
