@@ -18,6 +18,7 @@ import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, 
 import { PrivateValue } from '@/components/client-portal/PrivateValue';
 import { ActiveChallengeCards } from '@/components/client-portal/ActiveChallengeCard';
 import { WeeklyQuestsCard } from '@/components/client-portal/WeeklyQuestsCard';
+import { HabitTrackerCard } from '@/components/client-portal/HabitTrackerCard';
 import { useFinanzType } from '@/hooks/useFinanzType';
 import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
 import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
