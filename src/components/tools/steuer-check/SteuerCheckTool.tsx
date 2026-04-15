@@ -13,6 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import { ArrowRight, Calculator, MessageCircle, CheckSquare, Sparkles, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { InfoHint } from '@/components/client-portal/InfoHint';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -215,6 +216,7 @@ export function SteuerCheckTool({ mode = 'internal' }: Props) {
                   <CardTitle className="text-sm flex items-center gap-2">
                     🔐 Säule 3a Potenzial
                   </CardTitle>
+                  <InfoHint text="Einzahlungen in die Säule 3a reduzieren dein steuerbares Einkommen." articleId="3a-steuervorteile" />
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="grid grid-cols-2 gap-3">
@@ -263,6 +265,7 @@ export function SteuerCheckTool({ mode = 'internal' }: Props) {
                   <CardTitle className="text-sm flex items-center gap-2">
                     🏛️ Einkaufspotenzial Pensionskasse
                   </CardTitle>
+                  <InfoHint text="Freiwillige PK-Einkäufe sind vollständig steuerlich absetzbar." articleId="drei-saeulen-system" />
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <p className="text-sm text-muted-foreground">
@@ -296,6 +299,7 @@ export function SteuerCheckTool({ mode = 'internal' }: Props) {
                   <CardTitle className="text-sm flex items-center gap-2">
                     ✅ Weitere Abzüge
                   </CardTitle>
+                  <InfoHint text="Diese Abzüge können je nach Kanton variieren." articleId="faq-kosten" />
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <p className="text-xs text-muted-foreground mb-2">
