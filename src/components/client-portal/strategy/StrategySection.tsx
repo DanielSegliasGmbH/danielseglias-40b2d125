@@ -5,7 +5,11 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { DonutChart } from './DonutChart';
-import { getStrategiesForPlatform, type Strategy } from './strategyData';
+import { RiskDots } from './RiskDots';
+import { StrategyDetailSheet } from './StrategyDetailSheet';
+import { getStrategiesForPlatform, getRiskCategoryForTolerance, type Strategy } from './strategyData';
+import { useMetaProfile } from '@/hooks/useMetaProfile';
+import { Sparkles, ChevronRight } from 'lucide-react';
 
 interface Props {
   platformId: string;
@@ -14,21 +18,17 @@ interface Props {
 
 export function StrategySection({ platformId, privacyMode }: Props) {
   const strategies = getStrategiesForPlatform(platformId);
-  const [selectedId, setSelectedId] = useState<string>('');
+  const [selectedStrategy, setSelectedStrategy] = useState<Strategy | null>(null);
   const [cryptoEnabled, setCryptoEnabled] = useState(false);
 
-  // Reset selection when platform changes
+  const { profile: metaProfile } = useMetaProfile();
+  const userRiskCategory = getRiskCategoryForTolerance(metaProfile?.risk_tolerance ?? null);
+
+  // Reset when platform changes
   useEffect(() => {
-    if (strategies.length > 0) {
-      setSelectedId(strategies[0].id);
-    } else {
-      setSelectedId('');
-    }
+    setSelectedStrategy(null);
   }, [platformId]);
 
-  const activeStrategy = strategies.find((s) => s.id === selectedId) ?? strategies[0];
-
-  // No strategies for this platform
   if (strategies.length === 0) {
     return (
       <section className="space-y-4">
@@ -58,104 +58,98 @@ export function StrategySection({ platformId, privacyMode }: Props) {
         </p>
       </div>
 
-      {/* Strategy tabs - only show if more than 1 strategy */}
-      {strategies.length > 1 && (
-        <div className="flex flex-wrap gap-2 overflow-x-auto pb-1">
-          {strategies.map((s) => (
-            <button
+      {/* Strategy cards grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        {strategies.map((s) => {
+          const isMatch = userRiskCategory !== null && s.riskCategory === userRiskCategory;
+          return (
+            <Card
               key={s.id}
-              onClick={() => setSelectedId(s.id)}
+              onClick={() => setSelectedStrategy(s)}
               className={cn(
-                'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
-                selectedId === s.id
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'bg-muted text-muted-foreground hover:bg-muted/80',
+                'cursor-pointer transition-all duration-200 hover:shadow-md relative group',
+                isMatch
+                  ? 'border-primary/50 ring-1 ring-primary/20'
+                  : 'border-border hover:border-primary/40',
               )}
             >
-              {s.name}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Strategy detail */}
-      {activeStrategy && (
-        <Card>
-          <CardContent className="p-4 sm:p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-              {/* Left: Chart */}
-              <div className="space-y-3 sm:space-y-4">
-                <div className="text-center">
-                  <h3 className="font-semibold text-foreground text-sm sm:text-base">{activeStrategy.name}</h3>
-                  <Badge variant="secondary" className="text-[10px] sm:text-xs mt-1">
-                    {activeStrategy.subtitle}
-                  </Badge>
+              <CardContent className="p-4 sm:p-5 space-y-3">
+                {/* Header row */}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="space-y-1 min-w-0">
+                    <h3 className="font-semibold text-foreground text-sm sm:text-base leading-tight">
+                      {s.name}
+                    </h3>
+                    <RiskDots level={s.riskLevel} />
+                  </div>
+                  <div className="flex flex-col items-end gap-1 shrink-0">
+                    {isMatch && (
+                      <Badge className="text-[10px] px-1.5 py-0 gap-0.5 bg-primary/10 text-primary border-primary/20 hover:bg-primary/15">
+                        <Sparkles className="h-3 w-3" /> Passt zu dir
+                      </Badge>
+                    )}
+                    {s.lastUpdated && (
+                      <Badge variant="warning" className="text-[10px] px-1.5 py-0">
+                        Aktualisiert
+                      </Badge>
+                    )}
+                  </div>
                 </div>
-                <DonutChart
-                  allocations={activeStrategy.allocations}
-                  cryptoEnabled={cryptoEnabled}
-                  avgReturn={activeStrategy.avgReturn}
-                  privacyMode={privacyMode}
-                />
-                <p className="text-center text-xs sm:text-sm text-muted-foreground">
-                  Ø Rendite:{' '}
-                  <span className="font-semibold text-foreground">{activeStrategy.avgReturn}</span>
-                  <span className="ml-1 text-xs">({activeStrategy.returnSince})</span>
-                </p>
-              </div>
 
-              {/* Right: Allocations */}
-              <div className="space-y-3">
-                <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                  Zusammensetzung
+                {/* Short description */}
+                <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                  {s.shortDescription}
                 </p>
-                <div className="space-y-2">
-                  {activeStrategy.allocations.map((a, idx) => {
-                    const adjustedWeight = cryptoEnabled
-                      ? Math.round(a.weight * 0.95)
-                      : a.weight;
-                    return (
-                      <div key={a.fundName} className="flex items-start justify-between gap-2">
-                      <span className="text-xs sm:text-sm text-foreground leading-snug break-words min-w-0">
-                          {privacyMode ? `Baustein ${idx + 1}` : a.fundName}
-                        </span>
-                        {!privacyMode && (
-                          <Badge variant="secondary" className="text-xs font-mono shrink-0">
-                            {adjustedWeight}%
-                          </Badge>
-                        )}
-                      </div>
-                    );
-                  })}
-                  {cryptoEnabled && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-foreground font-medium">
-                        {privacyMode ? `Baustein ${activeStrategy.allocations.length + 1}` : 'Krypto'}
-                      </span>
-                      {!privacyMode && (
-                        <Badge variant="outline" className="text-xs font-mono border-primary text-primary">
-                          5%
-                        </Badge>
-                      )}
-                    </div>
-                  )}
+
+                {/* Mini donut + return range */}
+                <div className="flex items-center gap-3">
+                  <div className="w-16 h-16 shrink-0">
+                    <DonutChart
+                      allocations={s.allocations}
+                      cryptoEnabled={false}
+                      privacyMode={privacyMode}
+                      mini
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-muted-foreground">Erwartete Rendite</p>
+                    <p className="text-sm font-semibold text-foreground">{s.returnRange}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                      Ø {s.avgReturn} ({s.returnSince})
+                    </p>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
 
-            {/* Crypto toggle */}
-            <div className="mt-6 pt-4 border-t flex items-center gap-3">
-              <Switch
-                id="crypto-toggle"
-                checked={cryptoEnabled}
-                onCheckedChange={setCryptoEnabled}
-              />
-              <Label htmlFor="crypto-toggle" className="text-sm cursor-pointer">
-                + 5% Krypto beimischen
-              </Label>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Crypto toggle */}
+      <Card>
+        <CardContent className="p-4 flex items-center gap-3">
+          <Switch
+            id="crypto-toggle"
+            checked={cryptoEnabled}
+            onCheckedChange={setCryptoEnabled}
+          />
+          <Label htmlFor="crypto-toggle" className="text-sm cursor-pointer">
+            + 5% Krypto beimischen
+          </Label>
+        </CardContent>
+      </Card>
+
+      {/* Detail sheet */}
+      {selectedStrategy && (
+        <StrategyDetailSheet
+          strategy={selectedStrategy}
+          open={!!selectedStrategy}
+          onOpenChange={(open) => { if (!open) setSelectedStrategy(null); }}
+          cryptoEnabled={cryptoEnabled}
+          privacyMode={privacyMode}
+          isMatch={userRiskCategory !== null && selectedStrategy.riskCategory === userRiskCategory}
+        />
       )}
     </section>
   );

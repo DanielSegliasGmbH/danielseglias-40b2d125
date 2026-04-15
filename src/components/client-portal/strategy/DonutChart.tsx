@@ -6,9 +6,10 @@ interface Props {
   cryptoEnabled?: boolean;
   avgReturn?: string;
   privacyMode?: boolean;
+  mini?: boolean;
 }
 
-export function DonutChart({ allocations, cryptoEnabled, avgReturn, privacyMode }: Props) {
+export function DonutChart({ allocations, cryptoEnabled, avgReturn, privacyMode, mini }: Props) {
   let data = allocations.map((a, i) => ({
     name: privacyMode ? `Baustein ${i + 1}` : a.region,
     value: a.weight,
@@ -21,17 +22,21 @@ export function DonutChart({ allocations, cryptoEnabled, avgReturn, privacyMode 
     data.push({ name: privacyMode ? `Baustein ${data.length + 1}` : 'Krypto', value: remainder });
   }
 
+  const chartHeight = mini ? 64 : 220;
+  const innerR = mini ? 18 : 55;
+  const outerR = mini ? 30 : 90;
+
   return (
-    <div className="h-[220px] w-full relative">
+    <div className={`w-full relative`} style={{ height: chartHeight }}>
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
             data={data}
             cx="50%"
             cy="50%"
-            innerRadius={55}
-            outerRadius={90}
-            paddingAngle={2}
+            innerRadius={innerR}
+            outerRadius={outerR}
+            paddingAngle={mini ? 1 : 2}
             dataKey="value"
             stroke="none"
           >
@@ -39,7 +44,7 @@ export function DonutChart({ allocations, cryptoEnabled, avgReturn, privacyMode 
               <Cell key={i} fill={DONUT_COLORS[i % DONUT_COLORS.length]} />
             ))}
           </Pie>
-          {!privacyMode && (
+          {!privacyMode && !mini && (
             <Tooltip
               formatter={(value: number) => [`${value}%`, '']}
               contentStyle={{
@@ -53,7 +58,7 @@ export function DonutChart({ allocations, cryptoEnabled, avgReturn, privacyMode 
         </PieChart>
       </ResponsiveContainer>
       {/* Center label */}
-      {avgReturn && (
+      {avgReturn && !mini && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <span className="text-sm font-bold text-foreground">{avgReturn}</span>
         </div>

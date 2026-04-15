@@ -57,6 +57,20 @@ export interface Strategy {
   avgReturn: string;
   returnSince: string;
   allocations: StrategyAllocation[];
+  /** Risk level 1-5 */
+  riskLevel: number;
+  /** Short description for the card (2 lines) */
+  shortDescription: string;
+  /** Expected return range e.g. "4-7% p.a." */
+  returnRange: string;
+  /** Full description for the detail view */
+  fullDescription: string;
+  /** Historical performance context */
+  performanceContext: string;
+  /** Risk category: conservative | balanced | growth */
+  riskCategory: 'conservative' | 'balanced' | 'growth';
+  /** ISO date string of last update */
+  lastUpdated?: string;
 }
 
 export interface PlatformStrategies {
@@ -74,6 +88,12 @@ export const platformStrategies: PlatformStrategies[] = [
         subtitle: 'Systematische Übergewichtung',
         avgReturn: '11.93% p.a.',
         returnSince: 'Seit 2021',
+        riskLevel: 4,
+        riskCategory: 'growth',
+        shortDescription: 'Systematische Übergewichtung von Faktoren wie Value, Quality und Small Cap für langfristiges Alpha.',
+        returnRange: '7–12% p.a.',
+        fullDescription: 'Das Faktorportfolio nutzt systematische Faktorprämien (Value, Quality, Small Cap, Emerging Markets) zur Renditesteigerung. Es eignet sich für risikobereite Anleger mit langem Anlagehorizont, die über die Marktrendite hinaus profitieren möchten.',
+        performanceContext: 'Seit Auflegung 2021 hat das Faktorportfolio eine annualisierte Rendite von 11.93% erzielt. Faktorstrategien zeigen typischerweise in Erholungsphasen und über längere Zeiträume eine Outperformance gegenüber klassischen Marktkapitalisierungs-Strategien.',
         allocations: [
           { fundName: 'UBS (CH) Index Fund – Equities Emerging Markets NSL I-B-acc', region: 'Emerging Markets', weight: 10 },
           { fundName: 'UBS (CH) Index Fund 3 – Equities World ex CH Small NSL Multi Investor (CHF hedged) I-B-acc Funds', region: 'Small Cap', weight: 34 },
@@ -88,6 +108,12 @@ export const platformStrategies: PlatformStrategies[] = [
         subtitle: 'Passive Marktabbildung',
         avgReturn: '12.45% p.a.',
         returnSince: 'Seit 2021',
+        riskLevel: 3,
+        riskCategory: 'balanced',
+        shortDescription: 'Passive, breit diversifizierte Abbildung der globalen Aktienmärkte nach Marktkapitalisierung.',
+        returnRange: '6–10% p.a.',
+        fullDescription: 'Der Marketcap Mix bildet die globalen Aktienmärkte passiv nach Marktkapitalisierung ab. Es ist die klassische Buy-and-Hold-Strategie mit maximaler Diversifikation und minimalen Umschichtungskosten.',
+        performanceContext: 'Die annualisierte Rendite seit 2021 beträgt 12.45%. Marktkapitalisierungs-gewichtete Strategien haben sich über Jahrzehnte als robuster Kern bewährt und bieten breite Diversifikation bei tiefen Kosten.',
         allocations: [
           { fundName: 'UBS AST 2 Global Equities (ex CH) Passive II (hedged in CHF) I-X', region: 'Global ex CH', weight: 90 },
           { fundName: 'Swisscanto (CH) Index Equity Fund Emerging Markets NT CHF', region: 'Emerging Markets', weight: 8 },
@@ -100,6 +126,12 @@ export const platformStrategies: PlatformStrategies[] = [
         subtitle: 'Makroorientierte Gewichtung',
         avgReturn: '9.56% p.a.',
         returnSince: 'Seit 2021',
+        riskLevel: 4,
+        riskCategory: 'growth',
+        shortDescription: 'Gewichtung nach Bruttoinlandsprodukt der Regionen – stärkere Berücksichtigung von Schwellenländern.',
+        returnRange: '5–10% p.a.',
+        fullDescription: 'Die BIP-Allokation gewichtet Regionen nach ihrer wirtschaftlichen Leistungskraft (BIP) statt nach Marktkapitalisierung. Das führt zu einer stärkeren Gewichtung von Schwellenländern und Europa im Vergleich zu US-lastigen Strategien.',
+        performanceContext: 'Seit 2021 liegt die annualisierte Rendite bei 9.56%. BIP-gewichtete Portfolios profitieren langfristig von der wirtschaftlichen Entwicklung aufstrebender Volkswirtschaften und reduzieren das US-Konzentrationsrisiko.',
         allocations: [
           { fundName: 'UBS (CH) Index Fund – Equities Emerging Markets NSL I-B-acc', region: 'Emerging Markets', weight: 42 },
           { fundName: 'UBS (CH) Index Fund 2 – Equities Europe ex CH Selection NSL (CHF hedged) I-X-acc Funds', region: 'Europa', weight: 22 },
@@ -121,6 +153,12 @@ export const platformStrategies: PlatformStrategies[] = [
         subtitle: 'Passive Marktabbildung',
         avgReturn: '13.41% p.a.',
         returnSince: 'Seit 2021',
+        riskLevel: 3,
+        riskCategory: 'balanced',
+        shortDescription: 'Breit gestreute, passive ETF-Lösung mit globaler Abdeckung zu tiefsten Kosten.',
+        returnRange: '6–11% p.a.',
+        fullDescription: 'Der Marketcap Mix bei Truewealth nutzt kostengünstige ETFs und Indexfonds für eine breit diversifizierte, globale Aktienallokation. Die Strategie minimiert Kosten bei maximaler Marktabdeckung.',
+        performanceContext: 'Die annualisierte Rendite seit 2021 beträgt 13.41%. Diese Strategie profitiert von den besonders tiefen Gebühren der Plattform und der breiten Diversifikation über alle wichtigen Weltregionen.',
         allocations: [
           { fundName: 'UBS (CH) Index Fund 3 – Equities USA NSL I-A-acc', region: 'USA', weight: 60 },
           { fundName: 'HSBC EURO STOXX 50 UCITS ETF', region: 'Europa', weight: 14 },
@@ -221,3 +259,13 @@ export const DONUT_COLORS = [
 ];
 
 export const LAST_UPDATE_DATE = '3.2.2026';
+
+/**
+ * Maps a risk_tolerance value (1-10) from the meta profile to a risk category.
+ */
+export function getRiskCategoryForTolerance(tolerance: number | null): 'conservative' | 'balanced' | 'growth' | null {
+  if (tolerance === null || tolerance === undefined) return null;
+  if (tolerance <= 3) return 'conservative';
+  if (tolerance <= 7) return 'balanced';
+  return 'growth';
+}
