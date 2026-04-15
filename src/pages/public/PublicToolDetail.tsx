@@ -36,6 +36,7 @@ import { NotfallCheckTool } from '@/components/tools/notfall-check/NotfallCheckT
 import { AboAuditTool } from '@/components/tools/abo-audit/AboAuditTool';
 import { LohnerhoherTool } from '@/components/tools/lohnerhoher/LohnerhoherTool';
 import { MeinFinanzplanTool } from '@/components/tools/mein-finanzplan/MeinFinanzplanTool';
+import { KontenModellTool } from '@/components/tools/konten-modell/KontenModellTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -246,6 +247,10 @@ export default function PublicToolDetail() {
               ) : slug === 'mein-finanzplan' ? (
                 <div className="mb-8">
                   <MeinFinanzplanTool mode="public" />
+                </div>
+              ) : slug === 'konten-modell' ? (
+                <div className="mb-8">
+                  <KontenModellTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">

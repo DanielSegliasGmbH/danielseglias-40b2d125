@@ -42,6 +42,7 @@ const toolFallbacks: Record<string, { name: string; description: string }> = {
   aboAudit: { name: 'Abo-Audit', description: 'Finde und eliminiere vergessene oder unnötige Abos.' },
   lohnerhoher: { name: 'Lohnerhöher', description: 'Verstehe deinen Marktwert und bereite dich auf Lohnverhandlungen vor.' },
   meinFinanzplan: { name: 'Mein Finanzplan', description: 'Plane Lebensereignisse und sieh ihren Einfluss auf deine finanzielle Freiheit.' },
+  kontenModell: { name: 'Konten-Modell', description: 'Die optimale Aufteilung deines Einkommens für finanzielle Gesundheit.' },
 };
 
 /**

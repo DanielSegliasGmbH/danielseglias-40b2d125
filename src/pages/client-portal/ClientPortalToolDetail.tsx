@@ -41,6 +41,7 @@ import { NotfallCheckTool } from '@/components/tools/notfall-check/NotfallCheckT
 import { AboAuditTool } from '@/components/tools/abo-audit/AboAuditTool';
 import { LohnerhoherTool } from '@/components/tools/lohnerhoher/LohnerhoherTool';
 import { MeinFinanzplanTool } from '@/components/tools/mein-finanzplan/MeinFinanzplanTool';
+import { KontenModellTool } from '@/components/tools/konten-modell/KontenModellTool';
 import { RecommendationCards } from '@/components/client-portal/RecommendationCards';
 import { TOOL_RECOMMENDATIONS } from '@/config/recommendationConfig';
 
@@ -154,6 +155,8 @@ export default function ClientPortalToolDetail() {
         return <LohnerhoherTool mode="internal" />;
       case 'mein-finanzplan':
         return <MeinFinanzplanTool mode="internal" />;
+      case 'konten-modell':
+        return <KontenModellTool mode="internal" />;
       default:
         return (
           <Card>
