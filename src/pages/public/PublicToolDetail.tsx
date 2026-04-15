@@ -34,6 +34,7 @@ import { WasKostetDasWirklichTool } from '@/components/tools/was-kostet-das-wirk
 import { GuiltyPleasureRechnerTool } from '@/components/tools/guilty-pleasure-rechner/GuiltyPleasureRechnerTool';
 import { NotfallCheckTool } from '@/components/tools/notfall-check/NotfallCheckTool';
 import { AboAuditTool } from '@/components/tools/abo-audit/AboAuditTool';
+import { LohnerhoherTool } from '@/components/tools/lohnerhoher/LohnerhoherTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -236,6 +237,10 @@ export default function PublicToolDetail() {
               ) : slug === 'abo-audit' ? (
                 <div className="mb-8">
                   <AboAuditTool mode="public" />
+                </div>
+              ) : slug === 'lohnerhoher' ? (
+                <div className="mb-8">
+                  <LohnerhoherTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">

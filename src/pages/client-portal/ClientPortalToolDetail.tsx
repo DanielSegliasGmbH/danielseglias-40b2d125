@@ -39,6 +39,7 @@ import { WasKostetDasWirklichTool } from '@/components/tools/was-kostet-das-wirk
 import { GuiltyPleasureRechnerTool } from '@/components/tools/guilty-pleasure-rechner/GuiltyPleasureRechnerTool';
 import { NotfallCheckTool } from '@/components/tools/notfall-check/NotfallCheckTool';
 import { AboAuditTool } from '@/components/tools/abo-audit/AboAuditTool';
+import { LohnerhoherTool } from '@/components/tools/lohnerhoher/LohnerhoherTool';
 import { RecommendationCards } from '@/components/client-portal/RecommendationCards';
 import { TOOL_RECOMMENDATIONS } from '@/config/recommendationConfig';
 
@@ -148,6 +149,8 @@ export default function ClientPortalToolDetail() {
         return <NotfallCheckTool mode="internal" />;
       case 'abo-audit':
         return <AboAuditTool mode="internal" />;
+      case 'lohnerhoher':
+        return <LohnerhoherTool mode="internal" />;
       default:
         return (
           <Card>

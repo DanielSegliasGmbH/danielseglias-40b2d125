@@ -33,6 +33,7 @@ const TOOL_LABELS: Record<string, string> = {
   'guilty-pleasure-rechner': 'Guilty Pleasure Rechner',
   'notfall-check': 'Notfall-Check',
   'abo-audit': 'Abo-Audit',
+  'lohnerhoher': 'Lohnerhöher',
   'lebenzeit-rechner': 'Lebenszeit-Rechner',
   'recovery-analyse': 'Recovery-Analyse',
   'zeitverlust-simulator': 'Zeitverlust-Simulator',

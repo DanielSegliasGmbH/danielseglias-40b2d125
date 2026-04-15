@@ -35,6 +35,7 @@ import { WasKostetDasWirklichTool } from '@/components/tools/was-kostet-das-wirk
 import { GuiltyPleasureRechnerTool } from '@/components/tools/guilty-pleasure-rechner/GuiltyPleasureRechnerTool';
 import { NotfallCheckTool } from '@/components/tools/notfall-check/NotfallCheckTool';
 import { AboAuditTool } from '@/components/tools/abo-audit/AboAuditTool';
+import { LohnerhoherTool } from '@/components/tools/lohnerhoher/LohnerhoherTool';
 import { VersicherungsCheckTool } from '@/components/tools/versicherungs-check/VersicherungsCheckTool';
 
 // Icon mapping
@@ -166,6 +167,8 @@ export default function AdminToolDetail() {
         return <NotfallCheckTool mode="internal" />;
       case 'abo-audit':
         return <AboAuditTool mode="internal" />;
+      case 'lohnerhoher':
+        return <LohnerhoherTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">
