@@ -2262,26 +2262,26 @@ function SnapshotDetail({
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function SnapshotComparison({ older, newer }: { older: any; newer: any }) {
   const olderData = older.snapshot_data || {};
-  const newerData = (newer.snapshot_data || {}) as Record<string, unknown>;
+  const newerData = newer.snapshot_data || {};
   const fmtCHF = (v: number) => `CHF ${v.toLocaleString('de-CH')}`;
 
   // Freedom impact: net worth delta / monthly expenses
   const netWorthDelta = (Number(newer.net_worth) || 0) - (Number(older.net_worth) || 0);
-  const monthlyExp = n((newerData.monthly_expenses as Record<string, unknown>)?.amount) || n((olderData.monthly_expenses as Record<string, unknown>)?.amount);
+  const monthlyExp = n(newerData.monthly_expenses?.amount) || n(olderData.monthly_expenses?.amount);
   const freedomMonths = monthlyExp > 0 ? netWorthDelta / monthlyExp : 0;
 
   const categories = [
     { label: 'Nettovermögen', oldVal: Number(older.net_worth) || 0, newVal: Number(newer.net_worth) || 0 },
-    { label: '3a Guthaben', oldVal: n((olderData.pillar_3a as Record<string, unknown>)?.amount), newVal: n((newerData.pillar_3a as Record<string, unknown>)?.amount) },
-    { label: 'Freizügigkeit', oldVal: n((olderData.freizuegigkeit as Record<string, unknown>)?.amount), newVal: n((newerData.freizuegigkeit as Record<string, unknown>)?.amount) },
-    { label: 'Pensionskasse', oldVal: n((olderData.pensionskasse as Record<string, unknown>)?.amount), newVal: n((newerData.pensionskasse as Record<string, unknown>)?.amount) },
+    { label: '3a Guthaben', oldVal: n(olderData.pillar_3a?.amount), newVal: n(newerData.pillar_3a?.amount) },
+    { label: 'Freizügigkeit', oldVal: n(olderData.freizuegigkeit?.amount), newVal: n(newerData.freizuegigkeit?.amount) },
+    { label: 'Pensionskasse', oldVal: n(olderData.pensionskasse?.amount), newVal: n(newerData.pensionskasse?.amount) },
     { label: 'Bankkonten', oldVal: Array.isArray(olderData.bank_accounts) ? sumBankAccounts(olderData.bank_accounts) : 0, newVal: Array.isArray(newerData.bank_accounts) ? sumBankAccounts(newerData.bank_accounts) : 0 },
-    { label: 'Bargeld', oldVal: n((olderData.cash as Record<string, unknown>)?.amount), newVal: n((newerData.cash as Record<string, unknown>)?.amount) },
+    { label: 'Bargeld', oldVal: n(olderData.cash?.amount), newVal: n(newerData.cash?.amount) },
     { label: 'Investments', oldVal: Array.isArray(olderData.investment_positions) ? sumInvestments(olderData.investment_positions) : 0, newVal: Array.isArray(newerData.investment_positions) ? sumInvestments(newerData.investment_positions) : 0 },
     { label: 'Krypto', oldVal: Array.isArray(olderData.crypto_positions) ? sumCrypto(olderData.crypto_positions) : 0, newVal: Array.isArray(newerData.crypto_positions) ? sumCrypto(newerData.crypto_positions) : 0 },
     { label: 'Kredite', oldVal: Array.isArray(olderData.credits) ? sumCredits(olderData.credits) : 0, newVal: Array.isArray(newerData.credits) ? sumCredits(newerData.credits) : 0 },
-    { label: 'Einkommen mtl.', oldVal: n((olderData.monthly_income as Record<string, unknown>)?.amount), newVal: n((newerData.monthly_income as Record<string, unknown>)?.amount) },
-    { label: 'Ausgaben mtl.', oldVal: n((olderData.monthly_expenses as Record<string, unknown>)?.amount), newVal: n((newerData.monthly_expenses as Record<string, unknown>)?.amount) },
+    { label: 'Einkommen mtl.', oldVal: n(olderData.monthly_income?.amount), newVal: n(newerData.monthly_income?.amount) },
+    { label: 'Ausgaben mtl.', oldVal: n(olderData.monthly_expenses?.amount), newVal: n(newerData.monthly_expenses?.amount) },
   ];
 
   return (
