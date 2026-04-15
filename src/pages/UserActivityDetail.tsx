@@ -99,6 +99,96 @@ function getEventContext(event: { page_path: string | null; tool_key: string | n
   return parts;
 }
 
+// ── Access Control Card ─────────────────────────────────
+function AccessControlCard({ user, updateAccess }: { user: { id: string; user_type?: string; plan?: string; has_strategy_access?: boolean }; updateAccess: ReturnType<typeof useUpdateUserAccess> }) {
+  const [userType, setUserType] = useState(user.user_type || 'user');
+  const [plan, setPlan] = useState(user.plan || 'free');
+  const [strategyAccess, setStrategyAccess] = useState(!!user.has_strategy_access);
+  const [saving, setSaving] = useState(false);
+
+  const hasChanges =
+    userType !== (user.user_type || 'user') ||
+    plan !== (user.plan || 'free') ||
+    strategyAccess !== !!user.has_strategy_access;
+
+  const handleSave = () => {
+    setSaving(true);
+    updateAccess.mutate(
+      {
+        userId: user.id,
+        user_type: userType as 'user' | 'customer',
+        plan: plan as 'free' | 'premium',
+        has_strategy_access: strategyAccess,
+      },
+      {
+        onSuccess: () => {
+          toast.success('Zugriffsrechte gespeichert ✓');
+          setSaving(false);
+        },
+        onError: () => {
+          toast.error('Fehler beim Speichern');
+          setSaving(false);
+        },
+      }
+    );
+  };
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base flex items-center gap-2">
+          <Shield className="h-4 w-4" /> Zugriffssteuerung
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="space-y-1.5">
+            <p className="text-xs font-medium text-muted-foreground">Nutzer-Typ</p>
+            <Select value={userType} onValueChange={setUserType}>
+              <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="user">User</SelectItem>
+                <SelectItem value="customer">Kunde</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <p className="text-xs font-medium text-muted-foreground">Plan</p>
+            <Select value={plan} onValueChange={setPlan}>
+              <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="free">Free</SelectItem>
+                <SelectItem value="premium">Premium</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <p className="text-xs font-medium text-muted-foreground">Strategie-Zugang</p>
+            <Button
+              variant={strategyAccess ? 'default' : 'outline'}
+              size="sm"
+              className="w-full h-9"
+              onClick={() => setStrategyAccess(!strategyAccess)}
+            >
+              {strategyAccess ? '✓ Aktiv' : '✗ Gesperrt'}
+            </Button>
+          </div>
+        </div>
+        <p className="text-[10px] text-muted-foreground mt-3">
+          Strategie-Zugang erfordert: Nutzer-Typ = Kunde UND Strategie-Zugang = Aktiv
+        </p>
+        <Button
+          className="w-full mt-4 h-10"
+          onClick={handleSave}
+          disabled={!hasChanges || saving}
+        >
+          {saving ? 'Speichern…' : 'Speichern'}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
 // ── Component ───────────────────────────────────────────
 export default function UserActivityDetail() {
   const { userId } = useParams<{ userId: string }>();
@@ -294,62 +384,7 @@ export default function UserActivityDetail() {
           </Card>
 
           {/* ── 1c. Zugriffssteuerung ──────────────── */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Shield className="h-4 w-4" /> Zugriffssteuerung
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {/* User Type */}
-                <div className="space-y-1.5">
-                  <p className="text-xs font-medium text-muted-foreground">Nutzer-Typ</p>
-                  <Select
-                    value={user.user_type || 'user'}
-                    onValueChange={(v) => updateAccess.mutate({ userId: user.id, user_type: v as 'user' | 'customer' })}
-                  >
-                    <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="user">User</SelectItem>
-                      <SelectItem value="customer">Kunde</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Plan */}
-                <div className="space-y-1.5">
-                  <p className="text-xs font-medium text-muted-foreground">Plan</p>
-                  <Select
-                    value={user.plan || 'free'}
-                    onValueChange={(v) => updateAccess.mutate({ userId: user.id, plan: v as 'free' | 'premium' })}
-                  >
-                    <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="free">Free</SelectItem>
-                      <SelectItem value="premium">Premium</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Strategy Access */}
-                <div className="space-y-1.5">
-                  <p className="text-xs font-medium text-muted-foreground">Strategie-Zugang</p>
-                  <Button
-                    variant={user.has_strategy_access ? 'default' : 'outline'}
-                    size="sm"
-                    className="w-full h-9"
-                    onClick={() => updateAccess.mutate({ userId: user.id, has_strategy_access: !user.has_strategy_access })}
-                  >
-                    {user.has_strategy_access ? '✓ Aktiv' : '✗ Gesperrt'}
-                  </Button>
-                </div>
-              </div>
-              <p className="text-[10px] text-muted-foreground mt-3">
-                Strategie-Zugang erfordert: Nutzer-Typ = Kunde UND Strategie-Zugang = Aktiv
-              </p>
-            </CardContent>
-          </Card>
+          <AccessControlCard user={user} updateAccess={updateAccess} />
 
           {/* ── 1d. Account-Verwaltung ─────────────── */}
           <Card className="border-destructive/20">
