@@ -133,7 +133,7 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
 
   // PeakScore impact estimate: savings per year / monthly expenses
   const annualSavings = Math.max(0, cashflow) * 12;
-  const peakScoreImpactPerYear = totalExpenses > 0 ? (annualSavings / totalExpenses).toFixed(1) : '0';
+  const peakScoreImpactMonths = totalExpenses > 0 ? annualSavings / totalExpenses : 0;
 
   // Bar chart widths
   const maxBar = Math.max(totalIncome, totalExpenses, 1);
