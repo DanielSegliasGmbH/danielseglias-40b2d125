@@ -1827,7 +1827,7 @@ function SnapshotHistory({
   onCreateNew,
   onDelete,
 }: {
-  snapshots: Array<{ id: string; created_at: string; net_worth: number; peak_score: number | null; notes: string | null; snapshot_data: Record<string, unknown> }>;
+  snapshots: any[];
   isLoading: boolean;
   onCreateNew: () => void;
   onDelete: (id: string) => void;
