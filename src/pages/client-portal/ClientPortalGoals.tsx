@@ -60,6 +60,7 @@ interface GoalRow {
 export default function ClientPortalGoals() {
   const { user } = useAuth();
   const { awardPoints } = useGamification();
+  const { monthlyExpenses } = usePeakScore();
   const qc = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [title, setTitle] = useState('');
