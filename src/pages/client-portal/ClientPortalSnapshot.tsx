@@ -83,6 +83,20 @@ interface OtherAsset {
   value: string;
 }
 
+interface CreditItem {
+  id: string;
+  name: string;
+  remaining: string;
+  monthly_payment: string;
+  interest_rate: string;
+}
+
+interface DebtItem {
+  id: string;
+  description: string;
+  amount: string;
+}
+
 interface SnapshotDraft {
   // Step 0: Vorsorge
   pillar_3a: SnapshotFieldValue;
@@ -105,9 +119,14 @@ interface SnapshotDraft {
   other_assets: OtherAsset[];
   other_assets_skipped: boolean;
   // Step 3: Verbindlichkeiten
-  mortgage: SnapshotFieldValue;
-  consumer_debt: SnapshotFieldValue;
-  other_debt: SnapshotFieldValue;
+  credits: CreditItem[];
+  credits_skipped: boolean;
+  debts: DebtItem[];
+  debts_skipped: boolean;
+  // Legacy liability fields
+  mortgage?: SnapshotFieldValue;
+  consumer_debt?: SnapshotFieldValue;
+  other_debt?: SnapshotFieldValue;
   // Step 4: Einkommen & Ausgaben
   monthly_income: SnapshotFieldValue;
   monthly_expenses: SnapshotFieldValue;
@@ -170,6 +189,20 @@ const newOtherAsset = (): OtherAsset => ({
   value: '',
 });
 
+const newCredit = (): CreditItem => ({
+  id: crypto.randomUUID(),
+  name: '',
+  remaining: '',
+  monthly_payment: '',
+  interest_rate: '',
+});
+
+const newDebt = (): DebtItem => ({
+  id: crypto.randomUUID(),
+  description: '',
+  amount: '',
+});
+
 const EMPTY_DRAFT: SnapshotDraft = {
   pillar_3a: { ...DEFAULT_FIELD },
   freizuegigkeit: { ...DEFAULT_FIELD },
@@ -188,9 +221,10 @@ const EMPTY_DRAFT: SnapshotDraft = {
   owns_property: false,
   other_assets: [],
   other_assets_skipped: false,
-  mortgage: { ...DEFAULT_FIELD },
-  consumer_debt: { ...DEFAULT_FIELD },
-  other_debt: { ...DEFAULT_FIELD },
+  credits: [],
+  credits_skipped: false,
+  debts: [],
+  debts_skipped: false,
   monthly_income: { ...DEFAULT_FIELD },
   monthly_expenses: { ...DEFAULT_FIELD },
   insurance_monthly: { ...DEFAULT_FIELD },
@@ -221,7 +255,7 @@ interface FieldConfig {
 interface StepConfig {
   title: string;
   emoji: string;
-  type: 'fields' | 'bank_cash' | 'investments';
+  type: 'fields' | 'bank_cash' | 'investments' | 'liabilities';
   fields?: FieldConfig[];
 }
 
@@ -283,12 +317,7 @@ const STEPS: StepConfig[] = [
   {
     title: 'Verbindlichkeiten',
     emoji: '📉',
-    type: 'fields',
-    fields: [
-      { key: 'mortgage', label: 'Hypothek', emoji: '🏠', isCHF: true, showProvider: true },
-      { key: 'consumer_debt', label: 'Konsumschulden / Leasing', emoji: '💳', isCHF: true },
-      { key: 'other_debt', label: 'Sonstige Schulden', emoji: '📋', isCHF: true },
-    ],
+    type: 'liabilities',
   },
   {
     title: 'Einkommen & Ausgaben',
@@ -340,6 +369,14 @@ function sumOtherAssets(items: OtherAsset[]): number {
   return items.reduce((sum, a) => sum + n(a.value), 0);
 }
 
+function sumCredits(items: CreditItem[]): number {
+  return items.reduce((sum, c) => sum + n(c.remaining), 0);
+}
+
+function sumDebts(items: DebtItem[]): number {
+  return items.reduce((sum, d) => sum + n(d.amount), 0);
+}
+
 function computeNetWorth(d: SnapshotDraft): number {
   const bankTotal = d.bank_accounts_skipped ? 0 : sumBankAccounts(d.bank_accounts);
   const cashTotal = d.cash.skipped ? 0 : n(d.cash.amount);
@@ -348,15 +385,20 @@ function computeNetWorth(d: SnapshotDraft): number {
   const cryptoTotal = d.crypto_positions_skipped ? 0 : sumCrypto(d.crypto_positions);
   const propertyEquity = d.owns_property ? sumPropertyEquity(d.properties) : 0;
   const otherTotal = d.other_assets_skipped ? 0 : sumOtherAssets(d.other_assets);
+  const creditsTotal = d.credits_skipped ? 0 : sumCredits(d.credits);
+  const debtsTotal = d.debts_skipped ? 0 : sumDebts(d.debts);
   // Legacy fields for old snapshots
   const legacySavings = d.savings ? n(d.savings.amount) : 0;
   const legacyInvestments = d.investments ? n(d.investments.amount) : 0;
   const legacyRE = d.real_estate ? n(d.real_estate.amount) : 0;
   const legacyEmergency = d.emergency_fund ? n(d.emergency_fund.amount) : 0;
+  const legacyMortgage = d.mortgage ? n(d.mortgage.amount) : 0;
+  const legacyConsumer = d.consumer_debt ? n(d.consumer_debt.amount) : 0;
+  const legacyOther = d.other_debt ? n(d.other_debt.amount) : 0;
   return bankTotal + cashTotal + valuablesTotal + investTotal + cryptoTotal + propertyEquity + otherTotal +
     legacySavings + legacyInvestments + legacyRE + legacyEmergency +
     n(d.pillar_3a.amount) + n(d.freizuegigkeit.amount) + n(d.pensionskasse.amount) -
-    n(d.mortgage.amount) - n(d.consumer_debt.amount) - n(d.other_debt.amount);
+    creditsTotal - debtsTotal - legacyMortgage - legacyConsumer - legacyOther;
 }
 
 // ── Field labels for history display ───────────────
@@ -454,6 +496,10 @@ export default function ClientPortalSnapshot() {
         merged.owns_property = !!parsed.owns_property;
         if (Array.isArray(parsed.other_assets)) merged.other_assets = parsed.other_assets;
         merged.other_assets_skipped = !!parsed.other_assets_skipped;
+        if (Array.isArray(parsed.credits)) merged.credits = parsed.credits;
+        merged.credits_skipped = !!parsed.credits_skipped;
+        if (Array.isArray(parsed.debts)) merged.debts = parsed.debts;
+        merged.debts_skipped = !!parsed.debts_skipped;
         setDraft(merged);
         setStep(savedDraft.current_step || 0);
       } catch { /* ignore parse errors */ }
@@ -632,6 +678,8 @@ export default function ClientPortalSnapshot() {
                   <BankCashStep draft={draft} updateDraft={updateDraft} updateField={updateField} updateAmount={updateAmount} />
                 ) : currentStepConfig?.type === 'investments' ? (
                   <InvestmentsStep draft={draft} updateDraft={updateDraft} />
+                ) : currentStepConfig?.type === 'liabilities' ? (
+                  <LiabilitiesStep draft={draft} updateDraft={updateDraft} />
                 ) : currentStepConfig?.type === 'fields' && currentStepConfig.fields ? (
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
@@ -1262,6 +1310,182 @@ function InvestmentsStep({
   );
 }
 
+// ── Liabilities Step ───────────────────────────────
+
+function LiabilitiesStep({
+  draft, updateDraft,
+}: {
+  draft: SnapshotDraft;
+  updateDraft: (fn: (prev: SnapshotDraft) => SnapshotDraft) => void;
+}) {
+  const cleanNum = (v: string) => v.replace(/[^0-9.]/g, '');
+
+  const propertyMortgages = draft.owns_property
+    ? draft.properties.filter(p => n(p.mortgage_amount) > 0)
+    : [];
+
+  const addCredit = () => updateDraft(d => ({ ...d, credits: [...d.credits, newCredit()] }));
+  const removeCredit = (id: string) => updateDraft(d => ({ ...d, credits: d.credits.filter(c => c.id !== id) }));
+  const updateCred = (id: string, field: keyof CreditItem, value: string) => updateDraft(d => ({
+    ...d, credits: d.credits.map(c => c.id === id ? {
+      ...c, [field]: ['remaining', 'monthly_payment', 'interest_rate'].includes(field) ? cleanNum(value) : value,
+    } : c),
+  }));
+
+  const addDebtItem = () => updateDraft(d => ({ ...d, debts: [...d.debts, newDebt()] }));
+  const removeDebtItem = (id: string) => updateDraft(d => ({ ...d, debts: d.debts.filter(x => x.id !== id) }));
+  const updateDebtItem = (id: string, field: keyof DebtItem, value: string) => updateDraft(d => ({
+    ...d, debts: d.debts.map(x => x.id === id ? { ...x, [field]: field === 'amount' ? cleanNum(value) : value } : x),
+  }));
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <span className="text-xl">📉</span>
+        <h2 className="text-base font-bold text-foreground">Verbindlichkeiten</h2>
+      </div>
+
+      {/* Hypotheken (auto-filled) */}
+      <Card>
+        <CardContent className="p-4 space-y-3">
+          <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+            <span>🏠</span> Hypotheken
+          </h3>
+          {propertyMortgages.length > 0 ? (
+            <>
+              <div className="flex gap-2 bg-primary/5 rounded-lg p-2.5">
+                <Info className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                <p className="text-[11px] text-primary">Automatisch übernommen aus deinen Immobilien in Schritt 3.</p>
+              </div>
+              {propertyMortgages.map((prop, idx) => (
+                <div key={prop.id} className="flex justify-between items-center p-2.5 bg-muted/30 rounded-lg">
+                  <span className="text-xs text-muted-foreground">{prop.description || `Immobilie ${idx + 1}`}</span>
+                  <span className="text-sm font-medium text-foreground">CHF {Number(prop.mortgage_amount).toLocaleString('de-CH')}</span>
+                </div>
+              ))}
+              <div className="flex justify-between items-center pt-1 border-t border-border/50">
+                <span className="text-xs font-medium text-muted-foreground">Total Hypotheken</span>
+                <span className="text-sm font-bold text-foreground">CHF {sumPropertyMortgages(draft.properties).toLocaleString('de-CH')}</span>
+              </div>
+            </>
+          ) : (
+            <p className="text-[11px] text-muted-foreground text-center py-2">Keine Hypotheken erfasst. Du kannst Immobilien in Schritt 3 hinzufügen.</p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Kredite & Leasing */}
+      <Card className={cn(draft.credits_skipped && "opacity-60")}>
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <span>💳</span> Kredite & Leasing
+            </h3>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <Checkbox checked={draft.credits_skipped} onCheckedChange={(v) => updateDraft(d => ({ ...d, credits_skipped: !!v }))} className="h-3.5 w-3.5" />
+              <span className="text-[10px] text-muted-foreground">Nicht bekannt</span>
+            </label>
+          </div>
+          {!draft.credits_skipped && (
+            <>
+              <div className="flex gap-2 bg-destructive/5 rounded-lg p-2.5">
+                <Info className="h-3.5 w-3.5 text-destructive shrink-0 mt-0.5" />
+                <p className="text-[11px] text-destructive">Konsumkredite und Leasingverträge belasten deinen PeakScore stark.</p>
+              </div>
+              {draft.credits.map((credit, idx) => (
+                <div key={credit.id} className="space-y-2 p-3 bg-muted/30 rounded-lg relative">
+                  <button onClick={() => removeCredit(credit.id)} className="absolute top-2 right-2 p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                  <p className="text-[10px] font-medium text-muted-foreground">Kredit {idx + 1}</p>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Bezeichnung</Label>
+                    <Input value={credit.name} onChange={(e) => updateCred(credit.id, 'name', e.target.value)} placeholder="z.B. Autokredit, Privatkredit" maxLength={100} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Restschuld</Label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                        <Input type="text" inputMode="decimal" value={credit.remaining} onChange={(e) => updateCred(credit.id, 'remaining', e.target.value)} placeholder="0" className="pl-11 text-right" />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Monatliche Rate</Label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                        <Input type="text" inputMode="decimal" value={credit.monthly_payment} onChange={(e) => updateCred(credit.id, 'monthly_payment', e.target.value)} placeholder="0" className="pl-11 text-right" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Zinssatz (% p.a., optional)</Label>
+                    <div className="relative">
+                      <Input type="text" inputMode="decimal" value={credit.interest_rate} onChange={(e) => updateCred(credit.id, 'interest_rate', e.target.value)} placeholder="z.B. 4.9" className="text-right" />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">%</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {draft.credits.length === 0 && (
+                <p className="text-[11px] text-muted-foreground text-center py-2">Keine Kredite oder Leasingverträge erfasst.</p>
+              )}
+              <Button variant="outline" size="sm" onClick={addCredit} className="w-full gap-1.5 text-xs">
+                <Plus className="h-3.5 w-3.5" /> Kredit hinzufügen
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Sonstige Schulden */}
+      <Card className={cn(draft.debts_skipped && "opacity-60")}>
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <span>📋</span> Sonstige Schulden
+            </h3>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <Checkbox checked={draft.debts_skipped} onCheckedChange={(v) => updateDraft(d => ({ ...d, debts_skipped: !!v }))} className="h-3.5 w-3.5" />
+              <span className="text-[10px] text-muted-foreground">Nicht bekannt</span>
+            </label>
+          </div>
+          {!draft.debts_skipped && (
+            <>
+              {draft.debts.map((debt) => (
+                <div key={debt.id} className="space-y-2 p-3 bg-muted/30 rounded-lg relative">
+                  <button onClick={() => removeDebtItem(debt.id)} className="absolute top-2 right-2 p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Beschreibung</Label>
+                      <Input value={debt.description} onChange={(e) => updateDebtItem(debt.id, 'description', e.target.value)} placeholder="z.B. Darlehen Familie" maxLength={100} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Betrag</Label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                        <Input type="text" inputMode="decimal" value={debt.amount} onChange={(e) => updateDebtItem(debt.id, 'amount', e.target.value)} placeholder="0" className="pl-11 text-right" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {draft.debts.length === 0 && (
+                <p className="text-[11px] text-muted-foreground text-center py-2">Keine sonstigen Schulden erfasst.</p>
+              )}
+              <Button variant="outline" size="sm" onClick={addDebtItem} className="w-full gap-1.5 text-xs">
+                <Plus className="h-3.5 w-3.5" /> Hinzufügen
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 // ── Field Card ─────────────────────────────────────
 
 function SnapshotFieldCard({
@@ -1387,8 +1611,11 @@ function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesCh
   const propertyTotal = draft.owns_property ? sumPropertyValue(draft.properties) : 0;
   const propertyMortgages = draft.owns_property ? sumPropertyMortgages(draft.properties) : 0;
   const otherTotal = draft.other_assets_skipped ? 0 : sumOtherAssets(draft.other_assets);
+  const creditsTotal = draft.credits_skipped ? 0 : sumCredits(draft.credits);
+  const debtsTotal = draft.debts_skipped ? 0 : sumDebts(draft.debts);
   const totalPension = n(draft.pillar_3a.amount) + n(draft.freizuegigkeit.amount) + n(draft.pensionskasse.amount);
-  const totalDebt = n(draft.mortgage.amount) + n(draft.consumer_debt.amount) + n(draft.other_debt.amount) + propertyMortgages;
+  const legacyDebt = (draft.mortgage ? n(draft.mortgage.amount) : 0) + (draft.consumer_debt ? n(draft.consumer_debt.amount) : 0) + (draft.other_debt ? n(draft.other_debt.amount) : 0);
+  const totalDebt = propertyMortgages + creditsTotal + debtsTotal + legacyDebt;
   const fmtCHF = (v: number) => `CHF ${v.toLocaleString('de-CH')}`;
 
   const summaryItems = [
@@ -1401,6 +1628,9 @@ function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesCh
     ...(propertyTotal > 0 ? [{ label: 'Immobilien (Marktwert)', value: fmtCHF(propertyTotal) }] : []),
     ...(otherTotal > 0 ? [{ label: 'Sonstiges Vermögen', value: fmtCHF(otherTotal) }] : []),
     { label: 'Vorsorge Total', value: fmtCHF(totalPension) },
+    ...(propertyMortgages > 0 ? [{ label: 'Hypotheken', value: fmtCHF(propertyMortgages) }] : []),
+    ...(creditsTotal > 0 ? [{ label: 'Kredite & Leasing', value: fmtCHF(creditsTotal) }] : []),
+    ...(debtsTotal > 0 ? [{ label: 'Sonstige Schulden', value: fmtCHF(debtsTotal) }] : []),
     { label: 'Schulden Total', value: fmtCHF(totalDebt) },
     { label: 'Einkommen mtl.', value: income > 0 ? fmtCHF(income) : '–' },
     { label: 'Ausgaben mtl.', value: expenses > 0 ? fmtCHF(expenses) : '–' },
@@ -1408,7 +1638,6 @@ function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesCh
 
   // Count skipped fields
   const simpleSkipped = (['pillar_3a', 'freizuegigkeit', 'pensionskasse', 'ahv_annual', 'cash',
-    'mortgage', 'consumer_debt', 'other_debt',
     'monthly_income', 'monthly_expenses', 'insurance_monthly'] as (keyof SnapshotDraft)[])
     .filter(k => {
       const val = draft[k];
@@ -1417,7 +1646,7 @@ function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesCh
   const skippedCount = simpleSkipped +
     (draft.bank_accounts_skipped ? 1 : 0) + (draft.valuables_skipped ? 1 : 0) +
     (draft.investment_positions_skipped ? 1 : 0) + (draft.crypto_positions_skipped ? 1 : 0) +
-    (draft.other_assets_skipped ? 1 : 0);
+    (draft.other_assets_skipped ? 1 : 0) + (draft.credits_skipped ? 1 : 0) + (draft.debts_skipped ? 1 : 0);
 
   return (
     <div className="space-y-4">
@@ -1604,6 +1833,24 @@ function HistoryCard({ snapshot, previous, onDelete }: { snapshot: any; previous
                   <div key={`oth-${i}`} className="flex justify-between text-sm">
                     <span className="text-muted-foreground">📦 {a.name || 'Sonstiges'}</span>
                     <span className="font-medium text-foreground">CHF {Number(a.value).toLocaleString('de-CH')}</span>
+                  </div>
+                )
+              ))}
+              {/* Credits */}
+              {Array.isArray(data.credits) && data.credits.map((c: any, i: number) => (
+                n(c.remaining) > 0 && (
+                  <div key={`cred-${i}`} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">💳 {c.name || 'Kredit'}</span>
+                    <span className="font-medium text-destructive">-CHF {Number(c.remaining).toLocaleString('de-CH')}</span>
+                  </div>
+                )
+              ))}
+              {/* Debts */}
+              {Array.isArray(data.debts) && data.debts.map((d: any, i: number) => (
+                n(d.amount) > 0 && (
+                  <div key={`debt-${i}`} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">📋 {d.description || 'Schuld'}</span>
+                    <span className="font-medium text-destructive">-CHF {Number(d.amount).toLocaleString('de-CH')}</span>
                   </div>
                 )
               ))}
