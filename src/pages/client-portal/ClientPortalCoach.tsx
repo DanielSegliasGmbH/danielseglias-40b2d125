@@ -174,6 +174,7 @@ export default function ClientPortalCoach() {
             const isLocked = !isPremium && !subLoading && idx >= FREE_MODULE_COUNT;
             const isNext = mod.key === nextModuleKey && !isLocked;
             const hasBadge = badges.some(b => b.module_key === mod.key);
+            const isTypeRecommended = finanzTypCompleted && recommendedModules.includes(mod.key) && status !== 'completed';
 
             return (
               <Card
@@ -224,6 +225,11 @@ export default function ClientPortalCoach() {
                         {isNext && !isLocked && !resumeModule && (
                           <Badge variant="default" className="text-[9px] px-1.5 py-0">
                             Empfohlen
+                          </Badge>
+                        )}
+                        {isTypeRecommended && !isLocked && !isNext && (
+                          <Badge variant="secondary" className="text-[9px] px-1.5 py-0 bg-primary/10 text-primary border-0">
+                            Für dich
                           </Badge>
                         )}
                       </div>
