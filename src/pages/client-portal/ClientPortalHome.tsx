@@ -17,6 +17,9 @@ import { NotificationBell } from '@/components/client-portal/NotificationBell';
 import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, Crown, Landmark, Wallet, ClipboardList, TrendingUp, FileBarChart, Gift } from 'lucide-react';
 import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
 import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
+import { RankWarningBanner } from '@/components/client-portal/RankWarningBanner';
+import { RankChangeOverlay } from '@/components/client-portal/RankChangeOverlay';
+import { useRankSystem } from '@/hooks/useRankSystem';
 
 const LEVEL_ICONS = [null, Zap, Star, Trophy, Award, Crown];
 
