@@ -188,12 +188,19 @@ export default function ClientPortalMonthlyReport() {
   const saveSummary = useMutation({
     mutationFn: async (summaryData: Record<string, unknown>) => {
       if (!user) throw new Error('No user');
-      const { error } = await supabase.from('monthly_summaries').upsert({
-        user_id: user.id,
-        month_key: monthKey,
-        summary_data: summaryData,
-      }, { onConflict: 'user_id,month_key' });
-      if (error) throw error;
+      // Check if exists first
+      const { data: existing } = await supabase.from('monthly_summaries')
+        .select('id').eq('user_id', user.id).eq('month_key', monthKey).maybeSingle();
+      if (existing) {
+        const { error } = await supabase.from('monthly_summaries')
+          .update({ summary_data: summaryData as unknown as Record<string, unknown> })
+          .eq('id', existing.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('monthly_summaries')
+          .insert({ user_id: user.id, month_key: monthKey, summary_data: summaryData as unknown as Record<string, unknown> });
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['monthly-summaries'] });
