@@ -358,6 +358,7 @@ function InsightForm({ onComplete }: { onComplete: (xp?: number) => void }) {
           content: content.trim(),
           source: 'quick_action',
         });
+      if (error) throw error;
       await awardPoints('tool_used', `insight-${Date.now()}`);
       toast.success('Erkenntnis gespeichert');
       onComplete(15);
