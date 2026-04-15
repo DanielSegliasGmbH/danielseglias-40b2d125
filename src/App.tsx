@@ -459,6 +459,14 @@ function App() {
                 }
               />
               <Route
+                path="/app/client-portal/life-film-archive"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalLifeFilmArchive />
+                  </RouteGuard>
+                }
+              />
+              <Route
                 path="/app/client-portal/premium"
                 element={
                   <RouteGuard allowedRoles={['client', 'admin']}>
