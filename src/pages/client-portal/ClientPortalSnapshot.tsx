@@ -18,7 +18,7 @@ import { toast } from '@/hooks/use-toast';
 import {
   Camera, History, TrendingUp, TrendingDown, Minus,
   ArrowLeft, ArrowRight, Loader2, Trash2, ChevronRight,
-  Info, ExternalLink, Plus,
+  Info, ExternalLink, Plus, Zap, CheckCircle,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
@@ -673,7 +673,7 @@ export default function ClientPortalSnapshot() {
                 transition={{ duration: 0.2 }}
               >
                 {isSummary ? (
-                  <SummaryStep draft={draft} onNotesChange={(v) => setDraft(prev => ({ ...prev, notes: v }))} />
+                  <SummaryStep draft={draft} onNotesChange={(v) => setDraft(prev => ({ ...prev, notes: v }))} onEdit={() => setStep(step - 1)} />
                 ) : currentStepConfig?.type === 'bank_cash' ? (
                   <BankCashStep draft={draft} updateDraft={updateDraft} updateField={updateField} updateAmount={updateAmount} />
                 ) : currentStepConfig?.type === 'investments' ? (
