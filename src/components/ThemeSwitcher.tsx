@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Moon, Sun } from 'lucide-react';
+import { useEffect, useState, useCallback } from 'react';
+import { Moon, Sun, Monitor } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -8,8 +8,19 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useTranslation } from 'react-i18next';
+import { supabase } from '@/integrations/supabase/client';
 
 type Theme = 'light' | 'dark' | 'system';
+
+const applyThemeToDOM = (theme: Theme) => {
+  const root = document.documentElement;
+  if (theme === 'system') {
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    root.classList.toggle('dark', systemDark);
+  } else {
+    root.classList.toggle('dark', theme === 'dark');
+  }
+};
 
 export function ThemeSwitcher() {
   const { t } = useTranslation();
@@ -20,36 +31,55 @@ export function ThemeSwitcher() {
     return 'system';
   });
 
+  // Load theme from Supabase on mount
   useEffect(() => {
-    const root = document.documentElement;
-    
-    const applyTheme = (newTheme: Theme) => {
-      if (newTheme === 'system') {
-        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        root.classList.toggle('dark', systemDark);
-      } else {
-        root.classList.toggle('dark', newTheme === 'dark');
+    const loadTheme = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      
+      const { data } = await supabase
+        .from('profiles')
+        .select('theme_preference')
+        .eq('id', user.id)
+        .maybeSingle();
+      
+      if (data?.theme_preference && ['light', 'dark', 'system'].includes(data.theme_preference)) {
+        const saved = data.theme_preference as Theme;
+        setTheme(saved);
+        localStorage.setItem('theme', saved);
+        applyThemeToDOM(saved);
       }
     };
+    loadTheme();
+  }, []);
 
-    applyTheme(theme);
+  useEffect(() => {
+    applyThemeToDOM(theme);
     localStorage.setItem('theme', theme);
 
-    // Listen for system theme changes when in system mode
     if (theme === 'system') {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const handleChange = () => applyTheme('system');
+      const handleChange = () => applyThemeToDOM('system');
       mediaQuery.addEventListener('change', handleChange);
       return () => mediaQuery.removeEventListener('change', handleChange);
     }
   }, [theme]);
 
-  const handleChange = (newTheme: Theme) => {
+  const handleChange = useCallback(async (newTheme: Theme) => {
     setTheme(newTheme);
-  };
+    
+    // Persist to Supabase
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase
+        .from('profiles')
+        .update({ theme_preference: newTheme } as any)
+        .eq('id', user.id);
+    }
+  }, []);
 
-  const currentIcon = theme === 'dark' ? Moon : Sun;
-  const CurrentIcon = currentIcon;
+  const iconMap = { light: Sun, dark: Moon, system: Monitor };
+  const CurrentIcon = iconMap[theme];
 
   return (
     <DropdownMenu>
@@ -82,7 +112,7 @@ export function ThemeSwitcher() {
           onClick={() => handleChange('system')}
           className={theme === 'system' ? 'bg-accent' : ''}
         >
-          <Sun className="h-4 w-4 mr-2" />
+          <Monitor className="h-4 w-4 mr-2" />
           {t('theme.system', 'System')}
         </DropdownMenuItem>
       </DropdownMenuContent>
