@@ -32,6 +32,7 @@ import { RolexRechnerTool } from '@/components/tools/rolex-rechner/RolexRechnerT
 import { ThreeAAnalyzerTool } from '@/components/tools/three-a-analyzer/ThreeAAnalyzerTool';
 import { SteuerCheckTool } from '@/components/tools/steuer-check/SteuerCheckTool';
 import { WasKostetDasWirklichTool } from '@/components/tools/was-kostet-das-wirklich/WasKostetDasWirklichTool';
+import { GuiltyPleasureRechnerTool } from '@/components/tools/guilty-pleasure-rechner/GuiltyPleasureRechnerTool';
 import { VersicherungsCheckTool } from '@/components/tools/versicherungs-check/VersicherungsCheckTool';
 
 // Icon mapping
@@ -157,6 +158,8 @@ export default function AdminToolDetail() {
         return <VersicherungsCheckTool mode="internal" />;
       case 'was-kostet-das-wirklich':
         return <WasKostetDasWirklichTool mode="internal" />;
+      case 'guilty-pleasure-rechner':
+        return <GuiltyPleasureRechnerTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">

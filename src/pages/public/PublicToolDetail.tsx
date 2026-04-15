@@ -31,6 +31,7 @@ import { ThreeAAnalyzerTool } from '@/components/tools/three-a-analyzer/ThreeAAn
 import { SteuerCheckTool } from '@/components/tools/steuer-check/SteuerCheckTool';
 import { VersicherungsCheckTool } from '@/components/tools/versicherungs-check/VersicherungsCheckTool';
 import { WasKostetDasWirklichTool } from '@/components/tools/was-kostet-das-wirklich/WasKostetDasWirklichTool';
+import { GuiltyPleasureRechnerTool } from '@/components/tools/guilty-pleasure-rechner/GuiltyPleasureRechnerTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -221,6 +222,10 @@ export default function PublicToolDetail() {
               ) : slug === 'was-kostet-das-wirklich' ? (
                 <div className="mb-8">
                   <WasKostetDasWirklichTool mode="public" />
+                </div>
+              ) : slug === 'guilty-pleasure-rechner' ? (
+                <div className="mb-8">
+                  <GuiltyPleasureRechnerTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
