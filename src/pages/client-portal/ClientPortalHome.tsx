@@ -52,6 +52,7 @@ export default function ClientPortalHome() {
   } = useGamification();
 
   const { data: nextStepResult } = useNextBestStep();
+  const { rankChange, dismissRankChange } = useRankSystem();
   const firstName = user?.user_metadata?.first_name || 'Kunde';
 
   useEffect(() => {
