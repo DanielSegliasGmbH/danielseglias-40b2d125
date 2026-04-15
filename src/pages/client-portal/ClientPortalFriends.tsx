@@ -392,7 +392,7 @@ export default function ClientPortalFriends() {
 
                         {/* Score + Trend + Challenge */}
                         <div className="flex items-center gap-2 shrink-0">
-                          {!entry.isMe && (
+                          {!entry.isMe && entry.challengesAllowed !== false && (
                             <button
                               onClick={(e) => { e.stopPropagation(); setChallengeTarget(entry); }}
                               className="w-7 h-7 rounded-full bg-muted hover:bg-primary/10 flex items-center justify-center transition-colors"
@@ -402,18 +402,24 @@ export default function ClientPortalFriends() {
                             </button>
                           )}
                           <div className="text-right">
-                            <p className="text-sm font-bold text-foreground">{entry.peakScore}</p>
-                            <div className="flex items-center gap-0.5 justify-end">
-                              <TrendIcon trend={entry.trend} />
-                              {entry.trend !== null && entry.trend !== 0 && (
-                                <span className={cn(
-                                  "text-[10px]",
-                                  entry.trend > 0 ? "text-emerald-500" : "text-red-500"
-                                )}>
-                                  {entry.trend > 0 ? '+' : ''}{entry.trend}
-                                </span>
-                              )}
-                            </div>
+                            {entry.scoreHidden && !entry.isMe ? (
+                              <p className="text-sm font-bold text-muted-foreground">🔒</p>
+                            ) : (
+                              <>
+                                <p className="text-sm font-bold text-foreground">{entry.peakScore}</p>
+                                <div className="flex items-center gap-0.5 justify-end">
+                                  <TrendIcon trend={entry.trend} />
+                                  {entry.trend !== null && entry.trend !== 0 && (
+                                    <span className={cn(
+                                      "text-[10px]",
+                                      entry.trend > 0 ? "text-emerald-500" : "text-red-500"
+                                    )}>
+                                      {entry.trend > 0 ? '+' : ''}{entry.trend}
+                                    </span>
+                                  )}
+                                </div>
+                              </>
+                            )}
                           </div>
                         </div>
                       </CardContent>
