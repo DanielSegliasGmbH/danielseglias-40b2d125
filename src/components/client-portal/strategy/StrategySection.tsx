@@ -21,7 +21,7 @@ export function StrategySection({ platformId, privacyMode }: Props) {
   const [selectedStrategy, setSelectedStrategy] = useState<Strategy | null>(null);
   const [cryptoEnabled, setCryptoEnabled] = useState(false);
 
-  const { data: metaProfile } = useMetaProfile();
+  const { profile: metaProfile } = useMetaProfile();
   const userRiskCategory = getRiskCategoryForTolerance(metaProfile?.risk_tolerance ?? null);
 
   // Reset when platform changes
