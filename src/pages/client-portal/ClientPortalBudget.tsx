@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
 import { Plus, ChevronLeft, ChevronRight, Pencil, Wallet, TrendingDown, PiggyBank, Percent, Trash2, RefreshCw } from 'lucide-react';
+import { PrivateValue } from '@/components/client-portal/PrivateValue';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -312,9 +313,9 @@ export default function ClientPortalBudget() {
                 </div>
                 <div>
                   <p className="text-[11px] text-muted-foreground">Einkommen</p>
-                  <p className="text-sm font-bold text-foreground">
+                  <PrivateValue className="text-sm font-bold text-foreground">
                     {monthlyIncome > 0 ? `CHF ${monthlyIncome.toLocaleString('de-CH')}` : '–'}
-                  </p>
+                  </PrivateValue>
                 </div>
               </div>
               <div className="flex items-center gap-2.5">
@@ -323,7 +324,7 @@ export default function ClientPortalBudget() {
                 </div>
                 <div>
                   <p className="text-[11px] text-muted-foreground">Ausgaben</p>
-                  <p className="text-sm font-bold text-foreground">CHF {totalSpent.toLocaleString('de-CH')}</p>
+                  <PrivateValue className="text-sm font-bold text-foreground">CHF {totalSpent.toLocaleString('de-CH')}</PrivateValue>
                 </div>
               </div>
               <div className="flex items-center gap-2.5">
@@ -332,9 +333,9 @@ export default function ClientPortalBudget() {
                 </div>
                 <div>
                   <p className="text-[11px] text-muted-foreground">Übrig</p>
-                  <p className={cn("text-sm font-bold", remaining >= 0 ? "text-foreground" : "text-destructive")}>
+                  <PrivateValue className={cn("text-sm font-bold", remaining >= 0 ? "text-foreground" : "text-destructive")}>
                     CHF {remaining.toLocaleString('de-CH')}
-                  </p>
+                  </PrivateValue>
                 </div>
               </div>
               <div className="flex items-center gap-2.5">
@@ -343,9 +344,9 @@ export default function ClientPortalBudget() {
                 </div>
                 <div>
                   <p className="text-[11px] text-muted-foreground">Sparquote</p>
-                  <p className={cn("text-sm font-bold", savingsRate >= 0 ? "text-foreground" : "text-destructive")}>
+                  <PrivateValue className={cn("text-sm font-bold", savingsRate >= 0 ? "text-foreground" : "text-destructive")}>
                     {monthlyIncome > 0 ? `${savingsRate}%` : '–'}
-                  </p>
+                  </PrivateValue>
                 </div>
               </div>
             </CardContent>
