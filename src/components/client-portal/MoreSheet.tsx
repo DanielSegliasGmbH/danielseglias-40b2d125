@@ -11,8 +11,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { ThemeSwitcher } from '@/components/ThemeSwitcher';
-import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 interface MoreSheetProps {
   open: boolean;
