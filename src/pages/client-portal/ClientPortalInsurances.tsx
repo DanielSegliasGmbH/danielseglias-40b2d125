@@ -22,6 +22,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { PrivateValue } from '@/components/client-portal/PrivateValue';
 
 // ─── Types ─────────────────────────────────────────────────────
 
@@ -429,9 +430,9 @@ export default function ClientPortalInsurances() {
                     </div>
                     <div className="flex items-center gap-2">
                       {p.price != null && (
-                        <p className="text-sm font-medium text-foreground flex-1">
+                        <PrivateValue className="text-sm font-medium text-foreground flex-1">
                           {formatPrice(p.price, p.payment_interval)}
-                        </p>
+                        </PrivateValue>
                       )}
                       {(p.document_url || p.portal_url) && (
                         <div className="flex gap-1">

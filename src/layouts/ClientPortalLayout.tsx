@@ -4,6 +4,9 @@ import { useSmartNotifications } from '@/hooks/useSmartNotifications';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { PrivacyModeProvider } from '@/hooks/usePrivacyMode';
+import { PrivacyToggle } from '@/components/client-portal/PrivacyToggle';
+import { PrivacyBanner } from '@/components/client-portal/PrivacyBanner';
 import { useCustomerPortalSettings, usePreviewCustomerId, PortalVisibility } from '@/hooks/useClientPortal';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -137,7 +140,9 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
   };
 
   return (
+    <PrivacyModeProvider>
     <TooltipProvider delayDuration={0}>
+      <PrivacyBanner />
       <div className="min-h-screen bg-background flex">
         {/* Admin Preview Banner */}
         {isAdminPreview && (
@@ -224,6 +229,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
           <div className="flex items-center justify-between px-4 h-12">
             <h1 className="text-base font-semibold text-foreground">{t('clientPortal.title')}</h1>
             <div className="flex items-center gap-1">
+              <PrivacyToggle />
               <PeakScoreNavBadge />
               <NotificationBell />
             </div>
@@ -240,6 +246,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
           )}
         >
           <div className="hidden lg:flex items-center justify-end gap-4 p-4 border-b border-border bg-card">
+            <PrivacyToggle />
             <PeakScoreNavBadge />
             <NotificationBell />
             <Button
@@ -289,5 +296,6 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
         <LevelUpCelebration />
       </div>
     </TooltipProvider>
+    </PrivacyModeProvider>
   );
 }

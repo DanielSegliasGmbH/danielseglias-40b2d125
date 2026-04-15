@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import {
   Target, Trash2, Plus, TrendingUp, Home, Heart, Shield, Star, CalendarIcon, RefreshCw,
 } from 'lucide-react';
+import { PrivateValue } from '@/components/client-portal/PrivateValue';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -291,12 +292,12 @@ function GoalCard({ goal, onDelete }: { goal: GoalRow; onDelete: () => void }) {
         {/* Target amount prominent */}
         {goal.target_amount != null && (
           <div className="mb-3">
-            <p className="text-2xl font-bold text-foreground tracking-tight">
+            <PrivateValue className="text-2xl font-bold text-foreground tracking-tight">
               CHF {Number(goal.target_amount).toLocaleString('de-CH')}
-            </p>
-            <p className="text-xs text-muted-foreground">
+            </PrivateValue>
+            <PrivateValue as="p" className="text-xs text-muted-foreground">
               Aktuell: CHF {Number(goal.current_amount).toLocaleString('de-CH')}
-            </p>
+            </PrivateValue>
           </div>
         )}
 
