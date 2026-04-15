@@ -70,6 +70,7 @@ import ClientPortalFinanzTyp from "./pages/client-portal/ClientPortalFinanzTyp";
 import ClientPortalSettings from "./pages/client-portal/ClientPortalSettings";
 import ClientPortalSnapshot from "./pages/client-portal/ClientPortalSnapshot";
 import ClientPortalToolArchive from "./pages/client-portal/ClientPortalToolArchive";
+import ClientPortalCalendar from "./pages/client-portal/ClientPortalCalendar";
 
 // Insurance Consulting Pages
 import InsuranceConsultingStart from "./pages/insurance-consulting/InsuranceConsultingStart";
@@ -552,6 +553,14 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['client', 'admin']}>
                     <ClientPortalToolArchive />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/calendar"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalCalendar />
                   </RouteGuard>
                 }
               />

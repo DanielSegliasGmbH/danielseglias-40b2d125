@@ -140,6 +140,43 @@ export function useSmartNotifications() {
         );
       }
 
+      // 6. SWISS FINANCIAL CALENDAR DEADLINES
+      const calendarDeadlines = [
+        { month: 3, day: 31, title: 'Steuererklärung Frist', desc: 'Prüfe die Frist in deinem Kanton.' },
+        { month: 11, day: 30, title: 'Krankenkasse wechseln', desc: 'Letzte Möglichkeit für nächstes Jahr.' },
+        { month: 12, day: 31, title: 'Säule 3a Einzahlung', desc: 'Letzter Tag für Einzahlungen dieses Jahr.' },
+        { month: 12, day: 31, title: 'PK-Einkauf', desc: 'Letzter Tag für Pensionskassen-Einkäufe.' },
+      ];
+
+      for (const dl of calendarDeadlines) {
+        const target = new Date(now.getFullYear(), dl.month - 1, dl.day);
+        if (target < now) continue;
+        const daysUntil = Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+        if (daysUntil === 0) {
+          await upsertNotification(
+            uid, 'calendar_deadline', `cal-${dl.month}-${dl.day}-today-${now.getFullYear()}`,
+            `🚨 Heute ist der letzte Tag für: ${dl.title}!`,
+            dl.desc,
+            '/app/client-portal/calendar', 'Kalender öffnen'
+          );
+        } else if (daysUntil <= 7) {
+          await upsertNotification(
+            uid, 'calendar_deadline', `cal-${dl.month}-${dl.day}-7d-${now.getFullYear()}`,
+            `⏰ Noch ${daysUntil} Tage: ${dl.title}`,
+            dl.desc,
+            '/app/client-portal/calendar', 'Kalender öffnen'
+          );
+        } else if (daysUntil <= 30) {
+          await upsertNotification(
+            uid, 'calendar_deadline', `cal-${dl.month}-${dl.day}-30d-${now.getFullYear()}`,
+            `📅 In ${daysUntil} Tagen: ${dl.title}`,
+            dl.desc,
+            '/app/client-portal/calendar', 'Kalender öffnen'
+          );
+        }
+      }
+
       // Refresh the query
       queryClient.invalidateQueries({ queryKey: ['smart-notifications'] });
     } catch (err) {
