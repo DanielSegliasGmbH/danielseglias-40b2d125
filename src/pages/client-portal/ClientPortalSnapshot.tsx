@@ -419,6 +419,7 @@ export default function ClientPortalSnapshot() {
   const [step, setStep] = useState(0);
   const [tab, setTab] = useState('new');
   const [saving, setSaving] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
   const autoSaveTimeout = useRef<ReturnType<typeof setTimeout>>();
 
   // ── Load snapshots ──
@@ -569,6 +570,8 @@ export default function ClientPortalSnapshot() {
       await awardPoints('snapshot_completed', 'snapshot_' + Date.now());
       queryClient.invalidateQueries({ queryKey: ['financial-snapshots'] });
       toast({ title: 'Snapshot gespeichert! 📸', description: '+100 XP verdient' });
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 3000);
       setDraft(EMPTY_DRAFT);
       setStep(0);
       setTab('history');
