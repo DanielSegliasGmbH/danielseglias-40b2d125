@@ -28,6 +28,7 @@ import { FinanzEntscheidungTool } from '@/components/tools/finanz-entscheidung/F
 import { LebenzeitRechnerTool } from '@/components/tools/lebenzeit-rechner/LebenzeitRechnerTool';
 import { RolexRechnerTool } from '@/components/tools/rolex-rechner/RolexRechnerTool';
 import { ThreeAAnalyzerTool } from '@/components/tools/three-a-analyzer/ThreeAAnalyzerTool';
+import { SteuerCheckTool } from '@/components/tools/steuer-check/SteuerCheckTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -206,6 +207,10 @@ export default function PublicToolDetail() {
               ) : slug === 'three-a-analyzer' ? (
                 <div className="mb-8">
                   <ThreeAAnalyzerTool mode="public" />
+                </div>
+              ) : slug === 'steuer-check' ? (
+                <div className="mb-8">
+                  <SteuerCheckTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">

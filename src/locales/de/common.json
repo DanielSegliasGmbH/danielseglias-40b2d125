@@ -965,5 +965,11 @@
   },
   "common": {
     "contentFollows": "Inhalt folgt"
+  },
+  "tools": {
+    "steuerCheck": {
+      "name": "Steuer-Check",
+      "description": "Finde Steueroptimierungen: 3a-Potenzial, PK-Einkauf und vergessene Abzüge."
+    }
   }
 }

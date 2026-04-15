@@ -33,6 +33,7 @@ import { FinanzEntscheidungTool } from '@/components/tools/finanz-entscheidung/F
 import { LebenzeitRechnerTool } from '@/components/tools/lebenzeit-rechner/LebenzeitRechnerTool';
 import { RolexRechnerTool } from '@/components/tools/rolex-rechner/RolexRechnerTool';
 import { ThreeAAnalyzerTool } from '@/components/tools/three-a-analyzer/ThreeAAnalyzerTool';
+import { SteuerCheckTool } from '@/components/tools/steuer-check/SteuerCheckTool';
 import { RecommendationCards } from '@/components/client-portal/RecommendationCards';
 import { TOOL_RECOMMENDATIONS } from '@/config/recommendationConfig';
 
@@ -130,6 +131,8 @@ export default function ClientPortalToolDetail() {
         return <RolexRechnerTool mode="internal" />;
       case 'three-a-analyzer':
         return <ThreeAAnalyzerTool mode="internal" />;
+      case 'steuer-check':
+        return <SteuerCheckTool mode="internal" />;
       default:
         return (
           <Card>
