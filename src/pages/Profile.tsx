@@ -278,6 +278,25 @@ export default function Profile() {
             </div>
           )}
 
+          {/* ─── Friends Link ─── */}
+          {isClient && (
+            <Card
+              className="cursor-pointer active:scale-[0.99] transition-transform"
+              onClick={() => navigate('/app/client-portal/friends')}
+            >
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Heart className="h-4 w-4 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-foreground">Deine Finanz-Crew</p>
+                  <p className="text-xs text-muted-foreground">Freunde einladen & PeakScores vergleichen</p>
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              </CardContent>
+            </Card>
+          )}
+
           {/* ─── Achievements ─── */}
           {isClient && (
             <Card>
