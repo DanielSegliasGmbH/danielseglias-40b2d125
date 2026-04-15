@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
@@ -12,6 +12,8 @@ import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Film, TrendingUp, AlertTriangle, CheckCircle, Sparkles } from 'lucide-react';
 import { AlternativeTimeline } from '@/components/client-portal/life-film/AlternativeTimeline';
+import { SwissComparison } from '@/components/client-portal/life-film/SwissComparison';
+import { useGamification } from '@/hooks/useGamification';
 
 // ── Constants ──
 const INFLATION = 0.02;
