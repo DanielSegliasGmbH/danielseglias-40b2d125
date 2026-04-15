@@ -8,6 +8,7 @@ import { Shield, ShieldCheck, ShieldAlert, ShieldX, ChevronRight, ChevronLeft, M
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { InfoHint } from '@/components/client-portal/InfoHint';
 
 type Status = 'yes' | 'no' | 'unclear' | null;
 
@@ -15,8 +16,9 @@ interface InsuranceItem {
   key: string;
   label: string;
   hint?: string;
-  critical?: boolean; // red flag if missing
-  conditional?: string; // shown as note
+  critical?: boolean;
+  conditional?: string;
+  articleId?: string;
 }
 
 interface Step {
@@ -30,27 +32,27 @@ const STEPS: Step[] = [
     title: 'Pflichtversicherungen',
     description: 'Gesetzlich vorgeschriebene Grundabsicherung',
     items: [
-      { key: 'kvg', label: 'Krankenkasse Grundversicherung', critical: true },
-      { key: 'uvg', label: 'UVG (Unfallversicherung)', hint: 'Automatisch bei Anstellung', conditional: 'Nur bei Anstellung relevant' },
-      { key: 'ahv', label: 'AHV/IV Beiträge aktuell', critical: true },
+      { key: 'kvg', label: 'Krankenkasse Grundversicherung', critical: true, articleId: 'boersencrash-mythos' },
+      { key: 'uvg', label: 'UVG (Unfallversicherung)', hint: 'Automatisch bei Anstellung', conditional: 'Nur bei Anstellung relevant', articleId: 'faq-sicherheit' },
+      { key: 'ahv', label: 'AHV/IV Beiträge aktuell', critical: true, articleId: 'ahv-grundlagen' },
     ],
   },
   {
     title: 'Empfohlene Versicherungen',
     description: 'Wichtige Absicherungen für den Alltag',
     items: [
-      { key: 'haftpflicht', label: 'Privathaftpflicht', critical: true, hint: 'Sehr empfohlen' },
-      { key: 'hausrat', label: 'Hausratversicherung' },
-      { key: 'rechtsschutz', label: 'Rechtsschutzversicherung' },
-      { key: 'krankentaggeld', label: 'Krankentaggeld', hint: 'Bei Selbstständigen kritisch', conditional: 'Besonders wichtig ohne Arbeitgeber' },
+      { key: 'haftpflicht', label: 'Privathaftpflicht', critical: true, hint: 'Sehr empfohlen', articleId: 'faq-sicherheit' },
+      { key: 'hausrat', label: 'Hausratversicherung', articleId: 'faq-sicherheit' },
+      { key: 'rechtsschutz', label: 'Rechtsschutzversicherung', articleId: 'faq-sicherheit' },
+      { key: 'krankentaggeld', label: 'Krankentaggeld', hint: 'Bei Selbstständigen kritisch', conditional: 'Besonders wichtig ohne Arbeitgeber', articleId: 'faq-sicherheit' },
     ],
   },
   {
     title: 'Situationsabhängig',
     description: 'Je nach Lebenssituation sinnvoll',
     items: [
-      { key: 'leben', label: 'Lebensversicherung', conditional: 'Bei Familie oder Hypothek', critical: true },
-      { key: 'eu', label: 'Erwerbsunfähigkeitsversicherung', critical: true },
+      { key: 'leben', label: 'Lebensversicherung', conditional: 'Bei Familie oder Hypothek', critical: true, articleId: 'drei-saeulen-system' },
+      { key: 'eu', label: 'Erwerbsunfähigkeitsversicherung', critical: true, articleId: 'faq-sicherheit' },
       { key: 'reise', label: 'Reiseversicherung' },
     ],
   },
@@ -281,6 +283,7 @@ export function VersicherungsCheckTool({ mode = 'internal' }: Props) {
                         <p className="text-sm font-medium">{item.label}</p>
                         {item.hint && <p className="text-[11px] text-muted-foreground">{item.hint}</p>}
                         {item.conditional && <p className="text-[11px] text-muted-foreground italic">{item.conditional}</p>}
+                        {item.articleId && <InfoHint text="" articleId={item.articleId} className="mt-0" />}
                       </div>
                       {item.critical && <span className="text-[10px] font-medium text-destructive bg-destructive/10 rounded px-1.5 py-0.5 shrink-0">Wichtig</span>}
                     </div>

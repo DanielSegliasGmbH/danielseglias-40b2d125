@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Separator } from '@/components/ui/separator';
 import { Plus, Wallet, TrendingDown, TrendingUp, PiggyBank, Trash2, ExternalLink } from 'lucide-react';
 import { PrivateValue } from '@/components/client-portal/PrivateValue';
+import { InfoHint } from '@/components/client-portal/InfoHint';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -267,6 +268,7 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
               <div>
                 <p className="text-sm text-foreground">Fixkosten (Finanzprofil)</p>
                 <p className="text-[11px] text-muted-foreground">Miete, Krankenkasse, Versicherungen etc.</p>
+                <InfoHint text="Fixkosten sind regelmässige Ausgaben, die jeden Monat gleich bleiben." articleId="inflation-risiko" />
               </div>
               <PrivateValue className="text-sm font-semibold text-foreground">
                 {fixedCosts > 0 ? fmtCHF(fixedCosts) : '–'}
@@ -280,6 +282,7 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
               <div>
                 <p className="text-sm text-foreground">Variable Ausgaben (diesen Monat)</p>
                 <p className="text-[11px] text-muted-foreground">Aus deinem Budget-Tracking</p>
+                <InfoHint text="Variable Kosten schwanken monatlich – z.B. Essen, Freizeit, Shopping." />
               </div>
               <PrivateValue className="text-sm font-semibold text-foreground">
                 {fmtCHF(totalVariableExpenses)}
@@ -386,16 +389,19 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
 
             {/* Savings rate */}
             {totalIncome > 0 && (
-              <div className="flex items-center justify-center gap-2">
-                <PiggyBank className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">Sparquote:</span>
-                <PrivateValue className={cn(
-                  'text-sm font-bold',
-                  savingsRate >= 20 ? 'text-emerald-600' : savingsRate >= 0 ? 'text-foreground' : 'text-destructive'
-                )}>
-                  {savingsRate}%
-                </PrivateValue>
-              </div>
+              <>
+                <div className="flex items-center justify-center gap-2">
+                  <PiggyBank className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Sparquote:</span>
+                  <PrivateValue className={cn(
+                    'text-sm font-bold',
+                    savingsRate >= 20 ? 'text-emerald-600' : savingsRate >= 0 ? 'text-foreground' : 'text-destructive'
+                  )}>
+                    {savingsRate}%
+                  </PrivateValue>
+                </div>
+                <InfoHint text="Eine Sparquote von 20% oder mehr gilt als gesund und stärkt deinen PeakScore nachhaltig." articleId="case-junge-familie" />
+              </>
             )}
 
             {/* PeakScore impact */}

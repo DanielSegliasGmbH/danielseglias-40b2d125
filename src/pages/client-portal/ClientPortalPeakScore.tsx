@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowUp, ArrowDown, Shield, Sparkles, TrendingUp, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { InfoHint } from '@/components/client-portal/InfoHint';
 import { cn } from '@/lib/utils';
 import { usePeakScore, getPeakScoreGradient, getPeakScoreBorderColor, getRankForScore } from '@/hooks/usePeakScore';
 import { useQuery } from '@tanstack/react-query';
@@ -157,6 +158,10 @@ export default function ClientPortalPeakScore() {
               )}
             </CardContent>
           </Card>
+          <InfoHint
+            text="Der PeakScore zeigt, wie viele Monate du von deinem Vermögen leben könntest – ohne Einkommen. Je höher, desto unabhängiger."
+            articleId="unabhaengigkeit"
+          />
         </motion.div>
 
         {/* Calculation breakdown */}
