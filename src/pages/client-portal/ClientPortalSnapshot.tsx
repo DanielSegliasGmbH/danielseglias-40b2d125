@@ -83,6 +83,20 @@ interface OtherAsset {
   value: string;
 }
 
+interface CreditItem {
+  id: string;
+  name: string;
+  remaining: string;
+  monthly_payment: string;
+  interest_rate: string;
+}
+
+interface DebtItem {
+  id: string;
+  description: string;
+  amount: string;
+}
+
 interface SnapshotDraft {
   // Step 0: Vorsorge
   pillar_3a: SnapshotFieldValue;
@@ -105,9 +119,14 @@ interface SnapshotDraft {
   other_assets: OtherAsset[];
   other_assets_skipped: boolean;
   // Step 3: Verbindlichkeiten
-  mortgage: SnapshotFieldValue;
-  consumer_debt: SnapshotFieldValue;
-  other_debt: SnapshotFieldValue;
+  credits: CreditItem[];
+  credits_skipped: boolean;
+  debts: DebtItem[];
+  debts_skipped: boolean;
+  // Legacy liability fields
+  mortgage?: SnapshotFieldValue;
+  consumer_debt?: SnapshotFieldValue;
+  other_debt?: SnapshotFieldValue;
   // Step 4: Einkommen & Ausgaben
   monthly_income: SnapshotFieldValue;
   monthly_expenses: SnapshotFieldValue;
