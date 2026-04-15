@@ -2022,6 +2022,33 @@ export type Database = {
         }
         Relationships: []
       }
+      monthly_summaries: {
+        Row: {
+          created_at: string
+          id: string
+          month_key: string
+          summary_data: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          month_key: string
+          summary_data?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          month_key?: string
+          summary_data?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       net_worth_assets: {
         Row: {
           category: string
