@@ -36,9 +36,24 @@ export default function ClientPortalCoach() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { isPremium, isLoading: subLoading } = useSubscription();
+  const { user } = useAuth();
   const { data: allProgress = [] } = useAllCoachProgress();
   const { data: badges = [] } = useCoachBadges();
 
+  const { data: lifeFilmCompleted = false } = useQuery({
+    queryKey: ['life-film-completed', user?.id],
+    queryFn: async () => {
+      if (!user) return false;
+      const { data } = await supabase
+        .from('life_film_data')
+        .select('completed')
+        .eq('user_id', user.id)
+        .eq('completed', true)
+        .maybeSingle();
+      return !!data;
+    },
+    enabled: !!user,
+  });
   const FREE_MODULE_COUNT = 3;
 
   // Build status map from DB
