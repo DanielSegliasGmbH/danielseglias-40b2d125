@@ -14,7 +14,7 @@ import { useGamification, LEVELS } from '@/hooks/useGamification';
 import { useNextBestStep } from '@/hooks/useNextBestStep';
 import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { NotificationBell } from '@/components/client-portal/NotificationBell';
-import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, Crown, Landmark, Wallet, ClipboardList, TrendingUp, FileBarChart } from 'lucide-react';
+import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, Crown, Landmark, Wallet, ClipboardList, TrendingUp, FileBarChart, Gift } from 'lucide-react';
 import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
 
 const LEVEL_ICONS = [null, Zap, Star, Trophy, Award, Crown];

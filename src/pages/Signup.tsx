@@ -212,6 +212,19 @@ export default function Signup() {
             </div>
           </div>
 
+          {/* Referral code (optional) */}
+          <div className="space-y-2">
+            <Label htmlFor="referralCode">Einladungscode (optional)</Label>
+            <Input
+              id="referralCode"
+              placeholder="z.B. DANIEL202600"
+              value={referralCode}
+              onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+              disabled={isLoading}
+              className="h-14 rounded-2xl text-base px-4 font-mono tracking-wide"
+            />
+          </div>
+
           <Button type="submit" className="w-full h-14 rounded-2xl text-base font-semibold" disabled={isLoading || !isFormValid}>
             {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : t('auth.signup')}
           </Button>
