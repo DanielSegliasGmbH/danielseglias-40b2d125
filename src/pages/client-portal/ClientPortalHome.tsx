@@ -16,6 +16,7 @@ import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { NotificationBell } from '@/components/client-portal/NotificationBell';
 import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, Crown, Landmark, Wallet, ClipboardList, TrendingUp, FileBarChart, Gift } from 'lucide-react';
 import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
+import { usePeakScore, usePeakScoreDailyCheck } from '@/hooks/usePeakScore';
 
 const LEVEL_ICONS = [null, Zap, Star, Trophy, Award, Crown];
 
