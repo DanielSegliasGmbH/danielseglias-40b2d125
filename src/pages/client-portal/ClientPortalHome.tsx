@@ -17,6 +17,7 @@ import { NotificationBell } from '@/components/client-portal/NotificationBell';
 import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, Crown, Landmark, Wallet, ClipboardList, TrendingUp, FileBarChart, Gift, Film, UserRound, Camera, CalendarDays } from 'lucide-react';
 import { PrivateValue } from '@/components/client-portal/PrivateValue';
 import { ActiveChallengeCards } from '@/components/client-portal/ActiveChallengeCard';
+import { WeeklyQuestsCard } from '@/components/client-portal/WeeklyQuestsCard';
 import { useFinanzType } from '@/hooks/useFinanzType';
 import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
 import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
@@ -468,6 +469,9 @@ export default function ClientPortalHome() {
 
         {/* ── 3.5 ACTIVE CHALLENGES ── */}
         <ActiveChallengeCards />
+
+        {/* ── WEEKLY QUESTS ── */}
+        <WeeklyQuestsCard />
 
         {/* ── 3.6 MONTHLY REPORT TEASER (1st of month) ── */}
         {new Date().getDate() <= 7 && (() => {
