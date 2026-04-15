@@ -18,7 +18,7 @@ import { toast } from '@/hooks/use-toast';
 import {
   Camera, History, TrendingUp, TrendingDown, Minus,
   ArrowLeft, ArrowRight, Loader2, Trash2, ChevronRight,
-  Info, ExternalLink, Plus,
+  Info, ExternalLink, Plus, Zap, CheckCircle,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
@@ -419,6 +419,7 @@ export default function ClientPortalSnapshot() {
   const [step, setStep] = useState(0);
   const [tab, setTab] = useState('new');
   const [saving, setSaving] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
   const autoSaveTimeout = useRef<ReturnType<typeof setTimeout>>();
 
   // ── Load snapshots ──
@@ -569,6 +570,8 @@ export default function ClientPortalSnapshot() {
       await awardPoints('snapshot_completed', 'snapshot_' + Date.now());
       queryClient.invalidateQueries({ queryKey: ['financial-snapshots'] });
       toast({ title: 'Snapshot gespeichert! 📸', description: '+100 XP verdient' });
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 3000);
       setDraft(EMPTY_DRAFT);
       setStep(0);
       setTab('history');
@@ -600,6 +603,30 @@ export default function ClientPortalSnapshot() {
 
   return (
     <ClientPortalLayout>
+      {/* Confetti celebration */}
+      {showConfetti && (
+        <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+          {Array.from({ length: 50 }).map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 rounded-full"
+              style={{
+                left: `${Math.random() * 100}%`,
+                backgroundColor: ['hsl(var(--primary))', '#FFD700', '#FF6B35', '#4CAF50', '#E91E63'][i % 5],
+              }}
+              initial={{ top: '-5%', opacity: 1, scale: 1, rotate: 0 }}
+              animate={{
+                top: '110%',
+                opacity: [1, 1, 0],
+                scale: [1, 1.5, 0.5],
+                rotate: Math.random() * 720 - 360,
+                x: (Math.random() - 0.5) * 200,
+              }}
+              transition={{ duration: 2 + Math.random(), delay: i * 0.04, ease: 'easeOut' }}
+            />
+          ))}
+        </div>
+      )}
       <div className="max-w-2xl mx-auto space-y-4">
         {/* Header */}
         <div className="flex items-center gap-3">
@@ -673,7 +700,7 @@ export default function ClientPortalSnapshot() {
                 transition={{ duration: 0.2 }}
               >
                 {isSummary ? (
-                  <SummaryStep draft={draft} onNotesChange={(v) => setDraft(prev => ({ ...prev, notes: v }))} />
+                  <SummaryStep draft={draft} onNotesChange={(v) => setDraft(prev => ({ ...prev, notes: v }))} onEdit={() => setStep(step - 1)} />
                 ) : currentStepConfig?.type === 'bank_cash' ? (
                   <BankCashStep draft={draft} updateDraft={updateDraft} updateField={updateField} updateAmount={updateAmount} />
                 ) : currentStepConfig?.type === 'investments' ? (
@@ -1598,11 +1625,10 @@ function SnapshotFieldCard({
 
 // ── Summary step ───────────────────────────────────
 
-function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesChange: (v: string) => void }) {
+function SummaryStep({ draft, onNotesChange, onEdit }: { draft: SnapshotDraft; onNotesChange: (v: string) => void; onEdit: () => void }) {
   const netWorth = computeNetWorth(draft);
   const income = n(draft.monthly_income.amount);
   const expenses = n(draft.monthly_expenses.amount);
-  const savingsRate = income > 0 ? Math.round(((income - expenses) / income) * 100) : 0;
   const bankTotal = draft.bank_accounts_skipped ? 0 : sumBankAccounts(draft.bank_accounts);
   const cashTotal = draft.cash.skipped ? 0 : n(draft.cash.amount);
   const valuablesTotal = draft.valuables_skipped ? 0 : sumValuables(draft.valuables);
@@ -1616,27 +1642,35 @@ function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesCh
   const totalPension = n(draft.pillar_3a.amount) + n(draft.freizuegigkeit.amount) + n(draft.pensionskasse.amount);
   const legacyDebt = (draft.mortgage ? n(draft.mortgage.amount) : 0) + (draft.consumer_debt ? n(draft.consumer_debt.amount) : 0) + (draft.other_debt ? n(draft.other_debt.amount) : 0);
   const totalDebt = propertyMortgages + creditsTotal + debtsTotal + legacyDebt;
+  const totalAssets = bankTotal + cashTotal + valuablesTotal + investTotal + cryptoTotal + propertyTotal + otherTotal + totalPension;
   const fmtCHF = (v: number) => `CHF ${v.toLocaleString('de-CH')}`;
 
-  const summaryItems = [
-    { label: 'Nettovermögen', value: fmtCHF(netWorth), highlight: true, positive: netWorth >= 0 },
-    { label: 'Sparquote', value: income > 0 ? `${savingsRate}%` : '–' },
-    { label: 'Bankkonten', value: fmtCHF(bankTotal) },
-    { label: 'Bargeld & Wertgegenstände', value: fmtCHF(cashTotal + valuablesTotal) },
-    { label: 'Investments (Aktien, ETFs)', value: fmtCHF(investTotal) },
-    { label: 'Kryptowährungen', value: fmtCHF(cryptoTotal) },
-    ...(propertyTotal > 0 ? [{ label: 'Immobilien (Marktwert)', value: fmtCHF(propertyTotal) }] : []),
-    ...(otherTotal > 0 ? [{ label: 'Sonstiges Vermögen', value: fmtCHF(otherTotal) }] : []),
-    { label: 'Vorsorge Total', value: fmtCHF(totalPension) },
-    ...(propertyMortgages > 0 ? [{ label: 'Hypotheken', value: fmtCHF(propertyMortgages) }] : []),
-    ...(creditsTotal > 0 ? [{ label: 'Kredite & Leasing', value: fmtCHF(creditsTotal) }] : []),
-    ...(debtsTotal > 0 ? [{ label: 'Sonstige Schulden', value: fmtCHF(debtsTotal) }] : []),
-    { label: 'Schulden Total', value: fmtCHF(totalDebt) },
-    { label: 'Einkommen mtl.', value: income > 0 ? fmtCHF(income) : '–' },
-    { label: 'Ausgaben mtl.', value: expenses > 0 ? fmtCHF(expenses) : '–' },
-  ];
+  // Assets breakdown
+  const assetItems = [
+    { label: 'Bankkonten', value: bankTotal },
+    { label: 'Bargeld', value: cashTotal },
+    { label: 'Wertgegenstände', value: valuablesTotal },
+    { label: 'Aktien, ETFs & Fonds', value: investTotal },
+    { label: 'Kryptowährungen', value: cryptoTotal },
+    { label: 'Immobilien (Marktwert)', value: propertyTotal },
+    { label: 'Sonstiges Vermögen', value: otherTotal },
+    { label: 'Vorsorge (3a, FZ, PK)', value: totalPension },
+  ].filter(i => i.value > 0);
 
-  // Count skipped fields
+  // Liabilities breakdown
+  const liabilityItems = [
+    { label: 'Hypotheken', value: propertyMortgages },
+    { label: 'Kredite & Leasing', value: creditsTotal },
+    { label: 'Sonstige Schulden', value: debtsTotal },
+    ...(legacyDebt > 0 ? [{ label: 'Weitere Schulden', value: legacyDebt }] : []),
+  ].filter(i => i.value > 0);
+
+  // PeakScore impact (months of expenses covered)
+  const monthlyExpenses = expenses > 0 ? expenses : 1;
+  const currentMonths = Math.max(0, Math.round(netWorth / monthlyExpenses));
+
+  // Completeness
+  const TOTAL_FIELDS = 15;
   const simpleSkipped = (['pillar_3a', 'freizuegigkeit', 'pensionskasse', 'ahv_annual', 'cash',
     'monthly_income', 'monthly_expenses', 'insurance_monthly'] as (keyof SnapshotDraft)[])
     .filter(k => {
@@ -1647,38 +1681,144 @@ function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesCh
     (draft.bank_accounts_skipped ? 1 : 0) + (draft.valuables_skipped ? 1 : 0) +
     (draft.investment_positions_skipped ? 1 : 0) + (draft.crypto_positions_skipped ? 1 : 0) +
     (draft.other_assets_skipped ? 1 : 0) + (draft.credits_skipped ? 1 : 0) + (draft.debts_skipped ? 1 : 0);
+  const filledCount = TOTAL_FIELDS - skippedCount;
+  const completenessPercent = Math.round((filledCount / TOTAL_FIELDS) * 100);
+
+  const motivationalText = completenessPercent > 80
+    ? 'Sehr vollständig! Top Überblick. 🎯'
+    : completenessPercent >= 50
+      ? 'Guter Start. Ergänze fehlende Felder beim nächsten Snapshot.'
+      : 'Jedes Feld, das du ausfüllst, macht deinen Plan besser.';
+
+  const today = format(new Date(), 'dd. MMMM yyyy', { locale: de });
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <span className="text-xl">✅</span>
-        <h2 className="text-base font-bold text-foreground">Zusammenfassung</h2>
+      {/* Header */}
+      <div className="text-center space-y-1">
+        <h2 className="text-lg font-bold text-foreground">Dein Snapshot – {today}</h2>
+        <p className="text-xs text-muted-foreground">Deine finanzielle Momentaufnahme</p>
       </div>
 
-      <Card className="border-primary/20 bg-primary/5">
-        <CardContent className="p-4 space-y-2.5">
-          {summaryItems.map((item) => (
+      {/* SECTION 1: Vermögen (green) */}
+      <Card className="border-primary/30 bg-primary/5">
+        <CardContent className="p-4 space-y-2">
+          <h3 className="text-sm font-bold text-primary flex items-center gap-1.5">
+            <TrendingUp className="h-4 w-4" /> Vermögen
+          </h3>
+          {assetItems.map(item => (
             <div key={item.label} className="flex justify-between items-center">
               <span className="text-xs text-muted-foreground">{item.label}</span>
-              <span className={cn(
-                "text-sm font-semibold",
-                item.highlight
-                  ? item.positive ? "text-primary" : "text-destructive"
-                  : "text-foreground"
-              )}>
-                {item.value}
-              </span>
+              <span className="text-sm font-medium text-foreground">{fmtCHF(item.value)}</span>
             </div>
           ))}
+          {assetItems.length === 0 && (
+            <p className="text-xs text-muted-foreground text-center py-1">Keine Vermögenswerte erfasst</p>
+          )}
+          <div className="pt-2 border-t border-primary/20 flex justify-between items-center">
+            <span className="text-xs font-semibold text-primary">Total Vermögen</span>
+            <span className="text-lg font-bold text-primary">{fmtCHF(totalAssets)}</span>
+          </div>
         </CardContent>
       </Card>
 
-      {skippedCount > 0 && (
-        <p className="text-[11px] text-muted-foreground text-center">
-          {skippedCount} Feld(er) übersprungen — du kannst sie jederzeit nachträglich ausfüllen.
-        </p>
-      )}
+      {/* SECTION 2: Verbindlichkeiten (red) */}
+      <Card className="border-destructive/30 bg-destructive/5">
+        <CardContent className="p-4 space-y-2">
+          <h3 className="text-sm font-bold text-destructive flex items-center gap-1.5">
+            <TrendingDown className="h-4 w-4" /> Verbindlichkeiten
+          </h3>
+          {liabilityItems.map(item => (
+            <div key={item.label} className="flex justify-between items-center">
+              <span className="text-xs text-muted-foreground">{item.label}</span>
+              <span className="text-sm font-medium text-destructive">-{fmtCHF(item.value)}</span>
+            </div>
+          ))}
+          {liabilityItems.length === 0 && (
+            <p className="text-xs text-muted-foreground text-center py-1">Keine Verbindlichkeiten erfasst</p>
+          )}
+          <div className="pt-2 border-t border-destructive/20 flex justify-between items-center">
+            <span className="text-xs font-semibold text-destructive">Total Schulden</span>
+            <span className="text-lg font-bold text-destructive">-{fmtCHF(totalDebt)}</span>
+          </div>
+        </CardContent>
+      </Card>
 
+      {/* SECTION 3: Nettovermögen */}
+      <Card className={cn("border-2", netWorth >= 0 ? "border-primary/40" : "border-destructive/40")}>
+        <CardContent className="p-5 text-center space-y-1">
+          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Nettovermögen</p>
+          <p className={cn("text-2xl font-bold", netWorth >= 0 ? "text-primary" : "text-destructive")}>
+            {fmtCHF(netWorth)}
+          </p>
+          {income > 0 && (
+            <p className="text-[11px] text-muted-foreground">
+              Sparquote: {Math.round(((income - expenses) / income) * 100)}%
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* SECTION 4: PeakScore Impact */}
+      <Card>
+        <CardContent className="p-4 space-y-2">
+          <h3 className="text-sm font-bold text-foreground flex items-center gap-1.5">
+            <Zap className="h-4 w-4 text-primary" /> PeakScore Impact
+          </h3>
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">Finanzielle Reichweite</span>
+            <div className="flex items-center gap-2">
+              <span className="text-base font-bold text-foreground">{currentMonths} Monate</span>
+              {currentMonths >= 6 ? (
+                <Badge variant="outline" className="text-[10px] border-primary/30 text-primary">✓ Gesund</Badge>
+              ) : (
+                <Badge variant="outline" className="text-[10px] border-destructive/30 text-destructive">Aufbau nötig</Badge>
+              )}
+            </div>
+          </div>
+          <p className="text-[11px] text-muted-foreground">
+            {currentMonths >= 6
+              ? 'Du hast genug Reserven, um mindestens 6 Monate ohne Einkommen zu überbrücken.'
+              : `Ziel: 6 Monate Ausgaben als Reserve. Dir fehlen noch ${fmtCHF(Math.max(0, monthlyExpenses * 6 - Math.max(0, netWorth)))}.`}
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* SECTION 5: Vollständigkeit */}
+      <Card>
+        <CardContent className="p-4 space-y-3">
+          <h3 className="text-sm font-bold text-foreground flex items-center gap-1.5">
+            <CheckCircle className="h-4 w-4 text-primary" /> Vollständigkeit
+          </h3>
+          <div className="flex items-center gap-4">
+            {/* Progress ring */}
+            <div className="relative w-16 h-16 shrink-0">
+              <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
+                <circle cx="32" cy="32" r="28" fill="none" strokeWidth="5" className="stroke-muted/30" />
+                <circle
+                  cx="32" cy="32" r="28" fill="none" strokeWidth="5"
+                  strokeLinecap="round"
+                  className="stroke-primary"
+                  strokeDasharray={`${2 * Math.PI * 28}`}
+                  strokeDashoffset={`${2 * Math.PI * 28 * (1 - completenessPercent / 100)}`}
+                  style={{ transition: 'stroke-dashoffset 0.6s ease' }}
+                />
+              </svg>
+              <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-foreground">
+                {completenessPercent}%
+              </span>
+            </div>
+            <div className="space-y-1 flex-1">
+              <p className="text-sm font-medium text-foreground">
+                Du hast {filledCount} von {TOTAL_FIELDS} Felder ausgefüllt
+              </p>
+              <p className="text-[11px] text-muted-foreground">{motivationalText}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Notes */}
       <Card>
         <CardContent className="p-4 space-y-2">
           <Label className="text-xs">📝 Notizen (optional)</Label>
@@ -1691,6 +1831,11 @@ function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesCh
           />
         </CardContent>
       </Card>
+
+      {/* Edit button */}
+      <Button variant="outline" className="w-full" onClick={onEdit}>
+        <ArrowLeft className="h-4 w-4 mr-1.5" /> Noch bearbeiten
+      </Button>
     </div>
   );
 }
