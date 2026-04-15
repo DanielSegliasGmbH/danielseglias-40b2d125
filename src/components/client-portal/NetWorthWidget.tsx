@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
+import { PrivateValue } from '@/components/client-portal/PrivateValue';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Landmark, ChevronRight } from 'lucide-react';
@@ -58,9 +59,9 @@ export function NetWorthWidget() {
               <div>
                 <p className="text-sm font-semibold text-foreground">Mein Vermögen</p>
                 {hasData ? (
-                  <p className="text-lg font-bold text-primary">
+                  <PrivateValue className="text-lg font-bold text-primary">
                     CHF {netWorth.toLocaleString('de-CH')}
-                  </p>
+                  </PrivateValue>
                 ) : (
                   <p className="text-xs text-muted-foreground">Noch keine Einträge</p>
                 )}
