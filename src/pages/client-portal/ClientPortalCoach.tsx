@@ -1,11 +1,14 @@
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronRight, Sparkles, Brain, Eye, Target, LayoutGrid, Shield, Settings2, TrendingUp, Rocket, Star, RotateCcw, Info, Lock, CheckCircle, Clock, Play, Zap } from 'lucide-react';
+import { ChevronRight, Sparkles, Brain, Eye, Target, LayoutGrid, Shield, Settings2, TrendingUp, Rocket, Star, RotateCcw, Info, Lock, CheckCircle, Clock, Play, Zap, Film, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSubscription } from '@/hooks/useSubscription';
 import { useAllCoachProgress, useCoachBadges, getModuleStatus } from '@/hooks/useCoachProgress';
