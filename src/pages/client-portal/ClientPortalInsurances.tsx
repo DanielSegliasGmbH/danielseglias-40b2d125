@@ -22,6 +22,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { PrivateValue } from '@/components/client-portal/PrivateValue';
 
 // ─── Types ─────────────────────────────────────────────────────
 
