@@ -159,25 +159,94 @@ export default function ClientPortalPeakScore() {
           </Card>
         </motion.div>
 
-        {/* Score breakdown */}
+        {/* Calculation breakdown */}
         <Card>
           <CardContent className="p-5">
-            <h3 className="text-sm font-semibold text-foreground mb-3">Score-Zusammensetzung</h3>
-            <div className="space-y-2.5">
-              {breakdownItems.map(item => (
-                <div key={item.label} className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">{item.label}</span>
-                  <span className={cn('text-sm font-semibold', item.color)}>{item.value}</span>
+            <h3 className="text-sm font-semibold text-foreground mb-4">So berechnet sich dein PeakScore</h3>
+            <div className="space-y-3">
+              {/* Assets */}
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-base">💰</span>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Vermögen</p>
+                    <p className="text-[11px] text-muted-foreground">{assetCount} Einträge</p>
+                  </div>
+                </div>
+                <span className="text-sm font-semibold text-emerald-600">{fmtCHF(totalAssets)}</span>
+              </div>
+
+              {/* Liabilities */}
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-base">📉</span>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Verbindlichkeiten</p>
+                    <p className="text-[11px] text-muted-foreground">{liabilityCount} Einträge</p>
+                  </div>
+                </div>
+                <span className="text-sm font-semibold text-red-500">- {fmtCHF(totalLiabilities)}</span>
+              </div>
+
+              <div className="border-t border-border my-1" />
+
+              {/* Net worth */}
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-bold text-foreground">= Nettovermögen</p>
+                <span className={cn('text-sm font-bold', netWorth >= 0 ? 'text-emerald-600' : 'text-red-500')}>
+                  {netWorth < 0 ? '- ' : ''}{fmtCHF(Math.abs(netWorth))}
+                </span>
+              </div>
+
+              {/* Monthly expenses */}
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-sm font-medium text-foreground">÷ Monatliche Ausgaben</p>
+                  {expenseSourceLabel && (
+                    <p className="text-[11px] text-muted-foreground">{expenseSourceLabel}</p>
+                  )}
+                </div>
+                <span className="text-sm font-semibold text-muted-foreground">
+                  ÷ {fmtCHF(monthlyExpenses)} / Mt.
+                </span>
+              </div>
+
+              <div className="border-t border-border my-1" />
+
+              {/* Result */}
+              <div className="flex items-center justify-between">
+                <p className="text-base font-bold text-foreground">= PeakScore</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-base font-extrabold text-foreground">
+                    {displayScore ? `${score.toFixed(1)} Monate` : '–'}
+                  </span>
+                  {displayScore && (
+                    <span className="text-sm">{rank.emoji}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Tips section */}
+        <Card>
+          <CardContent className="p-5">
+            <h3 className="text-sm font-semibold text-foreground mb-4">So verbesserst du deinen Score</h3>
+            <div className="space-y-3">
+              {tips.map((tip, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-3 p-3 rounded-xl bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors active:scale-[0.98]"
+                  onClick={() => navigate(tip.route)}
+                >
+                  <span className="text-lg shrink-0">{tip.emoji}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-foreground/80 leading-relaxed">{tip.text}</p>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
                 </div>
               ))}
-              {displayScore && (
-                <div className="border-t border-border pt-2 mt-2 flex justify-between items-center">
-                  <span className="text-sm font-semibold text-foreground">PeakScore</span>
-                  <span className="text-sm font-bold text-foreground">
-                    {fmtCHF(totalAssets - totalLiabilities)} ÷ {fmtCHF(monthlyExpenses)} = {score.toFixed(1)} Mt.
-                  </span>
-                </div>
-              )}
             </div>
           </CardContent>
         </Card>
