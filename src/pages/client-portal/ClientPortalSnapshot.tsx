@@ -221,7 +221,7 @@ interface FieldConfig {
 interface StepConfig {
   title: string;
   emoji: string;
-  type: 'fields' | 'bank_cash';
+  type: 'fields' | 'bank_cash' | 'investments';
   fields?: FieldConfig[];
 }
 
@@ -276,14 +276,9 @@ const STEPS: StepConfig[] = [
     type: 'bank_cash',
   },
   {
-    title: 'Vermögen',
-    emoji: '💰',
-    type: 'fields',
-    fields: [
-      { key: 'investments', label: 'Investitionen (Aktien, ETFs etc.)', emoji: '📈', isCHF: true, showProvider: true, showLink: true },
-      { key: 'real_estate', label: 'Immobilien (Marktwert)', emoji: '🏠', isCHF: true },
-      { key: 'emergency_fund', label: 'Notgroschen', emoji: '🛡️', isCHF: true, hint: 'Dein finanzielles Sicherheitspolster für Notfälle.' },
-    ],
+    title: 'Investments & Immobilien',
+    emoji: '📈',
+    type: 'investments',
   },
   {
     title: 'Verbindlichkeiten',
@@ -321,12 +316,45 @@ function sumValuables(items: Valuable[]): number {
   return items.reduce((sum, v) => sum + n(v.value), 0);
 }
 
+function sumInvestments(items: InvestmentPosition[]): number {
+  return items.reduce((sum, i) => sum + n(i.value), 0);
+}
+
+function sumCrypto(items: CryptoPosition[]): number {
+  return items.reduce((sum, c) => sum + n(c.value), 0);
+}
+
+function sumPropertyEquity(properties: Property[]): number {
+  return properties.reduce((sum, p) => sum + n(p.market_value) - n(p.mortgage_amount), 0);
+}
+
+function sumPropertyValue(properties: Property[]): number {
+  return properties.reduce((sum, p) => sum + n(p.market_value), 0);
+}
+
+function sumPropertyMortgages(properties: Property[]): number {
+  return properties.reduce((sum, p) => sum + n(p.mortgage_amount), 0);
+}
+
+function sumOtherAssets(items: OtherAsset[]): number {
+  return items.reduce((sum, a) => sum + n(a.value), 0);
+}
+
 function computeNetWorth(d: SnapshotDraft): number {
   const bankTotal = d.bank_accounts_skipped ? 0 : sumBankAccounts(d.bank_accounts);
   const cashTotal = d.cash.skipped ? 0 : n(d.cash.amount);
   const valuablesTotal = d.valuables_skipped ? 0 : sumValuables(d.valuables);
-  return bankTotal + cashTotal + valuablesTotal +
-    n(d.investments.amount) + n(d.real_estate.amount) + n(d.emergency_fund.amount) +
+  const investTotal = d.investment_positions_skipped ? 0 : sumInvestments(d.investment_positions);
+  const cryptoTotal = d.crypto_positions_skipped ? 0 : sumCrypto(d.crypto_positions);
+  const propertyEquity = d.owns_property ? sumPropertyEquity(d.properties) : 0;
+  const otherTotal = d.other_assets_skipped ? 0 : sumOtherAssets(d.other_assets);
+  // Legacy fields for old snapshots
+  const legacySavings = d.savings ? n(d.savings.amount) : 0;
+  const legacyInvestments = d.investments ? n(d.investments.amount) : 0;
+  const legacyRE = d.real_estate ? n(d.real_estate.amount) : 0;
+  const legacyEmergency = d.emergency_fund ? n(d.emergency_fund.amount) : 0;
+  return bankTotal + cashTotal + valuablesTotal + investTotal + cryptoTotal + propertyEquity + otherTotal +
+    legacySavings + legacyInvestments + legacyRE + legacyEmergency +
     n(d.pillar_3a.amount) + n(d.freizuegigkeit.amount) + n(d.pensionskasse.amount) -
     n(d.mortgage.amount) - n(d.consumer_debt.amount) - n(d.other_debt.amount);
 }
@@ -336,7 +364,6 @@ const STATIC_FIELD_LABELS: Record<string, { label: string; emoji: string }> = {}
 STEPS.forEach(step => step.fields?.forEach(f => {
   STATIC_FIELD_LABELS[f.key as string] = { label: f.label, emoji: f.emoji };
 }));
-// Add cash
 STATIC_FIELD_LABELS['cash'] = { label: 'Bargeld', emoji: '💵' };
 
 // ── Main component ────────────────────────────────
