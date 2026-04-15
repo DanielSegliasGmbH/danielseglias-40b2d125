@@ -586,6 +586,8 @@ export default function ClientPortalBudget() {
             </CardContent>
           </Card>
         )}
+          </TabsContent>
+        </Tabs>
       </div>
       </PageTransition>
     </ClientPortalLayout>
