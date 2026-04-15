@@ -10,6 +10,7 @@ import { Wrench, Calculator, PieChart, TrendingUp, FileText, Clock, ClipboardChe
 import { useAllTools, useUpdateTool } from '@/hooks/useTools';
 import { groupToolsByCluster } from '@/config/toolClusters';
 import { toast } from 'sonner';
+import { resolveToolText } from '@/lib/toolTranslations';
 
 const iconMap: Record<string, LucideIcon> = {
   'calculator': Calculator,

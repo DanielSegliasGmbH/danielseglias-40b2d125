@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Calculator, Wrench, ArrowRight, AlertCircle } from 'lucide-react';
 import { usePublicTools } from '@/hooks/useTools';
 import { groupToolsByCluster } from '@/config/toolClusters';
+import { resolveToolText } from '@/lib/toolTranslations';
 
 export default function PublicTools() {
   const { t } = useTranslation();

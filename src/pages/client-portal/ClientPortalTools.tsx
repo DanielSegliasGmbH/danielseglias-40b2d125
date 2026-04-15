@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Wrench, Calculator, PieChart, TrendingUp, FileText, LucideIcon } from 'lucide-react';
 import { useClientToolsFiltered } from '@/hooks/useClientPortal';
 import { groupToolsByCluster } from '@/config/toolClusters';
+import { resolveToolText } from '@/lib/toolTranslations';
 
 const iconMap: Record<string, LucideIcon> = {
   'calculator': Calculator,
