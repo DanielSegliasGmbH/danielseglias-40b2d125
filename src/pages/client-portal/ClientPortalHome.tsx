@@ -14,7 +14,7 @@ import { useGamification, LEVELS } from '@/hooks/useGamification';
 import { useNextBestStep } from '@/hooks/useNextBestStep';
 import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { NotificationBell } from '@/components/client-portal/NotificationBell';
-import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, Crown, Landmark, Wallet, ClipboardList, TrendingUp, FileBarChart, Gift, Film, UserRound } from 'lucide-react';
+import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, Crown, Landmark, Wallet, ClipboardList, TrendingUp, FileBarChart, Gift, Film, UserRound, Camera } from 'lucide-react';
 import { ActiveChallengeCards } from '@/components/client-portal/ActiveChallengeCard';
 import { useFinanzType } from '@/hooks/useFinanzType';
 import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
@@ -257,6 +257,7 @@ export default function ClientPortalHome() {
     { icon: Wrench, label: 'Tools', path: '/app/client-portal/tools', emoji: '🔧' },
     { icon: Wallet, label: 'Budget', path: '/app/client-portal/budget', emoji: '💰' },
     { icon: Target, label: 'Ziele', path: '/app/client-portal/goals', emoji: '🎯' },
+    { icon: Camera, label: 'Snapshot', path: '/app/client-portal/snapshot', emoji: '📸' },
   ];
 
   return (
@@ -517,7 +518,7 @@ export default function ClientPortalHome() {
         )}
 
         {/* ── 5. SCHNELLZUGRIFF ── */}
-        <div className="grid grid-cols-4 gap-2.5">
+        <div className="grid grid-cols-5 gap-2">
           {quickAccess.map((item, i) => (
             <motion.div
               key={item.label}

@@ -15,7 +15,8 @@ export type ActionType =
   | 'expense_added'
   | 'asset_added'
   | 'life_film_completed'
-  | 'life_film_viewed';
+  | 'life_film_viewed'
+  | 'snapshot_completed';
 
 const POINTS_MAP: Record<ActionType, number> = {
   daily_login: 20,
@@ -30,6 +31,7 @@ const POINTS_MAP: Record<ActionType, number> = {
   asset_added: 25,
   life_film_completed: 150,
   life_film_viewed: 100,
+  snapshot_completed: 100,
 };
 
 export const LEVELS = [
