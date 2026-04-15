@@ -231,7 +231,7 @@ function GoalCard({ goal, onDelete, onToggle }: { goal: GoalRow; onDelete: () =>
           <div className="flex items-start gap-3 min-w-0 flex-1">
             <button onClick={onToggle} className="mt-0.5 shrink-0">
               {goal.is_completed
-                ? <CheckCircle2 className="h-5 w-5 text-green-600" />
+                ? <CheckCircle2 className="h-5 w-5 text-primary" />
                 : <div className="h-5 w-5 rounded-full border-2 border-muted-foreground/40" />}
             </button>
             <div className="min-w-0 flex-1">
