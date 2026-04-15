@@ -20,6 +20,7 @@ import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
 import { RankWarningBanner } from '@/components/client-portal/RankWarningBanner';
 import { RankChangeOverlay } from '@/components/client-portal/RankChangeOverlay';
 import { useRankSystem } from '@/hooks/useRankSystem';
+import { usePeakScore } from '@/hooks/usePeakScore';
 
 const LEVEL_ICONS = [null, Zap, Star, Trophy, Award, Crown];
 
@@ -53,6 +54,7 @@ export default function ClientPortalHome() {
 
   const { data: nextStepResult } = useNextBestStep();
   const { rankChange, dismissRankChange } = useRankSystem();
+  const { score, rank: peakRank } = usePeakScore();
   const firstName = user?.user_metadata?.first_name || 'Kunde';
 
   useEffect(() => {
@@ -230,6 +232,11 @@ export default function ClientPortalHome() {
             </p>
             <h1 className="text-xl font-semibold tracking-tight text-foreground mt-0.5">
               {firstName}
+              {score !== null && (
+                <span className="ml-2 text-sm font-normal text-muted-foreground">
+                  {peakRank.emoji}
+                </span>
+              )}
             </h1>
           </div>
           <NotificationBell />
