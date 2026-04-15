@@ -13,7 +13,8 @@ export type ActionType =
   | 'tool_used'
   | 'video_watched'
   | 'expense_added'
-  | 'asset_added';
+  | 'asset_added'
+  | 'life_film_completed';
 
 const POINTS_MAP: Record<ActionType, number> = {
   daily_login: 20,
