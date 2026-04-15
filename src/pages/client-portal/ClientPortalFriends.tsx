@@ -87,16 +87,9 @@ export default function ClientPortalFriends() {
         .in('user_id', friendIds)
         .eq('is_snapshot', false);
 
-      // Fetch streaks
-      const { data: streaks } = await supabase
-        .from('gamification_streaks')
-        .select('user_id, current_streak')
-        .in('user_id', friendIds);
-
       return friendIds.map(fid => {
         const profile = (profiles as FriendProfile[] | null)?.find(p => p.id === fid);
-        const scoreRow = scores?.find((s: { user_id: string; score: number }) => s.user_id === fid);
-        const streakRow = streaks?.find((s: { user_id: string; current_streak: number }) => s.user_id === fid);
+        const scoreRow = (scores as Array<{ user_id: string; score: number }> | null)?.find(s => s.user_id === fid);
         const peakScore = scoreRow?.score ?? 0;
         const rank = getRankForScore(peakScore);
         return {
@@ -104,7 +97,6 @@ export default function ClientPortalFriends() {
           name: profile ? `${profile.first_name} ${profile.last_name?.charAt(0) || ''}.` : 'Unbekannt',
           peakScore,
           rank,
-          streak: streakRow?.current_streak ?? 0,
         };
       }).sort((a, b) => b.peakScore - a.peakScore);
     },
