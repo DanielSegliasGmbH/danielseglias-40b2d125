@@ -3,14 +3,12 @@ import { PageTransition } from '@/components/PageTransition';
 import { ErrorState } from '@/components/ErrorState';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
-import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -24,8 +22,12 @@ import { useAuth } from '@/hooks/useAuth';
 import { useGamification } from '@/hooks/useGamification';
 import { usePeakScore } from '@/hooks/usePeakScore';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
+import { format, differenceInDays } from 'date-fns';
 import { de } from 'date-fns/locale';
+import { motion } from 'framer-motion';
+import {
+  Collapsible, CollapsibleContent, CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 
 const CATEGORIES = [
   { value: 'Vermögensaufbau', icon: TrendingUp },
@@ -36,15 +38,20 @@ const CATEGORIES = [
   { value: 'Sonstiges', icon: Target },
 ];
 
-const categoryIconMap: Record<string, React.ElementType> = Object.fromEntries(
-  CATEGORIES.map(c => [c.value, c.icon])
-);
-
 function getProgressEmoji(pct: number): string {
   if (pct >= 100) return '🏆';
   if (pct >= 75) return '🌳';
   if (pct >= 50) return '🌿';
   return '🌱';
+}
+
+function getDaysRemainingBadge(targetDate: string | null) {
+  if (!targetDate) return null;
+  const days = differenceInDays(new Date(targetDate), new Date());
+  if (days < 0) return <Badge variant="secondary" className="text-[10px] bg-destructive/10 text-destructive">Überfällig</Badge>;
+  if (days <= 7) return <Badge variant="secondary" className="text-[10px] bg-destructive/10 text-destructive">{days}d übrig</Badge>;
+  if (days <= 30) return <Badge variant="secondary" className="text-[10px] bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">{days}d übrig</Badge>;
+  return <Badge variant="secondary" className="text-[10px] bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">{days}d übrig</Badge>;
 }
 
 interface GoalRow {
@@ -68,6 +75,7 @@ export default function ClientPortalGoals() {
   const [targetAmount, setTargetAmount] = useState('');
   const [targetDate, setTargetDate] = useState<Date | undefined>();
   const [category, setCategory] = useState('Sonstiges');
+  const [completedOpen, setCompletedOpen] = useState(false);
 
   const { data: goals = [], isLoading, isError, refetch } = useQuery({
     queryKey: ['client-goals', user?.id],
@@ -120,15 +128,75 @@ export default function ClientPortalGoals() {
 
   return (
     <ClientPortalLayout>
-      <ScreenHeader title="Deine Ziele" showBack backTo="/app/client-portal" />
       <PageTransition>
-      <div className="max-w-2xl mx-auto space-y-4 p-4 pb-8">
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="w-full gap-2">
-              <Plus className="h-4 w-4" /> Ziel hinzufügen
+        <div className="max-w-2xl mx-auto space-y-5 px-4 pt-2 pb-8">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-lg font-bold text-foreground">🎯 Meine Ziele</h1>
+              <p className="text-sm text-muted-foreground mt-0.5">Deine finanziellen Meilensteine</p>
+            </div>
+            <Button size="sm" className="gap-1.5 h-8 rounded-xl" onClick={() => setDialogOpen(true)}>
+              <Plus className="h-3.5 w-3.5" /> Ziel hinzufügen
             </Button>
-          </DialogTrigger>
+          </div>
+
+          {isError && <ErrorState onRetry={() => refetch()} />}
+
+          {isLoading && (
+            <div className="space-y-3">
+              {[1, 2].map(i => <div key={i} className="h-28 bg-muted animate-pulse rounded-xl" />)}
+            </div>
+          )}
+
+          {/* Empty */}
+          {!isLoading && !isError && goals.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mb-4">
+                <span className="text-2xl">🎯</span>
+              </div>
+              <h3 className="text-base font-semibold text-foreground mb-1">Noch keine Ziele?</h3>
+              <p className="text-sm text-muted-foreground max-w-xs mb-4">
+                Setze dein erstes Ziel und starte deine Reise!
+              </p>
+              <Button size="sm" className="gap-1.5" onClick={() => setDialogOpen(true)}>
+                <Plus className="h-3.5 w-3.5" /> Erstes Ziel setzen
+              </Button>
+            </div>
+          )}
+
+          {/* Active goals */}
+          {activeGoals.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1">
+                Aktive Ziele ({activeGoals.length})
+              </p>
+              {activeGoals.map((goal, i) => (
+                <GoalCard key={goal.id} goal={goal} index={i} onDelete={() => deleteGoal.mutate(goal.id)} monthlyExpenses={monthlyExpenses} />
+              ))}
+            </div>
+          )}
+
+          {/* Completed goals */}
+          {completedGoals.length > 0 && (
+            <Collapsible open={completedOpen} onOpenChange={setCompletedOpen}>
+              <CollapsibleTrigger className="flex items-center gap-2 px-1 w-full text-left">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Erreichte Ziele ({completedGoals.length})
+                </p>
+                <span className="text-xs text-muted-foreground">{completedOpen ? '▾' : '▸'}</span>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-2 mt-2">
+                {completedGoals.map((goal, i) => (
+                  <GoalCard key={goal.id} goal={goal} index={i} onDelete={() => deleteGoal.mutate(goal.id)} monthlyExpenses={monthlyExpenses} completed />
+                ))}
+              </CollapsibleContent>
+            </Collapsible>
+          )}
+        </div>
+
+        {/* Create Dialog */}
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>Neues Ziel erstellen</DialogTitle>
@@ -167,7 +235,6 @@ export default function ClientPortalGoals() {
                   </SelectContent>
                 </Select>
               </div>
-              {/* Projected PeakScore impact */}
               {targetAmount && monthlyExpenses > 0 && (
                 <div className="flex items-center gap-1 text-xs font-medium text-emerald-600 px-1">
                   <Shield className="h-3 w-3" />
@@ -180,57 +247,25 @@ export default function ClientPortalGoals() {
             </div>
           </DialogContent>
         </Dialog>
-
-        {isError && <ErrorState onRetry={() => refetch()} />}
-        {isLoading && [1, 2].map(i => <div key={i} className="h-32 bg-muted animate-pulse rounded-2xl" />)}
-
-        {!isLoading && !isError && goals.length === 0 && (
-          <Card className="border-dashed">
-            <CardContent className="p-6 flex flex-col items-center justify-center text-center">
-              <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                <Target className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="font-semibold text-foreground mb-1">Noch keine Ziele definiert</h3>
-              <p className="text-sm text-muted-foreground max-w-xs">
-                Klicke oben auf «Ziel hinzufügen», um dein erstes Finanzziel zu erstellen.
-              </p>
-            </CardContent>
-          </Card>
-        )}
-
-        {activeGoals.length > 0 && (
-          <div className="space-y-3">
-            <p className="text-xs font-semibold text-muted-foreground px-1 uppercase tracking-wider">Aktive Ziele ({activeGoals.length})</p>
-            {activeGoals.map(goal => (
-              <GoalCard key={goal.id} goal={goal} onDelete={() => deleteGoal.mutate(goal.id)} />
-            ))}
-          </div>
-        )}
-
-        {completedGoals.length > 0 && (
-          <div className="space-y-3">
-            <p className="text-xs font-semibold text-muted-foreground px-1 uppercase tracking-wider">Erreichte Ziele ({completedGoals.length})</p>
-            {completedGoals.map(goal => (
-              <GoalCard key={goal.id} goal={goal} onDelete={() => deleteGoal.mutate(goal.id)} />
-            ))}
-          </div>
-        )}
-      </div>
       </PageTransition>
     </ClientPortalLayout>
   );
 }
 
-function GoalCard({ goal, onDelete }: { goal: GoalRow; onDelete: () => void }) {
-  const { user } = useAuth();
+function GoalCard({ goal, index, onDelete, monthlyExpenses, completed }: {
+  goal: GoalRow;
+  index: number;
+  onDelete: () => void;
+  monthlyExpenses: number;
+  completed?: boolean;
+}) {
   const qc = useQueryClient();
-  const CatIcon = categoryIconMap[goal.category || ''] || Target;
+  const [updateOpen, setUpdateOpen] = useState(false);
+  const [newAmount, setNewAmount] = useState('');
+
   const progress = goal.target_amount && goal.target_amount > 0
     ? Math.min(100, Math.round((goal.current_amount / goal.target_amount) * 100))
     : null;
-
-  const [updateOpen, setUpdateOpen] = useState(false);
-  const [newAmount, setNewAmount] = useState('');
 
   const updateAmount = useMutation({
     mutationFn: async () => {
@@ -252,101 +287,99 @@ function GoalCard({ goal, onDelete }: { goal: GoalRow; onDelete: () => void }) {
   });
 
   return (
-    <Card className={cn(
-      'overflow-hidden border-0 shadow-sm transition-all',
-      goal.is_completed && 'opacity-60'
-    )} style={{
-      background: 'linear-gradient(135deg, hsl(var(--card)) 0%, hsl(60 10% 96%) 100%)',
-    }}>
-      <CardContent className="p-5">
-        {/* Top row: emoji + title + delete */}
-        <div className="flex items-start justify-between gap-2 mb-3">
-          <div className="flex items-start gap-3 min-w-0 flex-1">
-            {progress !== null && (
-              <span className="text-2xl leading-none mt-0.5">{getProgressEmoji(progress)}</span>
-            )}
-            <div className="min-w-0 flex-1">
-              <h3 className={cn('font-bold text-base text-foreground leading-tight', goal.is_completed && 'line-through')}>
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, delay: index * 0.04 }}
+    >
+      <Card className={cn(
+        "border border-border/50 rounded-xl overflow-hidden transition-all",
+        completed && "opacity-60"
+      )}>
+        <CardContent className="p-4">
+          {/* Top row: title + date badge */}
+          <div className="flex items-start justify-between gap-2 mb-2">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              {progress !== null && (
+                <span className="text-lg leading-none">{getProgressEmoji(progress)}</span>
+              )}
+              <h3 className={cn(
+                "text-[15px] font-bold text-foreground leading-tight truncate",
+                completed && "line-through text-muted-foreground"
+              )}>
                 {goal.title}
               </h3>
-              <div className="flex items-center gap-2 mt-1">
-                {goal.category && (
-                  <Badge variant="secondary" className="text-[11px] gap-1 font-medium">
-                    <CatIcon className="h-3 w-3" /> {goal.category}
-                  </Badge>
-                )}
-                {goal.target_date && (
-                  <span className="text-[11px] text-muted-foreground flex items-center gap-0.5">
-                    <CalendarIcon className="h-3 w-3" />
-                    {new Date(goal.target_date).toLocaleDateString('de-CH')}
-                  </span>
-                )}
-              </div>
             </div>
-          </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={onDelete}>
-            <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
-          </Button>
-        </div>
-
-        {/* Target amount prominent */}
-        {goal.target_amount != null && (
-          <div className="mb-3">
-            <PrivateValue className="text-2xl font-bold text-foreground tracking-tight">
-              CHF {Number(goal.target_amount).toLocaleString('de-CH')}
-            </PrivateValue>
-            <PrivateValue as="p" className="text-xs text-muted-foreground">
-              Aktuell: CHF {Number(goal.current_amount).toLocaleString('de-CH')}
-            </PrivateValue>
-          </div>
-        )}
-
-        {/* Progress bar */}
-        {progress !== null && (
-          <div className="mb-3">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs text-muted-foreground font-medium">Fortschritt</span>
-              <span className="text-lg font-bold text-primary">{progress}%</span>
-            </div>
-            <Progress value={progress} className="h-2.5 rounded-full" />
-          </div>
-        )}
-
-        {/* Update amount button */}
-        {goal.target_amount != null && !goal.is_completed && (
-          <>
-            {!updateOpen ? (
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full gap-2 mt-1"
-                onClick={() => { setNewAmount(String(goal.current_amount)); setUpdateOpen(true); }}
-              >
-                <RefreshCw className="h-3.5 w-3.5" /> Betrag aktualisieren
+            <div className="flex items-center gap-1.5 shrink-0">
+              {getDaysRemainingBadge(goal.target_date)}
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onDelete}>
+                <Trash2 className="h-3 w-3 text-muted-foreground" />
               </Button>
-            ) : (
-              <div className="flex gap-2 mt-1">
-                <Input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={newAmount}
-                  onChange={e => setNewAmount(e.target.value)}
-                  placeholder="Neuer Betrag"
-                  className="flex-1"
-                  autoFocus
+            </div>
+          </div>
+
+          {/* Progress bar */}
+          {progress !== null && (
+            <div className="mb-2">
+              <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full bg-primary"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.6, delay: index * 0.04 + 0.15, ease: 'easeOut' }}
                 />
-                <Button size="sm" onClick={() => updateAmount.mutate()} disabled={updateAmount.isPending}>
-                  OK
-                </Button>
-                <Button size="sm" variant="ghost" onClick={() => setUpdateOpen(false)}>
-                  ✕
-                </Button>
               </div>
-            )}
-          </>
-        )}
-      </CardContent>
-    </Card>
+            </div>
+          )}
+
+          {/* Bottom row: amounts + percentage */}
+          {goal.target_amount != null && (
+            <div className="flex items-center justify-between">
+              <PrivateValue className="text-[13px] text-muted-foreground">
+                CHF {Number(goal.current_amount).toLocaleString('de-CH')} / CHF {Number(goal.target_amount).toLocaleString('de-CH')}
+              </PrivateValue>
+              {progress !== null && (
+                <span className="text-[13px] font-bold text-primary">{progress}%</span>
+              )}
+            </div>
+          )}
+
+          {/* Update amount inline */}
+          {goal.target_amount != null && !completed && (
+            <>
+              {!updateOpen ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full gap-1.5 mt-2 h-8 text-xs text-muted-foreground hover:text-foreground"
+                  onClick={() => { setNewAmount(String(goal.current_amount)); setUpdateOpen(true); }}
+                >
+                  <RefreshCw className="h-3 w-3" /> Betrag aktualisieren
+                </Button>
+              ) : (
+                <div className="flex gap-2 mt-2">
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={newAmount}
+                    onChange={e => setNewAmount(e.target.value)}
+                    placeholder="Neuer Betrag"
+                    className="flex-1 h-8 text-sm"
+                    autoFocus
+                  />
+                  <Button size="sm" className="h-8" onClick={() => updateAmount.mutate()} disabled={updateAmount.isPending}>
+                    OK
+                  </Button>
+                  <Button size="sm" variant="ghost" className="h-8" onClick={() => setUpdateOpen(false)}>
+                    ✕
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }
