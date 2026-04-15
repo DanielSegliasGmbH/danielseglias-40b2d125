@@ -1,6 +1,29 @@
 {
   "adminPages": {
-    "manageTools": "Tools verwalten"
+    "title": "Öffentliche Seiten",
+    "subtitle": "Verwalte Blog-Artikel und öffentliche Inhalte",
+    "newPage": "Neue Seite",
+    "editPage": "Seite bearbeiten",
+    "noPages": "Keine Seiten vorhanden",
+    "noPagesDesc": "Erstelle deine erste öffentliche Seite.",
+    "saved": "Seite gespeichert",
+    "published": "Veröffentlicht",
+    "draft": "Entwurf",
+    "updatedAt": "Aktualisiert am",
+    "titleLabel": "Titel",
+    "titlePlaceholder": "Seitentitel eingeben",
+    "slugLabel": "URL-Pfad",
+    "slugPlaceholder": "url-pfad",
+    "typeLabel": "Seitentyp",
+    "typeBlog": "Blog-Artikel",
+    "typeInfo": "Info-Seite",
+    "typeLanding": "Landing Page",
+    "typeTool": "Werkzeug",
+    "publishedLabel": "Status",
+    "excerptLabel": "Kurzbeschreibung",
+    "excerptPlaceholder": "Kurze Beschreibung für Vorschau",
+    "contentLabel": "Inhalt",
+    "contentPlaceholder": "Seiteninhalt hier eingeben..."
   },
   "app": {
     "title": "Mandantenverwaltung",
@@ -734,19 +757,7 @@
     "withoutMoneytree": "Ohne Moneytree"
   },
   "common": {
-    "select": "Auswählen",
-    "save": "Speichern",
-    "saving": "Speichern...",
-    "cancel": "Abbrechen",
-    "delete": "Löschen",
-    "create": "Erstellen",
-    "back": "Zurück",
-    "all": "Alle",
-    "filters": "Filter",
-    "resetFilters": "Filter zurücksetzen",
-    "apply": "Anwenden",
-    "items": "Einträge",
-    "actions": "Aktionen"
+    "contentFollows": "Inhalt folgt"
   },
   "languages": {
     "de": "Deutsch",
@@ -777,113 +788,121 @@
     "spezial": "Spezialbereiche"
   },
   "tools": {
-    "finanzcheck": {
-      "name": "Wie steht es um meine Finanzen?",
-      "description": "Finde in wenigen Minuten heraus, wie gut du finanziell aufgestellt bist – kostenlos und anonym."
+    "steuerCheck": {
+      "name": "Steuer-Check",
+      "description": "Finde Steueroptimierungen: 3a-Potenzial, PK-Einkauf und vergessene Abzüge."
     },
-    "budgetCalculator": {
-      "name": "Wo bleibt mein Geld jeden Monat?",
-      "description": "Verschaffe dir Klarheit über dein monatliches Budget und entdecke versteckte Sparpotenziale."
-    },
-    "retirementPlanner": {
-      "name": "Reicht meine Vorsorge?",
-      "description": "Sieh auf einen Blick, ob deine Altersvorsorge ausreicht – oder ob eine Lücke droht."
-    },
-    "investmentSimulator": {
-      "name": "Welche Strategie passt zu mir?",
-      "description": "Simuliere verschiedene Anlagestrategien und vergleiche die möglichen Ergebnisse."
-    },
-    "documentGenerator": {
-      "name": "Dokumente automatisch erstellen",
-      "description": "Erstelle professionelle Vorlagen und Dokumente auf Knopfdruck."
+    "versicherungsCheck": {
+      "name": "Versicherungs-Check",
+      "description": "Identifiziere Versicherungslücken und finde heraus, wo du gut abgesichert bist."
     },
     "beratungsreise": {
-      "name": "Wo stehe ich auf meiner Finanzreise?",
-      "description": "Deine persönliche Roadmap – sieh auf einen Blick, wo du stehst und was als Nächstes kommt."
+      "name": "Beratungsreise",
+      "description": "Verstehe deinen Weg zur optimalen Finanzberatung."
+    },
+    "finanzcheck": {
+      "name": "Finanz-Check",
+      "description": "Analysiere deine aktuelle finanzielle Situation."
     },
     "mini3aKurzcheck": {
-      "name": "Wie gut ist meine Säule 3a wirklich?",
-      "description": "Lass deine bestehende 3a-Lösung in 2 Minuten bewerten – mit Score, Visualisierung und klarer Empfehlung."
+      "name": "3a Kurzcheck",
+      "description": "Prüfe schnell dein Säule-3a-Potenzial."
+    },
+    "transparenzCheck": {
+      "name": "Transparenz-Check",
+      "description": "Erkenne versteckte Kosten in deinen Produkten."
+    },
+    "kostenaufschluesselung": {
+      "name": "Kostenaufschlüsselung",
+      "description": "Zeige, was deine Finanzprodukte wirklich kosten."
+    },
+    "kostenImpactSimulator": {
+      "name": "Kosten-Impact-Simulator",
+      "description": "Simuliere den Einfluss von Gebühren auf dein Vermögen."
+    },
+    "verlustrechner3a": {
+      "name": "3a Verlustrechner",
+      "description": "Berechne, was dich eine falsche 3a-Wahl kostet."
+    },
+    "sicherheitsvergleich": {
+      "name": "Sicherheitsvergleich",
+      "description": "Vergleiche die Sicherheit verschiedener Anlageformen."
+    },
+    "recoveryAnalyse": {
+      "name": "Recovery-Analyse",
+      "description": "Analysiere, wie schnell sich Märkte nach Krisen erholen."
+    },
+    "wahrscheinlichkeitsrechner": {
+      "name": "Wahrscheinlichkeitsrechner",
+      "description": "Berechne Wahrscheinlichkeiten für Lebensereignisse."
+    },
+    "zufallsRealitaetsCheck": {
+      "name": "Zufalls-Realitäts-Check",
+      "description": "Erkenne den Unterschied zwischen Zufall und Strategie."
+    },
+    "zeitverlustSimulator": {
+      "name": "Zeitverlust-Simulator",
+      "description": "Sieh, was Warten beim Investieren wirklich kostet."
+    },
+    "inflationsrechner": {
+      "name": "Inflationsrechner",
+      "description": "Berechne die reale Kaufkraft deines Geldes über die Zeit."
+    },
+    "renditeRisikoSimulation": {
+      "name": "Rendite-Risiko-Simulation",
+      "description": "Simuliere verschiedene Anlagestrategien und deren Risiko."
+    },
+    "glaubenssatzTransformer": {
+      "name": "Glaubenssatz-Transformer",
+      "description": "Transformiere limitierende Glaubenssätze über Geld."
+    },
+    "vergleichsrechner3a": {
+      "name": "3a Vergleichsrechner",
+      "description": "Vergleiche verschiedene Säule-3a-Anbieter."
+    },
+    "finanzEntscheidung": {
+      "name": "Finanz-Entscheidung",
+      "description": "Triff bessere finanzielle Entscheidungen mit Struktur."
+    },
+    "tragbarkeitsrechner": {
+      "name": "Tragbarkeitsrechner",
+      "description": "Prüfe, ob du dir eine Immobilie leisten kannst."
+    },
+    "vvgLeistungsvergleich": {
+      "name": "VVG-Leistungsvergleich",
+      "description": "Vergleiche Versicherungsleistungen nach VVG."
+    },
+    "lebenzeitRechner": {
+      "name": "Lebenszeit-Rechner",
+      "description": "Visualisiere deine verbleibende Lebenszeit."
+    },
+    "rolexRechner": {
+      "name": "Rolex-Rechner",
+      "description": "Was wäre dein Luxus-Kauf als Investment wert?"
     },
     "threeAAnalyzer": {
       "name": "3a Analyzer",
-      "description": "Lade deine 3a-Unterlagen hoch und erhalte eine verständliche Ersteinschätzung zu Struktur, Kosten und Optimierungspotenzial."
-    },
-    "transparenzCheck": {
-      "name": "Kann ich meiner Beratung vertrauen?",
-      "description": "Prüfe selbst, wie transparent und nachvollziehbar deine aktuelle Finanzberatung wirklich ist."
-    },
-    "kostenaufschluesselung": {
-      "name": "Welche Kosten zahle ich wirklich?",
-      "description": "Mach sichtbare und versteckte Kosten deiner Finanzprodukte auf einen Blick transparent."
-    },
-    "kostenImpactSimulator": {
-      "name": "Was kosten mich Gebühren wirklich?",
-      "description": "Vergleiche zwei Szenarien und erkenne, wie sich kleine Kostenunterschiede über Jahre auswirken."
-    },
-    "verlustrechner3a": {
-      "name": "Wie viel Geld verliere ich mit meiner 3a?",
-      "description": "Berechne, wie viel Kapital dir mit deiner aktuellen Säule-3a-Lösung entgeht – in Franken und Lebenszeit."
-    },
-    "sicherheitsvergleich": {
-      "name": "Ist keine Schwankung wirklich sicherer?",
-      "description": "Vergleiche, ob scheinbare Sicherheit dich langfristig tatsächlich mehr kostet als kontrolliertes Risiko."
-    },
-    "recoveryAnalyse": {
-      "name": "Wie schnell erholt sich der Markt nach einer Krise?",
-      "description": "Sieh anhand historischer Daten, wie lange der Weltaktienmarkt brauchte, um sich nach grossen Krisen zu erholen."
-    },
-    "wahrscheinlichkeitsrechner": {
-      "name": "Wie wahrscheinlich erreiche ich mein Ziel?",
-      "description": "Berechne, mit welcher Wahrscheinlichkeit du dein finanzielles Ziel tatsächlich erreichst."
-    },
-    "zufallsRealitaetsCheck": {
-      "name": "Gehe ich das Thema Finanzen richtig an?",
-      "description": "Ein kurzer Reality-Check – finde heraus, ob deine Finanzstrategie auf dem richtigen Weg ist."
-    },
-    "zeitverlustSimulator": {
-      "name": "Was kostet mich jeder Monat Warten?",
-      "description": "Berechne den finanziellen Preis des Aufschiebens – in Franken, Monaten und verlorener Rendite."
-    },
-    "inflationsrechner": {
-      "name": "Wie frisst die Inflation mein Geld?",
-      "description": "Verstehe mit echten Schweizer Daten, wie Inflation deine Kaufkraft über die Jahre schmälert."
-    },
-    "renditeRisikoSimulation": {
-      "name": "Welches Risiko kann ich mir leisten?",
-      "description": "Simuliere interaktiv verschiedene Szenarien und finde die Balance zwischen Rendite und Risiko."
-    },
-    "vergleichsrechner3a": {
-      "name": "Lohnt sich ein Wechsel meiner 3a?",
-      "description": "Vergleiche deine bestehende mit einer optimierten 3a-Lösung – und sieh den Unterschied in Franken."
-    },
-    "tragbarkeitsrechner": {
-      "name": "Kann ich mir diese Immobilie leisten?",
-      "description": "Prüfe anhand von Kaufpreis, Eigenmitteln und Einkommen, ob dein Traum vom Eigenheim tragbar ist."
-    },
-    "vvgLeistungsvergleich": {
-      "name": "Was leistet meine Zusatzversicherung wirklich?",
-      "description": "Vergleiche die Leistungen verschiedener VVG-Zusatzversicherungen – klar und übersichtlich."
+      "description": "Tiefenanalyse deiner bestehenden Säule-3a-Lösung."
     },
     "caseStudyGenerator": {
-      "name": "Echte Erfolgsgeschichten erstellen",
-      "description": "Erstelle strukturierte, anonymisierte Case Studies aus deiner Beratungspraxis."
+      "name": "Fallstudien-Generator",
+      "description": "Erstelle anonymisierte Fallstudien für die Beratung."
     },
-    "glaubenssatzTransformer": {
-      "name": "Welche Überzeugung hält mich zurück?",
-      "description": "Hinterfrage typische Glaubenssätze über Geld und entdecke neue Perspektiven – ohne Rechner, ohne Zahlen."
+    "budgetCalculator": {
+      "name": "Budget-Rechner",
+      "description": "Plane dein monatliches Budget optimal."
     },
-    "finanzEntscheidung": {
-      "name": "Bereit für den nächsten Schritt?",
-      "description": "Führe deine Erkenntnisse zusammen und triff eine klare Entscheidung – ohne Druck, mit voller Klarheit."
+    "retirementPlanner": {
+      "name": "Vorsorge-Planer",
+      "description": "Plane deine Pensionierung Schritt für Schritt."
     },
-    "lebenzeitRechner": {
-      "name": "Was kostet dich dein Leben wirklich?",
-      "description": "Finde heraus, wie viele Arbeitsstunden ein Kauf dich wirklich kostet – und ob er dir das wert ist."
+    "investmentSimulator": {
+      "name": "Anlage-Simulator",
+      "description": "Simuliere den Verlauf deiner Investitionen."
     },
-    "rolexRechner": {
-      "name": "Wann zahlen dir deine Zinsen deinen Lifestyle?",
-      "description": "Finde heraus, wie viel Vermögen du brauchst, damit deine Zinsen deinen Luxus dauerhaft finanzieren."
+    "documentGenerator": {
+      "name": "Dokument-Generator",
+      "description": "Erstelle professionelle Beratungsdokumente."
     }
   },
   "adminLeads": {
@@ -898,45 +917,132 @@
     "statusUpdated": "Status aktualisiert",
     "message": "Nachricht"
   },
-  "adminPages": {
-    "title": "Öffentliche Seiten",
-    "subtitle": "Verwalte Blog-Artikel und öffentliche Inhalte",
-    "newPage": "Neue Seite",
-    "editPage": "Seite bearbeiten",
-    "noPages": "Keine Seiten vorhanden",
-    "noPagesDesc": "Erstelle deine erste öffentliche Seite.",
-    "saved": "Seite gespeichert",
-    "published": "Veröffentlicht",
-    "draft": "Entwurf",
-    "updatedAt": "Aktualisiert am",
-    "titleLabel": "Titel",
-    "titlePlaceholder": "Seitentitel eingeben",
-    "slugLabel": "URL-Pfad",
-    "slugPlaceholder": "url-pfad",
-    "typeLabel": "Seitentyp",
-    "typeBlog": "Blog-Artikel",
-    "typeInfo": "Info-Seite",
-    "typeLanding": "Landing Page",
-    "typeTool": "Werkzeug",
-    "publishedLabel": "Status",
-    "excerptLabel": "Kurzbeschreibung",
-    "excerptPlaceholder": "Kurze Beschreibung für Vorschau",
-    "contentLabel": "Inhalt",
-    "contentPlaceholder": "Seiteninhalt hier eingeben..."
-  },
   "public": {
     "brand": "Finanzberatung",
-    "nav": { "home": "Home", "blog": "Blog", "tools": "Werkzeuge", "contact": "Kontakt" },
-    "hero": { "title": "Deine finanzielle Zukunft beginnt hier", "subtitle": "Professionelle Beratung für Versicherungen, Vorsorge und Vermögensaufbau.", "cta": "Kostenlose Beratung", "secondary": "Unsere Tools" },
-    "services": { "title": "Unsere Leistungen", "subtitle": "Umfassende Beratung für alle Lebensphasen", "insurance": { "title": "Versicherungen", "description": "Optimaler Schutz für dich und deine Familie" }, "goals": { "title": "Finanzielle Ziele", "description": "Gemeinsam definieren und erreichen" }, "investment": { "title": "Vermögensaufbau", "description": "Strategien für langfristigen Erfolg" }, "planning": { "title": "Vorsorgeplanung", "description": "Sicher in die Zukunft" } },
-    "benefits": { "title": "Warum wir?", "item1": "Unabhängige Beratung ohne Verkaufsdruck", "item2": "Transparente Kosten und Konditionen", "item3": "Persönliche Betreuung über Jahre hinweg", "item4": "Digitale Tools für volle Übersicht", "cta": "Jetzt Kontakt aufnehmen" },
-    "stats": { "clients": "zufriedene Kunden", "description": "Vertraue auf unsere Erfahrung." },
-    "cta": { "title": "Bereit für den nächsten Schritt?", "subtitle": "Vereinbare ein unverbindliches Erstgespräch.", "button": "Termin vereinbaren" },
-    "footer": { "description": "Deine unabhängige Finanzberatung.", "links": "Navigation", "contact": "Kontakt", "rights": "Alle Rechte vorbehalten.", "imprint": "Impressum", "privacy": "Datenschutz" },
-    "contact": { "title": "Kontaktformular", "subtitle": "Wir melden uns innerhalb von 24 Stunden.", "name": "Name", "namePlaceholder": "Dein Name", "email": "E-Mail", "emailPlaceholder": "deine@email.ch", "phone": "Telefon", "phonePlaceholder": "+41 79 000 00 00", "message": "Nachricht", "messagePlaceholder": "Wie können wir dir helfen?", "submit": "Absenden", "successTitle": "Nachricht gesendet", "successMessage": "Wir melden uns bald bei dir.", "errorMessage": "Fehler beim Senden. Bitte versuche es erneut.", "thankYouTitle": "Vielen Dank!", "thankYouMessage": "Wir haben deine Nachricht erhalten und melden uns schnellstmöglich.", "backToHome": "Zurück zur Startseite", "infoTitle": "So erreichst du uns", "infoDescription": "Wir freuen uns auf deine Anfrage.", "phoneLabel": "Telefon", "emailLabel": "E-Mail", "addressLabel": "Adresse" },
-    "blog": { "title": "Blog", "subtitle": "Wissen und Tipps rund um Finanzen", "readMore": "Weiterlesen", "noArticles": "Noch keine Artikel", "noArticlesDesc": "Bald findest du hier interessante Beiträge.", "backToList": "Zurück zum Blog", "notFound": "Artikel nicht gefunden", "notFoundDesc": "Dieser Artikel existiert nicht oder wurde entfernt.", "noContent": "Kein Inhalt vorhanden.", "ctaTitle": "Hat dir dieser Artikel gefallen?", "ctaDescription": "Kontaktiere uns für eine persönliche Beratung." },
-    "tools": { "title": "Werkzeuge", "subtitle": "Praktische Rechner für deine Finanzplanung", "comingSoon": "Demnächst", "startTool": "Starten", "learnMore": "Mehr erfahren", "noToolsAvailable": "Derzeit keine Werkzeuge verfügbar.", "ctaTitle": "Persönliche Beratung gewünscht?", "ctaDescription": "Unsere Experten helfen dir gerne weiter.", "ctaButton": "Beratung anfragen", "backToList": "Zurück zu Tools", "notFound": "Tool nicht gefunden", "notFoundDesc": "Dieses Tool existiert nicht oder ist nicht verfügbar.", "inDevelopmentTitle": "In Entwicklung", "inDevelopmentDesc": "Dieses Tool wird derzeit entwickelt.", "notifyMeTitle": "Interessiert?", "notifyMeDesc": "Hinterlasse deine Daten und wir informieren dich, sobald das Tool verfügbar ist.", "notifyMe": "Benachrichtigen", "notifyMeHint": "Trage dich ein, um benachrichtigt zu werden.", "toolPlaceholder": "Tool-Inhalt wird hier angezeigt." },
-    "lead": { "success": "Erfolgreich gesendet!", "error": "Fehler beim Senden.", "rateLimited": "Zu viele Anfragen", "rateLimitedMessage": "Bitte warte einige Minuten und versuche es dann erneut.", "validationError": "Bitte überprüfe deine Eingaben.", "thankYouTitle": "Vielen Dank!", "thankYouMessage": "Wir melden uns bald bei dir." }
+    "nav": {
+      "home": "Home",
+      "blog": "Blog",
+      "tools": "Werkzeuge",
+      "contact": "Kontakt"
+    },
+    "hero": {
+      "title": "Deine finanzielle Zukunft beginnt hier",
+      "subtitle": "Professionelle Beratung für Versicherungen, Vorsorge und Vermögensaufbau.",
+      "cta": "Kostenlose Beratung",
+      "secondary": "Unsere Tools"
+    },
+    "services": {
+      "title": "Unsere Leistungen",
+      "subtitle": "Umfassende Beratung für alle Lebensphasen",
+      "insurance": {
+        "title": "Versicherungen",
+        "description": "Optimaler Schutz für dich und deine Familie"
+      },
+      "goals": {
+        "title": "Finanzielle Ziele",
+        "description": "Gemeinsam definieren und erreichen"
+      },
+      "investment": {
+        "title": "Vermögensaufbau",
+        "description": "Strategien für langfristigen Erfolg"
+      },
+      "planning": {
+        "title": "Vorsorgeplanung",
+        "description": "Sicher in die Zukunft"
+      }
+    },
+    "benefits": {
+      "title": "Warum wir?",
+      "item1": "Unabhängige Beratung ohne Verkaufsdruck",
+      "item2": "Transparente Kosten und Konditionen",
+      "item3": "Persönliche Betreuung über Jahre hinweg",
+      "item4": "Digitale Tools für volle Übersicht",
+      "cta": "Jetzt Kontakt aufnehmen"
+    },
+    "stats": {
+      "clients": "zufriedene Kunden",
+      "description": "Vertraue auf unsere Erfahrung."
+    },
+    "cta": {
+      "title": "Bereit für den nächsten Schritt?",
+      "subtitle": "Vereinbare ein unverbindliches Erstgespräch.",
+      "button": "Termin vereinbaren"
+    },
+    "footer": {
+      "description": "Deine unabhängige Finanzberatung.",
+      "links": "Navigation",
+      "contact": "Kontakt",
+      "rights": "Alle Rechte vorbehalten.",
+      "imprint": "Impressum",
+      "privacy": "Datenschutz"
+    },
+    "contact": {
+      "title": "Kontaktformular",
+      "subtitle": "Wir melden uns innerhalb von 24 Stunden.",
+      "name": "Name",
+      "namePlaceholder": "Dein Name",
+      "email": "E-Mail",
+      "emailPlaceholder": "deine@email.ch",
+      "phone": "Telefon",
+      "phonePlaceholder": "+41 79 000 00 00",
+      "message": "Nachricht",
+      "messagePlaceholder": "Wie können wir dir helfen?",
+      "submit": "Absenden",
+      "successTitle": "Nachricht gesendet",
+      "successMessage": "Wir melden uns bald bei dir.",
+      "errorMessage": "Fehler beim Senden. Bitte versuche es erneut.",
+      "thankYouTitle": "Vielen Dank!",
+      "thankYouMessage": "Wir haben deine Nachricht erhalten und melden uns schnellstmöglich.",
+      "backToHome": "Zurück zur Startseite",
+      "infoTitle": "So erreichst du uns",
+      "infoDescription": "Wir freuen uns auf deine Anfrage.",
+      "phoneLabel": "Telefon",
+      "emailLabel": "E-Mail",
+      "addressLabel": "Adresse"
+    },
+    "blog": {
+      "title": "Blog",
+      "subtitle": "Wissen und Tipps rund um Finanzen",
+      "readMore": "Weiterlesen",
+      "noArticles": "Noch keine Artikel",
+      "noArticlesDesc": "Bald findest du hier interessante Beiträge.",
+      "backToList": "Zurück zum Blog",
+      "notFound": "Artikel nicht gefunden",
+      "notFoundDesc": "Dieser Artikel existiert nicht oder wurde entfernt.",
+      "noContent": "Kein Inhalt vorhanden.",
+      "ctaTitle": "Hat dir dieser Artikel gefallen?",
+      "ctaDescription": "Kontaktiere uns für eine persönliche Beratung."
+    },
+    "tools": {
+      "title": "Werkzeuge",
+      "subtitle": "Praktische Rechner für deine Finanzplanung",
+      "comingSoon": "Demnächst",
+      "startTool": "Starten",
+      "learnMore": "Mehr erfahren",
+      "noToolsAvailable": "Derzeit keine Werkzeuge verfügbar.",
+      "ctaTitle": "Persönliche Beratung gewünscht?",
+      "ctaDescription": "Unsere Experten helfen dir gerne weiter.",
+      "ctaButton": "Beratung anfragen",
+      "backToList": "Zurück zu Tools",
+      "notFound": "Tool nicht gefunden",
+      "notFoundDesc": "Dieses Tool existiert nicht oder ist nicht verfügbar.",
+      "inDevelopmentTitle": "In Entwicklung",
+      "inDevelopmentDesc": "Dieses Tool wird derzeit entwickelt.",
+      "notifyMeTitle": "Interessiert?",
+      "notifyMeDesc": "Hinterlasse deine Daten und wir informieren dich, sobald das Tool verfügbar ist.",
+      "notifyMe": "Benachrichtigen",
+      "notifyMeHint": "Trage dich ein, um benachrichtigt zu werden.",
+      "toolPlaceholder": "Tool-Inhalt wird hier angezeigt."
+    },
+    "lead": {
+      "success": "Erfolgreich gesendet!",
+      "error": "Fehler beim Senden.",
+      "rateLimited": "Zu viele Anfragen",
+      "rateLimitedMessage": "Bitte warte einige Minuten und versuche es dann erneut.",
+      "validationError": "Bitte überprüfe deine Eingaben.",
+      "thankYouTitle": "Vielen Dank!",
+      "thankYouMessage": "Wir melden uns bald bei dir."
+    }
   },
   "insuranceConsulting": {
     "title": "Versicherungsberatung",
@@ -962,18 +1068,5 @@
     "answers": "Antworten & Vertiefung",
     "summary": "Zusammenfassung",
     "offer": "Angebot"
-  },
-  "common": {
-    "contentFollows": "Inhalt folgt"
-  },
-  "tools": {
-    "steuerCheck": {
-      "name": "Steuer-Check",
-      "description": "Finde Steueroptimierungen: 3a-Potenzial, PK-Einkauf und vergessene Abzüge."
-    },
-    "versicherungsCheck": {
-      "name": "Versicherungs-Check",
-      "description": "Identifiziere Versicherungslücken und finde heraus, wo du gut abgesichert bist."
-    }
   }
 }
