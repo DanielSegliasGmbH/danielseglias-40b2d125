@@ -326,16 +326,23 @@ export function AlternativeTimeline({ filmData, baseDelay = 0 }: AlternativeTime
         <Button
           variant="outline"
           className="w-full gap-2"
-          onClick={() => {
-            // Generate share-friendly view — simplified clipboard share
-            const text = `Mein FinLife Lebensfilm:\n\nOhne Änderung: ${lastRow ? fmtCHF(lastRow.withoutChange) : '–'}\nMit FinLife: ${lastRow ? fmtCHF(lastRow.withFinLife) : '–'}\nUnterschied: ${fmtCHF(difference)}\n\nStarte deinen eigenen Lebensfilm auf FinLife ✦`;
-            navigator.clipboard.writeText(text);
-          }}
+          onClick={() => setShareOpen(true)}
         >
           <Share2 className="h-4 w-4" />
           Lebensfilm teilen
         </Button>
       </motion.div>
+
+      {/* Share Card Dialog */}
+      <ShareCard
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        age={filmData.age}
+        peakScore={currentPeakScore ?? (filmData.monthly_expenses > 0 ? filmData.total_savings / filmData.monthly_expenses : 0)}
+        rankEmoji={peakRank?.emoji ?? '🥾'}
+        difference={difference}
+        lifeGoals={filmData.life_goals}
+      />
     </motion.div>
   );
 }
