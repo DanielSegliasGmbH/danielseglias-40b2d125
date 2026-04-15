@@ -678,6 +678,8 @@ export default function ClientPortalSnapshot() {
                   <BankCashStep draft={draft} updateDraft={updateDraft} updateField={updateField} updateAmount={updateAmount} />
                 ) : currentStepConfig?.type === 'investments' ? (
                   <InvestmentsStep draft={draft} updateDraft={updateDraft} />
+                ) : currentStepConfig?.type === 'liabilities' ? (
+                  <LiabilitiesStep draft={draft} updateDraft={updateDraft} />
                 ) : currentStepConfig?.type === 'fields' && currentStepConfig.fields ? (
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
