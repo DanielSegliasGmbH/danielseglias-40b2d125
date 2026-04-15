@@ -1,7 +1,7 @@
-import { useMemo, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useMemo, useEffect, useRef, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,10 +10,11 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Film, TrendingUp, AlertTriangle, CheckCircle, Sparkles } from 'lucide-react';
+import { ArrowLeft, Film, TrendingUp, AlertTriangle, Save, Archive } from 'lucide-react';
 import { AlternativeTimeline } from '@/components/client-portal/life-film/AlternativeTimeline';
 import { SwissComparison } from '@/components/client-portal/life-film/SwissComparison';
 import { useGamification } from '@/hooks/useGamification';
+import { toast } from 'sonner';
 
 // ── Constants ──
 const INFLATION = 0.02;
