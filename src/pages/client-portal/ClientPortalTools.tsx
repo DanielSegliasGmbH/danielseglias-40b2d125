@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Wrench, Calculator, PieChart, TrendingUp, FileText, ChevronRight, Search, LucideIcon, Archive } from 'lucide-react';
