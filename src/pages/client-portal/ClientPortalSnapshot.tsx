@@ -255,7 +255,7 @@ interface FieldConfig {
 interface StepConfig {
   title: string;
   emoji: string;
-  type: 'fields' | 'bank_cash' | 'investments';
+  type: 'fields' | 'bank_cash' | 'investments' | 'liabilities';
   fields?: FieldConfig[];
 }
 
@@ -317,12 +317,7 @@ const STEPS: StepConfig[] = [
   {
     title: 'Verbindlichkeiten',
     emoji: '📉',
-    type: 'fields',
-    fields: [
-      { key: 'mortgage', label: 'Hypothek', emoji: '🏠', isCHF: true, showProvider: true },
-      { key: 'consumer_debt', label: 'Konsumschulden / Leasing', emoji: '💳', isCHF: true },
-      { key: 'other_debt', label: 'Sonstige Schulden', emoji: '📋', isCHF: true },
-    ],
+    type: 'liabilities',
   },
   {
     title: 'Einkommen & Ausgaben',
@@ -374,6 +369,14 @@ function sumOtherAssets(items: OtherAsset[]): number {
   return items.reduce((sum, a) => sum + n(a.value), 0);
 }
 
+function sumCredits(items: CreditItem[]): number {
+  return items.reduce((sum, c) => sum + n(c.remaining), 0);
+}
+
+function sumDebts(items: DebtItem[]): number {
+  return items.reduce((sum, d) => sum + n(d.amount), 0);
+}
+
 function computeNetWorth(d: SnapshotDraft): number {
   const bankTotal = d.bank_accounts_skipped ? 0 : sumBankAccounts(d.bank_accounts);
   const cashTotal = d.cash.skipped ? 0 : n(d.cash.amount);
@@ -382,15 +385,20 @@ function computeNetWorth(d: SnapshotDraft): number {
   const cryptoTotal = d.crypto_positions_skipped ? 0 : sumCrypto(d.crypto_positions);
   const propertyEquity = d.owns_property ? sumPropertyEquity(d.properties) : 0;
   const otherTotal = d.other_assets_skipped ? 0 : sumOtherAssets(d.other_assets);
+  const creditsTotal = d.credits_skipped ? 0 : sumCredits(d.credits);
+  const debtsTotal = d.debts_skipped ? 0 : sumDebts(d.debts);
   // Legacy fields for old snapshots
   const legacySavings = d.savings ? n(d.savings.amount) : 0;
   const legacyInvestments = d.investments ? n(d.investments.amount) : 0;
   const legacyRE = d.real_estate ? n(d.real_estate.amount) : 0;
   const legacyEmergency = d.emergency_fund ? n(d.emergency_fund.amount) : 0;
+  const legacyMortgage = d.mortgage ? n(d.mortgage.amount) : 0;
+  const legacyConsumer = d.consumer_debt ? n(d.consumer_debt.amount) : 0;
+  const legacyOther = d.other_debt ? n(d.other_debt.amount) : 0;
   return bankTotal + cashTotal + valuablesTotal + investTotal + cryptoTotal + propertyEquity + otherTotal +
     legacySavings + legacyInvestments + legacyRE + legacyEmergency +
     n(d.pillar_3a.amount) + n(d.freizuegigkeit.amount) + n(d.pensionskasse.amount) -
-    n(d.mortgage.amount) - n(d.consumer_debt.amount) - n(d.other_debt.amount);
+    creditsTotal - debtsTotal - legacyMortgage - legacyConsumer - legacyOther;
 }
 
 // ── Field labels for history display ───────────────
@@ -488,6 +496,10 @@ export default function ClientPortalSnapshot() {
         merged.owns_property = !!parsed.owns_property;
         if (Array.isArray(parsed.other_assets)) merged.other_assets = parsed.other_assets;
         merged.other_assets_skipped = !!parsed.other_assets_skipped;
+        if (Array.isArray(parsed.credits)) merged.credits = parsed.credits;
+        merged.credits_skipped = !!parsed.credits_skipped;
+        if (Array.isArray(parsed.debts)) merged.debts = parsed.debts;
+        merged.debts_skipped = !!parsed.debts_skipped;
         setDraft(merged);
         setStep(savedDraft.current_step || 0);
       } catch { /* ignore parse errors */ }
