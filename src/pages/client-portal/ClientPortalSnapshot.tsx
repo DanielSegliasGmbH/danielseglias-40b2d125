@@ -753,34 +753,12 @@ export default function ClientPortalSnapshot() {
 
           {/* ── TAB: Verlauf ── */}
           <TabsContent value="history" className="space-y-4 mt-4">
-            {isLoading ? (
-              <div className="flex justify-center py-12">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-              </div>
-            ) : snapshots.length === 0 ? (
-              <Card>
-                <CardContent className="p-8 text-center">
-                  <Camera className="h-10 w-10 mx-auto text-muted-foreground/40 mb-3" />
-                  <p className="font-semibold text-foreground mb-1">Noch kein Snapshot</p>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Erstelle deinen ersten Finanz-Snapshot und verfolge deine Entwicklung.
-                  </p>
-                  <Button variant="outline" onClick={() => setTab('new')}>Jetzt starten</Button>
-                </CardContent>
-              </Card>
-            ) : (
-              <>
-                {snapshots.length >= 2 && <ComparisonBanner current={snapshots[0]} previous={snapshots[1]} />}
-                {snapshots.map((snap: any, idx: number) => (
-                  <HistoryCard
-                    key={snap.id}
-                    snapshot={snap}
-                    previous={snapshots[idx + 1] || null}
-                    onDelete={() => deleteSnapshot.mutate(snap.id)}
-                  />
-                ))}
-              </>
-            )}
+            <SnapshotHistory
+              snapshots={snapshots}
+              isLoading={isLoading}
+              onCreateNew={() => setTab('new')}
+              onDelete={(id) => deleteSnapshot.mutate(id)}
+            />
           </TabsContent>
         </Tabs>
       </div>
