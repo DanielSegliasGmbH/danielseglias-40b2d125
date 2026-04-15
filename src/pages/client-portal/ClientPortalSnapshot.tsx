@@ -51,6 +51,38 @@ interface Valuable {
   category: string;
 }
 
+interface InvestmentPosition {
+  id: string;
+  name: string;
+  platform: string;
+  value: string;
+  link: string;
+}
+
+interface CryptoPosition {
+  id: string;
+  name: string;
+  platform: string;
+  value: string;
+  link: string;
+}
+
+interface Property {
+  id: string;
+  description: string;
+  market_value: string;
+  equity_invested: string;
+  mortgage_amount: string;
+  mortgage_rate: string;
+  link: string;
+}
+
+interface OtherAsset {
+  id: string;
+  name: string;
+  value: string;
+}
+
 interface SnapshotDraft {
   // Step 0: Vorsorge
   pillar_3a: SnapshotFieldValue;
