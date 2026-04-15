@@ -247,6 +247,27 @@ export default function ClientPortalHome() {
         <PeakScoreCard onClick={() => navigate('/app/client-portal/peak-score')} />
         <RankWarningBanner />
 
+        {/* ── LEBENSFILM CTA ── */}
+        {!lifeFilmCompleted && (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
+            <Card
+              className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent cursor-pointer active:scale-[0.99] transition-transform"
+              onClick={() => navigate('/app/client-portal/life-film')}
+            >
+              <CardContent className="p-4 flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <Film className="h-5 w-5 text-primary" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-semibold text-sm text-foreground">Dein Lebensfilm 🎬</h3>
+                  <p className="text-xs text-muted-foreground line-clamp-1">Entdecke deine finanzielle Zukunft in 2 Minuten</p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
         {/* ── 2. LEVEL & STREAK BAR ── */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
