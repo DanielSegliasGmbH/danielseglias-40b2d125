@@ -11,11 +11,14 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Copy, MessageCircle, Mail, Users, UserPlus, Crown, TrendingUp, TrendingDown, Minus, Trophy, Globe } from 'lucide-react';
+import { Copy, MessageCircle, Mail, Users, UserPlus, Crown, TrendingUp, TrendingDown, Minus, Trophy, Globe, Swords } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getRankForScore, usePeakScore } from '@/hooks/usePeakScore';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
+import { useChallenges } from '@/hooks/useChallenges';
+import { ChallengeDialog } from '@/components/client-portal/ChallengeDialog';
+import { ActiveChallengeCards } from '@/components/client-portal/ActiveChallengeCard';
 
 const INVITE_MESSAGE = (code: string) =>
   `Hey! Ich tracke meinen PeakScore mit FinLife. Was ist deiner? 🔥 Nutze meinen Code ${code} und wir können uns vergleichen! finlife.ch`;
