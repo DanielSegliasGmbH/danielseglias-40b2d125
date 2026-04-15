@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { PageTransition } from '@/components/PageTransition';
+import { ErrorState } from '@/components/ErrorState';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
@@ -57,7 +59,7 @@ export default function ClientPortalGoals() {
   const [targetDate, setTargetDate] = useState<Date | undefined>();
   const [category, setCategory] = useState('Sonstiges');
 
-  const { data: goals = [], isLoading } = useQuery({
+  const { data: goals = [], isLoading, isError, refetch } = useQuery({
     queryKey: ['client-goals', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -120,6 +122,7 @@ export default function ClientPortalGoals() {
   return (
     <ClientPortalLayout>
       <ScreenHeader title="Deine Ziele" showBack backTo="/app/client-portal" />
+      <PageTransition>
       <div className="max-w-2xl mx-auto space-y-4 p-4 pb-8">
         {/* Add Goal Button */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
