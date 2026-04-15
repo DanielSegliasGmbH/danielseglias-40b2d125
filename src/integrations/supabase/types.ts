@@ -41,6 +41,30 @@ export type Database = {
         }
         Relationships: []
       }
+      article_reads: {
+        Row: {
+          article_id: string
+          first_read_at: string
+          id: string
+          last_read_at: string
+          user_id: string
+        }
+        Insert: {
+          article_id: string
+          first_read_at?: string
+          id?: string
+          last_read_at?: string
+          user_id: string
+        }
+        Update: {
+          article_id?: string
+          first_read_at?: string
+          id?: string
+          last_read_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       automation_rule_logs: {
         Row: {
           action_executed: string
