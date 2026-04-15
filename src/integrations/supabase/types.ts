@@ -307,6 +307,54 @@ export type Database = {
           },
         ]
       }
+      challenges: {
+        Row: {
+          challenged_end_score: number | null
+          challenged_id: string
+          challenged_start_score: number | null
+          challenger_end_score: number | null
+          challenger_id: string
+          challenger_start_score: number | null
+          created_at: string
+          end_date: string
+          id: string
+          start_date: string
+          status: string
+          updated_at: string
+          winner_id: string | null
+        }
+        Insert: {
+          challenged_end_score?: number | null
+          challenged_id: string
+          challenged_start_score?: number | null
+          challenger_end_score?: number | null
+          challenger_id: string
+          challenger_start_score?: number | null
+          created_at?: string
+          end_date: string
+          id?: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+          winner_id?: string | null
+        }
+        Update: {
+          challenged_end_score?: number | null
+          challenged_id?: string
+          challenged_start_score?: number | null
+          challenger_end_score?: number | null
+          challenger_id?: string
+          challenger_start_score?: number | null
+          created_at?: string
+          end_date?: string
+          id?: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+          winner_id?: string | null
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           created_at: string
