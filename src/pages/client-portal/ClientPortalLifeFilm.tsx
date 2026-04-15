@@ -104,7 +104,7 @@ export default function ClientPortalLifeFilm() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['life-film-data'] });
-      awardPoints('life_film_completed', `life_film_${Date.now()}`, 150);
+      awardPoints('life_film_completed', `life_film_${Date.now()}`);
       // Navigate to film result
       navigate('/app/client-portal/life-film-result');
     },
