@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
-import { FileBarChart } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, TrendingUp, User, Users, HelpCircle, Globe, Crown, Wallet, PiggyBank, Landmark, Gift, Settings, FileBarChart as FileBarChartIcon } from 'lucide-react';
+import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, TrendingUp, User, Users, HelpCircle, Globe, Crown, Wallet, PiggyBank, Landmark, Gift, Settings, FileBarChart, Camera } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
