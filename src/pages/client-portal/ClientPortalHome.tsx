@@ -326,6 +326,46 @@ export default function ClientPortalHome() {
             </Card>
           </motion.div>
         )}
+
+        {/* ── FINANZ-TYP CTA ── */}
+        {!finanzTypCompleted ? (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}>
+            <Card
+              className="cursor-pointer active:scale-[0.99] transition-transform border-primary/20 bg-primary/5"
+              onClick={() => navigate('/app/client-portal/finanz-typ')}
+            >
+              <CardContent className="p-4 flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <UserRound className="h-5 w-5 text-primary" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <h3 className="font-bold text-sm text-foreground">Welcher Finanz-Typ bist du?</h3>
+                    <span className="text-[10px] font-bold bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">+100 XP</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Finde es heraus in 60 Sekunden</p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+              </CardContent>
+            </Card>
+          </motion.div>
+        ) : finanzTypInfo ? (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}>
+            <Card
+              className="cursor-pointer active:scale-[0.99] transition-transform border-border/50"
+              onClick={() => navigate('/app/client-portal/finanz-typ')}
+            >
+              <CardContent className="p-3 flex items-center gap-3">
+                <span className="text-base">{finanzTypInfo.emoji}</span>
+                <p className="text-xs text-muted-foreground flex-1">
+                  Dein Finanz-Typ: <span className="font-bold text-foreground">{finanzTypInfo.shortTitle}</span>
+                </p>
+                <span className="text-xs text-primary font-medium whitespace-nowrap">Details →</span>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ) : null}
+
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
