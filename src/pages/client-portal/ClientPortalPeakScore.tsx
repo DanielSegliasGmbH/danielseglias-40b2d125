@@ -2,13 +2,33 @@ import { useNavigate } from 'react-router-dom';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowUp, ArrowDown, Shield, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowUp, ArrowDown, Shield, Sparkles, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { usePeakScore, getPeakScoreGradient, getPeakScoreBorderColor } from '@/hooks/usePeakScore';
+import { usePeakScore, getPeakScoreGradient, getPeakScoreBorderColor, getRankForScore } from '@/hooks/usePeakScore';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import {
+  AreaChart, Area, XAxis, YAxis, Tooltip as RechartsTooltip,
+  ResponsiveContainer, CartesianGrid,
+} from 'recharts';
+import { useMemo } from 'react';
+
+const MONTH_NAMES = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+
+function PeakScoreTooltip({ active, payload }: any) {
+  if (!active || !payload?.[0]) return null;
+  const d = payload[0].payload;
+  const rank = getRankForScore(d.score);
+  return (
+    <div className="bg-popover border border-border rounded-lg px-3 py-2 shadow-md text-xs">
+      <p className="font-semibold text-foreground">{d.score.toFixed(1)} Monate</p>
+      <p className="text-muted-foreground">{d.label}</p>
+      <p className="text-muted-foreground">{rank.emoji} {rank.name}</p>
+    </div>
+  );
+}
 
 export default function ClientPortalPeakScore() {
   const navigate = useNavigate();
@@ -31,6 +51,31 @@ export default function ClientPortalPeakScore() {
     enabled: !!user,
   });
 
+  const chartData = useMemo(() => {
+    return history.map((h: any) => {
+      const date = new Date(h.calculated_at);
+      return {
+        score: Number(h.score),
+        label: `${MONTH_NAMES[date.getMonth()]} ${date.getFullYear()}`,
+        month: MONTH_NAMES[date.getMonth()],
+      };
+    });
+  }, [history]);
+
+  const stats = useMemo(() => {
+    if (chartData.length === 0) return null;
+    const scores = chartData.map((d: any) => d.score);
+    const maxVal = Math.max(...scores);
+    const maxItem = chartData.find((d: any) => d.score === maxVal);
+    const avg = scores.reduce((a: number, b: number) => a + b, 0) / scores.length;
+    return {
+      highest: maxVal,
+      highestLabel: maxItem?.label || '',
+      change: trend,
+      average: Math.round(avg * 10) / 10,
+    };
+  }, [chartData, trend]);
+
   const fmtCHF = (v: number) => `CHF ${v.toLocaleString('de-CH', { maximumFractionDigits: 0 })}`;
   const displayScore = score !== null;
 
@@ -40,8 +85,6 @@ export default function ClientPortalPeakScore() {
     { label: 'Netto', value: fmtCHF(totalAssets - totalLiabilities), color: 'text-foreground' },
     { label: 'Mtl. Ausgaben', value: fmtCHF(monthlyExpenses), color: 'text-muted-foreground' },
   ];
-
-  const maxScore = Math.max(...history.map((h: any) => Number(h.score)), score || 0, 1);
 
   return (
     <ClientPortalLayout>
@@ -53,6 +96,7 @@ export default function ClientPortalPeakScore() {
           <h1 className="text-lg font-semibold text-foreground">PeakScore</h1>
         </div>
 
+        {/* Hero score card */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <Card className={cn(
             'rounded-2xl border overflow-hidden',
@@ -82,6 +126,7 @@ export default function ClientPortalPeakScore() {
           </Card>
         </motion.div>
 
+        {/* Score breakdown */}
         <Card>
           <CardContent className="p-5">
             <h3 className="text-sm font-semibold text-foreground mb-3">Score-Zusammensetzung</h3>
@@ -104,35 +149,90 @@ export default function ClientPortalPeakScore() {
           </CardContent>
         </Card>
 
-        {history.length > 1 && (
-          <Card>
-            <CardContent className="p-5">
-              <h3 className="text-sm font-semibold text-foreground mb-4">Verlauf (letzte Monate)</h3>
-              <div className="flex items-end gap-2 h-24">
-                {history.map((h: any, i: number) => {
-                  const pct = Math.max(8, (Number(h.score) / maxScore) * 100);
-                  const date = new Date(h.calculated_at);
-                  const label = `${date.getMonth() + 1}/${String(date.getFullYear()).slice(2)}`;
-                  return (
-                    <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                      <span className="text-[10px] font-medium text-foreground">
-                        {Number(h.score).toFixed(1)}
-                      </span>
-                      <motion.div
-                        className="w-full bg-primary/70 rounded-t"
-                        initial={{ height: 0 }}
-                        animate={{ height: `${pct}%` }}
-                        transition={{ delay: 0.1 + i * 0.05, duration: 0.4 }}
-                      />
-                      <span className="text-[9px] text-muted-foreground">{label}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {/* Historical chart */}
+        <Card>
+          <CardContent className="p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <h3 className="text-sm font-semibold text-foreground">Verlauf (letzte 6 Monate)</h3>
+            </div>
 
+            {chartData.length >= 2 ? (
+              <>
+                <div className="h-[200px] -ml-2">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={chartData} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="peakScoreFill" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="hsl(60, 10%, 45%)" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="hsl(60, 10%, 45%)" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(60, 5%, 80%)" strokeOpacity={0.3} />
+                      <XAxis
+                        dataKey="month"
+                        tick={{ fontSize: 11, fill: 'hsl(60, 5%, 50%)' }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <YAxis
+                        tick={{ fontSize: 11, fill: 'hsl(60, 5%, 50%)' }}
+                        axisLine={false}
+                        tickLine={false}
+                        unit=" Mt."
+                      />
+                      <RechartsTooltip content={<PeakScoreTooltip />} />
+                      <Area
+                        type="monotone"
+                        dataKey="score"
+                        stroke="hsl(60, 10%, 45%)"
+                        strokeWidth={2.5}
+                        fill="url(#peakScoreFill)"
+                        dot={{ r: 4, fill: 'hsl(60, 10%, 45%)', stroke: 'hsl(var(--background))', strokeWidth: 2 }}
+                        activeDot={{ r: 6, fill: 'hsl(60, 10%, 40%)', stroke: 'hsl(var(--background))', strokeWidth: 2 }}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* Stats below chart */}
+                {stats && (
+                  <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-border">
+                    <div className="text-center">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Höchster</p>
+                      <p className="text-sm font-bold text-foreground">{stats.highest.toFixed(1)}</p>
+                      <p className="text-[10px] text-muted-foreground">{stats.highestLabel}</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Veränderung</p>
+                      <p className={cn(
+                        'text-sm font-bold',
+                        stats.change && stats.change > 0 ? 'text-emerald-600' : stats.change && stats.change < 0 ? 'text-red-500' : 'text-foreground'
+                      )}>
+                        {stats.change !== null ? `${stats.change > 0 ? '+' : ''}${stats.change}` : '–'}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">letzter Monat</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Durchschnitt</p>
+                      <p className="text-sm font-bold text-foreground">{stats.average.toFixed(1)}</p>
+                      <p className="text-[10px] text-muted-foreground">Monate</p>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="flex flex-col items-center text-center py-8 px-4">
+                <span className="text-3xl mb-3">📈</span>
+                <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
+                  Dein Verlauf wird hier sichtbar sobald du die App einen Monat nutzt. Bleib dran!
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Coach CTA */}
         <Card
           className="cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98]"
           onClick={() => navigate('/app/client-portal/coach')}
