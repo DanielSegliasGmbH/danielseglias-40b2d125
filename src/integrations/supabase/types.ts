@@ -1836,6 +1836,30 @@ export type Database = {
         }
         Relationships: []
       }
+      life_film_archives: {
+        Row: {
+          created_at: string
+          film_data: Json
+          id: string
+          saved_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          film_data?: Json
+          id?: string
+          saved_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          film_data?: Json
+          id?: string
+          saved_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       life_film_data: {
         Row: {
           age: number | null
