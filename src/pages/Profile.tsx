@@ -115,7 +115,7 @@ function ProfileRankBadge() {
   );
 }
 
-
+export default function Profile() {
   const { t } = useTranslation();
   const { user, role, signOut } = useAuth();
   const navigate = useNavigate();
