@@ -2,14 +2,14 @@ import { motion } from 'framer-motion';
 import { ArrowUp, ArrowDown, Shield } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { usePeakScore, getPeakScoreRank, getPeakScoreGradient, getPeakScoreBorderColor } from '@/hooks/usePeakScore';
+import { usePeakScore, getPeakScoreGradient, getPeakScoreBorderColor } from '@/hooks/usePeakScore';
 
 interface PeakScoreCardProps {
   onClick: () => void;
 }
 
 export function PeakScoreCard({ onClick }: PeakScoreCardProps) {
-  const { score, trend, loading, hasData } = usePeakScore();
+  const { score, trend, loading, hasData, rank } = usePeakScore();
 
   if (loading) {
     return (
@@ -39,14 +39,12 @@ export function PeakScoreCard({ onClick }: PeakScoreCardProps) {
         onClick={onClick}
       >
         <CardContent className="p-6 flex flex-col items-center text-center">
-          {/* Shield icon */}
           <div className="mb-1">
             <Shield className="h-5 w-5 text-muted-foreground/60" />
           </div>
 
           {displayScore ? (
             <>
-              {/* Score number */}
               <motion.span
                 className="text-[48px] leading-none font-extrabold tracking-tight text-foreground"
                 initial={{ scale: 0.8, opacity: 0 }}
@@ -56,15 +54,13 @@ export function PeakScoreCard({ onClick }: PeakScoreCardProps) {
                 {score.toFixed(1)}
               </motion.span>
 
-              {/* Unit */}
               <span className="text-xs text-muted-foreground mt-1">Monate</span>
 
-              {/* Rank */}
+              {/* Rank with emoji */}
               <span className="text-sm font-semibold text-foreground/80 mt-1">
-                {getPeakScoreRank(score)}
+                {rank.emoji} {rank.name}
               </span>
 
-              {/* Trend */}
               {trend !== null && trend !== 0 && (
                 <div className={cn(
                   'flex items-center gap-1 mt-2 text-xs font-medium',
@@ -88,7 +84,6 @@ export function PeakScoreCard({ onClick }: PeakScoreCardProps) {
             </>
           )}
 
-          {/* Subtle label */}
           <span className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/50 mt-3">
             PeakScore
           </span>
