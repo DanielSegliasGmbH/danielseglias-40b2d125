@@ -159,14 +159,14 @@ export default function ClientPortalBudget() {
     enabled: !!user,
   });
 
-  // Fetch meta profile income
+  // Fetch meta profile income & fixed costs
   const { data: metaProfile } = useQuery({
     queryKey: ['meta-profile-budget', user?.id],
     queryFn: async () => {
       if (!user) return null;
       const { data } = await supabase
         .from('meta_profiles')
-        .select('monthly_income')
+        .select('monthly_income, fixed_costs')
         .eq('user_id', user.id)
         .maybeSingle();
       return data;
@@ -175,6 +175,8 @@ export default function ClientPortalBudget() {
   });
 
   const monthlyIncome = metaProfile?.monthly_income || 0;
+  const fixedCosts = metaProfile?.fixed_costs || 0;
+  const [activeTab, setActiveTab] = useState('budget');
 
   // Compute per-category spending
   const categorySpending = useMemo(() => {
