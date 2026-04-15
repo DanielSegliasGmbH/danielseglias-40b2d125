@@ -166,6 +166,13 @@ export default function ClientPortalGoals() {
                   </SelectContent>
                 </Select>
               </div>
+              {/* Projected PeakScore impact */}
+              {targetAmount && monthlyExpenses > 0 && (
+                <div className="flex items-center gap-1 text-xs font-medium text-emerald-600 px-1">
+                  <Shield className="h-3 w-3" />
+                  <span>Wenn du dieses Ziel erreichst: PeakScore +{(Number(targetAmount) / monthlyExpenses).toFixed(1)}</span>
+                </div>
+              )}
               <Button className="w-full" disabled={!title.trim() || addGoal.isPending} onClick={() => addGoal.mutate()}>
                 Ziel speichern
               </Button>
