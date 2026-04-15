@@ -237,6 +237,7 @@ export default function ClientPortalHome() {
 
         {/* ── PEAKSCORE HERO ── */}
         <PeakScoreCard onClick={() => navigate('/app/client-portal/peak-score')} />
+        <RankWarningBanner />
 
         {/* ── 2. LEVEL & STREAK BAR ── */}
         <motion.div
@@ -461,6 +462,7 @@ export default function ClientPortalHome() {
         }}
       />
       <QuickActionFAB />
+      <RankChangeOverlay event={rankChange} onDismiss={dismissRankChange} />
     </ClientPortalLayout>
   );
 }
