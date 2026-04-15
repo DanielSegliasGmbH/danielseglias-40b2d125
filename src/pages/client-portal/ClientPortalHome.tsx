@@ -455,6 +455,9 @@ export default function ClientPortalHome() {
           </div>
         </div>
 
+        {/* ── 3.5 ACTIVE CHALLENGES ── */}
+        <ActiveChallengeCards />
+
         {/* ── 4. NÄCHSTE QUEST ── */}
         {nextStepResult?.primary && (
           <motion.div
