@@ -232,6 +232,7 @@ export default function ClientPortalNetWorth() {
         category: assetCategory,
         value: val,
         last_updated_date: new Date().toISOString().slice(0, 10),
+        platform_url: assetUrl || null,
       }).select('id').single();
       if (error) throw error;
       // Save initial snapshot
@@ -262,6 +263,7 @@ export default function ClientPortalNetWorth() {
         name: liabName,
         category: liabCategory,
         amount: val,
+        platform_url: liabUrl || null,
       }).select('id').single();
       if (error) throw error;
       await saveSnapshot(user.id, 'liability', data.id, val);
@@ -333,8 +335,8 @@ export default function ClientPortalNetWorth() {
     },
   });
 
-  const resetAssetForm = () => { setAssetName(''); setAssetCategory(ASSET_CATEGORIES[0]); setAssetValue(''); };
-  const resetLiabForm = () => { setLiabName(''); setLiabCategory(LIABILITY_CATEGORIES[0]); setLiabAmount(''); };
+  const resetAssetForm = () => { setAssetName(''); setAssetCategory(ASSET_CATEGORIES[0]); setAssetValue(''); setAssetUrl(''); };
+  const resetLiabForm = () => { setLiabName(''); setLiabCategory(LIABILITY_CATEGORIES[0]); setLiabAmount(''); setLiabUrl(''); };
 
   const openDetail = (entry: any, type: 'asset' | 'liability') => {
     setDetailEntry(entry);
