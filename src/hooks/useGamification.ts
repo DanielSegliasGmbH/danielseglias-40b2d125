@@ -27,6 +27,7 @@ const POINTS_MAP: Record<ActionType, number> = {
   video_watched: 15,
   expense_added: 10,
   asset_added: 25,
+  life_film_completed: 150,
 };
 
 export const LEVELS = [
