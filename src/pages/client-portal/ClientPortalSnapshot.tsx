@@ -1611,8 +1611,11 @@ function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesCh
   const propertyTotal = draft.owns_property ? sumPropertyValue(draft.properties) : 0;
   const propertyMortgages = draft.owns_property ? sumPropertyMortgages(draft.properties) : 0;
   const otherTotal = draft.other_assets_skipped ? 0 : sumOtherAssets(draft.other_assets);
+  const creditsTotal = draft.credits_skipped ? 0 : sumCredits(draft.credits);
+  const debtsTotal = draft.debts_skipped ? 0 : sumDebts(draft.debts);
   const totalPension = n(draft.pillar_3a.amount) + n(draft.freizuegigkeit.amount) + n(draft.pensionskasse.amount);
-  const totalDebt = n(draft.mortgage.amount) + n(draft.consumer_debt.amount) + n(draft.other_debt.amount) + propertyMortgages;
+  const legacyDebt = (draft.mortgage ? n(draft.mortgage.amount) : 0) + (draft.consumer_debt ? n(draft.consumer_debt.amount) : 0) + (draft.other_debt ? n(draft.other_debt.amount) : 0);
+  const totalDebt = propertyMortgages + creditsTotal + debtsTotal + legacyDebt;
   const fmtCHF = (v: number) => `CHF ${v.toLocaleString('de-CH')}`;
 
   const summaryItems = [
@@ -1625,6 +1628,9 @@ function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesCh
     ...(propertyTotal > 0 ? [{ label: 'Immobilien (Marktwert)', value: fmtCHF(propertyTotal) }] : []),
     ...(otherTotal > 0 ? [{ label: 'Sonstiges Vermögen', value: fmtCHF(otherTotal) }] : []),
     { label: 'Vorsorge Total', value: fmtCHF(totalPension) },
+    ...(propertyMortgages > 0 ? [{ label: 'Hypotheken', value: fmtCHF(propertyMortgages) }] : []),
+    ...(creditsTotal > 0 ? [{ label: 'Kredite & Leasing', value: fmtCHF(creditsTotal) }] : []),
+    ...(debtsTotal > 0 ? [{ label: 'Sonstige Schulden', value: fmtCHF(debtsTotal) }] : []),
     { label: 'Schulden Total', value: fmtCHF(totalDebt) },
     { label: 'Einkommen mtl.', value: income > 0 ? fmtCHF(income) : '–' },
     { label: 'Ausgaben mtl.', value: expenses > 0 ? fmtCHF(expenses) : '–' },
@@ -1632,7 +1638,6 @@ function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesCh
 
   // Count skipped fields
   const simpleSkipped = (['pillar_3a', 'freizuegigkeit', 'pensionskasse', 'ahv_annual', 'cash',
-    'mortgage', 'consumer_debt', 'other_debt',
     'monthly_income', 'monthly_expenses', 'insurance_monthly'] as (keyof SnapshotDraft)[])
     .filter(k => {
       const val = draft[k];
@@ -1641,7 +1646,7 @@ function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesCh
   const skippedCount = simpleSkipped +
     (draft.bank_accounts_skipped ? 1 : 0) + (draft.valuables_skipped ? 1 : 0) +
     (draft.investment_positions_skipped ? 1 : 0) + (draft.crypto_positions_skipped ? 1 : 0) +
-    (draft.other_assets_skipped ? 1 : 0);
+    (draft.other_assets_skipped ? 1 : 0) + (draft.credits_skipped ? 1 : 0) + (draft.debts_skipped ? 1 : 0);
 
   return (
     <div className="space-y-4">
