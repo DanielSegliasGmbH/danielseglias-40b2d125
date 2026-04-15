@@ -579,7 +579,7 @@ export default function ClientPortalNetWorth() {
                         </div>
                       ) : (
                         <>
-                          <span className="text-sm font-semibold text-foreground">{fmtCHF(Number(a.value))}</span>
+                          <PrivateValue className="text-sm font-semibold text-foreground">{fmtCHF(Number(a.value))}</PrivateValue>
                           <Button variant="ghost" size="icon" className="h-8 w-8" title="Aktualisieren"
                             onClick={() => { setQuickUpdateId(a.id); setQuickUpdateValue(String(Number(a.value))); }}>
                             <RefreshCw className="h-3.5 w-3.5 text-muted-foreground" />
