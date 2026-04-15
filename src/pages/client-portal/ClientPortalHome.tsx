@@ -57,20 +57,40 @@ export default function ClientPortalHome() {
   const { score, rank: peakRank } = usePeakScore();
   const firstName = user?.user_metadata?.first_name || 'Kunde';
 
-  const { data: lifeFilmCompleted = false } = useQuery({
-    queryKey: ['life-film-completed', user?.id],
+  const { data: lifeFilmData } = useQuery({
+    queryKey: ['life-film-status', user?.id],
     queryFn: async () => {
-      if (!user) return false;
+      if (!user) return null;
       const { data } = await supabase
         .from('life_film_data')
-        .select('completed')
+        .select('completed, monthly_income, monthly_expenses, total_savings, age, target_retirement_age')
         .eq('user_id', user.id)
         .eq('completed', true)
         .maybeSingle();
-      return !!data;
+      return data;
     },
     enabled: !!user,
   });
+
+  const lifeFilmCompleted = !!lifeFilmData;
+
+  // Compute potential difference for completed film summary
+  const lifeFilmDifference = useMemo(() => {
+    if (!lifeFilmData) return 0;
+    const { monthly_income, monthly_expenses, total_savings, age, target_retirement_age } = lifeFilmData;
+    const years = (target_retirement_age || 65) - (age || 30);
+    const monthlySavings = (monthly_income || 0) - (monthly_expenses || 0);
+    const discretionaryReduction = (monthly_expenses || 0) * 0.4 * 0.2;
+    const additionalSavings = (monthly_income || 0) * 0.1;
+    const extra3a = 7258 / 12;
+    const extraKK = 600 / 12;
+    const optimizedSavings = monthlySavings + discretionaryReduction + additionalSavings + extra3a + extraKK;
+    const currentWealth = (total_savings || 0) * Math.pow(1.04, years) +
+      Math.max(0, monthlySavings) * 12 * ((Math.pow(1.04, years) - 1) / 0.04);
+    const optimizedWealth = (total_savings || 0) * Math.pow(1.05, years) +
+      Math.max(0, optimizedSavings) * 12 * ((Math.pow(1.05, years) - 1) / 0.05);
+    return Math.max(0, Math.round(optimizedWealth - currentWealth));
+  }, [lifeFilmData]);
 
   useEffect(() => {
     const done = localStorage.getItem('client_onboarding_complete');
