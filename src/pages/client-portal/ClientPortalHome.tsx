@@ -459,6 +459,32 @@ export default function ClientPortalHome() {
         {/* ── 3.5 ACTIVE CHALLENGES ── */}
         <ActiveChallengeCards />
 
+        {/* ── 3.6 MONTHLY REPORT TEASER (1st of month) ── */}
+        {new Date().getDate() <= 7 && (() => {
+          const now = new Date();
+          const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+          const mk = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, '0')}`;
+          const label = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'][prevMonth.getMonth()];
+          return (
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}>
+              <Link to={`/app/client-portal/monthly-report?month=${mk}`}>
+                <Card className="bg-foreground text-background cursor-pointer active:scale-[0.98] transition-transform hover:shadow-lg">
+                  <CardContent className="p-5 flex items-center gap-4">
+                    <div className="w-11 h-11 rounded-2xl bg-background/10 flex items-center justify-center text-xl">
+                      📊
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-base font-bold">Dein {label}-Rückblick ist da!</p>
+                      <p className="text-xs opacity-60">Schau dir an, wie dein Monat war</p>
+                    </div>
+                    <ArrowRight className="h-5 w-5 opacity-50 shrink-0" />
+                  </CardContent>
+                </Card>
+              </Link>
+            </motion.div>
+          );
+        })()}
+
         {/* ── 4. NÄCHSTE QUEST ── */}
         {nextStepResult?.primary && (
           <motion.div
