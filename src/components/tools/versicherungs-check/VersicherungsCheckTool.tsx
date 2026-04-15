@@ -93,7 +93,8 @@ export function VersicherungsCheckTool({ mode = 'internal' }: Props) {
     } else {
       setShowResults(true);
       if (!xpAwarded && mode === 'internal') {
-        awardPoints(75, `versicherungs-check_${Date.now()}`);
+        awardPoints('tool_used', `versicherungs-check_${Date.now()}`);
+        awardPoints('task_completed', `versicherungs-check-done_${Date.now()}`);
         setXpAwarded(true);
       }
     }
