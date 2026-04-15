@@ -40,6 +40,7 @@ const toolFallbacks: Record<string, { name: string; description: string }> = {
   guiltyPleasureRechner: { name: 'Guilty Pleasure Rechner', description: 'Zeigt die wahren Lebenskosten deiner Gewohnheiten.' },
   notfallCheck: { name: 'Notfall-Check', description: 'Was passiert, wenn morgen dein Einkommen wegfällt?' },
   aboAudit: { name: 'Abo-Audit', description: 'Finde und eliminiere vergessene oder unnötige Abos.' },
+  lohnerhoher: { name: 'Lohnerhöher', description: 'Verstehe deinen Marktwert und bereite dich auf Lohnverhandlungen vor.' },
 };
 
 /**
