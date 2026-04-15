@@ -49,11 +49,19 @@ export default function ClientPortalHome() {
   } = useGamification();
 
   const { data: nextStepResult } = useNextBestStep();
+  const { data: peakScoreData } = usePeakScore();
+  const checkPeakScore = usePeakScoreDailyCheck();
   const firstName = user?.user_metadata?.first_name || 'Kunde';
 
   useEffect(() => {
     const done = localStorage.getItem('client_onboarding_complete');
     if (!done) setShowOnboarding(true);
+  }, []);
+
+  // Daily PeakScore recalculation on login
+  useEffect(() => {
+    checkPeakScore();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Data queries for cockpit cards ──
