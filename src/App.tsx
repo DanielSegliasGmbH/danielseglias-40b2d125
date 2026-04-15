@@ -445,6 +445,7 @@ function App() {
                   </RouteGuard>
                 }
               />
+              <Route
                 path="/app/client-portal/premium"
                 element={
                   <RouteGuard allowedRoles={['client', 'admin']}>
