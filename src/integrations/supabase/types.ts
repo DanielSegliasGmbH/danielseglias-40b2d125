@@ -1150,6 +1150,7 @@ export type Database = {
           id: string
           notes: string | null
           payment_interval: string
+          portal_url: string | null
           price: number | null
           product_name: string
           provider: string | null
@@ -1164,6 +1165,7 @@ export type Database = {
           id?: string
           notes?: string | null
           payment_interval?: string
+          portal_url?: string | null
           price?: number | null
           product_name: string
           provider?: string | null
@@ -1178,6 +1180,7 @@ export type Database = {
           id?: string
           notes?: string | null
           payment_interval?: string
+          portal_url?: string | null
           price?: number | null
           product_name?: string
           provider?: string | null
@@ -2086,6 +2089,7 @@ export type Database = {
           id: string
           last_updated_date: string
           name: string
+          platform_url: string | null
           updated_at: string
           user_id: string
           value: number
@@ -2096,6 +2100,7 @@ export type Database = {
           id?: string
           last_updated_date?: string
           name: string
+          platform_url?: string | null
           updated_at?: string
           user_id: string
           value?: number
@@ -2106,6 +2111,7 @@ export type Database = {
           id?: string
           last_updated_date?: string
           name?: string
+          platform_url?: string | null
           updated_at?: string
           user_id?: string
           value?: number
@@ -2119,6 +2125,7 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          platform_url: string | null
           updated_at: string
           user_id: string
         }
@@ -2128,6 +2135,7 @@ export type Database = {
           created_at?: string
           id?: string
           name: string
+          platform_url?: string | null
           updated_at?: string
           user_id: string
         }
@@ -2137,6 +2145,7 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string
+          platform_url?: string | null
           updated_at?: string
           user_id?: string
         }
