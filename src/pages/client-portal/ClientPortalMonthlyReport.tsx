@@ -54,6 +54,7 @@ export default function ClientPortalMonthlyReport() {
   });
   const [slide, setSlide] = useState(0);
   const [slideDir, setSlideDir] = useState(1);
+  const [shareOpen, setShareOpen] = useState(false);
   const shareRef = useRef<HTMLDivElement>(null);
   const TOTAL_SLIDES = 5;
 
