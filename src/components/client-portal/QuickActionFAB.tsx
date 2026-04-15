@@ -351,12 +351,13 @@ function InsightForm({ onComplete }: { onComplete: (xp?: number) => void }) {
     if (!user?.id || !content.trim()) return;
     setSaving(true);
     try {
-      const { error } = await supabase.from('user_insights' as 'client_feedback').insert({
-        user_id: user.id,
-        content: content.trim(),
-        source: 'quick_action',
-      } as Record<string, unknown>);
-      if (error) throw error;
+      const { error } = await (supabase as unknown as { from: (t: string) => { insert: (d: Record<string, unknown>) => Promise<{ error: unknown }> } })
+        .from('user_insights')
+        .insert({
+          user_id: user.id,
+          content: content.trim(),
+          source: 'quick_action',
+        });
       await awardPoints('tool_used', `insight-${Date.now()}`);
       toast.success('Erkenntnis gespeichert');
       onComplete(15);
