@@ -111,6 +111,7 @@ export function useMetaProfile() {
     }
 
     queryClient.invalidateQueries({ queryKey: ['meta-profile'] });
+    queryClient.invalidateQueries({ queryKey: ['peak-score'] });
   };
 
   // Bulk update multiple fields
@@ -146,6 +147,7 @@ export function useMetaProfile() {
     }
 
     queryClient.invalidateQueries({ queryKey: ['meta-profile'] });
+    queryClient.invalidateQueries({ queryKey: ['peak-score'] });
   };
 
   // Confirm profile (resets 90-day timer)
