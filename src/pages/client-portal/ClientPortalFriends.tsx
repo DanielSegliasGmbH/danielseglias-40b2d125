@@ -153,7 +153,7 @@ export default function ClientPortalFriends() {
   const leaderboard: FriendEntry[] = useMemo(() => {
     const myEntry: FriendEntry = {
       id: user?.id || 'me',
-      name: myProfile ? `${myProfile.first_name} ${(myProfile as FriendProfile & { last_name?: string }).last_name?.charAt(0) || ''}.` : 'Du',
+      name: myProfile ? `${myProfile.first_name} ${(myProfile as unknown as { last_name?: string }).last_name?.charAt(0) || ''}.` : 'Du',
       peakScore: myPeak.score ?? 0,
       rank: myPeak.rank,
       trend: myPeak.trend,
