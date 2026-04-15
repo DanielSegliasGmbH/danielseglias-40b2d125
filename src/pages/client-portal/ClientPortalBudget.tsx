@@ -177,8 +177,24 @@ export default function ClientPortalBudget() {
         amount: parseFloat(expAmount),
         expense_date: expDate,
         note: expNote || null,
+        is_recurring: expRecurring,
+        recurring_frequency: expRecurring ? expFrequency : null,
       });
       if (error) throw error;
+
+      // If recurring, create next occurrence
+      if (expRecurring) {
+        const nextDate = computeNextDate(expDate, expFrequency);
+        await supabase.from('budget_expenses').insert({
+          user_id: user.id,
+          category: expCategory,
+          amount: parseFloat(expAmount),
+          expense_date: nextDate,
+          note: expNote || null,
+          is_recurring: true,
+          recurring_frequency: expFrequency,
+        });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses'] });
@@ -187,9 +203,24 @@ export default function ClientPortalBudget() {
       setExpAmount('');
       setExpNote('');
       setExpDate(new Date().toISOString().slice(0, 10));
+      setExpRecurring(false);
+      setExpFrequency('monatlich');
       setExpenseDialogOpen(false);
     },
     onError: () => toast.error('Fehler beim Speichern'),
+  });
+
+  // Delete expense mutation
+  const deleteExpense = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('budget_expenses').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      toast.success('Ausgabe gelöscht');
+    },
+    onError: () => toast.error('Fehler beim Löschen'),
   });
 
   // Save budgets mutation
