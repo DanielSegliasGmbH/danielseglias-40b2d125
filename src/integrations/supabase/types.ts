@@ -2599,6 +2599,33 @@ export type Database = {
         }
         Relationships: []
       }
+      snapshot_drafts: {
+        Row: {
+          created_at: string
+          current_step: number
+          draft_data: Json
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_step?: number
+          draft_data?: Json
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_step?: number
+          draft_data?: Json
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       system_map_edges: {
         Row: {
           created_at: string
