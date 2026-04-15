@@ -1902,7 +1902,7 @@ function SnapshotHistory({
       {/* Reminder banner */}
       {monthsAgo >= 3 && (
         <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
-          <Card className="border-amber-500/30 bg-amber-500/5">
+          <Card className="border-accent/30 bg-accent/5">
             <CardContent className="p-4 flex items-center gap-3">
               <span className="text-2xl">⏰</span>
               <div className="flex-1">
