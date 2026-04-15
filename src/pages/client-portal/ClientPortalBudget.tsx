@@ -347,7 +347,7 @@ export default function ClientPortalBudget() {
                 <Plus className="h-4 w-4" /> Ausgabe erfassen
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-lg">
               <DialogHeader>
                 <DialogTitle>Neue Ausgabe</DialogTitle>
               </DialogHeader>
@@ -369,8 +369,25 @@ export default function ClientPortalBudget() {
                 </div>
                 <div>
                   <Label>Datum</Label>
-                  <Input type="date" value={expDate} onChange={e => setExpDate(e.target.value)} />
+                  <Input type="date" value={expDate} onChange={e => setExpDate(e.target.value)} className="w-full" />
                 </div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="recurring-toggle" className="cursor-pointer">Wiederkehrend</Label>
+                  <Switch id="recurring-toggle" checked={expRecurring} onCheckedChange={setExpRecurring} />
+                </div>
+                {expRecurring && (
+                  <div>
+                    <Label>Häufigkeit</Label>
+                    <Select value={expFrequency} onValueChange={setExpFrequency}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {FREQUENCY_OPTIONS.map(f => (
+                          <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
                 <div>
                   <Label>Notiz (optional)</Label>
                   <Textarea value={expNote} onChange={e => setExpNote(e.target.value)} placeholder="z.B. Migros Wocheneinkauf" rows={2} />
