@@ -1,21 +1,34 @@
 import { Shield, ArrowUp, ArrowDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { formatExpenseImpact, formatAssetImpact, formatPeakScoreImpact } from '@/lib/peakScoreFormat';
 
 interface PeakScoreImpactProps {
   impact: number | null; // positive = good, negative = bad
   show: boolean;
   className?: string;
+  /** Context determines the sentence framing */
+  context?: 'expense' | 'asset' | 'generic';
 }
 
 /**
- * Small inline badge showing PeakScore impact after an action.
- * Usage: <PeakScoreImpact impact={-0.3} show={showAfterSave} />
+ * Inline badge showing PeakScore impact after an action — in human-readable freedom terms.
  */
-export function PeakScoreImpact({ impact, show, className }: PeakScoreImpactProps) {
+export function PeakScoreImpact({ impact, show, className, context = 'generic' }: PeakScoreImpactProps) {
   if (impact === null || impact === 0) return null;
 
   const positive = impact > 0;
+
+  const getMessage = () => {
+    switch (context) {
+      case 'expense':
+        return formatExpenseImpact(impact);
+      case 'asset':
+        return formatAssetImpact(impact);
+      default:
+        return formatPeakScoreImpact(impact);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -26,15 +39,16 @@ export function PeakScoreImpact({ impact, show, className }: PeakScoreImpactProp
           exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.3 }}
           className={cn(
-            'inline-flex items-center gap-1 text-xs font-medium',
-            positive ? 'text-emerald-600' : 'text-red-500',
+            'inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg',
+            positive
+              ? 'text-primary bg-primary/10'
+              : 'text-destructive bg-destructive/10',
             className
           )}
         >
-          <Shield className="h-3 w-3" />
-          <span>PeakScore Auswirkung:</span>
+          <Shield className="h-3.5 w-3.5 shrink-0" />
           {positive ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
-          <span className="font-bold">{positive ? '+' : ''}{impact.toFixed(1)}</span>
+          <span>{getMessage()}</span>
         </motion.div>
       )}
     </AnimatePresence>

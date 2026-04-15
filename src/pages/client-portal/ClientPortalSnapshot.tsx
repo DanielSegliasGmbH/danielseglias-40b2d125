@@ -28,6 +28,7 @@ import { useGamification } from '@/hooks/useGamification';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { InfoHint } from '@/components/client-portal/InfoHint';
+import { formatSnapshotTrend } from '@/lib/peakScoreFormat';
 
 // ── Types ──────────────────────────────────────────
 
@@ -2258,13 +2259,19 @@ function SnapshotDetail({
 
 // ── Snapshot Comparison ────────────────────────────
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function SnapshotComparison({ older, newer }: { older: any; newer: any }) {
   const olderData = older.snapshot_data || {};
   const newerData = newer.snapshot_data || {};
   const fmtCHF = (v: number) => `CHF ${v.toLocaleString('de-CH')}`;
 
+  // Freedom impact: net worth delta / monthly expenses
+  const netWorthDelta = (Number(newer.net_worth) || 0) - (Number(older.net_worth) || 0);
+  const monthlyExp = n(newerData.monthly_expenses?.amount) || n(olderData.monthly_expenses?.amount);
+  const freedomMonths = monthlyExp > 0 ? netWorthDelta / monthlyExp : 0;
+
   const categories = [
-    { label: 'Nettovermögen', oldVal: older.net_worth || 0, newVal: newer.net_worth || 0 },
+    { label: 'Nettovermögen', oldVal: Number(older.net_worth) || 0, newVal: Number(newer.net_worth) || 0 },
     { label: '3a Guthaben', oldVal: n(olderData.pillar_3a?.amount), newVal: n(newerData.pillar_3a?.amount) },
     { label: 'Freizügigkeit', oldVal: n(olderData.freizuegigkeit?.amount), newVal: n(newerData.freizuegigkeit?.amount) },
     { label: 'Pensionskasse', oldVal: n(olderData.pensionskasse?.amount), newVal: n(newerData.pensionskasse?.amount) },
@@ -2279,11 +2286,21 @@ function SnapshotComparison({ older, newer }: { older: any; newer: any }) {
 
   return (
     <div className="space-y-3">
+      {/* Freedom impact summary */}
+      {monthlyExp > 0 && freedomMonths !== 0 && (
+        <div className={cn(
+          'p-3 rounded-xl text-xs font-medium text-center',
+          freedomMonths > 0 ? 'bg-primary/10 text-primary' : 'bg-destructive/10 text-destructive'
+        )}>
+          {formatSnapshotTrend(freedomMonths)}
+        </div>
+      )}
+
       {/* Header row */}
       <div className="grid grid-cols-4 gap-2 text-[10px] font-medium text-muted-foreground px-2">
         <span>Kategorie</span>
-        <span className="text-right">{format(new Date(older.created_at), 'dd.MM.yy')}</span>
-        <span className="text-right">{format(new Date(newer.created_at), 'dd.MM.yy')}</span>
+        <span className="text-right">{format(new Date(String(older.created_at)), 'dd.MM.yy')}</span>
+        <span className="text-right">{format(new Date(String(newer.created_at)), 'dd.MM.yy')}</span>
         <span className="text-right">Δ</span>
       </div>
 

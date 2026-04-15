@@ -392,7 +392,7 @@ export default function ClientPortalNetWorth() {
         </motion.div>
 
         {/* PeakScore impact after asset add */}
-        <PeakScoreImpact impact={lastAssetImpact} show={showAssetImpact} className="px-1" />
+        <PeakScoreImpact impact={lastAssetImpact} show={showAssetImpact} context="asset" className="px-1" />
 
         {/* Net worth chart */}
         {validChartData.length >= 2 && (

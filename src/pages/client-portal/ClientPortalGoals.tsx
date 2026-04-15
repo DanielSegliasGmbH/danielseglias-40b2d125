@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import {
   Target, Trash2, Plus, TrendingUp, Home, Heart, Shield, Star, CalendarIcon, RefreshCw,
 } from 'lucide-react';
+import { formatGoalImpact } from '@/lib/peakScoreFormat';
 import { PrivateValue } from '@/components/client-portal/PrivateValue';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
@@ -236,9 +237,9 @@ export default function ClientPortalGoals() {
                 </Select>
               </div>
               {targetAmount && monthlyExpenses > 0 && (
-                <div className="flex items-center gap-1 text-xs font-medium text-emerald-600 px-1">
-                  <Shield className="h-3 w-3" />
-                  <span>Wenn du dieses Ziel erreichst: PeakScore +{(Number(targetAmount) / monthlyExpenses).toFixed(1)}</span>
+                <div className="flex items-center gap-1.5 text-xs font-medium text-primary bg-primary/10 px-3 py-2 rounded-lg">
+                  <Shield className="h-3.5 w-3.5 shrink-0" />
+                  <span>{formatGoalImpact(Number(targetAmount) / monthlyExpenses)}</span>
                 </div>
               )}
               <Button className="w-full" disabled={!title.trim() || addGoal.isPending} onClick={() => addGoal.mutate()}>
