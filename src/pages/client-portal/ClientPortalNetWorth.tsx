@@ -15,6 +15,8 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGamification } from '@/hooks/useGamification';
+import { usePeakScore } from '@/hooks/usePeakScore';
+import { PeakScoreImpact } from '@/components/client-portal/PeakScoreImpact';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Area, AreaChart } from 'recharts';
 
 const ASSET_CATEGORIES = [
@@ -233,6 +235,11 @@ export default function ClientPortalNetWorth() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['net-worth-assets'] });
       queryClient.invalidateQueries({ queryKey: ['net-worth-snapshots'] });
+      const val = parseFloat(assetValue);
+      const impact = monthlyExpenses > 0 ? val / monthlyExpenses : null;
+      setLastAssetImpact(impact ? Math.round(impact * 10) / 10 : null);
+      setShowAssetImpact(true);
+      setTimeout(() => setShowAssetImpact(false), 4000);
       toast.success('Vermögenswert hinzugefügt ✓');
       awardPoints('asset_added', `asset_${Date.now()}`);
       resetAssetForm();

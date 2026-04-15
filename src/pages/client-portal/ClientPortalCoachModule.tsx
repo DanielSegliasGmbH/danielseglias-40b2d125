@@ -1058,6 +1058,10 @@ function ModuleCelebration({ title, onClose }: { title: string; onClose: () => v
         <Badge variant="default" className="text-sm px-3 py-1 gap-1">
           <Star className="h-3.5 w-3.5" /> Badge erhalten
         </Badge>
+        <div className="flex items-center justify-center gap-1 text-sm font-medium text-emerald-600">
+          <Shield className="h-3.5 w-3.5" />
+          <span>Umsetzung dieser Tipps: geschätzter PeakScore +1.5</span>
+        </div>
         <p className="text-sm text-muted-foreground">Tippe, um fortzufahren</p>
       </motion.div>
     </motion.div>

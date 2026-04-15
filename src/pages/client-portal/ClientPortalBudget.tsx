@@ -19,6 +19,8 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { useGamification } from '@/hooks/useGamification';
+import { usePeakScore } from '@/hooks/usePeakScore';
+import { PeakScoreImpact } from '@/components/client-portal/PeakScoreImpact';
 
 const CATEGORIES = [
   'Wohnen',
@@ -216,6 +218,11 @@ export default function ClientPortalBudget() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      const amt = parseFloat(expAmount);
+      const impact = monthlyExpenses > 0 ? -(amt / monthlyExpenses) : null;
+      setLastExpenseImpact(impact ? Math.round(impact * 10) / 10 : null);
+      setShowExpenseImpact(true);
+      setTimeout(() => setShowExpenseImpact(false), 4000);
       toast.success('Ausgabe erfasst ✓');
       awardPoints('expense_added', `expense_${Date.now()}`);
       setExpAmount('');
