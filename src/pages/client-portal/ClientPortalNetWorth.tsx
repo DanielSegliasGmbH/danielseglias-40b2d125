@@ -544,6 +544,15 @@ export default function ClientPortalNetWorth() {
                         <p className="text-sm font-medium truncate">{a.name}</p>
                         <p className="text-[11px] text-muted-foreground">{a.category}</p>
                       </div>
+                      {a.platform_url && (
+                        <button
+                          className="p-1 rounded hover:bg-primary/10 transition-colors"
+                          onClick={(e) => { e.stopPropagation(); window.open(a.platform_url, '_blank', 'noopener,noreferrer'); }}
+                          title="Plattform öffnen"
+                        >
+                          <Link2 className="h-3.5 w-3.5 text-primary" />
+                        </button>
+                      )}
                       <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50 ml-1" />
                     </button>
                     <div className="flex items-center gap-1.5 shrink-0 ml-2">
@@ -600,6 +609,15 @@ export default function ClientPortalNetWorth() {
                         <p className="text-sm font-medium truncate">{l.name}</p>
                         <p className="text-[11px] text-muted-foreground">{l.category}</p>
                       </div>
+                      {l.platform_url && (
+                        <button
+                          className="p-1 rounded hover:bg-primary/10 transition-colors"
+                          onClick={(e) => { e.stopPropagation(); window.open(l.platform_url, '_blank', 'noopener,noreferrer'); }}
+                          title="Plattform öffnen"
+                        >
+                          <Link2 className="h-3.5 w-3.5 text-primary" />
+                        </button>
+                      )}
                       <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50 ml-1" />
                     </button>
                     <div className="flex items-center gap-1.5 shrink-0 ml-2">
