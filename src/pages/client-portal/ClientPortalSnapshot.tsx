@@ -189,6 +189,20 @@ const newOtherAsset = (): OtherAsset => ({
   value: '',
 });
 
+const newCredit = (): CreditItem => ({
+  id: crypto.randomUUID(),
+  name: '',
+  remaining: '',
+  monthly_payment: '',
+  interest_rate: '',
+});
+
+const newDebt = (): DebtItem => ({
+  id: crypto.randomUUID(),
+  description: '',
+  amount: '',
+});
+
 const EMPTY_DRAFT: SnapshotDraft = {
   pillar_3a: { ...DEFAULT_FIELD },
   freizuegigkeit: { ...DEFAULT_FIELD },
@@ -207,9 +221,10 @@ const EMPTY_DRAFT: SnapshotDraft = {
   owns_property: false,
   other_assets: [],
   other_assets_skipped: false,
-  mortgage: { ...DEFAULT_FIELD },
-  consumer_debt: { ...DEFAULT_FIELD },
-  other_debt: { ...DEFAULT_FIELD },
+  credits: [],
+  credits_skipped: false,
+  debts: [],
+  debts_skipped: false,
   monthly_income: { ...DEFAULT_FIELD },
   monthly_expenses: { ...DEFAULT_FIELD },
   insurance_monthly: { ...DEFAULT_FIELD },
