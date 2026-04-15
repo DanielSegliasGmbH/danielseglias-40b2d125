@@ -1567,6 +1567,46 @@ function HistoryCard({ snapshot, previous, onDelete }: { snapshot: any; previous
                   </div>
                 )
               ))}
+              {/* Investments */}
+              {Array.isArray(data.investment_positions) && data.investment_positions.map((inv: any, i: number) => (
+                n(inv.value) > 0 && (
+                  <div key={`inv-${i}`} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      📊 {inv.name || 'Investment'}{inv.platform && <span className="text-[10px] ml-1">({inv.platform})</span>}
+                    </span>
+                    <span className="font-medium text-foreground">CHF {Number(inv.value).toLocaleString('de-CH')}</span>
+                  </div>
+                )
+              ))}
+              {/* Crypto */}
+              {Array.isArray(data.crypto_positions) && data.crypto_positions.map((c: any, i: number) => (
+                n(c.value) > 0 && (
+                  <div key={`cry-${i}`} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      🪙 {c.name || 'Krypto'}{c.platform && <span className="text-[10px] ml-1">({c.platform})</span>}
+                    </span>
+                    <span className="font-medium text-foreground">CHF {Number(c.value).toLocaleString('de-CH')}</span>
+                  </div>
+                )
+              ))}
+              {/* Properties */}
+              {Array.isArray(data.properties) && data.properties.map((p: any, i: number) => (
+                n(p.market_value) > 0 && (
+                  <div key={`prop-${i}`} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">🏠 {p.description || 'Immobilie'}</span>
+                    <span className="font-medium text-foreground">CHF {Number(p.market_value).toLocaleString('de-CH')}</span>
+                  </div>
+                )
+              ))}
+              {/* Other assets */}
+              {Array.isArray(data.other_assets) && data.other_assets.map((a: any, i: number) => (
+                n(a.value) > 0 && (
+                  <div key={`oth-${i}`} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">📦 {a.name || 'Sonstiges'}</span>
+                    <span className="font-medium text-foreground">CHF {Number(a.value).toLocaleString('de-CH')}</span>
+                  </div>
+                )
+              ))}
               {snapshot.notes && (
                 <div className="pt-2 border-t border-border">
                   <p className="text-xs text-muted-foreground">📝 {snapshot.notes}</p>
