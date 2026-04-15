@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGamification } from '@/hooks/useGamification';
+import { useRecalculatePeakScore } from '@/hooks/usePeakScore';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Area, AreaChart } from 'recharts';
 
 const ASSET_CATEGORIES = [
@@ -77,6 +78,7 @@ export default function ClientPortalNetWorth() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { awardPoints } = useGamification();
+  const recalcPeakScore = useRecalculatePeakScore();
   const [assetDialogOpen, setAssetDialogOpen] = useState(false);
   const [liabilityDialogOpen, setLiabilityDialogOpen] = useState(false);
   const [detailEntry, setDetailEntry] = useState<any>(null);
