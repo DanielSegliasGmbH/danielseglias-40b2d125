@@ -16,6 +16,7 @@ import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { NotificationBell } from '@/components/client-portal/NotificationBell';
 import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, Crown, Landmark, Wallet, ClipboardList, TrendingUp, FileBarChart, Gift } from 'lucide-react';
 import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
+import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
 
 const LEVEL_ICONS = [null, Zap, Star, Trophy, Award, Crown];
 
@@ -229,6 +230,9 @@ export default function ClientPortalHome() {
           </div>
           <NotificationBell />
         </div>
+
+        {/* ── PEAKSCORE HERO ── */}
+        <PeakScoreCard onClick={() => navigate('/app/client-portal/peak-score')} />
 
         {/* ── 2. LEVEL & STREAK BAR ── */}
         <motion.div
