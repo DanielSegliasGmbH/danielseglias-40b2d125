@@ -271,33 +271,6 @@ export default function ClientPortalMonthlyReport() {
     }
   }, [user, monthKey, savedSummaries, currentScore, peakDelta, currentRank, income, totalExpenses, netSavings, savingsRate, biggestCategory, tasksCompleted, goalsProgressed, coachSteps, xpThisMonth, streakDays, resultMessage, saveSummary]);
 
-  // Share / screenshot
-  const handleShare = async () => {
-    if (!shareRef.current) return;
-    try {
-      const canvas = await html2canvas(shareRef.current, { backgroundColor: null, scale: 2 });
-      canvas.toBlob(blob => {
-        if (!blob) return;
-        const file = new File([blob], `finlife-rueckblick-${monthKey}.png`, { type: 'image/png' });
-        if (navigator.share && navigator.canShare?.({ files: [file] })) {
-          navigator.share({ files: [file], title: `Mein ${monthLabel}-Rückblick` });
-        } else {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a'); a.href = url; a.download = file.name; a.click();
-          URL.revokeObjectURL(url);
-          toast.success('Screenshot gespeichert');
-        }
-      });
-    } catch {
-      toast.error('Screenshot konnte nicht erstellt werden');
-    }
-  };
-
-  const handleWhatsApp = async () => {
-    const text = `Mein ${monthLabel}-Rückblick auf FinLife ✦\n\n🏆 PeakScore: ${currentScore} Monate (${peakDelta >= 0 ? '+' : ''}${peakDelta})\n${currentRank.emoji} Rang: ${currentRank.name}\n💰 Sparquote: ${savingsRate}%\n⚡ ${xpThisMonth} XP verdient\n\nWas ist dein Score? 🔥`;
-    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
-  };
 
   // Progress dots
   const ProgressDots = () => (
