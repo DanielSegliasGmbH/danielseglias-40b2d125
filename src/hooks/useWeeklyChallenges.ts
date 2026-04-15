@@ -3,6 +3,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useGamification } from '@/hooks/useGamification';
 import { toast } from 'sonner';
+import type { Json } from '@/integrations/supabase/types';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { useGamification } from '@/hooks/useGamification';
+import { toast } from 'sonner';
 import { useCallback } from 'react';
 
 export interface MicroChallenge {
@@ -147,7 +152,7 @@ export function useWeeklyChallenges() {
         .insert({
           user_id: user.id,
           week_key: weekKey,
-          challenges: challenges as unknown as Record<string, unknown>[],
+          challenges: JSON.parse(JSON.stringify(challenges)) as Json,
         })
         .select()
         .single();
@@ -190,7 +195,7 @@ export function useWeeklyChallenges() {
       const { error } = await supabase
         .from('weekly_challenges')
         .update({
-          challenges: updated as unknown as Record<string, unknown>[],
+          challenges: JSON.parse(JSON.stringify(updated)) as Json,
           completed_at: allDone ? new Date().toISOString() : null,
         })
         .eq('id', currentWeek.id);
