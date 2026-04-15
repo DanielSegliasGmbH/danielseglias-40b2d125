@@ -1,4 +1,6 @@
 import { useState, useCallback } from 'react';
+import { PageTransition } from '@/components/PageTransition';
+import { ErrorState } from '@/components/ErrorState';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
@@ -41,7 +43,7 @@ export default function ClientPortalTasks() {
   const [notes, setNotes] = useState('');
   const [dueDate, setDueDate] = useState<Date | undefined>();
 
-  const { data: tasks = [], isLoading } = useQuery({
+  const { data: tasks = [], isLoading, isError, refetch } = useQuery({
     queryKey: ['client-tasks', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -118,6 +120,7 @@ export default function ClientPortalTasks() {
   return (
     <ClientPortalLayout>
       <ScreenHeader title="Meine Aufgaben" showBack backTo="/app/client-portal" />
+      <PageTransition>
       <div className="max-w-2xl mx-auto space-y-4 p-4 pb-8">
         {/* Add Task Button */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -160,15 +163,20 @@ export default function ClientPortalTasks() {
           </DialogContent>
         </Dialog>
 
+        {/* Error */}
+        {isError && <ErrorState onRetry={() => refetch()} />}
+
         {/* Loading */}
         {isLoading && [1, 2].map(i => <div key={i} className="h-20 bg-muted animate-pulse rounded-xl" />)}
 
         {/* Empty state */}
-        {!isLoading && tasks.length === 0 && (
+        {!isLoading && !isError && tasks.length === 0 && (
           <EmptyState
             icon={ClipboardList}
             title="Noch keine Aufgaben"
-            description="Erstelle deine erste Aufgabe mit dem Button oben."
+            description="Erstelle deine erste Quest mit dem Button oben. +50 XP pro erledigter Aufgabe!"
+            actionLabel="Aufgabe erstellen"
+            onAction={() => setDialogOpen(true)}
           />
         )}
 
@@ -204,6 +212,7 @@ export default function ClientPortalTasks() {
           </div>
         )}
       </div>
+      </PageTransition>
     </ClientPortalLayout>
   );
 }

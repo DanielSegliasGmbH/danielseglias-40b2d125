@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { PageTransition } from '@/components/PageTransition';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -223,6 +224,7 @@ export default function ClientPortalBudget() {
 
   return (
     <ClientPortalLayout>
+      <PageTransition>
       <div className="max-w-2xl mx-auto space-y-5">
         {/* Month navigator */}
         <div className="flex items-center justify-between">
@@ -460,6 +462,7 @@ export default function ClientPortalBudget() {
           </Card>
         )}
       </div>
+      </PageTransition>
     </ClientPortalLayout>
   );
 }

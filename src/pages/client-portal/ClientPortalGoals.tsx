@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { PageTransition } from '@/components/PageTransition';
+import { ErrorState } from '@/components/ErrorState';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
@@ -57,7 +59,7 @@ export default function ClientPortalGoals() {
   const [targetDate, setTargetDate] = useState<Date | undefined>();
   const [category, setCategory] = useState('Sonstiges');
 
-  const { data: goals = [], isLoading } = useQuery({
+  const { data: goals = [], isLoading, isError, refetch } = useQuery({
     queryKey: ['client-goals', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -120,6 +122,7 @@ export default function ClientPortalGoals() {
   return (
     <ClientPortalLayout>
       <ScreenHeader title="Deine Ziele" showBack backTo="/app/client-portal" />
+      <PageTransition>
       <div className="max-w-2xl mx-auto space-y-4 p-4 pb-8">
         {/* Add Goal Button */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -173,11 +176,14 @@ export default function ClientPortalGoals() {
           </DialogContent>
         </Dialog>
 
+        {/* Error state */}
+        {isError && <ErrorState onRetry={() => refetch()} />}
+
         {/* Loading */}
         {isLoading && [1, 2].map(i => <div key={i} className="h-24 bg-muted animate-pulse rounded-xl" />)}
 
         {/* Empty state */}
-        {!isLoading && goals.length === 0 && (
+        {!isLoading && !isError && goals.length === 0 && (
           <Card>
             <CardContent className="p-6 flex flex-col items-center justify-center text-center">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
@@ -207,6 +213,7 @@ export default function ClientPortalGoals() {
           </div>
         )}
       </div>
+      </PageTransition>
     </ClientPortalLayout>
   );
 }
@@ -224,7 +231,7 @@ function GoalCard({ goal, onDelete, onToggle }: { goal: GoalRow; onDelete: () =>
           <div className="flex items-start gap-3 min-w-0 flex-1">
             <button onClick={onToggle} className="mt-0.5 shrink-0">
               {goal.is_completed
-                ? <CheckCircle2 className="h-5 w-5 text-green-600" />
+                ? <CheckCircle2 className="h-5 w-5 text-primary" />
                 : <div className="h-5 w-5 rounded-full border-2 border-muted-foreground/40" />}
             </button>
             <div className="min-w-0 flex-1">
