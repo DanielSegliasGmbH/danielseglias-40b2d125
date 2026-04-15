@@ -13,7 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
-import { Plus, ChevronLeft, ChevronRight, Pencil, Wallet, TrendingDown, PiggyBank, Percent } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Plus, ChevronLeft, ChevronRight, Pencil, Wallet, TrendingDown, PiggyBank, Percent, Trash2, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -73,6 +74,24 @@ function getStatusText(spent: number, budget: number): string {
   return 'Im Rahmen';
 }
 
+function computeNextDate(dateStr: string, frequency: string): string {
+  const d = new Date(dateStr);
+  switch (frequency) {
+    case 'quartalsweise': d.setMonth(d.getMonth() + 3); break;
+    case 'halbjaehrlich': d.setMonth(d.getMonth() + 6); break;
+    case 'jaehrlich': d.setFullYear(d.getFullYear() + 1); break;
+    default: d.setMonth(d.getMonth() + 1); break;
+  }
+  return d.toISOString().slice(0, 10);
+}
+
+const FREQUENCY_OPTIONS = [
+  { value: 'monatlich', label: 'Monatlich' },
+  { value: 'quartalsweise', label: 'Quartalsweise' },
+  { value: 'halbjaehrlich', label: 'Halbjährlich' },
+  { value: 'jaehrlich', label: 'Jährlich' },
+];
+
 export default function ClientPortalBudget() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -86,6 +105,8 @@ export default function ClientPortalBudget() {
   const [expCategory, setExpCategory] = useState<string>(CATEGORIES[0]);
   const [expDate, setExpDate] = useState(new Date().toISOString().slice(0, 10));
   const [expNote, setExpNote] = useState('');
+  const [expRecurring, setExpRecurring] = useState(false);
+  const [expFrequency, setExpFrequency] = useState<string>('monatlich');
 
   // Budget edit state
   const [budgetAmounts, setBudgetAmounts] = useState<Record<string, string>>({});
@@ -174,8 +195,24 @@ export default function ClientPortalBudget() {
         amount: parseFloat(expAmount),
         expense_date: expDate,
         note: expNote || null,
+        is_recurring: expRecurring,
+        recurring_frequency: expRecurring ? expFrequency : null,
       });
       if (error) throw error;
+
+      // If recurring, create next occurrence
+      if (expRecurring) {
+        const nextDate = computeNextDate(expDate, expFrequency);
+        await supabase.from('budget_expenses').insert({
+          user_id: user.id,
+          category: expCategory,
+          amount: parseFloat(expAmount),
+          expense_date: nextDate,
+          note: expNote || null,
+          is_recurring: true,
+          recurring_frequency: expFrequency,
+        });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses'] });
@@ -184,9 +221,24 @@ export default function ClientPortalBudget() {
       setExpAmount('');
       setExpNote('');
       setExpDate(new Date().toISOString().slice(0, 10));
+      setExpRecurring(false);
+      setExpFrequency('monatlich');
       setExpenseDialogOpen(false);
     },
     onError: () => toast.error('Fehler beim Speichern'),
+  });
+
+  // Delete expense mutation
+  const deleteExpense = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('budget_expenses').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      toast.success('Ausgabe gelöscht');
+    },
+    onError: () => toast.error('Fehler beim Löschen'),
   });
 
   // Save budgets mutation
@@ -295,7 +347,7 @@ export default function ClientPortalBudget() {
                 <Plus className="h-4 w-4" /> Ausgabe erfassen
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-lg">
               <DialogHeader>
                 <DialogTitle>Neue Ausgabe</DialogTitle>
               </DialogHeader>
@@ -317,8 +369,25 @@ export default function ClientPortalBudget() {
                 </div>
                 <div>
                   <Label>Datum</Label>
-                  <Input type="date" value={expDate} onChange={e => setExpDate(e.target.value)} />
+                  <Input type="date" value={expDate} onChange={e => setExpDate(e.target.value)} className="w-full" />
                 </div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="recurring-toggle" className="cursor-pointer">Wiederkehrend</Label>
+                  <Switch id="recurring-toggle" checked={expRecurring} onCheckedChange={setExpRecurring} />
+                </div>
+                {expRecurring && (
+                  <div>
+                    <Label>Häufigkeit</Label>
+                    <Select value={expFrequency} onValueChange={setExpFrequency}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {FREQUENCY_OPTIONS.map(f => (
+                          <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
                 <div>
                   <Label>Notiz (optional)</Label>
                   <Textarea value={expNote} onChange={e => setExpNote(e.target.value)} placeholder="z.B. Migros Wocheneinkauf" rows={2} />
@@ -436,13 +505,29 @@ export default function ClientPortalBudget() {
                   <div className="flex items-center gap-2.5 min-w-0">
                     <span className="text-base">{CATEGORY_ICONS[exp.category as Category] || '📦'}</span>
                     <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">{exp.note || exp.category}</p>
+                      <p className="text-sm font-medium truncate flex items-center gap-1">
+                        {exp.is_recurring && <RefreshCw className="h-3 w-3 text-muted-foreground shrink-0" />}
+                        {exp.note || exp.category}
+                        {exp.is_recurring && (
+                          <span className="text-[10px] text-muted-foreground font-normal">Fixkosten</span>
+                        )}
+                      </p>
                       <p className="text-[11px] text-muted-foreground">{new Date(exp.expense_date).toLocaleDateString('de-CH')}</p>
                     </div>
                   </div>
-                  <span className="text-sm font-semibold text-foreground shrink-0 ml-2">
-                    CHF {Number(exp.amount).toLocaleString('de-CH', { minimumFractionDigits: 2 })}
-                  </span>
+                  <div className="flex items-center gap-2 shrink-0 ml-2">
+                    <span className="text-sm font-semibold text-foreground">
+                      CHF {Number(exp.amount).toLocaleString('de-CH', { minimumFractionDigits: 2 })}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                      onClick={() => deleteExpense.mutate(exp.id)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
