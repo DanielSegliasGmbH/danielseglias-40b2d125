@@ -474,6 +474,9 @@ export default function ClientPortalHome() {
         {/* ── WEEKLY QUESTS ── */}
         <WeeklyQuestsCard />
 
+        {/* ── HABIT TRACKER ── */}
+        <HabitTrackerCard />
+
         {/* ── 3.6 MONTHLY REPORT TEASER (1st of month) ── */}
         {new Date().getDate() <= 7 && (() => {
           const now = new Date();
