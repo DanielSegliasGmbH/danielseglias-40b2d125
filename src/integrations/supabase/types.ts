@@ -1599,6 +1599,74 @@ export type Database = {
         }
         Relationships: []
       }
+      habit_tracking: {
+        Row: {
+          created_at: string
+          date: string
+          habit_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          habit_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          habit_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habit_tracking_habit_id_fkey"
+            columns: ["habit_id"]
+            isOneToOne: false
+            referencedRelation: "habits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      habits: {
+        Row: {
+          created_at: string
+          emoji: string
+          frequency: string
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emoji?: string
+          frequency?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          frequency?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       income_sources: {
         Row: {
           amount: number
