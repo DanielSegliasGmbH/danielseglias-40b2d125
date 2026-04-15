@@ -15,7 +15,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
-  Target, Trash2, Plus, TrendingUp, Home, Heart, Shield, Star, CalendarIcon, CheckCircle2,
+  Target, Trash2, Plus, TrendingUp, Home, Heart, Shield, Star, CalendarIcon, RefreshCw,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
@@ -37,6 +37,13 @@ const CATEGORIES = [
 const categoryIconMap: Record<string, React.ElementType> = Object.fromEntries(
   CATEGORIES.map(c => [c.value, c.icon])
 );
+
+function getProgressEmoji(pct: number): string {
+  if (pct >= 100) return '🏆';
+  if (pct >= 75) return '🌳';
+  if (pct >= 50) return '🌿';
+  return '🌱';
+}
 
 interface GoalRow {
   id: string;
@@ -105,17 +112,6 @@ export default function ClientPortalGoals() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['client-goals'] }),
   });
 
-  const toggleComplete = useMutation({
-    mutationFn: async ({ id, completed }: { id: string; completed: boolean }) => {
-      const { error } = await supabase
-        .from('client_goals')
-        .update({ is_completed: completed })
-        .eq('id', id);
-      if (error) throw error;
-    },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['client-goals'] }),
-  });
-
   const activeGoals = goals.filter(g => !g.is_completed);
   const completedGoals = goals.filter(g => g.is_completed);
 
@@ -124,14 +120,13 @@ export default function ClientPortalGoals() {
       <ScreenHeader title="Deine Ziele" showBack backTo="/app/client-portal" />
       <PageTransition>
       <div className="max-w-2xl mx-auto space-y-4 p-4 pb-8">
-        {/* Add Goal Button */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button className="w-full gap-2">
               <Plus className="h-4 w-4" /> Ziel hinzufügen
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>Neues Ziel erstellen</DialogTitle>
             </DialogHeader>
@@ -176,40 +171,38 @@ export default function ClientPortalGoals() {
           </DialogContent>
         </Dialog>
 
-        {/* Error state */}
         {isError && <ErrorState onRetry={() => refetch()} />}
+        {isLoading && [1, 2].map(i => <div key={i} className="h-32 bg-muted animate-pulse rounded-2xl" />)}
 
-        {/* Loading */}
-        {isLoading && [1, 2].map(i => <div key={i} className="h-24 bg-muted animate-pulse rounded-xl" />)}
-
-        {/* Empty state */}
         {!isLoading && !isError && goals.length === 0 && (
-          <Card>
+          <Card className="border-dashed">
             <CardContent className="p-6 flex flex-col items-center justify-center text-center">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                <Target className="h-5 w-5 text-primary" />
+              <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                <Target className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="font-semibold text-sm text-foreground mb-1">Noch keine Ziele definiert</h3>
-              <p className="text-xs text-muted-foreground max-w-xs">
+              <h3 className="font-semibold text-foreground mb-1">Noch keine Ziele definiert</h3>
+              <p className="text-sm text-muted-foreground max-w-xs">
                 Klicke oben auf «Ziel hinzufügen», um dein erstes Finanzziel zu erstellen.
               </p>
             </CardContent>
           </Card>
         )}
 
-        {/* Active Goals */}
         {activeGoals.length > 0 && (
           <div className="space-y-3">
-            <p className="text-xs font-medium text-muted-foreground px-1">Aktive Ziele ({activeGoals.length})</p>
-            {activeGoals.map(goal => <GoalCard key={goal.id} goal={goal} onDelete={() => deleteGoal.mutate(goal.id)} onToggle={() => toggleComplete.mutate({ id: goal.id, completed: true })} />)}
+            <p className="text-xs font-semibold text-muted-foreground px-1 uppercase tracking-wider">Aktive Ziele ({activeGoals.length})</p>
+            {activeGoals.map(goal => (
+              <GoalCard key={goal.id} goal={goal} onDelete={() => deleteGoal.mutate(goal.id)} />
+            ))}
           </div>
         )}
 
-        {/* Completed Goals */}
         {completedGoals.length > 0 && (
           <div className="space-y-3">
-            <p className="text-xs font-medium text-muted-foreground px-1">Erreichte Ziele ({completedGoals.length})</p>
-            {completedGoals.map(goal => <GoalCard key={goal.id} goal={goal} onDelete={() => deleteGoal.mutate(goal.id)} onToggle={() => toggleComplete.mutate({ id: goal.id, completed: false })} />)}
+            <p className="text-xs font-semibold text-muted-foreground px-1 uppercase tracking-wider">Erreichte Ziele ({completedGoals.length})</p>
+            {completedGoals.map(goal => (
+              <GoalCard key={goal.id} goal={goal} onDelete={() => deleteGoal.mutate(goal.id)} />
+            ))}
           </div>
         )}
       </div>
@@ -218,54 +211,131 @@ export default function ClientPortalGoals() {
   );
 }
 
-function GoalCard({ goal, onDelete, onToggle }: { goal: GoalRow; onDelete: () => void; onToggle: () => void }) {
+function GoalCard({ goal, onDelete }: { goal: GoalRow; onDelete: () => void }) {
+  const { user } = useAuth();
+  const qc = useQueryClient();
   const CatIcon = categoryIconMap[goal.category || ''] || Target;
   const progress = goal.target_amount && goal.target_amount > 0
     ? Math.min(100, Math.round((goal.current_amount / goal.target_amount) * 100))
     : null;
 
+  const [updateOpen, setUpdateOpen] = useState(false);
+  const [newAmount, setNewAmount] = useState('');
+
+  const updateAmount = useMutation({
+    mutationFn: async () => {
+      const val = parseFloat(newAmount);
+      if (isNaN(val) || val < 0) throw new Error('Invalid');
+      const { error } = await supabase
+        .from('client_goals')
+        .update({ current_amount: val })
+        .eq('id', goal.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['client-goals'] });
+      toast.success('Betrag aktualisiert ✓');
+      setUpdateOpen(false);
+      setNewAmount('');
+    },
+    onError: () => toast.error('Fehler'),
+  });
+
   return (
-    <Card className={cn('transition-all', goal.is_completed && 'opacity-60')}>
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between gap-2">
+    <Card className={cn(
+      'overflow-hidden border-0 shadow-sm transition-all',
+      goal.is_completed && 'opacity-60'
+    )} style={{
+      background: 'linear-gradient(135deg, hsl(var(--card)) 0%, hsl(60 10% 96%) 100%)',
+    }}>
+      <CardContent className="p-5">
+        {/* Top row: emoji + title + delete */}
+        <div className="flex items-start justify-between gap-2 mb-3">
           <div className="flex items-start gap-3 min-w-0 flex-1">
-            <button onClick={onToggle} className="mt-0.5 shrink-0">
-              {goal.is_completed
-                ? <CheckCircle2 className="h-5 w-5 text-primary" />
-                : <div className="h-5 w-5 rounded-full border-2 border-muted-foreground/40" />}
-            </button>
+            {progress !== null && (
+              <span className="text-2xl leading-none mt-0.5">{getProgressEmoji(progress)}</span>
+            )}
             <div className="min-w-0 flex-1">
-              <h3 className={cn('font-semibold text-sm text-foreground', goal.is_completed && 'line-through')}>{goal.title}</h3>
-              <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+              <h3 className={cn('font-bold text-base text-foreground leading-tight', goal.is_completed && 'line-through')}>
+                {goal.title}
+              </h3>
+              <div className="flex items-center gap-2 mt-1">
                 {goal.category && (
-                  <Badge variant="outline" className="text-[10px] gap-1">
+                  <Badge variant="secondary" className="text-[11px] gap-1 font-medium">
                     <CatIcon className="h-3 w-3" /> {goal.category}
                   </Badge>
                 )}
-                {goal.target_amount != null && (
-                  <span className="text-[10px] text-muted-foreground">
-                    Ziel: CHF {Number(goal.target_amount).toLocaleString('de-CH')}
-                  </span>
-                )}
                 {goal.target_date && (
-                  <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                  <span className="text-[11px] text-muted-foreground flex items-center gap-0.5">
                     <CalendarIcon className="h-3 w-3" />
                     {new Date(goal.target_date).toLocaleDateString('de-CH')}
                   </span>
                 )}
               </div>
-              {progress !== null && (
-                <div className="mt-2 flex items-center gap-2">
-                  <Progress value={progress} className="flex-1 h-1.5" />
-                  <span className="text-[10px] text-muted-foreground font-medium">{progress}%</span>
-                </div>
-              )}
             </div>
           </div>
           <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={onDelete}>
             <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
           </Button>
         </div>
+
+        {/* Target amount prominent */}
+        {goal.target_amount != null && (
+          <div className="mb-3">
+            <p className="text-2xl font-bold text-foreground tracking-tight">
+              CHF {Number(goal.target_amount).toLocaleString('de-CH')}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Aktuell: CHF {Number(goal.current_amount).toLocaleString('de-CH')}
+            </p>
+          </div>
+        )}
+
+        {/* Progress bar */}
+        {progress !== null && (
+          <div className="mb-3">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-xs text-muted-foreground font-medium">Fortschritt</span>
+              <span className="text-lg font-bold text-primary">{progress}%</span>
+            </div>
+            <Progress value={progress} className="h-2.5 rounded-full" />
+          </div>
+        )}
+
+        {/* Update amount button */}
+        {goal.target_amount != null && !goal.is_completed && (
+          <>
+            {!updateOpen ? (
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full gap-2 mt-1"
+                onClick={() => { setNewAmount(String(goal.current_amount)); setUpdateOpen(true); }}
+              >
+                <RefreshCw className="h-3.5 w-3.5" /> Betrag aktualisieren
+              </Button>
+            ) : (
+              <div className="flex gap-2 mt-1">
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={newAmount}
+                  onChange={e => setNewAmount(e.target.value)}
+                  placeholder="Neuer Betrag"
+                  className="flex-1"
+                  autoFocus
+                />
+                <Button size="sm" onClick={() => updateAmount.mutate()} disabled={updateAmount.isPending}>
+                  OK
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => setUpdateOpen(false)}>
+                  ✕
+                </Button>
+              </div>
+            )}
+          </>
+        )}
       </CardContent>
     </Card>
   );
