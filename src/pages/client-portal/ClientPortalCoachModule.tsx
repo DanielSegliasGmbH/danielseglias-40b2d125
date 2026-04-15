@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { RecommendationCards } from '@/components/client-portal/RecommendationCards';
+import { InfoHint } from '@/components/client-portal/InfoHint';
 import { COACH_MODULE_RECOMMENDATIONS } from '@/config/recommendationConfig';
 
 // ─── Module definitions ───────────────────────────────────────────
@@ -1844,6 +1845,24 @@ export default function ClientPortalCoachModule() {
         {/* Recommendations after analysis */}
         {(analysisResult || reflectionResult) && COACH_MODULE_RECOMMENDATIONS[currentModuleKey] && (
           <RecommendationCards recommendations={COACH_MODULE_RECOMMENDATIONS[currentModuleKey]} />
+        )}
+
+        {/* Deepen knowledge link */}
+        {(analysisResult || reflectionResult) && (
+          <InfoHint
+            text="Vertiefen → Lerne mehr über die Hintergründe in der Wissensbibliothek."
+            articleId={
+              currentModuleKey === 'mindset' ? 'unabhaengigkeit'
+              : currentModuleKey === 'klarheit' ? 'vorsorgeluecke'
+              : currentModuleKey === 'ziele' ? 'case-fruehpensionierung'
+              : currentModuleKey === 'struktur' ? 'inflation-risiko'
+              : currentModuleKey === 'absicherung' ? 'faq-sicherheit'
+              : currentModuleKey === 'optimierung' ? '3a-steuervorteile'
+              : currentModuleKey === 'wachstum' ? 'etf-grundlagen'
+              : currentModuleKey === 'umsetzung' ? 'sparplan-strategie'
+              : 'drei-saeulen-system'
+            }
+          />
         )}
 
         {/* Data hint */}
