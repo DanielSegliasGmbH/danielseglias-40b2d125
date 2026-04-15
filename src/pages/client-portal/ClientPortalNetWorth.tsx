@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Plus, TrendingUp, TrendingDown, Landmark, Trash2, RefreshCw, ArrowUpRight, ArrowDownRight, ChevronRight, Calendar } from 'lucide-react';
+import { Plus, TrendingUp, TrendingDown, Landmark, Trash2, RefreshCw, ArrowUpRight, ArrowDownRight, ChevronRight, Calendar, ExternalLink, Link2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -94,11 +94,13 @@ export default function ClientPortalNetWorth() {
   const [assetName, setAssetName] = useState('');
   const [assetCategory, setAssetCategory] = useState<string>(ASSET_CATEGORIES[0]);
   const [assetValue, setAssetValue] = useState('');
+  const [assetUrl, setAssetUrl] = useState('');
 
   // Liability form
   const [liabName, setLiabName] = useState('');
   const [liabCategory, setLiabCategory] = useState<string>(LIABILITY_CATEGORIES[0]);
   const [liabAmount, setLiabAmount] = useState('');
+  const [liabUrl, setLiabUrl] = useState('');
 
   const { data: assets = [] } = useQuery({
     queryKey: ['net-worth-assets', user?.id],
@@ -230,6 +232,7 @@ export default function ClientPortalNetWorth() {
         category: assetCategory,
         value: val,
         last_updated_date: new Date().toISOString().slice(0, 10),
+        platform_url: assetUrl || null,
       }).select('id').single();
       if (error) throw error;
       // Save initial snapshot
@@ -260,6 +263,7 @@ export default function ClientPortalNetWorth() {
         name: liabName,
         category: liabCategory,
         amount: val,
+        platform_url: liabUrl || null,
       }).select('id').single();
       if (error) throw error;
       await saveSnapshot(user.id, 'liability', data.id, val);
@@ -331,8 +335,8 @@ export default function ClientPortalNetWorth() {
     },
   });
 
-  const resetAssetForm = () => { setAssetName(''); setAssetCategory(ASSET_CATEGORIES[0]); setAssetValue(''); };
-  const resetLiabForm = () => { setLiabName(''); setLiabCategory(LIABILITY_CATEGORIES[0]); setLiabAmount(''); };
+  const resetAssetForm = () => { setAssetName(''); setAssetCategory(ASSET_CATEGORIES[0]); setAssetValue(''); setAssetUrl(''); };
+  const resetLiabForm = () => { setLiabName(''); setLiabCategory(LIABILITY_CATEGORIES[0]); setLiabAmount(''); setLiabUrl(''); };
 
   const openDetail = (entry: any, type: 'asset' | 'liability') => {
     setDetailEntry(entry);
@@ -484,6 +488,10 @@ export default function ClientPortalNetWorth() {
                   </Select>
                 </div>
                 <div><Label>Wert (CHF)</Label><Input type="number" min="0" step="100" value={assetValue} onChange={e => setAssetValue(e.target.value)} placeholder="0" /></div>
+                <div>
+                  <Label className="flex items-center gap-1.5"><ExternalLink className="h-3.5 w-3.5" /> Link zur Plattform (optional)</Label>
+                  <Input type="url" value={assetUrl} onChange={e => setAssetUrl(e.target.value)} placeholder="z.B. https://login.ubs.com" />
+                </div>
                 <Button onClick={() => addAsset.mutate()} disabled={!assetName || !assetValue || parseFloat(assetValue) <= 0 || addAsset.isPending} className="w-full">Speichern</Button>
               </div>
             </DialogContent>
@@ -509,6 +517,10 @@ export default function ClientPortalNetWorth() {
                   </Select>
                 </div>
                 <div><Label>Betrag (CHF)</Label><Input type="number" min="0" step="100" value={liabAmount} onChange={e => setLiabAmount(e.target.value)} placeholder="0" /></div>
+                <div>
+                  <Label className="flex items-center gap-1.5"><ExternalLink className="h-3.5 w-3.5" /> Link zur Plattform (optional)</Label>
+                  <Input type="url" value={liabUrl} onChange={e => setLiabUrl(e.target.value)} placeholder="z.B. https://www.postfinance.ch" />
+                </div>
                 <Button onClick={() => addLiability.mutate()} disabled={!liabName || !liabAmount || parseFloat(liabAmount) <= 0 || addLiability.isPending} className="w-full">Speichern</Button>
               </div>
             </DialogContent>
@@ -532,6 +544,15 @@ export default function ClientPortalNetWorth() {
                         <p className="text-sm font-medium truncate">{a.name}</p>
                         <p className="text-[11px] text-muted-foreground">{a.category}</p>
                       </div>
+                      {a.platform_url && (
+                        <button
+                          className="p-1 rounded hover:bg-primary/10 transition-colors"
+                          onClick={(e) => { e.stopPropagation(); window.open(a.platform_url, '_blank', 'noopener,noreferrer'); }}
+                          title="Plattform öffnen"
+                        >
+                          <Link2 className="h-3.5 w-3.5 text-primary" />
+                        </button>
+                      )}
                       <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50 ml-1" />
                     </button>
                     <div className="flex items-center gap-1.5 shrink-0 ml-2">
@@ -588,6 +609,15 @@ export default function ClientPortalNetWorth() {
                         <p className="text-sm font-medium truncate">{l.name}</p>
                         <p className="text-[11px] text-muted-foreground">{l.category}</p>
                       </div>
+                      {l.platform_url && (
+                        <button
+                          className="p-1 rounded hover:bg-primary/10 transition-colors"
+                          onClick={(e) => { e.stopPropagation(); window.open(l.platform_url, '_blank', 'noopener,noreferrer'); }}
+                          title="Plattform öffnen"
+                        >
+                          <Link2 className="h-3.5 w-3.5 text-primary" />
+                        </button>
+                      )}
                       <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50 ml-1" />
                     </button>
                     <div className="flex items-center gap-1.5 shrink-0 ml-2">
@@ -665,6 +695,19 @@ export default function ClientPortalNetWorth() {
                 <span>Zuletzt aktualisiert: {new Date(detailEntry.updated_at).toLocaleDateString('de-CH')}</span>
               </div>
 
+              {/* Platform link */}
+              {detailEntry.platform_url && (
+                <a
+                  href={detailEntry.platform_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+                  onClick={(e) => { e.preventDefault(); window.open(detailEntry.platform_url, '_blank', 'noopener,noreferrer'); }}
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  Plattform öffnen
+                </a>
+              )}
               {/* Mini history chart */}
               {detailChartData.length >= 2 && (
                 <Card>

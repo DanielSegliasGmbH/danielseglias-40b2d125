@@ -36,6 +36,7 @@ interface Product {
   payment_interval: string;
   notes: string | null;
   document_url: string | null;
+  portal_url: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -48,6 +49,7 @@ type ProductFormData = {
   payment_interval: string;
   notes: string;
   document_url: string;
+  portal_url: string;
 };
 
 const EMPTY_FORM: ProductFormData = {
@@ -58,6 +60,7 @@ const EMPTY_FORM: ProductFormData = {
   payment_interval: 'monatlich',
   notes: '',
   document_url: '',
+  portal_url: '',
 };
 
 // ─── Constants ─────────────────────────────────────────────────
@@ -168,6 +171,7 @@ export default function ClientPortalInsurances() {
         payment_interval: data.payment_interval,
         notes: data.notes || null,
         document_url: data.document_url || null,
+        portal_url: data.portal_url || null,
         customer_id: customerId!,
         user_id: user!.id,
       };
@@ -227,6 +231,7 @@ export default function ClientPortalInsurances() {
       payment_interval: p.payment_interval,
       notes: p.notes || '',
       document_url: p.document_url || '',
+      portal_url: p.portal_url || '',
     });
     setDialogOpen(true);
   };
@@ -295,15 +300,32 @@ export default function ClientPortalInsurances() {
 
               {p.document_url && (
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">Dokument / Link</p>
+                  <p className="text-xs text-muted-foreground mb-1">Link zur Police</p>
                   <a
                     href={p.document_url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+                    onClick={(e) => { e.preventDefault(); window.open(p.document_url!, '_blank', 'noopener,noreferrer'); }}
                   >
                     <ExternalLink className="h-3.5 w-3.5" />
-                    Öffnen
+                    Police öffnen
+                  </a>
+                </div>
+              )}
+
+              {p.portal_url && (
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">Kundenportal</p>
+                  <a
+                    href={p.portal_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+                    onClick={(e) => { e.preventDefault(); window.open(p.portal_url!, '_blank', 'noopener,noreferrer'); }}
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    Portal öffnen
                   </a>
                 </div>
               )}
@@ -405,11 +427,35 @@ export default function ClientPortalInsurances() {
                         <p className="text-xs text-muted-foreground mt-0.5">{p.provider}</p>
                       )}
                     </div>
-                    {p.price != null && (
-                      <p className="text-sm font-medium text-foreground">
-                        {formatPrice(p.price, p.payment_interval)}
-                      </p>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {p.price != null && (
+                        <p className="text-sm font-medium text-foreground flex-1">
+                          {formatPrice(p.price, p.payment_interval)}
+                        </p>
+                      )}
+                      {(p.document_url || p.portal_url) && (
+                        <div className="flex gap-1">
+                          {p.document_url && (
+                            <button
+                              className="p-1 rounded hover:bg-primary/10 transition-colors"
+                              onClick={(e) => { e.stopPropagation(); window.open(p.document_url!, '_blank', 'noopener,noreferrer'); }}
+                              title="Police öffnen"
+                            >
+                              <ExternalLink className="h-3.5 w-3.5 text-primary" />
+                            </button>
+                          )}
+                          {p.portal_url && (
+                            <button
+                              className="p-1 rounded hover:bg-primary/10 transition-colors"
+                              onClick={(e) => { e.stopPropagation(); window.open(p.portal_url!, '_blank', 'noopener,noreferrer'); }}
+                              title="Kundenportal öffnen"
+                            >
+                              <ExternalLink className="h-3.5 w-3.5 text-primary" />
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               );
@@ -507,13 +553,24 @@ export default function ClientPortalInsurances() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="document_url">Dokument / Link (optional)</Label>
+              <Label htmlFor="document_url">Link zur Police (optional)</Label>
               <Input
                 id="document_url"
                 type="url"
                 value={form.document_url}
                 onChange={e => updateField('document_url', e.target.value)}
                 placeholder="https://..."
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="portal_url">Link zum Kundenportal (optional)</Label>
+              <Input
+                id="portal_url"
+                type="url"
+                value={form.portal_url}
+                onChange={e => updateField('portal_url', e.target.value)}
+                placeholder="z.B. https://login.axa.ch"
               />
             </div>
 
