@@ -177,6 +177,62 @@ export function useSmartNotifications() {
         }
       }
 
+      // 7. WEEKLY QUESTS NOTIFICATIONS
+      const dayOfWeek = now.getDay(); // 0=Sun, 1=Mon
+      const weekYear = `${now.getFullYear()}-W${String(Math.ceil((Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 1).getTime()) / 86400000) + new Date(now.getFullYear(), 0, 1).getDay() + 1) / 7)).padStart(2, '0')}`;
+
+      if (dayOfWeek === 1) {
+        // Monday: new quests notification
+        await upsertNotification(
+          uid, 'weekly_quests', `wq-new-${weekYear}`,
+          '🎮 Neue Wöchentliche Quests!',
+          'Diese Woche warten 3 Herausforderungen auf dich.',
+          '/app/client-portal/habits', 'Quests ansehen'
+        );
+      }
+
+      if (dayOfWeek === 0) {
+        // Sunday: check incomplete quests
+        const { data: weekData } = await supabase
+          .from('weekly_challenges')
+          .select('challenges, bonus_claimed')
+          .eq('user_id', uid)
+          .eq('week_key', weekYear)
+          .maybeSingle();
+
+        if (weekData && !weekData.bonus_claimed) {
+          const challenges = weekData.challenges as { completed: boolean }[];
+          const remaining = challenges.filter(c => !c.completed).length;
+          if (remaining > 0) {
+            await upsertNotification(
+              uid, 'weekly_quests', `wq-remind-${weekYear}`,
+              `⏰ Noch ${remaining} Quest${remaining > 1 ? 's' : ''} offen bis morgen!`,
+              'Schliesse deine Quests ab, bevor die Woche endet.',
+              '/app/client-portal/habits', 'Quests öffnen'
+            );
+          }
+        }
+      }
+
+      // Check if all quests just completed (bonus)
+      {
+        const { data: weekData } = await supabase
+          .from('weekly_challenges')
+          .select('challenges, bonus_claimed')
+          .eq('user_id', uid)
+          .eq('week_key', weekYear)
+          .maybeSingle();
+
+        if (weekData?.bonus_claimed) {
+          await upsertNotification(
+            uid, 'weekly_quests', `wq-done-${weekYear}`,
+            '🏆 Alle Quests erledigt! +50 XP Bonus kassiert!',
+            'Weiter so! Nächste Woche warten neue Herausforderungen.',
+            '/app/client-portal/habits', 'Ansehen'
+          );
+        }
+      }
+
       // Refresh the query
       queryClient.invalidateQueries({ queryKey: ['smart-notifications'] });
     } catch (err) {
