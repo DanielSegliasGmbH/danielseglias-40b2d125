@@ -56,6 +56,7 @@ export default function ClientPortalHome() {
   const { data: nextStepResult } = useNextBestStep();
   const { rankChange, dismissRankChange } = useRankSystem();
   const { score, rank: peakRank } = usePeakScore();
+  const { completed: finanzTypCompleted, info: finanzTypInfo } = useFinanzType();
   const firstName = user?.user_metadata?.first_name || 'Kunde';
 
   const { data: lifeFilmData } = useQuery({
