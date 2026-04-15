@@ -37,6 +37,7 @@ import { NotfallCheckTool } from '@/components/tools/notfall-check/NotfallCheckT
 import { AboAuditTool } from '@/components/tools/abo-audit/AboAuditTool';
 import { LohnerhoherTool } from '@/components/tools/lohnerhoher/LohnerhoherTool';
 import { MeinFinanzplanTool } from '@/components/tools/mein-finanzplan/MeinFinanzplanTool';
+import { KontenModellTool } from '@/components/tools/konten-modell/KontenModellTool';
 import { VersicherungsCheckTool } from '@/components/tools/versicherungs-check/VersicherungsCheckTool';
 
 // Icon mapping
@@ -172,6 +173,8 @@ export default function AdminToolDetail() {
         return <LohnerhoherTool mode="internal" />;
       case 'mein-finanzplan':
         return <MeinFinanzplanTool mode="internal" />;
+      case 'konten-modell':
+        return <KontenModellTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">
