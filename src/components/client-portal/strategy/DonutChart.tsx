@@ -9,7 +9,7 @@ interface Props {
   mini?: boolean;
 }
 
-export function DonutChart({ allocations, cryptoEnabled, avgReturn, privacyMode }: Props) {
+export function DonutChart({ allocations, cryptoEnabled, avgReturn, privacyMode, mini }: Props) {
   let data = allocations.map((a, i) => ({
     name: privacyMode ? `Baustein ${i + 1}` : a.region,
     value: a.weight,
