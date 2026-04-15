@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
@@ -12,6 +12,8 @@ import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Film, TrendingUp, AlertTriangle, CheckCircle, Sparkles } from 'lucide-react';
 import { AlternativeTimeline } from '@/components/client-portal/life-film/AlternativeTimeline';
+import { SwissComparison } from '@/components/client-portal/life-film/SwissComparison';
+import { useGamification } from '@/hooks/useGamification';
 
 // ── Constants ──
 const INFLATION = 0.02;
@@ -345,6 +347,8 @@ export default function ClientPortalLifeFilmResult() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const firstName = user?.user_metadata?.first_name || 'Du';
+  const { awardPoints } = useGamification();
+  const xpAwarded = useRef(false);
 
   const { data: filmData, isLoading } = useQuery({
     queryKey: ['life-film-data', user?.id],
@@ -369,6 +373,14 @@ export default function ClientPortalLifeFilmResult() {
   const finalCard = useMemo(() => {
     if (!filmData || !filmData.age) return null;
     return computeFinalCard(filmData);
+  }, [filmData]);
+
+  // Award +100 XP for viewing the complete Lebensfilm (once)
+  useEffect(() => {
+    if (filmData && filmData.age && !xpAwarded.current) {
+      xpAwarded.current = true;
+      awardPoints('life_film_viewed', 'life-film-result');
+    }
   }, [filmData]);
 
   if (isLoading) {
@@ -576,6 +588,12 @@ export default function ClientPortalLifeFilmResult() {
             <AlternativeTimeline
               filmData={filmData}
               baseDelay={timeline.length * 0.06 + 0.4}
+            />
+
+            {/* Swiss Comparison */}
+            <SwissComparison
+              filmData={filmData}
+              baseDelay={timeline.length * 0.06 + 1.2}
             />
           </motion.div>
         )}
