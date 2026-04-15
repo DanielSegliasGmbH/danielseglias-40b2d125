@@ -35,6 +35,7 @@ import { RolexRechnerTool } from '@/components/tools/rolex-rechner/RolexRechnerT
 import { ThreeAAnalyzerTool } from '@/components/tools/three-a-analyzer/ThreeAAnalyzerTool';
 import { SteuerCheckTool } from '@/components/tools/steuer-check/SteuerCheckTool';
 import { VersicherungsCheckTool } from '@/components/tools/versicherungs-check/VersicherungsCheckTool';
+import { WasKostetDasWirklichTool } from '@/components/tools/was-kostet-das-wirklich/WasKostetDasWirklichTool';
 import { RecommendationCards } from '@/components/client-portal/RecommendationCards';
 import { TOOL_RECOMMENDATIONS } from '@/config/recommendationConfig';
 
@@ -136,6 +137,8 @@ export default function ClientPortalToolDetail() {
         return <SteuerCheckTool mode="internal" />;
       case 'versicherungs-check':
         return <VersicherungsCheckTool mode="internal" />;
+      case 'was-kostet-das-wirklich':
+        return <WasKostetDasWirklichTool mode="internal" />;
       default:
         return (
           <Card>

@@ -31,6 +31,7 @@ import { LebenzeitRechnerTool } from '@/components/tools/lebenzeit-rechner/Leben
 import { RolexRechnerTool } from '@/components/tools/rolex-rechner/RolexRechnerTool';
 import { ThreeAAnalyzerTool } from '@/components/tools/three-a-analyzer/ThreeAAnalyzerTool';
 import { SteuerCheckTool } from '@/components/tools/steuer-check/SteuerCheckTool';
+import { WasKostetDasWirklichTool } from '@/components/tools/was-kostet-das-wirklich/WasKostetDasWirklichTool';
 import { VersicherungsCheckTool } from '@/components/tools/versicherungs-check/VersicherungsCheckTool';
 
 // Icon mapping
@@ -154,6 +155,8 @@ export default function AdminToolDetail() {
         return <SteuerCheckTool mode="internal" />;
       case 'versicherungs-check':
         return <VersicherungsCheckTool mode="internal" />;
+      case 'was-kostet-das-wirklich':
+        return <WasKostetDasWirklichTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">

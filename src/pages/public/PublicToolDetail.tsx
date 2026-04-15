@@ -30,6 +30,7 @@ import { RolexRechnerTool } from '@/components/tools/rolex-rechner/RolexRechnerT
 import { ThreeAAnalyzerTool } from '@/components/tools/three-a-analyzer/ThreeAAnalyzerTool';
 import { SteuerCheckTool } from '@/components/tools/steuer-check/SteuerCheckTool';
 import { VersicherungsCheckTool } from '@/components/tools/versicherungs-check/VersicherungsCheckTool';
+import { WasKostetDasWirklichTool } from '@/components/tools/was-kostet-das-wirklich/WasKostetDasWirklichTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -216,6 +217,10 @@ export default function PublicToolDetail() {
               ) : slug === 'versicherungs-check' ? (
                 <div className="mb-8">
                   <VersicherungsCheckTool mode="public" />
+                </div>
+              ) : slug === 'was-kostet-das-wirklich' ? (
+                <div className="mb-8">
+                  <WasKostetDasWirklichTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
