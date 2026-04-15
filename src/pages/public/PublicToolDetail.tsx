@@ -32,6 +32,7 @@ import { SteuerCheckTool } from '@/components/tools/steuer-check/SteuerCheckTool
 import { VersicherungsCheckTool } from '@/components/tools/versicherungs-check/VersicherungsCheckTool';
 import { WasKostetDasWirklichTool } from '@/components/tools/was-kostet-das-wirklich/WasKostetDasWirklichTool';
 import { GuiltyPleasureRechnerTool } from '@/components/tools/guilty-pleasure-rechner/GuiltyPleasureRechnerTool';
+import { NotfallCheckTool } from '@/components/tools/notfall-check/NotfallCheckTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -226,6 +227,10 @@ export default function PublicToolDetail() {
               ) : slug === 'guilty-pleasure-rechner' ? (
                 <div className="mb-8">
                   <GuiltyPleasureRechnerTool mode="public" />
+                </div>
+              ) : slug === 'notfall-check' ? (
+                <div className="mb-8">
+                  <NotfallCheckTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
