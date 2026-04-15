@@ -7,6 +7,8 @@ import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { motion, useInView } from 'framer-motion';
 import { ArrowRight, Rocket, Share2, TrendingUp } from 'lucide-react';
+import { ShareCard } from './ShareCard';
+import { usePeakScore } from '@/hooks/usePeakScore';
 
 // ── Optimized assumptions ──
 const INFLATION = 0.02;
