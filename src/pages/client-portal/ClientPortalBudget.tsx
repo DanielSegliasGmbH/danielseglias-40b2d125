@@ -19,6 +19,8 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { useGamification } from '@/hooks/useGamification';
+import { usePeakScore } from '@/hooks/usePeakScore';
+import { PeakScoreImpact } from '@/components/client-portal/PeakScoreImpact';
 
 const CATEGORIES = [
   'Wohnen',
@@ -96,9 +98,12 @@ export default function ClientPortalBudget() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { awardPoints } = useGamification();
+  const { monthlyExpenses } = usePeakScore();
   const [selectedMonth, setSelectedMonth] = useState(getMonthKey());
   const [expenseDialogOpen, setExpenseDialogOpen] = useState(false);
   const [budgetDialogOpen, setBudgetDialogOpen] = useState(false);
+  const [lastExpenseImpact, setLastExpenseImpact] = useState<number | null>(null);
+  const [showExpenseImpact, setShowExpenseImpact] = useState(false);
 
   // Expense form state
   const [expAmount, setExpAmount] = useState('');
@@ -216,6 +221,11 @@ export default function ClientPortalBudget() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      const amt = parseFloat(expAmount);
+      const impact = monthlyExpenses > 0 ? -(amt / monthlyExpenses) : null;
+      setLastExpenseImpact(impact ? Math.round(impact * 10) / 10 : null);
+      setShowExpenseImpact(true);
+      setTimeout(() => setShowExpenseImpact(false), 4000);
       toast.success('Ausgabe erfasst ✓');
       awardPoints('expense_added', `expense_${Date.now()}`);
       setExpAmount('');
@@ -288,6 +298,9 @@ export default function ClientPortalBudget() {
             <ChevronRight className="h-5 w-5" />
           </Button>
         </div>
+
+        {/* PeakScore impact after expense */}
+        <PeakScoreImpact impact={lastExpenseImpact} show={showExpenseImpact} className="px-1" />
 
         {/* Monthly summary */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>

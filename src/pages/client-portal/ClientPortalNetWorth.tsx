@@ -15,6 +15,8 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGamification } from '@/hooks/useGamification';
+import { usePeakScore } from '@/hooks/usePeakScore';
+import { PeakScoreImpact } from '@/components/client-portal/PeakScoreImpact';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Area, AreaChart } from 'recharts';
 
 const ASSET_CATEGORIES = [
@@ -77,6 +79,7 @@ export default function ClientPortalNetWorth() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { awardPoints } = useGamification();
+  const { monthlyExpenses } = usePeakScore();
   const [assetDialogOpen, setAssetDialogOpen] = useState(false);
   const [liabilityDialogOpen, setLiabilityDialogOpen] = useState(false);
   const [detailEntry, setDetailEntry] = useState<any>(null);
@@ -84,6 +87,8 @@ export default function ClientPortalNetWorth() {
   const [quickUpdateId, setQuickUpdateId] = useState<string | null>(null);
   const [quickUpdateValue, setQuickUpdateValue] = useState('');
   const [xpFlashId, setXpFlashId] = useState<string | null>(null);
+  const [lastAssetImpact, setLastAssetImpact] = useState<number | null>(null);
+  const [showAssetImpact, setShowAssetImpact] = useState(false);
 
   // Asset form
   const [assetName, setAssetName] = useState('');
@@ -233,6 +238,11 @@ export default function ClientPortalNetWorth() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['net-worth-assets'] });
       queryClient.invalidateQueries({ queryKey: ['net-worth-snapshots'] });
+      const val = parseFloat(assetValue);
+      const impact = monthlyExpenses > 0 ? val / monthlyExpenses : null;
+      setLastAssetImpact(impact ? Math.round(impact * 10) / 10 : null);
+      setShowAssetImpact(true);
+      setTimeout(() => setShowAssetImpact(false), 4000);
       toast.success('Vermögenswert hinzugefügt ✓');
       awardPoints('asset_added', `asset_${Date.now()}`);
       resetAssetForm();
@@ -375,6 +385,9 @@ export default function ClientPortalNetWorth() {
             </CardContent>
           </Card>
         </motion.div>
+
+        {/* PeakScore impact after asset add */}
+        <PeakScoreImpact impact={lastAssetImpact} show={showAssetImpact} className="px-1" />
 
         {/* Net worth chart */}
         {validChartData.length >= 2 && (

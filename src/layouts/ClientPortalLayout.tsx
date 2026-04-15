@@ -17,6 +17,7 @@ import { MoreSheet } from '@/components/client-portal/MoreSheet';
 import { ChatDrawer } from '@/components/client-portal/ChatDrawer';
 import { FloatingChatBubble } from '@/components/client-portal/FloatingChatBubble';
 import { NotificationBell } from '@/components/client-portal/NotificationBell';
+import { PeakScoreNavBadge } from '@/components/client-portal/PeakScoreNavBadge';
 import { useUnreadCount } from '@/hooks/useChat';
 import {
   Shield,
@@ -223,6 +224,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
           <div className="flex items-center justify-between px-4 h-12">
             <h1 className="text-base font-semibold text-foreground">{t('clientPortal.title')}</h1>
             <div className="flex items-center gap-1">
+              <PeakScoreNavBadge />
               <NotificationBell />
             </div>
           </div>
@@ -238,6 +240,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
           )}
         >
           <div className="hidden lg:flex items-center justify-end gap-4 p-4 border-b border-border bg-card">
+            <PeakScoreNavBadge />
             <NotificationBell />
             <Button
               variant="ghost"
