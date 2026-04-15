@@ -2062,6 +2062,8 @@ export type Database = {
           debts: number | null
           financial_goal: string | null
           fixed_costs: number | null
+          freedom_life_expectancy: number | null
+          freedom_target_age: number | null
           id: string
           last_confirmed_at: string | null
           monthly_income: number | null
@@ -2079,6 +2081,8 @@ export type Database = {
           debts?: number | null
           financial_goal?: string | null
           fixed_costs?: number | null
+          freedom_life_expectancy?: number | null
+          freedom_target_age?: number | null
           id?: string
           last_confirmed_at?: string | null
           monthly_income?: number | null
@@ -2096,6 +2100,8 @@ export type Database = {
           debts?: number | null
           financial_goal?: string | null
           fixed_costs?: number | null
+          freedom_life_expectancy?: number | null
+          freedom_target_age?: number | null
           id?: string
           last_confirmed_at?: string | null
           monthly_income?: number | null
