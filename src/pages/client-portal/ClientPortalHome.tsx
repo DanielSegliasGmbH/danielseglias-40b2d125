@@ -165,6 +165,7 @@ export default function ClientPortalHome() {
     video_watched: 'Video geschaut',
     expense_added: 'Ausgabe erfasst',
     asset_added: 'Vermögenswert hinzugefügt',
+    rank_up: 'Rang aufgestiegen 🏅',
   };
 
   function timeAgo(dateStr: string): string {
