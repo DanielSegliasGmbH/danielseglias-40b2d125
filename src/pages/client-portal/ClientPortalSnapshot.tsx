@@ -1310,6 +1310,182 @@ function InvestmentsStep({
   );
 }
 
+// ── Liabilities Step ───────────────────────────────
+
+function LiabilitiesStep({
+  draft, updateDraft,
+}: {
+  draft: SnapshotDraft;
+  updateDraft: (fn: (prev: SnapshotDraft) => SnapshotDraft) => void;
+}) {
+  const cleanNum = (v: string) => v.replace(/[^0-9.]/g, '');
+
+  const propertyMortgages = draft.owns_property
+    ? draft.properties.filter(p => n(p.mortgage_amount) > 0)
+    : [];
+
+  const addCredit = () => updateDraft(d => ({ ...d, credits: [...d.credits, newCredit()] }));
+  const removeCredit = (id: string) => updateDraft(d => ({ ...d, credits: d.credits.filter(c => c.id !== id) }));
+  const updateCred = (id: string, field: keyof CreditItem, value: string) => updateDraft(d => ({
+    ...d, credits: d.credits.map(c => c.id === id ? {
+      ...c, [field]: ['remaining', 'monthly_payment', 'interest_rate'].includes(field) ? cleanNum(value) : value,
+    } : c),
+  }));
+
+  const addDebtItem = () => updateDraft(d => ({ ...d, debts: [...d.debts, newDebt()] }));
+  const removeDebtItem = (id: string) => updateDraft(d => ({ ...d, debts: d.debts.filter(x => x.id !== id) }));
+  const updateDebtItem = (id: string, field: keyof DebtItem, value: string) => updateDraft(d => ({
+    ...d, debts: d.debts.map(x => x.id === id ? { ...x, [field]: field === 'amount' ? cleanNum(value) : value } : x),
+  }));
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <span className="text-xl">📉</span>
+        <h2 className="text-base font-bold text-foreground">Verbindlichkeiten</h2>
+      </div>
+
+      {/* Hypotheken (auto-filled) */}
+      <Card>
+        <CardContent className="p-4 space-y-3">
+          <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+            <span>🏠</span> Hypotheken
+          </h3>
+          {propertyMortgages.length > 0 ? (
+            <>
+              <div className="flex gap-2 bg-primary/5 rounded-lg p-2.5">
+                <Info className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                <p className="text-[11px] text-primary">Automatisch übernommen aus deinen Immobilien in Schritt 3.</p>
+              </div>
+              {propertyMortgages.map((prop, idx) => (
+                <div key={prop.id} className="flex justify-between items-center p-2.5 bg-muted/30 rounded-lg">
+                  <span className="text-xs text-muted-foreground">{prop.description || `Immobilie ${idx + 1}`}</span>
+                  <span className="text-sm font-medium text-foreground">CHF {Number(prop.mortgage_amount).toLocaleString('de-CH')}</span>
+                </div>
+              ))}
+              <div className="flex justify-between items-center pt-1 border-t border-border/50">
+                <span className="text-xs font-medium text-muted-foreground">Total Hypotheken</span>
+                <span className="text-sm font-bold text-foreground">CHF {sumPropertyMortgages(draft.properties).toLocaleString('de-CH')}</span>
+              </div>
+            </>
+          ) : (
+            <p className="text-[11px] text-muted-foreground text-center py-2">Keine Hypotheken erfasst. Du kannst Immobilien in Schritt 3 hinzufügen.</p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Kredite & Leasing */}
+      <Card className={cn(draft.credits_skipped && "opacity-60")}>
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <span>💳</span> Kredite & Leasing
+            </h3>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <Checkbox checked={draft.credits_skipped} onCheckedChange={(v) => updateDraft(d => ({ ...d, credits_skipped: !!v }))} className="h-3.5 w-3.5" />
+              <span className="text-[10px] text-muted-foreground">Nicht bekannt</span>
+            </label>
+          </div>
+          {!draft.credits_skipped && (
+            <>
+              <div className="flex gap-2 bg-destructive/5 rounded-lg p-2.5">
+                <Info className="h-3.5 w-3.5 text-destructive shrink-0 mt-0.5" />
+                <p className="text-[11px] text-destructive">Konsumkredite und Leasingverträge belasten deinen PeakScore stark.</p>
+              </div>
+              {draft.credits.map((credit, idx) => (
+                <div key={credit.id} className="space-y-2 p-3 bg-muted/30 rounded-lg relative">
+                  <button onClick={() => removeCredit(credit.id)} className="absolute top-2 right-2 p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                  <p className="text-[10px] font-medium text-muted-foreground">Kredit {idx + 1}</p>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Bezeichnung</Label>
+                    <Input value={credit.name} onChange={(e) => updateCred(credit.id, 'name', e.target.value)} placeholder="z.B. Autokredit, Privatkredit" maxLength={100} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Restschuld</Label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                        <Input type="text" inputMode="decimal" value={credit.remaining} onChange={(e) => updateCred(credit.id, 'remaining', e.target.value)} placeholder="0" className="pl-11 text-right" />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Monatliche Rate</Label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                        <Input type="text" inputMode="decimal" value={credit.monthly_payment} onChange={(e) => updateCred(credit.id, 'monthly_payment', e.target.value)} placeholder="0" className="pl-11 text-right" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Zinssatz (% p.a., optional)</Label>
+                    <div className="relative">
+                      <Input type="text" inputMode="decimal" value={credit.interest_rate} onChange={(e) => updateCred(credit.id, 'interest_rate', e.target.value)} placeholder="z.B. 4.9" className="text-right" />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">%</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {draft.credits.length === 0 && (
+                <p className="text-[11px] text-muted-foreground text-center py-2">Keine Kredite oder Leasingverträge erfasst.</p>
+              )}
+              <Button variant="outline" size="sm" onClick={addCredit} className="w-full gap-1.5 text-xs">
+                <Plus className="h-3.5 w-3.5" /> Kredit hinzufügen
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Sonstige Schulden */}
+      <Card className={cn(draft.debts_skipped && "opacity-60")}>
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <span>📋</span> Sonstige Schulden
+            </h3>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <Checkbox checked={draft.debts_skipped} onCheckedChange={(v) => updateDraft(d => ({ ...d, debts_skipped: !!v }))} className="h-3.5 w-3.5" />
+              <span className="text-[10px] text-muted-foreground">Nicht bekannt</span>
+            </label>
+          </div>
+          {!draft.debts_skipped && (
+            <>
+              {draft.debts.map((debt) => (
+                <div key={debt.id} className="space-y-2 p-3 bg-muted/30 rounded-lg relative">
+                  <button onClick={() => removeDebtItem(debt.id)} className="absolute top-2 right-2 p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Beschreibung</Label>
+                      <Input value={debt.description} onChange={(e) => updateDebtItem(debt.id, 'description', e.target.value)} placeholder="z.B. Darlehen Familie" maxLength={100} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Betrag</Label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                        <Input type="text" inputMode="decimal" value={debt.amount} onChange={(e) => updateDebtItem(debt.id, 'amount', e.target.value)} placeholder="0" className="pl-11 text-right" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {draft.debts.length === 0 && (
+                <p className="text-[11px] text-muted-foreground text-center py-2">Keine sonstigen Schulden erfasst.</p>
+              )}
+              <Button variant="outline" size="sm" onClick={addDebtItem} className="w-full gap-1.5 text-xs">
+                <Plus className="h-3.5 w-3.5" /> Hinzufügen
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 // ── Field Card ─────────────────────────────────────
 
 function SnapshotFieldCard({
