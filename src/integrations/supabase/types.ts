@@ -1485,6 +1485,36 @@ export type Database = {
         }
         Relationships: []
       }
+      financial_snapshots: {
+        Row: {
+          created_at: string
+          id: string
+          net_worth: number | null
+          notes: string | null
+          peak_score: number | null
+          snapshot_data: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          net_worth?: number | null
+          notes?: string | null
+          peak_score?: number | null
+          snapshot_data?: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          net_worth?: number | null
+          notes?: string | null
+          peak_score?: number | null
+          snapshot_data?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       finanz_type_results: {
         Row: {
           answers: Json
