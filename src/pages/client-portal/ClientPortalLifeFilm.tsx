@@ -306,8 +306,8 @@ export default function ClientPortalLifeFilm() {
                 className={cn(
                   'p-5 rounded-2xl border-2 text-left transition-all',
                   truthMode === 'optimistic'
-                    ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
-                    : 'border-border hover:border-emerald-300'
+                    ? 'border-primary bg-primary/5'
+                    : 'border-border hover:border-primary/30'
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -323,8 +323,8 @@ export default function ClientPortalLifeFilm() {
                 className={cn(
                   'p-5 rounded-2xl border-2 text-left transition-all',
                   truthMode === 'realistic'
-                    ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
-                    : 'border-border hover:border-red-300'
+                    ? 'border-destructive bg-destructive/5'
+                    : 'border-border hover:border-destructive/30'
                 )}
               >
                 <div className="flex items-center gap-3">
