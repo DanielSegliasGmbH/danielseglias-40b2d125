@@ -84,6 +84,7 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
           <p className="text-xs font-medium text-muted-foreground px-1 mb-2">
             {t('app.accountSettings', 'Konto & Einstellungen')}
           </p>
+          <MoreLink to="/app/client-portal/snapshot" icon={Camera} label="Mein Snapshot" />
           <MoreLink to="/app/client-portal/monthly-report" icon={FileBarChart} label="Mein Monatsbericht" />
           <MoreLink to="/app/client-portal/friends" icon={Users} label="Freunde" />
           <MoreLink to="/app/client-portal/invite" icon={Gift} label="Freunde einladen" />
