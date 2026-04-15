@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { useGamification, getLevel, LEVELS } from '@/hooks/useGamification';
+import { usePeakScore } from '@/hooks/usePeakScore';
 import { supabase } from '@/integrations/supabase/client';
 import { AppLayout } from '@/components/AppLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
@@ -208,10 +209,11 @@ export default function Profile() {
                 <span className="text-2xl font-bold text-primary">{initials}</span>
               </div>
               {displayName && <p className="text-lg font-bold text-foreground">{displayName}</p>}
-              <div className="flex items-center justify-center gap-2 mt-1">
+              <div className="flex items-center justify-center gap-2 mt-1 flex-wrap">
                 <Badge variant="secondary" className="text-xs gap-1">
                   <Award className="h-3 w-3" /> {levelLabel}
                 </Badge>
+                <ProfileRankBadge />
               </div>
               <div className="flex items-center justify-center gap-3 mt-2 text-xs text-muted-foreground">
                 {memberSince && <span>Mitglied seit {memberSince}</span>}
