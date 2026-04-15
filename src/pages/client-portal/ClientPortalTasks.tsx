@@ -1,19 +1,17 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { PageTransition } from '@/components/PageTransition';
 import { ErrorState } from '@/components/ErrorState';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
-import { ScreenHeader } from '@/components/ScreenHeader';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { EmptyState } from '@/components/EmptyState';
-import { ClipboardList, Plus, CalendarIcon, Clock } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Plus, CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -21,7 +19,6 @@ import { useGamification } from '@/hooks/useGamification';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
-import { motion, AnimatePresence } from 'framer-motion';
 import { TaskCard } from '@/components/client-portal/TaskCard';
 
 interface TaskRow {
@@ -42,6 +39,7 @@ export default function ClientPortalTasks() {
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
   const [dueDate, setDueDate] = useState<Date | undefined>();
+  const [doneOpen, setDoneOpen] = useState(false);
 
   const { data: tasks = [], isLoading, isError, refetch } = useQuery({
     queryKey: ['client-tasks', user?.id],
@@ -119,17 +117,94 @@ export default function ClientPortalTasks() {
 
   return (
     <ClientPortalLayout>
-      <ScreenHeader title="Meine Aufgaben" showBack backTo="/app/client-portal" />
       <PageTransition>
-      <div className="max-w-2xl mx-auto space-y-4 p-4 pb-8">
-        {/* Add Task Button */}
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="w-full gap-2">
-              <Plus className="h-4 w-4" /> Aufgabe hinzufügen
+        <div className="max-w-2xl mx-auto space-y-5 px-4 pt-2 pb-8">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-lg font-bold text-foreground">✅ Meine Aufgaben</h1>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                {openTasks.length > 0
+                  ? `${openTasks.length} offene Aufgabe${openTasks.length !== 1 ? 'n' : ''}`
+                  : 'Alle erledigt!'}
+              </p>
+            </div>
+            <Button size="sm" className="gap-1.5 h-8 rounded-xl" onClick={() => setDialogOpen(true)}>
+              <Plus className="h-3.5 w-3.5" /> Aufgabe hinzufügen
             </Button>
-          </DialogTrigger>
-          <DialogContent>
+          </div>
+
+          {isError && <ErrorState onRetry={() => refetch()} />}
+
+          {isLoading && (
+            <div className="space-y-2">
+              {[1, 2, 3].map(i => <div key={i} className="h-16 bg-muted animate-pulse rounded-xl" />)}
+            </div>
+          )}
+
+          {/* Empty */}
+          {!isLoading && !isError && tasks.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mb-4">
+                <span className="text-2xl">⚔️</span>
+              </div>
+              <h3 className="text-base font-semibold text-foreground mb-1">Keine offenen Aufgaben</h3>
+              <p className="text-sm text-muted-foreground max-w-xs mb-4">
+                Erstelle deine erste Quest! +50 XP pro erledigter Aufgabe.
+              </p>
+              <Button size="sm" className="gap-1.5" onClick={() => setDialogOpen(true)}>
+                <Plus className="h-3.5 w-3.5" /> Neue Aufgabe
+              </Button>
+            </div>
+          )}
+
+          {/* Open Tasks */}
+          {openTasks.length > 0 && (
+            <div className="space-y-1.5">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1">
+                Offen ({openTasks.length})
+              </p>
+              {openTasks.map((task, i) => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  index={i}
+                  overdue={isOverdue(task)}
+                  onToggle={() => toggleTask.mutate({ id: task.id, completed: true })}
+                  onDelete={() => deleteTask.mutate(task.id)}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Done Tasks */}
+          {doneTasks.length > 0 && (
+            <Collapsible open={doneOpen} onOpenChange={setDoneOpen}>
+              <CollapsibleTrigger className="flex items-center gap-2 px-1 w-full text-left">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Erledigt ({doneTasks.length})
+                </p>
+                <span className="text-xs text-muted-foreground">{doneOpen ? '▾' : '▸'}</span>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-1.5 mt-2">
+                {doneTasks.map((task, i) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    index={i}
+                    overdue={false}
+                    onToggle={() => toggleTask.mutate({ id: task.id, completed: false })}
+                    onDelete={() => deleteTask.mutate(task.id)}
+                  />
+                ))}
+              </CollapsibleContent>
+            </Collapsible>
+          )}
+        </div>
+
+        {/* Add Task Dialog */}
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>Neue Aufgabe</DialogTitle>
             </DialogHeader>
@@ -162,56 +237,6 @@ export default function ClientPortalTasks() {
             </div>
           </DialogContent>
         </Dialog>
-
-        {/* Error */}
-        {isError && <ErrorState onRetry={() => refetch()} />}
-
-        {/* Loading */}
-        {isLoading && [1, 2].map(i => <div key={i} className="h-20 bg-muted animate-pulse rounded-xl" />)}
-
-        {/* Empty state */}
-        {!isLoading && !isError && tasks.length === 0 && (
-          <EmptyState
-            icon={ClipboardList}
-            title="Noch keine Aufgaben"
-            description="Erstelle deine erste Quest mit dem Button oben. +50 XP pro erledigter Aufgabe!"
-            actionLabel="Aufgabe erstellen"
-            onAction={() => setDialogOpen(true)}
-          />
-        )}
-
-        {/* Open Tasks */}
-        {openTasks.length > 0 && (
-          <div className="space-y-2">
-            <p className="text-xs font-medium text-muted-foreground px-1">Offen ({openTasks.length})</p>
-            {openTasks.map(task => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                overdue={isOverdue(task)}
-                onToggle={() => toggleTask.mutate({ id: task.id, completed: true })}
-                onDelete={() => deleteTask.mutate(task.id)}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Done Tasks */}
-        {doneTasks.length > 0 && (
-          <div className="space-y-2">
-            <p className="text-xs font-medium text-muted-foreground px-1">Erledigt ({doneTasks.length})</p>
-            {doneTasks.map(task => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                overdue={false}
-                onToggle={() => toggleTask.mutate({ id: task.id, completed: false })}
-                onDelete={() => deleteTask.mutate(task.id)}
-              />
-            ))}
-          </div>
-        )}
-      </div>
       </PageTransition>
     </ClientPortalLayout>
   );
