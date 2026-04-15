@@ -51,6 +51,38 @@ interface Valuable {
   category: string;
 }
 
+interface InvestmentPosition {
+  id: string;
+  name: string;
+  platform: string;
+  value: string;
+  link: string;
+}
+
+interface CryptoPosition {
+  id: string;
+  name: string;
+  platform: string;
+  value: string;
+  link: string;
+}
+
+interface Property {
+  id: string;
+  description: string;
+  market_value: string;
+  equity_invested: string;
+  mortgage_amount: string;
+  mortgage_rate: string;
+  link: string;
+}
+
+interface OtherAsset {
+  id: string;
+  name: string;
+  value: string;
+}
+
 interface SnapshotDraft {
   // Step 0: Vorsorge
   pillar_3a: SnapshotFieldValue;
@@ -63,11 +95,15 @@ interface SnapshotDraft {
   cash: SnapshotFieldValue;
   valuables: Valuable[];
   valuables_skipped: boolean;
-  // Step 2: Vermögen
-  savings: SnapshotFieldValue;
-  investments: SnapshotFieldValue;
-  real_estate: SnapshotFieldValue;
-  emergency_fund: SnapshotFieldValue;
+  // Step 2: Investments & Immobilien
+  investment_positions: InvestmentPosition[];
+  investment_positions_skipped: boolean;
+  crypto_positions: CryptoPosition[];
+  crypto_positions_skipped: boolean;
+  properties: Property[];
+  owns_property: boolean;
+  other_assets: OtherAsset[];
+  other_assets_skipped: boolean;
   // Step 3: Verbindlichkeiten
   mortgage: SnapshotFieldValue;
   consumer_debt: SnapshotFieldValue;
@@ -76,6 +112,11 @@ interface SnapshotDraft {
   monthly_income: SnapshotFieldValue;
   monthly_expenses: SnapshotFieldValue;
   insurance_monthly: SnapshotFieldValue;
+  // Legacy (kept for backward compat with old snapshots)
+  savings?: SnapshotFieldValue;
+  investments?: SnapshotFieldValue;
+  real_estate?: SnapshotFieldValue;
+  emergency_fund?: SnapshotFieldValue;
   // Summary
   notes: string;
 }
@@ -97,6 +138,38 @@ const newValuable = (): Valuable => ({
   category: '',
 });
 
+const newInvestment = (): InvestmentPosition => ({
+  id: crypto.randomUUID(),
+  name: '',
+  platform: '',
+  value: '',
+  link: '',
+});
+
+const newCrypto = (): CryptoPosition => ({
+  id: crypto.randomUUID(),
+  name: '',
+  platform: '',
+  value: '',
+  link: '',
+});
+
+const newProperty = (): Property => ({
+  id: crypto.randomUUID(),
+  description: '',
+  market_value: '',
+  equity_invested: '',
+  mortgage_amount: '',
+  mortgage_rate: '',
+  link: '',
+});
+
+const newOtherAsset = (): OtherAsset => ({
+  id: crypto.randomUUID(),
+  name: '',
+  value: '',
+});
+
 const EMPTY_DRAFT: SnapshotDraft = {
   pillar_3a: { ...DEFAULT_FIELD },
   freizuegigkeit: { ...DEFAULT_FIELD },
@@ -107,10 +180,14 @@ const EMPTY_DRAFT: SnapshotDraft = {
   cash: { ...DEFAULT_FIELD },
   valuables: [],
   valuables_skipped: false,
-  savings: { ...DEFAULT_FIELD },
-  investments: { ...DEFAULT_FIELD },
-  real_estate: { ...DEFAULT_FIELD },
-  emergency_fund: { ...DEFAULT_FIELD },
+  investment_positions: [],
+  investment_positions_skipped: false,
+  crypto_positions: [],
+  crypto_positions_skipped: false,
+  properties: [],
+  owns_property: false,
+  other_assets: [],
+  other_assets_skipped: false,
   mortgage: { ...DEFAULT_FIELD },
   consumer_debt: { ...DEFAULT_FIELD },
   other_debt: { ...DEFAULT_FIELD },
@@ -144,7 +221,7 @@ interface FieldConfig {
 interface StepConfig {
   title: string;
   emoji: string;
-  type: 'fields' | 'bank_cash';
+  type: 'fields' | 'bank_cash' | 'investments';
   fields?: FieldConfig[];
 }
 
@@ -199,14 +276,9 @@ const STEPS: StepConfig[] = [
     type: 'bank_cash',
   },
   {
-    title: 'Vermögen',
-    emoji: '💰',
-    type: 'fields',
-    fields: [
-      { key: 'investments', label: 'Investitionen (Aktien, ETFs etc.)', emoji: '📈', isCHF: true, showProvider: true, showLink: true },
-      { key: 'real_estate', label: 'Immobilien (Marktwert)', emoji: '🏠', isCHF: true },
-      { key: 'emergency_fund', label: 'Notgroschen', emoji: '🛡️', isCHF: true, hint: 'Dein finanzielles Sicherheitspolster für Notfälle.' },
-    ],
+    title: 'Investments & Immobilien',
+    emoji: '📈',
+    type: 'investments',
   },
   {
     title: 'Verbindlichkeiten',
@@ -244,12 +316,45 @@ function sumValuables(items: Valuable[]): number {
   return items.reduce((sum, v) => sum + n(v.value), 0);
 }
 
+function sumInvestments(items: InvestmentPosition[]): number {
+  return items.reduce((sum, i) => sum + n(i.value), 0);
+}
+
+function sumCrypto(items: CryptoPosition[]): number {
+  return items.reduce((sum, c) => sum + n(c.value), 0);
+}
+
+function sumPropertyEquity(properties: Property[]): number {
+  return properties.reduce((sum, p) => sum + n(p.market_value) - n(p.mortgage_amount), 0);
+}
+
+function sumPropertyValue(properties: Property[]): number {
+  return properties.reduce((sum, p) => sum + n(p.market_value), 0);
+}
+
+function sumPropertyMortgages(properties: Property[]): number {
+  return properties.reduce((sum, p) => sum + n(p.mortgage_amount), 0);
+}
+
+function sumOtherAssets(items: OtherAsset[]): number {
+  return items.reduce((sum, a) => sum + n(a.value), 0);
+}
+
 function computeNetWorth(d: SnapshotDraft): number {
   const bankTotal = d.bank_accounts_skipped ? 0 : sumBankAccounts(d.bank_accounts);
   const cashTotal = d.cash.skipped ? 0 : n(d.cash.amount);
   const valuablesTotal = d.valuables_skipped ? 0 : sumValuables(d.valuables);
-  return bankTotal + cashTotal + valuablesTotal +
-    n(d.investments.amount) + n(d.real_estate.amount) + n(d.emergency_fund.amount) +
+  const investTotal = d.investment_positions_skipped ? 0 : sumInvestments(d.investment_positions);
+  const cryptoTotal = d.crypto_positions_skipped ? 0 : sumCrypto(d.crypto_positions);
+  const propertyEquity = d.owns_property ? sumPropertyEquity(d.properties) : 0;
+  const otherTotal = d.other_assets_skipped ? 0 : sumOtherAssets(d.other_assets);
+  // Legacy fields for old snapshots
+  const legacySavings = d.savings ? n(d.savings.amount) : 0;
+  const legacyInvestments = d.investments ? n(d.investments.amount) : 0;
+  const legacyRE = d.real_estate ? n(d.real_estate.amount) : 0;
+  const legacyEmergency = d.emergency_fund ? n(d.emergency_fund.amount) : 0;
+  return bankTotal + cashTotal + valuablesTotal + investTotal + cryptoTotal + propertyEquity + otherTotal +
+    legacySavings + legacyInvestments + legacyRE + legacyEmergency +
     n(d.pillar_3a.amount) + n(d.freizuegigkeit.amount) + n(d.pensionskasse.amount) -
     n(d.mortgage.amount) - n(d.consumer_debt.amount) - n(d.other_debt.amount);
 }
@@ -259,7 +364,6 @@ const STATIC_FIELD_LABELS: Record<string, { label: string; emoji: string }> = {}
 STEPS.forEach(step => step.fields?.forEach(f => {
   STATIC_FIELD_LABELS[f.key as string] = { label: f.label, emoji: f.emoji };
 }));
-// Add cash
 STATIC_FIELD_LABELS['cash'] = { label: 'Bargeld', emoji: '💵' };
 
 // ── Main component ────────────────────────────────
@@ -340,10 +444,16 @@ export default function ClientPortalSnapshot() {
           merged.bank_accounts = parsed.bank_accounts;
         }
         merged.bank_accounts_skipped = !!parsed.bank_accounts_skipped;
-        if (Array.isArray(parsed.valuables)) {
-          merged.valuables = parsed.valuables;
-        }
+        if (Array.isArray(parsed.valuables)) merged.valuables = parsed.valuables;
         merged.valuables_skipped = !!parsed.valuables_skipped;
+        if (Array.isArray(parsed.investment_positions)) merged.investment_positions = parsed.investment_positions;
+        merged.investment_positions_skipped = !!parsed.investment_positions_skipped;
+        if (Array.isArray(parsed.crypto_positions)) merged.crypto_positions = parsed.crypto_positions;
+        merged.crypto_positions_skipped = !!parsed.crypto_positions_skipped;
+        if (Array.isArray(parsed.properties)) merged.properties = parsed.properties;
+        merged.owns_property = !!parsed.owns_property;
+        if (Array.isArray(parsed.other_assets)) merged.other_assets = parsed.other_assets;
+        merged.other_assets_skipped = !!parsed.other_assets_skipped;
         setDraft(merged);
         setStep(savedDraft.current_step || 0);
       } catch { /* ignore parse errors */ }
@@ -520,6 +630,8 @@ export default function ClientPortalSnapshot() {
                   <SummaryStep draft={draft} onNotesChange={(v) => setDraft(prev => ({ ...prev, notes: v }))} />
                 ) : currentStepConfig?.type === 'bank_cash' ? (
                   <BankCashStep draft={draft} updateDraft={updateDraft} updateField={updateField} updateAmount={updateAmount} />
+                ) : currentStepConfig?.type === 'investments' ? (
+                  <InvestmentsStep draft={draft} updateDraft={updateDraft} />
                 ) : currentStepConfig?.type === 'fields' && currentStepConfig.fields ? (
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
@@ -835,6 +947,321 @@ function BankCashStep({
   );
 }
 
+// ── Investments & Immobilien Step ──────────────────
+
+function InvestmentsStep({
+  draft, updateDraft,
+}: {
+  draft: SnapshotDraft;
+  updateDraft: (fn: (prev: SnapshotDraft) => SnapshotDraft) => void;
+}) {
+  const cleanNum = (v: string) => v.replace(/[^0-9.]/g, '');
+
+  // Investment helpers
+  const addInvestment = () => updateDraft(d => ({ ...d, investment_positions: [...d.investment_positions, newInvestment()] }));
+  const removeInvestment = (id: string) => updateDraft(d => ({ ...d, investment_positions: d.investment_positions.filter(i => i.id !== id) }));
+  const updateInv = (id: string, field: keyof InvestmentPosition, value: string) => updateDraft(d => ({
+    ...d, investment_positions: d.investment_positions.map(i => i.id === id ? { ...i, [field]: field === 'value' ? cleanNum(value) : value } : i),
+  }));
+
+  // Crypto helpers
+  const addCrypto = () => updateDraft(d => ({ ...d, crypto_positions: [...d.crypto_positions, newCrypto()] }));
+  const removeCrypto = (id: string) => updateDraft(d => ({ ...d, crypto_positions: d.crypto_positions.filter(c => c.id !== id) }));
+  const updateCryp = (id: string, field: keyof CryptoPosition, value: string) => updateDraft(d => ({
+    ...d, crypto_positions: d.crypto_positions.map(c => c.id === id ? { ...c, [field]: field === 'value' ? cleanNum(value) : value } : c),
+  }));
+
+  // Property helpers
+  const addProperty = () => updateDraft(d => ({ ...d, properties: [...d.properties, newProperty()] }));
+  const removeProperty = (id: string) => updateDraft(d => ({ ...d, properties: d.properties.filter(p => p.id !== id) }));
+  const updateProp = (id: string, field: keyof Property, value: string) => updateDraft(d => ({
+    ...d, properties: d.properties.map(p => p.id === id ? {
+      ...p,
+      [field]: ['market_value', 'equity_invested', 'mortgage_amount', 'mortgage_rate'].includes(field) ? cleanNum(value) : value,
+    } : p),
+  }));
+
+  // Other assets helpers
+  const addOther = () => updateDraft(d => ({ ...d, other_assets: [...d.other_assets, newOtherAsset()] }));
+  const removeOther = (id: string) => updateDraft(d => ({ ...d, other_assets: d.other_assets.filter(a => a.id !== id) }));
+  const updateOther = (id: string, field: keyof OtherAsset, value: string) => updateDraft(d => ({
+    ...d, other_assets: d.other_assets.map(a => a.id === id ? { ...a, [field]: field === 'value' ? cleanNum(value) : value } : a),
+  }));
+
+  const toggleProperty = (on: boolean) => {
+    updateDraft(d => ({
+      ...d,
+      owns_property: on,
+      properties: on && d.properties.length === 0 ? [newProperty()] : d.properties,
+    }));
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <span className="text-xl">📈</span>
+        <h2 className="text-base font-bold text-foreground">Investments & Immobilien</h2>
+      </div>
+
+      {/* ── Aktien, ETFs & Fonds ── */}
+      <Card className={cn(draft.investment_positions_skipped && "opacity-60")}>
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <span>📊</span> Aktien, ETFs & Fonds
+            </h3>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <Checkbox
+                checked={draft.investment_positions_skipped}
+                onCheckedChange={(v) => updateDraft(d => ({ ...d, investment_positions_skipped: !!v }))}
+                className="h-3.5 w-3.5"
+              />
+              <span className="text-[10px] text-muted-foreground">Nicht bekannt</span>
+            </label>
+          </div>
+
+          {!draft.investment_positions_skipped && (
+            <>
+              {draft.investment_positions.map((inv, idx) => (
+                <div key={inv.id} className="space-y-2 p-3 bg-muted/30 rounded-lg relative">
+                  <button onClick={() => removeInvestment(inv.id)} className="absolute top-2 right-2 p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                  <p className="text-[10px] font-medium text-muted-foreground">Position {idx + 1}</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Name</Label>
+                      <Input value={inv.name} onChange={(e) => updateInv(inv.id, 'name', e.target.value)} placeholder="z.B. Swissquote Depot" maxLength={100} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Plattform/Broker</Label>
+                      <Input value={inv.platform} onChange={(e) => updateInv(inv.id, 'platform', e.target.value)} placeholder="z.B. Swissquote" maxLength={100} />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Aktueller Wert</Label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                      <Input type="text" inputMode="decimal" value={inv.value} onChange={(e) => updateInv(inv.id, 'value', e.target.value)} placeholder="0" className="pl-11 text-right" />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground flex items-center gap-1"><ExternalLink className="h-3 w-3" /> Link (optional)</Label>
+                    <Input type="url" value={inv.link} onChange={(e) => updateInv(inv.id, 'link', e.target.value)} placeholder="https://..." maxLength={500} />
+                  </div>
+                </div>
+              ))}
+              {draft.investment_positions.length === 0 && (
+                <p className="text-[11px] text-muted-foreground text-center py-2">Keine Positionen erfasst.</p>
+              )}
+              <Button variant="outline" size="sm" onClick={addInvestment} className="w-full gap-1.5 text-xs">
+                <Plus className="h-3.5 w-3.5" /> Position hinzufügen
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* ── Kryptowährungen ── */}
+      <Card className={cn(draft.crypto_positions_skipped && "opacity-60")}>
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <span>🪙</span> Kryptowährungen
+            </h3>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <Checkbox
+                checked={draft.crypto_positions_skipped}
+                onCheckedChange={(v) => updateDraft(d => ({ ...d, crypto_positions_skipped: !!v }))}
+                className="h-3.5 w-3.5"
+              />
+              <span className="text-[10px] text-muted-foreground">Nicht bekannt</span>
+            </label>
+          </div>
+
+          {!draft.crypto_positions_skipped && (
+            <>
+              {draft.crypto_positions.map((cry, idx) => (
+                <div key={cry.id} className="space-y-2 p-3 bg-muted/30 rounded-lg relative">
+                  <button onClick={() => removeCrypto(cry.id)} className="absolute top-2 right-2 p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                  <p className="text-[10px] font-medium text-muted-foreground">Krypto {idx + 1}</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Name</Label>
+                      <Input value={cry.name} onChange={(e) => updateCryp(cry.id, 'name', e.target.value)} placeholder="z.B. Bitcoin" maxLength={100} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Plattform</Label>
+                      <Input value={cry.platform} onChange={(e) => updateCryp(cry.id, 'platform', e.target.value)} placeholder="z.B. Binance" maxLength={100} />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Aktueller Wert</Label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                      <Input type="text" inputMode="decimal" value={cry.value} onChange={(e) => updateCryp(cry.id, 'value', e.target.value)} placeholder="0" className="pl-11 text-right" />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground flex items-center gap-1"><ExternalLink className="h-3 w-3" /> Link (optional)</Label>
+                    <Input type="url" value={cry.link} onChange={(e) => updateCryp(cry.id, 'link', e.target.value)} placeholder="https://..." maxLength={500} />
+                  </div>
+                </div>
+              ))}
+              {draft.crypto_positions.length === 0 && (
+                <p className="text-[11px] text-muted-foreground text-center py-2">Keine Kryptowährungen erfasst.</p>
+              )}
+              <Button variant="outline" size="sm" onClick={addCrypto} className="w-full gap-1.5 text-xs">
+                <Plus className="h-3.5 w-3.5" /> Krypto hinzufügen
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* ── Immobilien ── */}
+      <Card>
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <span>🏠</span> Immobilien
+            </h3>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Label className="text-xs text-muted-foreground">Besitzt du Wohneigentum?</Label>
+            <div className="flex gap-2">
+              <Button size="sm" variant={draft.owns_property ? "default" : "outline"} className="h-7 text-xs px-3" onClick={() => toggleProperty(true)}>Ja</Button>
+              <Button size="sm" variant={!draft.owns_property ? "default" : "outline"} className="h-7 text-xs px-3" onClick={() => toggleProperty(false)}>Nein</Button>
+            </div>
+          </div>
+
+          {draft.owns_property && (
+            <>
+              {draft.properties.map((prop, idx) => {
+                const equity = n(prop.market_value) - n(prop.mortgage_amount);
+                return (
+                  <div key={prop.id} className="space-y-2 p-3 bg-muted/30 rounded-lg relative">
+                    {draft.properties.length > 1 && (
+                      <button onClick={() => removeProperty(prop.id)} className="absolute top-2 right-2 p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                    <p className="text-[10px] font-medium text-muted-foreground">Immobilie {idx + 1}</p>
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Beschreibung</Label>
+                      <Input value={prop.description} onChange={(e) => updateProp(prop.id, 'description', e.target.value)} placeholder="z.B. 3.5-Zi-Wohnung Zürich" maxLength={200} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <Label className="text-xs text-muted-foreground">Aktueller Marktwert</Label>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                          <Input type="text" inputMode="decimal" value={prop.market_value} onChange={(e) => updateProp(prop.id, 'market_value', e.target.value)} placeholder="0" className="pl-11 text-right" />
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs text-muted-foreground">Eigenmittel eingebracht</Label>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                          <Input type="text" inputMode="decimal" value={prop.equity_invested} onChange={(e) => updateProp(prop.id, 'equity_invested', e.target.value)} placeholder="0" className="pl-11 text-right" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <Label className="text-xs text-muted-foreground">Hypothek Betrag</Label>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                          <Input type="text" inputMode="decimal" value={prop.mortgage_amount} onChange={(e) => updateProp(prop.id, 'mortgage_amount', e.target.value)} placeholder="0" className="pl-11 text-right" />
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs text-muted-foreground">Hypothekarzins (% p.a.)</Label>
+                        <div className="relative">
+                          <Input type="text" inputMode="decimal" value={prop.mortgage_rate} onChange={(e) => updateProp(prop.id, 'mortgage_rate', e.target.value)} placeholder="1.5" className="text-right" />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">%</span>
+                        </div>
+                      </div>
+                    </div>
+                    {(n(prop.market_value) > 0 || n(prop.mortgage_amount) > 0) && (
+                      <div className="flex gap-2 bg-primary/5 rounded-lg p-2.5">
+                        <Info className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                        <p className="text-[11px] text-primary font-medium">
+                          Dein Eigenkapitalanteil: CHF {equity.toLocaleString('de-CH')}
+                        </p>
+                      </div>
+                    )}
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground flex items-center gap-1"><ExternalLink className="h-3 w-3" /> Link zum Hypothekaranbieter (optional)</Label>
+                      <Input type="url" value={prop.link} onChange={(e) => updateProp(prop.id, 'link', e.target.value)} placeholder="https://..." maxLength={500} />
+                    </div>
+                  </div>
+                );
+              })}
+              <Button variant="outline" size="sm" onClick={addProperty} className="w-full gap-1.5 text-xs">
+                <Plus className="h-3.5 w-3.5" /> Weitere Immobilie hinzufügen
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* ── Sonstiges Vermögen ── */}
+      <Card className={cn(draft.other_assets_skipped && "opacity-60")}>
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <span>📦</span> Sonstiges Vermögen
+            </h3>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <Checkbox
+                checked={draft.other_assets_skipped}
+                onCheckedChange={(v) => updateDraft(d => ({ ...d, other_assets_skipped: !!v }))}
+                className="h-3.5 w-3.5"
+              />
+              <span className="text-[10px] text-muted-foreground">Nicht bekannt</span>
+            </label>
+          </div>
+
+          {!draft.other_assets_skipped && (
+            <>
+              {draft.other_assets.map((asset, idx) => (
+                <div key={asset.id} className="space-y-2 p-3 bg-muted/30 rounded-lg relative">
+                  <button onClick={() => removeOther(asset.id)} className="absolute top-2 right-2 p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Bezeichnung</Label>
+                      <Input value={asset.name} onChange={(e) => updateOther(asset.id, 'name', e.target.value)} placeholder="z.B. Darlehen an Freund" maxLength={100} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Wert</Label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                        <Input type="text" inputMode="decimal" value={asset.value} onChange={(e) => updateOther(asset.id, 'value', e.target.value)} placeholder="0" className="pl-11 text-right" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {draft.other_assets.length === 0 && (
+                <p className="text-[11px] text-muted-foreground text-center py-2">Keine sonstigen Vermögenswerte erfasst.</p>
+              )}
+              <Button variant="outline" size="sm" onClick={addOther} className="w-full gap-1.5 text-xs">
+                <Plus className="h-3.5 w-3.5" /> Hinzufügen
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 // ── Field Card ─────────────────────────────────────
 
 function SnapshotFieldCard({
@@ -955,9 +1382,13 @@ function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesCh
   const bankTotal = draft.bank_accounts_skipped ? 0 : sumBankAccounts(draft.bank_accounts);
   const cashTotal = draft.cash.skipped ? 0 : n(draft.cash.amount);
   const valuablesTotal = draft.valuables_skipped ? 0 : sumValuables(draft.valuables);
-  const totalAssets = bankTotal + cashTotal + valuablesTotal + n(draft.investments.amount) + n(draft.real_estate.amount) + n(draft.emergency_fund.amount);
+  const investTotal = draft.investment_positions_skipped ? 0 : sumInvestments(draft.investment_positions);
+  const cryptoTotal = draft.crypto_positions_skipped ? 0 : sumCrypto(draft.crypto_positions);
+  const propertyTotal = draft.owns_property ? sumPropertyValue(draft.properties) : 0;
+  const propertyMortgages = draft.owns_property ? sumPropertyMortgages(draft.properties) : 0;
+  const otherTotal = draft.other_assets_skipped ? 0 : sumOtherAssets(draft.other_assets);
   const totalPension = n(draft.pillar_3a.amount) + n(draft.freizuegigkeit.amount) + n(draft.pensionskasse.amount);
-  const totalDebt = n(draft.mortgage.amount) + n(draft.consumer_debt.amount) + n(draft.other_debt.amount);
+  const totalDebt = n(draft.mortgage.amount) + n(draft.consumer_debt.amount) + n(draft.other_debt.amount) + propertyMortgages;
   const fmtCHF = (v: number) => `CHF ${v.toLocaleString('de-CH')}`;
 
   const summaryItems = [
@@ -965,7 +1396,10 @@ function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesCh
     { label: 'Sparquote', value: income > 0 ? `${savingsRate}%` : '–' },
     { label: 'Bankkonten', value: fmtCHF(bankTotal) },
     { label: 'Bargeld & Wertgegenstände', value: fmtCHF(cashTotal + valuablesTotal) },
-    { label: 'Vermögen (Investitionen etc.)', value: fmtCHF(n(draft.investments.amount) + n(draft.real_estate.amount) + n(draft.emergency_fund.amount)) },
+    { label: 'Investments (Aktien, ETFs)', value: fmtCHF(investTotal) },
+    { label: 'Kryptowährungen', value: fmtCHF(cryptoTotal) },
+    ...(propertyTotal > 0 ? [{ label: 'Immobilien (Marktwert)', value: fmtCHF(propertyTotal) }] : []),
+    ...(otherTotal > 0 ? [{ label: 'Sonstiges Vermögen', value: fmtCHF(otherTotal) }] : []),
     { label: 'Vorsorge Total', value: fmtCHF(totalPension) },
     { label: 'Schulden Total', value: fmtCHF(totalDebt) },
     { label: 'Einkommen mtl.', value: income > 0 ? fmtCHF(income) : '–' },
@@ -974,10 +1408,16 @@ function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesCh
 
   // Count skipped fields
   const simpleSkipped = (['pillar_3a', 'freizuegigkeit', 'pensionskasse', 'ahv_annual', 'cash',
-    'investments', 'real_estate', 'emergency_fund', 'mortgage', 'consumer_debt', 'other_debt',
+    'mortgage', 'consumer_debt', 'other_debt',
     'monthly_income', 'monthly_expenses', 'insurance_monthly'] as (keyof SnapshotDraft)[])
-    .filter(k => (draft[k] as SnapshotFieldValue).skipped).length;
-  const skippedCount = simpleSkipped + (draft.bank_accounts_skipped ? 1 : 0) + (draft.valuables_skipped ? 1 : 0);
+    .filter(k => {
+      const val = draft[k];
+      return val && typeof val === 'object' && 'skipped' in val && (val as SnapshotFieldValue).skipped;
+    }).length;
+  const skippedCount = simpleSkipped +
+    (draft.bank_accounts_skipped ? 1 : 0) + (draft.valuables_skipped ? 1 : 0) +
+    (draft.investment_positions_skipped ? 1 : 0) + (draft.crypto_positions_skipped ? 1 : 0) +
+    (draft.other_assets_skipped ? 1 : 0);
 
   return (
     <div className="space-y-4">
@@ -1124,6 +1564,46 @@ function HistoryCard({ snapshot, previous, onDelete }: { snapshot: any; previous
                   <div key={`v-${i}`} className="flex justify-between text-sm">
                     <span className="text-muted-foreground">💍 {v.name || 'Wertgegenstand'}</span>
                     <span className="font-medium text-foreground">CHF {Number(v.value).toLocaleString('de-CH')}</span>
+                  </div>
+                )
+              ))}
+              {/* Investments */}
+              {Array.isArray(data.investment_positions) && data.investment_positions.map((inv: any, i: number) => (
+                n(inv.value) > 0 && (
+                  <div key={`inv-${i}`} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      📊 {inv.name || 'Investment'}{inv.platform && <span className="text-[10px] ml-1">({inv.platform})</span>}
+                    </span>
+                    <span className="font-medium text-foreground">CHF {Number(inv.value).toLocaleString('de-CH')}</span>
+                  </div>
+                )
+              ))}
+              {/* Crypto */}
+              {Array.isArray(data.crypto_positions) && data.crypto_positions.map((c: any, i: number) => (
+                n(c.value) > 0 && (
+                  <div key={`cry-${i}`} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      🪙 {c.name || 'Krypto'}{c.platform && <span className="text-[10px] ml-1">({c.platform})</span>}
+                    </span>
+                    <span className="font-medium text-foreground">CHF {Number(c.value).toLocaleString('de-CH')}</span>
+                  </div>
+                )
+              ))}
+              {/* Properties */}
+              {Array.isArray(data.properties) && data.properties.map((p: any, i: number) => (
+                n(p.market_value) > 0 && (
+                  <div key={`prop-${i}`} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">🏠 {p.description || 'Immobilie'}</span>
+                    <span className="font-medium text-foreground">CHF {Number(p.market_value).toLocaleString('de-CH')}</span>
+                  </div>
+                )
+              ))}
+              {/* Other assets */}
+              {Array.isArray(data.other_assets) && data.other_assets.map((a: any, i: number) => (
+                n(a.value) > 0 && (
+                  <div key={`oth-${i}`} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">📦 {a.name || 'Sonstiges'}</span>
+                    <span className="font-medium text-foreground">CHF {Number(a.value).toLocaleString('de-CH')}</span>
                   </div>
                 )
               ))}
