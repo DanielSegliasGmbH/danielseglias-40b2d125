@@ -69,6 +69,7 @@ import ClientPortalLifeFilmArchive from "./pages/client-portal/ClientPortalLifeF
 import ClientPortalFinanzTyp from "./pages/client-portal/ClientPortalFinanzTyp";
 import ClientPortalSettings from "./pages/client-portal/ClientPortalSettings";
 import ClientPortalSnapshot from "./pages/client-portal/ClientPortalSnapshot";
+import ClientPortalToolArchive from "./pages/client-portal/ClientPortalToolArchive";
 
 // Insurance Consulting Pages
 import InsuranceConsultingStart from "./pages/insurance-consulting/InsuranceConsultingStart";
