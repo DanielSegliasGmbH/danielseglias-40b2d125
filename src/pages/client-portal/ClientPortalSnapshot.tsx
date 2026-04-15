@@ -21,6 +21,7 @@ import {
   Info, ExternalLink, Plus, Zap, CheckCircle,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useGamification } from '@/hooks/useGamification';
