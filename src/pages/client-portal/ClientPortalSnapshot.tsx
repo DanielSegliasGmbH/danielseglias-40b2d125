@@ -1590,8 +1590,15 @@ function SnapshotFieldCard({
           </div>
         )}
 
-        {/* More link */}
-        {config.moreLink && (
+        {/* Article link */}
+        {config.articleId && (
+          <InfoHint
+            text=""
+            articleId={config.articleId}
+            className="mt-0"
+          />
+        )}
+        {config.moreLink && !config.articleId && (
           <button
             onClick={() => navigate(config.moreLink!)}
             className="text-xs text-primary hover:underline font-medium"
