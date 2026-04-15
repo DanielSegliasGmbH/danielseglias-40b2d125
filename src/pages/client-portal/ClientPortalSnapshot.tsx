@@ -13,11 +13,12 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
 import {
   Camera, History, TrendingUp, TrendingDown, Minus,
   ArrowLeft, ArrowRight, Loader2, Trash2, ChevronRight,
-  Info, ExternalLink,
+  Info, ExternalLink, Plus,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
@@ -35,36 +36,77 @@ interface SnapshotFieldValue {
   skipped: boolean;
 }
 
+interface BankAccount {
+  id: string;
+  name: string;
+  bank: string;
+  balance: string;
+  link: string;
+}
+
+interface Valuable {
+  id: string;
+  name: string;
+  value: string;
+  category: string;
+}
+
 interface SnapshotDraft {
   // Step 0: Vorsorge
   pillar_3a: SnapshotFieldValue;
   freizuegigkeit: SnapshotFieldValue;
   pensionskasse: SnapshotFieldValue;
   ahv_annual: SnapshotFieldValue;
-  // Step 1: Vermögen
+  // Step 1: Bankkonten & Bargeld
+  bank_accounts: BankAccount[];
+  bank_accounts_skipped: boolean;
+  cash: SnapshotFieldValue;
+  valuables: Valuable[];
+  valuables_skipped: boolean;
+  // Step 2: Vermögen
   savings: SnapshotFieldValue;
   investments: SnapshotFieldValue;
   real_estate: SnapshotFieldValue;
   emergency_fund: SnapshotFieldValue;
-  // Step 2: Verbindlichkeiten
+  // Step 3: Verbindlichkeiten
   mortgage: SnapshotFieldValue;
   consumer_debt: SnapshotFieldValue;
   other_debt: SnapshotFieldValue;
-  // Step 3: Einkommen & Ausgaben
+  // Step 4: Einkommen & Ausgaben
   monthly_income: SnapshotFieldValue;
   monthly_expenses: SnapshotFieldValue;
   insurance_monthly: SnapshotFieldValue;
-  // Step 4: Notizen & Zusammenfassung
+  // Summary
   notes: string;
 }
 
 const DEFAULT_FIELD: SnapshotFieldValue = { amount: '', provider: '', link: '', skipped: false };
+
+const newBankAccount = (): BankAccount => ({
+  id: crypto.randomUUID(),
+  name: '',
+  bank: '',
+  balance: '',
+  link: '',
+});
+
+const newValuable = (): Valuable => ({
+  id: crypto.randomUUID(),
+  name: '',
+  value: '',
+  category: '',
+});
 
 const EMPTY_DRAFT: SnapshotDraft = {
   pillar_3a: { ...DEFAULT_FIELD },
   freizuegigkeit: { ...DEFAULT_FIELD },
   pensionskasse: { ...DEFAULT_FIELD },
   ahv_annual: { ...DEFAULT_FIELD },
+  bank_accounts: [newBankAccount()],
+  bank_accounts_skipped: false,
+  cash: { ...DEFAULT_FIELD },
+  valuables: [],
+  valuables_skipped: false,
   savings: { ...DEFAULT_FIELD },
   investments: { ...DEFAULT_FIELD },
   real_estate: { ...DEFAULT_FIELD },
@@ -78,10 +120,18 @@ const EMPTY_DRAFT: SnapshotDraft = {
   notes: '',
 };
 
+const VALUABLE_CATEGORIES = [
+  { value: 'gold_silver', label: 'Gold/Silber' },
+  { value: 'watches', label: 'Uhren' },
+  { value: 'jewelry', label: 'Schmuck' },
+  { value: 'art', label: 'Kunst' },
+  { value: 'other', label: 'Sonstiges' },
+];
+
 // ── Step definitions ───────────────────────────────
 
 interface FieldConfig {
-  key: keyof Omit<SnapshotDraft, 'notes'>;
+  key: keyof SnapshotDraft;
   label: string;
   emoji: string;
   hint?: string;
@@ -89,19 +139,20 @@ interface FieldConfig {
   showProvider?: boolean;
   showLink?: boolean;
   isCHF?: boolean;
-  defaultSuggestion?: string;
 }
 
 interface StepConfig {
   title: string;
   emoji: string;
-  fields: FieldConfig[];
+  type: 'fields' | 'bank_cash';
+  fields?: FieldConfig[];
 }
 
 const STEPS: StepConfig[] = [
   {
     title: 'Vorsorge',
     emoji: '🏛️',
+    type: 'fields',
     fields: [
       {
         key: 'pillar_3a',
@@ -143,10 +194,15 @@ const STEPS: StepConfig[] = [
     ],
   },
   {
+    title: 'Bankkonten & Bargeld',
+    emoji: '🏦',
+    type: 'bank_cash',
+  },
+  {
     title: 'Vermögen',
     emoji: '💰',
+    type: 'fields',
     fields: [
-      { key: 'savings', label: 'Ersparnisse (Konten)', emoji: '🏦', isCHF: true, showProvider: true, showLink: true },
       { key: 'investments', label: 'Investitionen (Aktien, ETFs etc.)', emoji: '📈', isCHF: true, showProvider: true, showLink: true },
       { key: 'real_estate', label: 'Immobilien (Marktwert)', emoji: '🏠', isCHF: true },
       { key: 'emergency_fund', label: 'Notgroschen', emoji: '🛡️', isCHF: true, hint: 'Dein finanzielles Sicherheitspolster für Notfälle.' },
@@ -155,6 +211,7 @@ const STEPS: StepConfig[] = [
   {
     title: 'Verbindlichkeiten',
     emoji: '📉',
+    type: 'fields',
     fields: [
       { key: 'mortgage', label: 'Hypothek', emoji: '🏠', isCHF: true, showProvider: true },
       { key: 'consumer_debt', label: 'Konsumschulden / Leasing', emoji: '💳', isCHF: true },
@@ -164,6 +221,7 @@ const STEPS: StepConfig[] = [
   {
     title: 'Einkommen & Ausgaben',
     emoji: '💸',
+    type: 'fields',
     fields: [
       { key: 'monthly_income', label: 'Monatliches Nettoeinkommen', emoji: '💰', isCHF: true },
       { key: 'monthly_expenses', label: 'Monatliche Ausgaben (gesamt)', emoji: '🛒', isCHF: true },
@@ -178,15 +236,31 @@ const TOTAL_STEPS = STEPS.length + 1; // +1 for summary
 
 function n(v: string | undefined): number { return Number(v) || 0; }
 
+function sumBankAccounts(accounts: BankAccount[]): number {
+  return accounts.reduce((sum, a) => sum + n(a.balance), 0);
+}
+
+function sumValuables(items: Valuable[]): number {
+  return items.reduce((sum, v) => sum + n(v.value), 0);
+}
+
 function computeNetWorth(d: SnapshotDraft): number {
-  return n(d.savings.amount) + n(d.investments.amount) + n(d.real_estate.amount) + n(d.emergency_fund.amount) + n(d.pillar_3a.amount) + n(d.freizuegigkeit.amount) + n(d.pensionskasse.amount) - n(d.mortgage.amount) - n(d.consumer_debt.amount) - n(d.other_debt.amount);
+  const bankTotal = d.bank_accounts_skipped ? 0 : sumBankAccounts(d.bank_accounts);
+  const cashTotal = d.cash.skipped ? 0 : n(d.cash.amount);
+  const valuablesTotal = d.valuables_skipped ? 0 : sumValuables(d.valuables);
+  return bankTotal + cashTotal + valuablesTotal +
+    n(d.investments.amount) + n(d.real_estate.amount) + n(d.emergency_fund.amount) +
+    n(d.pillar_3a.amount) + n(d.freizuegigkeit.amount) + n(d.pensionskasse.amount) -
+    n(d.mortgage.amount) - n(d.consumer_debt.amount) - n(d.other_debt.amount);
 }
 
 // ── Field labels for history display ───────────────
-const ALL_FIELD_LABELS: Record<string, { label: string; emoji: string }> = {};
-STEPS.forEach(step => step.fields.forEach(f => {
-  ALL_FIELD_LABELS[f.key] = { label: f.label, emoji: f.emoji };
+const STATIC_FIELD_LABELS: Record<string, { label: string; emoji: string }> = {};
+STEPS.forEach(step => step.fields?.forEach(f => {
+  STATIC_FIELD_LABELS[f.key as string] = { label: f.label, emoji: f.emoji };
 }));
+// Add cash
+STATIC_FIELD_LABELS['cash'] = { label: 'Bargeld', emoji: '💵' };
 
 // ── Main component ────────────────────────────────
 
@@ -247,15 +321,29 @@ export default function ClientPortalSnapshot() {
     if (savedDraft?.draft_data) {
       try {
         const parsed = savedDraft.draft_data as unknown as SnapshotDraft;
-        // Merge with defaults to fill any missing fields
-        const merged = { ...EMPTY_DRAFT };
-        for (const key of Object.keys(EMPTY_DRAFT) as (keyof SnapshotDraft)[]) {
-          if (key === 'notes') {
-            merged.notes = (parsed.notes as string) || '';
-          } else if (parsed[key] && typeof parsed[key] === 'object') {
-            merged[key] = { ...DEFAULT_FIELD, ...(parsed[key] as SnapshotFieldValue) };
+        const merged: SnapshotDraft = { ...EMPTY_DRAFT };
+        // Restore simple fields
+        const simpleKeys: (keyof SnapshotDraft)[] = [
+          'pillar_3a', 'freizuegigkeit', 'pensionskasse', 'ahv_annual', 'cash',
+          'savings', 'investments', 'real_estate', 'emergency_fund',
+          'mortgage', 'consumer_debt', 'other_debt',
+          'monthly_income', 'monthly_expenses', 'insurance_monthly',
+        ];
+        for (const key of simpleKeys) {
+          if (parsed[key] && typeof parsed[key] === 'object' && 'amount' in (parsed[key] as any)) {
+            (merged as any)[key] = { ...DEFAULT_FIELD, ...(parsed[key] as SnapshotFieldValue) };
           }
         }
+        merged.notes = (parsed.notes as string) || '';
+        // Restore dynamic lists
+        if (Array.isArray(parsed.bank_accounts) && parsed.bank_accounts.length > 0) {
+          merged.bank_accounts = parsed.bank_accounts;
+        }
+        merged.bank_accounts_skipped = !!parsed.bank_accounts_skipped;
+        if (Array.isArray(parsed.valuables)) {
+          merged.valuables = parsed.valuables;
+        }
+        merged.valuables_skipped = !!parsed.valuables_skipped;
         setDraft(merged);
         setStep(savedDraft.current_step || 0);
       } catch { /* ignore parse errors */ }
@@ -278,21 +366,30 @@ export default function ClientPortalSnapshot() {
   }, [saveDraft]);
 
   // ── Field updaters ──
-  const updateField = (key: keyof Omit<SnapshotDraft, 'notes'>, field: keyof SnapshotFieldValue, value: string | boolean) => {
+  const updateField = (key: keyof SnapshotDraft, field: keyof SnapshotFieldValue, value: string | boolean) => {
     setDraft(prev => {
       const updated = {
         ...prev,
-        [key]: { ...prev[key], [field]: value },
+        [key]: { ...(prev[key] as SnapshotFieldValue), [field]: value },
       };
       debouncedSave(updated, step);
       return updated;
     });
   };
 
-  const updateAmount = (key: keyof Omit<SnapshotDraft, 'notes'>, value: string) => {
+  const updateAmount = (key: keyof SnapshotDraft, value: string) => {
     const cleaned = value.replace(/[^0-9.]/g, '');
     updateField(key, 'amount', cleaned);
   };
+
+  // ── Dynamic list updaters ──
+  const updateDraft = useCallback((updater: (prev: SnapshotDraft) => SnapshotDraft) => {
+    setDraft(prev => {
+      const updated = updater(prev);
+      debouncedSave(updated, step);
+      return updated;
+    });
+  }, [debouncedSave, step]);
 
   const lastSnapshot = snapshots[0] || null;
 
@@ -310,7 +407,6 @@ export default function ClientPortalSnapshot() {
       });
       if (error) throw error;
 
-      // Delete draft
       await supabase.from('snapshot_drafts').delete().eq('user_id', user.id);
       queryClient.invalidateQueries({ queryKey: ['snapshot-draft'] });
 
@@ -339,7 +435,6 @@ export default function ClientPortalSnapshot() {
   });
 
   const progressPercent = ((step + 1) / TOTAL_STEPS) * 100;
-  const isLastFieldStep = step === STEPS.length - 1;
   const isSummary = step === STEPS.length;
   const currentStepConfig = STEPS[step] || null;
 
@@ -421,27 +516,28 @@ export default function ClientPortalSnapshot() {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.2 }}
               >
-                {!isSummary && currentStepConfig ? (
+                {isSummary ? (
+                  <SummaryStep draft={draft} onNotesChange={(v) => setDraft(prev => ({ ...prev, notes: v }))} />
+                ) : currentStepConfig?.type === 'bank_cash' ? (
+                  <BankCashStep draft={draft} updateDraft={updateDraft} updateField={updateField} updateAmount={updateAmount} />
+                ) : currentStepConfig?.type === 'fields' && currentStepConfig.fields ? (
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
                       <span className="text-xl">{currentStepConfig.emoji}</span>
                       <h2 className="text-base font-bold text-foreground">{currentStepConfig.title}</h2>
                     </div>
-
                     {currentStepConfig.fields.map((field) => (
                       <SnapshotFieldCard
-                        key={field.key}
+                        key={field.key as string}
                         config={field}
-                        value={draft[field.key]}
+                        value={draft[field.key] as SnapshotFieldValue}
                         onChange={(f, v) => updateField(field.key, f, v)}
                         onAmountChange={(v) => updateAmount(field.key, v)}
                         ahvSuggestion={field.key === 'ahv_annual' ? ahvSuggestion : undefined}
                       />
                     ))}
                   </div>
-                ) : (
-                  <SummaryStep draft={draft} onNotesChange={(v) => setDraft(prev => ({ ...prev, notes: v }))} />
-                )}
+                ) : null}
               </motion.div>
             </AnimatePresence>
 
@@ -502,6 +598,240 @@ export default function ClientPortalSnapshot() {
         </Tabs>
       </div>
     </ClientPortalLayout>
+  );
+}
+
+// ── Bank & Cash Step ──────────────────────────────
+
+function BankCashStep({
+  draft, updateDraft, updateField, updateAmount,
+}: {
+  draft: SnapshotDraft;
+  updateDraft: (fn: (prev: SnapshotDraft) => SnapshotDraft) => void;
+  updateField: (key: keyof SnapshotDraft, field: keyof SnapshotFieldValue, value: string | boolean) => void;
+  updateAmount: (key: keyof SnapshotDraft, value: string) => void;
+}) {
+  const addAccount = () => updateDraft(d => ({ ...d, bank_accounts: [...d.bank_accounts, newBankAccount()] }));
+  const removeAccount = (id: string) => updateDraft(d => ({
+    ...d, bank_accounts: d.bank_accounts.filter(a => a.id !== id),
+  }));
+  const updateAccount = (id: string, field: keyof BankAccount, value: string) => updateDraft(d => ({
+    ...d,
+    bank_accounts: d.bank_accounts.map(a => a.id === id ? { ...a, [field]: field === 'balance' ? value.replace(/[^0-9.]/g, '') : value } : a),
+  }));
+
+  const addValuable = () => updateDraft(d => ({ ...d, valuables: [...d.valuables, newValuable()] }));
+  const removeValuable = (id: string) => updateDraft(d => ({
+    ...d, valuables: d.valuables.filter(v => v.id !== id),
+  }));
+  const updateValuableField = (id: string, field: keyof Valuable, value: string) => updateDraft(d => ({
+    ...d,
+    valuables: d.valuables.map(v => v.id === id ? { ...v, [field]: field === 'value' ? value.replace(/[^0-9.]/g, '') : value } : v),
+  }));
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <span className="text-xl">🏦</span>
+        <h2 className="text-base font-bold text-foreground">Bankkonten & Bargeld</h2>
+      </div>
+
+      {/* ── Bankkonten ── */}
+      <Card className={cn(draft.bank_accounts_skipped && "opacity-60")}>
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <span>🏦</span> Bankkonten
+            </h3>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <Checkbox
+                checked={draft.bank_accounts_skipped}
+                onCheckedChange={(v) => updateDraft(d => ({ ...d, bank_accounts_skipped: !!v }))}
+                className="h-3.5 w-3.5"
+              />
+              <span className="text-[10px] text-muted-foreground">Nicht bekannt</span>
+            </label>
+          </div>
+
+          {!draft.bank_accounts_skipped && (
+            <>
+              {draft.bank_accounts.map((account, idx) => (
+                <div key={account.id} className="space-y-2 p-3 bg-muted/30 rounded-lg relative">
+                  {draft.bank_accounts.length > 1 && (
+                    <button
+                      onClick={() => removeAccount(account.id)}
+                      className="absolute top-2 right-2 p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                  <p className="text-[10px] font-medium text-muted-foreground">Konto {idx + 1}</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Kontoname</Label>
+                      <Input
+                        value={account.name}
+                        onChange={(e) => updateAccount(account.id, 'name', e.target.value)}
+                        placeholder="z.B. Sparkonto"
+                        maxLength={100}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Bank</Label>
+                      <Input
+                        value={account.bank}
+                        onChange={(e) => updateAccount(account.id, 'bank', e.target.value)}
+                        placeholder="z.B. UBS"
+                        maxLength={100}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Saldo</Label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                      <Input
+                        type="text"
+                        inputMode="decimal"
+                        value={account.balance}
+                        onChange={(e) => updateAccount(account.id, 'balance', e.target.value)}
+                        placeholder="0"
+                        className="pl-11 text-right"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground flex items-center gap-1">
+                      <ExternalLink className="h-3 w-3" /> Link zum E-Banking (optional)
+                    </Label>
+                    <Input
+                      type="url"
+                      value={account.link}
+                      onChange={(e) => updateAccount(account.id, 'link', e.target.value)}
+                      placeholder="https://..."
+                      maxLength={500}
+                    />
+                  </div>
+                </div>
+              ))}
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={addAccount}
+                className="w-full gap-1.5 text-xs"
+              >
+                <Plus className="h-3.5 w-3.5" /> Konto hinzufügen
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* ── Bargeld ── */}
+      <SnapshotFieldCard
+        config={{
+          key: 'cash' as any,
+          label: 'Bargeld',
+          emoji: '💵',
+          hint: 'Schätze, wie viel Bargeld du zu Hause oder im Portemonnaie hast.',
+          isCHF: true,
+        }}
+        value={draft.cash}
+        onChange={(f, v) => updateField('cash', f, v)}
+        onAmountChange={(v) => updateAmount('cash', v)}
+      />
+
+      {/* ── Edelmetalle & Wertgegenstände ── */}
+      <Card className={cn(draft.valuables_skipped && "opacity-60")}>
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <span>💍</span> Edelmetalle & Wertgegenstände
+            </h3>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <Checkbox
+                checked={draft.valuables_skipped}
+                onCheckedChange={(v) => updateDraft(d => ({ ...d, valuables_skipped: !!v }))}
+                className="h-3.5 w-3.5"
+              />
+              <span className="text-[10px] text-muted-foreground">Nicht bekannt</span>
+            </label>
+          </div>
+
+          {!draft.valuables_skipped && (
+            <>
+              {draft.valuables.map((item, idx) => (
+                <div key={item.id} className="space-y-2 p-3 bg-muted/30 rounded-lg relative">
+                  <button
+                    onClick={() => removeValuable(item.id)}
+                    className="absolute top-2 right-2 p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Bezeichnung</Label>
+                      <Input
+                        value={item.name}
+                        onChange={(e) => updateValuableField(item.id, 'name', e.target.value)}
+                        placeholder="z.B. Goldmünzen"
+                        maxLength={100}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Kategorie</Label>
+                      <Select
+                        value={item.category}
+                        onValueChange={(v) => updateValuableField(item.id, 'category', v)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Wählen..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {VALUABLE_CATEGORIES.map(c => (
+                            <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Geschätzter Wert</Label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                      <Input
+                        type="text"
+                        inputMode="decimal"
+                        value={item.value}
+                        onChange={(e) => updateValuableField(item.id, 'value', e.target.value)}
+                        placeholder="0"
+                        className="pl-11 text-right"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {draft.valuables.length === 0 && (
+                <p className="text-[11px] text-muted-foreground text-center py-2">
+                  Keine Wertgegenstände erfasst.
+                </p>
+              )}
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={addValuable}
+                className="w-full gap-1.5 text-xs"
+              >
+                <Plus className="h-3.5 w-3.5" /> Wertgegenstand hinzufügen
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
@@ -622,7 +952,10 @@ function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesCh
   const income = n(draft.monthly_income.amount);
   const expenses = n(draft.monthly_expenses.amount);
   const savingsRate = income > 0 ? Math.round(((income - expenses) / income) * 100) : 0;
-  const totalAssets = n(draft.savings.amount) + n(draft.investments.amount) + n(draft.real_estate.amount) + n(draft.emergency_fund.amount);
+  const bankTotal = draft.bank_accounts_skipped ? 0 : sumBankAccounts(draft.bank_accounts);
+  const cashTotal = draft.cash.skipped ? 0 : n(draft.cash.amount);
+  const valuablesTotal = draft.valuables_skipped ? 0 : sumValuables(draft.valuables);
+  const totalAssets = bankTotal + cashTotal + valuablesTotal + n(draft.investments.amount) + n(draft.real_estate.amount) + n(draft.emergency_fund.amount);
   const totalPension = n(draft.pillar_3a.amount) + n(draft.freizuegigkeit.amount) + n(draft.pensionskasse.amount);
   const totalDebt = n(draft.mortgage.amount) + n(draft.consumer_debt.amount) + n(draft.other_debt.amount);
   const fmtCHF = (v: number) => `CHF ${v.toLocaleString('de-CH')}`;
@@ -630,17 +963,21 @@ function SummaryStep({ draft, onNotesChange }: { draft: SnapshotDraft; onNotesCh
   const summaryItems = [
     { label: 'Nettovermögen', value: fmtCHF(netWorth), highlight: true, positive: netWorth >= 0 },
     { label: 'Sparquote', value: income > 0 ? `${savingsRate}%` : '–' },
-    { label: 'Vermögen (ohne Vorsorge)', value: fmtCHF(totalAssets) },
+    { label: 'Bankkonten', value: fmtCHF(bankTotal) },
+    { label: 'Bargeld & Wertgegenstände', value: fmtCHF(cashTotal + valuablesTotal) },
+    { label: 'Vermögen (Investitionen etc.)', value: fmtCHF(n(draft.investments.amount) + n(draft.real_estate.amount) + n(draft.emergency_fund.amount)) },
     { label: 'Vorsorge Total', value: fmtCHF(totalPension) },
     { label: 'Schulden Total', value: fmtCHF(totalDebt) },
     { label: 'Einkommen mtl.', value: income > 0 ? fmtCHF(income) : '–' },
     { label: 'Ausgaben mtl.', value: expenses > 0 ? fmtCHF(expenses) : '–' },
   ];
 
-  const skippedCount = Object.entries(draft)
-    .filter(([k]) => k !== 'notes')
-    .filter(([, v]) => typeof v === 'object' && (v as SnapshotFieldValue).skipped)
-    .length;
+  // Count skipped fields
+  const simpleSkipped = (['pillar_3a', 'freizuegigkeit', 'pensionskasse', 'ahv_annual', 'cash',
+    'investments', 'real_estate', 'emergency_fund', 'mortgage', 'consumer_debt', 'other_debt',
+    'monthly_income', 'monthly_expenses', 'insurance_monthly'] as (keyof SnapshotDraft)[])
+    .filter(k => (draft[k] as SnapshotFieldValue).skipped).length;
+  const skippedCount = simpleSkipped + (draft.bank_accounts_skipped ? 1 : 0) + (draft.valuables_skipped ? 1 : 0);
 
   return (
     <div className="space-y-4">
@@ -753,7 +1090,8 @@ function HistoryCard({ snapshot, previous, onDelete }: { snapshot: any; previous
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="overflow-hidden">
             <Separator />
             <div className="p-4 space-y-2">
-              {Object.entries(ALL_FIELD_LABELS).map(([key, meta]) => {
+              {/* Static fields */}
+              {Object.entries(STATIC_FIELD_LABELS).map(([key, meta]) => {
                 const fieldData = data[key];
                 if (!fieldData) return null;
                 const amount = typeof fieldData === 'object' ? fieldData.amount : fieldData;
@@ -769,6 +1107,26 @@ function HistoryCard({ snapshot, previous, onDelete }: { snapshot: any; previous
                   </div>
                 );
               })}
+              {/* Bank accounts */}
+              {Array.isArray(data.bank_accounts) && data.bank_accounts.map((a: any, i: number) => (
+                n(a.balance) > 0 && (
+                  <div key={i} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      🏦 {a.name || 'Konto'}{a.bank && <span className="text-[10px] ml-1">({a.bank})</span>}
+                    </span>
+                    <span className="font-medium text-foreground">CHF {Number(a.balance).toLocaleString('de-CH')}</span>
+                  </div>
+                )
+              ))}
+              {/* Valuables */}
+              {Array.isArray(data.valuables) && data.valuables.map((v: any, i: number) => (
+                n(v.value) > 0 && (
+                  <div key={`v-${i}`} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">💍 {v.name || 'Wertgegenstand'}</span>
+                    <span className="font-medium text-foreground">CHF {Number(v.value).toLocaleString('de-CH')}</span>
+                  </div>
+                )
+              ))}
               {snapshot.notes && (
                 <div className="pt-2 border-t border-border">
                   <p className="text-xs text-muted-foreground">📝 {snapshot.notes}</p>
