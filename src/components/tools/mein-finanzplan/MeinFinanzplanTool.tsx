@@ -186,7 +186,8 @@ export function MeinFinanzplanTool({ mode = 'internal' }: Props) {
 
   // Find PeakScore at age 50
   const psAt50 = projection.find(p => p.age === 50)?.peakScore ?? 0;
-  const baseAt50 = baselineProjection.find(p => p.age === (50))?.peakScore ?? 0;
+  const baseAt50Idx = 50 - age;
+  const baseAt50 = baselineProjection[baseAt50Idx]?.peakScore ?? 0;
 
   // Timeline visualization helpers
   const timelineStart = currentYear;
