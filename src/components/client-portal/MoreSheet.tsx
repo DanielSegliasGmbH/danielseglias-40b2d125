@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, TrendingUp, User, Users, HelpCircle, Globe, Crown, Wallet, PiggyBank, Landmark, Gift, Settings, FileBarChart, Camera } from 'lucide-react';
+import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, TrendingUp, User, Users, HelpCircle, Globe, Crown, Wallet, PiggyBank, Landmark, Gift, Settings, FileBarChart, Camera, Archive } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -85,6 +85,7 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
             {t('app.accountSettings', 'Konto & Einstellungen')}
           </p>
           <MoreLink to="/app/client-portal/snapshot" icon={Camera} label="Mein Snapshot" />
+          <MoreLink to="/app/client-portal/tool-archive" icon={Archive} label="Mein Archiv" />
           <MoreLink to="/app/client-portal/monthly-report" icon={FileBarChart} label="Mein Monatsbericht" />
           <MoreLink to="/app/client-portal/friends" icon={Users} label="Freunde" />
           <MoreLink to="/app/client-portal/invite" icon={Gift} label="Freunde einladen" />
