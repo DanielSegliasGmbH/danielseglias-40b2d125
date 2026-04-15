@@ -125,6 +125,8 @@ interface AlternativeTimelineProps {
 
 export function AlternativeTimeline({ filmData, baseDelay = 0 }: AlternativeTimelineProps) {
   const navigate = useNavigate();
+  const [shareOpen, setShareOpen] = useState(false);
+  const { score: currentPeakScore, rank: peakRank } = usePeakScore();
 
   const comparison = useMemo(() => buildComparison(filmData), [filmData]);
 
