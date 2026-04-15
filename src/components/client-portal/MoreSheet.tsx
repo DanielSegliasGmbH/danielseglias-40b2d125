@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { FileBarChart } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, TrendingUp, User, Users, HelpCircle, Globe, Crown, Wallet, PiggyBank, Landmark, Gift, Settings } from 'lucide-react';
+import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, TrendingUp, User, Users, HelpCircle, Globe, Crown, Wallet, PiggyBank, Landmark, Gift, Settings, FileBarChart as FileBarChartIcon } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -32,6 +32,7 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
     { key: 'tasks', path: '/app/client-portal/tasks', icon: ClipboardList, label: t('clientPortal.tasks') },
     { key: 'budget', path: '/app/client-portal/budget', icon: PiggyBank, label: t('clientPortal.budget', 'Mein Budget') },
     { key: 'net-worth', path: '/app/client-portal/net-worth', icon: Landmark, label: 'Mein Vermögen' },
+    { key: 'snapshot', path: '/app/client-portal/snapshot', icon: FileBarChart, label: 'Mein Snapshot' },
     { key: 'courses', path: '/app/client-portal/courses', icon: GraduationCap, label: t('clientPortal.courses') },
   ];
 
