@@ -45,8 +45,7 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
       className={cn(
         "flex items-center justify-between w-full px-4 py-3.5 rounded-xl",
         "bg-muted/50 transition-colors touch-manipulation",
-        "@media(hover:hover){hover:bg-muted}",
-        "active:bg-muted"
+        "active:bg-muted more-sheet-item"
       )}
       style={{ WebkitTapHighlightColor: 'transparent' }}
     >
