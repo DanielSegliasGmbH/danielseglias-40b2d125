@@ -991,7 +991,7 @@ function VorsorgeStep({
 
       {/* Säule 3a */}
       <VorsorgeEntryList<Pillar3aEntry>
-        label="Säule 3a"
+        label="Säule 3a (inkl. Wertschriften-3a)"
         emoji="💎"
         hint="Du findest den Betrag auf deinem 3a-Kontoauszug oder im Online-Portal."
         articleId="3a-steuervorteile"
@@ -1009,7 +1009,7 @@ function VorsorgeStep({
 
       {/* Freizügigkeit */}
       <VorsorgeEntryList<FreizuegigkeitEntry>
-        label="Freizügigkeit"
+        label="Freizügigkeit (inkl. Wertschriften-Lösungen)"
         emoji="🔄"
         hint="Falls du in der Vergangenheit die Stelle gewechselt hast, könnte hier Geld liegen."
         articleId="vorsorgeluecke"
@@ -1369,6 +1369,27 @@ function InvestmentsStep({
             </label>
           </div>
 
+          {/* Disclaimer: prevent double-counting */}
+          <Collapsible>
+            <div className="flex items-start gap-2 p-2.5 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+              <AlertTriangle className="h-3.5 w-3.5 text-yellow-600 shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] text-yellow-800 dark:text-yellow-300 leading-snug">
+                  Erfasse hier nur Wertschriften auf freien Depots (z.B. Saxo, Swissquote, IBKR). Wertschriften in deiner Säule 3a oder Freizügigkeit hast du bereits in Schritt 1 «Vorsorge» erfasst — sonst wird dein Vermögen doppelt gezählt.
+                </p>
+                <CollapsibleTrigger className="flex items-center gap-1 mt-1.5 text-[10px] font-medium text-yellow-700 dark:text-yellow-400 hover:underline cursor-pointer">
+                  <Info className="h-3 w-3" /> Warum dieser Hinweis?
+                  <ChevronDown className="h-3 w-3 transition-transform [[data-state=open]>&]:rotate-180" />
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <p className="text-[10px] text-yellow-700/80 dark:text-yellow-400/80 leading-snug mt-1.5 border-t border-yellow-500/20 pt-1.5">
+                    Wenn du eine Säule 3a in Form von Wertschriften hast (z.B. bei VIAC oder Finpension), sind das zwar Aktien und ETFs — aber sie gehören in die Vorsorge-Kategorie, nicht hier. Das gleiche gilt für Freizügigkeitsdepots und BVG-Anlagen. Diese Werte hast du bereits in Schritt 1 erfasst. Um Doppelerfassungen zu vermeiden, gib hier nur Wertschriften an, die du unabhängig von Vorsorgeprodukten hältst.
+                  </p>
+                </CollapsibleContent>
+              </div>
+            </div>
+          </Collapsible>
+
           {!draft.investment_positions_skipped && (
             <>
               {draft.investment_positions.map((inv, idx) => (
@@ -1426,6 +1447,14 @@ function InvestmentsStep({
               />
               <span className="text-[10px] text-muted-foreground">Nicht bekannt</span>
             </label>
+          </div>
+
+          {/* Disclaimer */}
+          <div className="flex items-start gap-2 p-2.5 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+            <AlertTriangle className="h-3.5 w-3.5 text-yellow-600 shrink-0 mt-0.5" />
+            <p className="text-[11px] text-yellow-800 dark:text-yellow-300 leading-snug">
+              Nur direkt gehaltene Kryptowährungen (nicht solche innerhalb von 3a-Produkten).
+            </p>
           </div>
 
           {!draft.crypto_positions_skipped && (
