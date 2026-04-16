@@ -3368,6 +3368,45 @@ export type Database = {
         }
         Relationships: []
       }
+      user_avatars: {
+        Row: {
+          avatar_completed: boolean
+          created_at: string
+          current_avatar_data: Json | null
+          future_self_age: number | null
+          future_self_defining_moment: string | null
+          future_self_name: string | null
+          future_self_name_category: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_completed?: boolean
+          created_at?: string
+          current_avatar_data?: Json | null
+          future_self_age?: number | null
+          future_self_defining_moment?: string | null
+          future_self_name?: string | null
+          future_self_name_category?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_completed?: boolean
+          created_at?: string
+          current_avatar_data?: Json | null
+          future_self_age?: number | null
+          future_self_defining_moment?: string | null
+          future_self_name?: string | null
+          future_self_name_category?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_gamification: {
         Row: {
           created_at: string
