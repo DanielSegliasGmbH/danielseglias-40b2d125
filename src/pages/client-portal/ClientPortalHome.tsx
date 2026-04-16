@@ -20,6 +20,7 @@ import { ActiveChallengeCards } from '@/components/client-portal/ActiveChallenge
 import { WeeklyOverviewCard } from '@/components/client-portal/WeeklyOverviewCard';
 import { useFinanzType } from '@/hooks/useFinanzType';
 import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
+import { WeeklyCheckCard } from '@/components/client-portal/WeeklyCheckCard';
 import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
 import { RankWarningBanner } from '@/components/client-portal/RankWarningBanner';
 import { RankChangeOverlay } from '@/components/client-portal/RankChangeOverlay';
@@ -292,6 +293,7 @@ export default function ClientPortalHome() {
         {/* ── PEAKSCORE HERO ── */}
         <PeakScoreCard onClick={() => navigate('/app/client-portal/peak-score')} />
         <FreedomCountdown />
+        <WeeklyCheckCard />
         <RankWarningBanner />
 
         {/* ── LEBENSFILM CTA ── */}

@@ -17,7 +17,8 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Shield, Download, Trash2, AlertTriangle, Eye, Swords, FileBarChart, Loader2, Lightbulb } from 'lucide-react';
+import { Shield, Download, Trash2, AlertTriangle, Eye, Swords, FileBarChart, Loader2, Lightbulb, CalendarDays, Flame, MessageCircle } from 'lucide-react';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
@@ -271,6 +272,14 @@ export default function ClientPortalSettings() {
 
         <Separator />
 
+        {/* Rituale */}
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-muted-foreground px-1">Rituale & Engagement</p>
+          <RitualSettingsSection userId={user?.id} />
+        </div>
+
+        <Separator />
+
         {/* Daten */}
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground px-1">Daten</p>
@@ -346,5 +355,122 @@ export default function ClientPortalSettings() {
         </DialogContent>
       </Dialog>
     </ClientPortalLayout>
+  );
+}
+
+function RitualSettingsSection({ userId }: { userId?: string }) {
+  const queryClient = useQueryClient();
+
+  const { data: ritualSettings } = useQuery({
+    queryKey: ['ritual-settings', userId],
+    queryFn: async () => {
+      if (!userId) return null;
+      const { data } = await supabase
+        .from('profiles')
+        .select('payday_date, weekly_ritual_enabled, streak_rescue_enabled, future_self_messages_enabled')
+        .eq('id', userId)
+        .maybeSingle();
+      return {
+        payday_date: (data as any)?.payday_date ?? 25,
+        weekly_ritual_enabled: (data as any)?.weekly_ritual_enabled ?? true,
+        streak_rescue_enabled: (data as any)?.streak_rescue_enabled ?? true,
+        future_self_messages_enabled: (data as any)?.future_self_messages_enabled ?? true,
+      };
+    },
+    enabled: !!userId,
+  });
+
+  const updateRitual = useMutation({
+    mutationFn: async ({ key, value }: { key: string; value: boolean | number }) => {
+      if (!userId) throw new Error('Not authenticated');
+      const { error } = await supabase
+        .from('profiles')
+        .update({ [key]: value })
+        .eq('id', userId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ritual-settings', userId] });
+    },
+    onError: () => toast.error('Einstellung konnte nicht gespeichert werden'),
+  });
+
+  if (!ritualSettings) return null;
+
+  const RITUAL_TOGGLES = [
+    {
+      key: 'weekly_ritual_enabled',
+      label: 'Wochenritual (Sonntag)',
+      description: 'Wöchentlicher Rückblick jeden Sonntag',
+      icon: CalendarDays,
+      value: ritualSettings.weekly_ritual_enabled,
+    },
+    {
+      key: 'streak_rescue_enabled',
+      label: 'Streak-Rescue',
+      description: '1× pro Monat den Streak retten',
+      icon: Flame,
+      value: ritualSettings.streak_rescue_enabled,
+    },
+    {
+      key: 'future_self_messages_enabled',
+      label: 'Zukunfts-Ich Nachrichten',
+      description: 'Motivierende Nachrichten von deinem Zukunfts-Ich',
+      icon: MessageCircle,
+      value: ritualSettings.future_self_messages_enabled,
+    },
+  ];
+
+  return (
+    <div className="space-y-2">
+      {/* Payday date */}
+      <Card>
+        <CardContent className="p-4 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+            <CalendarDays className="h-4 w-4 text-primary" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-foreground">Payday-Datum</p>
+            <p className="text-[11px] text-muted-foreground leading-tight">Tag des monatlichen Rituals</p>
+          </div>
+          <div className="flex items-center gap-1">
+            <Input
+              type="number"
+              min={1}
+              max={31}
+              value={ritualSettings.payday_date}
+              onChange={e => {
+                const val = Math.min(31, Math.max(1, Number(e.target.value) || 25));
+                updateRitual.mutate({ key: 'payday_date', value: val });
+              }}
+              className="w-16 h-8 text-sm text-center"
+            />
+            <span className="text-xs text-muted-foreground">.</span>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Toggles */}
+      {RITUAL_TOGGLES.map(toggle => {
+        const Icon = toggle.icon;
+        return (
+          <Card key={toggle.key}>
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <Icon className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground">{toggle.label}</p>
+                <p className="text-[11px] text-muted-foreground leading-tight">{toggle.description}</p>
+              </div>
+              <Switch
+                checked={toggle.value}
+                onCheckedChange={(checked) => updateRitual.mutate({ key: toggle.key, value: checked })}
+              />
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
   );
 }

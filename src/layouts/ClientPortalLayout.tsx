@@ -1,6 +1,8 @@
 import { ReactNode, useState } from 'react';
 import { LevelUpCelebration } from '@/components/client-portal/LevelUpCelebration';
 import { TruthMomentOverlay } from '@/components/client-portal/TruthMomentOverlay';
+import { PaydayRitualOverlay } from '@/components/client-portal/PaydayRitualOverlay';
+import { StreakRescueOverlay } from '@/components/client-portal/StreakRescueOverlay';
 import { useSmartNotifications } from '@/hooks/useSmartNotifications';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
@@ -299,6 +301,8 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
         {/* Level-up celebration overlay */}
         <LevelUpCelebration />
         <TruthMomentOverlay />
+        <PaydayRitualOverlay />
+        <StreakRescueOverlay />
       </div>
     </TooltipProvider>
     </PrivacyModeProvider>
