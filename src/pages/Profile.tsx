@@ -141,6 +141,8 @@ export default function Profile() {
     points, streakDays, levelLabel, progressPercent, pointsToNext, maxLevel, level,
   } = useGamification();
   const [loading, setLoading] = useState(false);
+  const { profile: metaProfile } = useMetaProfile();
+  const professionInfo = getProfessionInfo(metaProfile?.professional_status);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPasswordSection, setShowPasswordSection] = useState(false);
@@ -243,6 +245,11 @@ export default function Profile() {
                 </Badge>
                 <ProfileRankBadge />
                 <ProfileFinanzTypBadge />
+                {professionInfo && (
+                  <Badge variant="outline" className="text-xs gap-1">
+                    {professionInfo.emoji} {professionInfo.label}
+                  </Badge>
+                )}
               </div>
               <div className="flex items-center justify-center gap-3 mt-2 text-xs text-muted-foreground">
                 {memberSince && <span>Mitglied seit {memberSince}</span>}
