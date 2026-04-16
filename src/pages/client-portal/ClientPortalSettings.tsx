@@ -27,6 +27,7 @@ interface PrivacySettings {
   peak_score_visible: boolean;
   challenges_allowed: boolean;
   auto_monthly_report: boolean;
+  show_truth_moments: boolean;
 }
 
 const PRIVACY_TOGGLES: {
