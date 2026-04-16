@@ -272,6 +272,14 @@ export default function ClientPortalSettings() {
 
         <Separator />
 
+        {/* Rituale */}
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-muted-foreground px-1">Rituale & Engagement</p>
+          <RitualSettingsSection userId={user?.id} />
+        </div>
+
+        <Separator />
+
         {/* Daten */}
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground px-1">Daten</p>
