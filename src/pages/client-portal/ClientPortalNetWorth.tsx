@@ -22,15 +22,43 @@ import { PeakScoreImpact } from '@/components/client-portal/PeakScoreImpact';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Area, AreaChart } from 'recharts';
 
 const ASSET_CATEGORIES = [
-  'Bargeld', 'Bankkonto', 'Säule 3a', 'Pensionskasse', 'Aktien/ETF', 'Immobilien', 'Sonstiges',
+  'Bargeld', 'Bankkonto', 'Säule 3a', 'Pensionskasse', 'Aktien/ETF', 'Immobilien', 'Krypto', 'Edelmetalle', 'Sonstiges',
 ] as const;
 
 const LIABILITY_CATEGORIES = ['Hypothek', 'Autoleasing', 'Privatkredit', 'Kreditkarten', 'Sonstiges'] as const;
 
 const ASSET_ICONS: Record<string, string> = {
   'Bargeld': '💵', 'Bankkonto': '🏦', 'Säule 3a': '🔐', 'Pensionskasse': '🏛️',
-  'Aktien/ETF': '📈', 'Immobilien': '🏠', 'Sonstiges': '📦',
+  'Aktien/ETF': '📈', 'Immobilien': '🏠', 'Krypto': '₿', 'Edelmetalle': '🥇', 'Sonstiges': '📦',
 };
+
+const DEFAULT_RETURNS: Record<string, number> = {
+  'Bargeld': 0,
+  'Bankkonto': 0.5,
+  'Säule 3a': 4,
+  'Pensionskasse': 1.5,
+  'Aktien/ETF': 7,
+  'Immobilien': 3,
+  'Krypto': 0,
+  'Edelmetalle': 3,
+  'Sonstiges': 0,
+};
+
+const TYPICAL_RETURNS_TABLE = [
+  { category: 'Bargeld', range: '0%' },
+  { category: 'Sparkonto', range: '0.5%' },
+  { category: 'Säule 3a (Konto)', range: '0.5–1%' },
+  { category: 'Säule 3a (Wertschriften)', range: '4–6%' },
+  { category: 'Freizügigkeit (Konto)', range: '0.5%' },
+  { category: 'Freizügigkeit (Wertschriften)', range: '4–6%' },
+  { category: 'Pensionskasse', range: '1–2%' },
+  { category: 'Aktien/ETFs', range: '7%' },
+  { category: 'Kryptowährungen', range: '0% (hohe Volatilität)' },
+  { category: 'Wohneigentum', range: '2%' },
+  { category: 'Investmentimmobilien', range: '4–6%' },
+  { category: 'Edelmetalle', range: '3%' },
+  { category: 'Wertgegenstände', range: '0%' },
+];
 
 const DONUT_COLORS = [
   'hsl(var(--primary))', '#34d399', '#f59e0b', '#6366f1',
