@@ -22,15 +22,43 @@ import { PeakScoreImpact } from '@/components/client-portal/PeakScoreImpact';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Area, AreaChart } from 'recharts';
 
 const ASSET_CATEGORIES = [
-  'Bargeld', 'Bankkonto', 'Säule 3a', 'Pensionskasse', 'Aktien/ETF', 'Immobilien', 'Sonstiges',
+  'Bargeld', 'Bankkonto', 'Säule 3a', 'Pensionskasse', 'Aktien/ETF', 'Immobilien', 'Krypto', 'Edelmetalle', 'Sonstiges',
 ] as const;
 
 const LIABILITY_CATEGORIES = ['Hypothek', 'Autoleasing', 'Privatkredit', 'Kreditkarten', 'Sonstiges'] as const;
 
 const ASSET_ICONS: Record<string, string> = {
   'Bargeld': '💵', 'Bankkonto': '🏦', 'Säule 3a': '🔐', 'Pensionskasse': '🏛️',
-  'Aktien/ETF': '📈', 'Immobilien': '🏠', 'Sonstiges': '📦',
+  'Aktien/ETF': '📈', 'Immobilien': '🏠', 'Krypto': '₿', 'Edelmetalle': '🥇', 'Sonstiges': '📦',
 };
+
+const DEFAULT_RETURNS: Record<string, number> = {
+  'Bargeld': 0,
+  'Bankkonto': 0.5,
+  'Säule 3a': 4,
+  'Pensionskasse': 1.5,
+  'Aktien/ETF': 7,
+  'Immobilien': 3,
+  'Krypto': 0,
+  'Edelmetalle': 3,
+  'Sonstiges': 0,
+};
+
+const TYPICAL_RETURNS_TABLE = [
+  { category: 'Bargeld', range: '0%' },
+  { category: 'Sparkonto', range: '0.5%' },
+  { category: 'Säule 3a (Konto)', range: '0.5–1%' },
+  { category: 'Säule 3a (Wertschriften)', range: '4–6%' },
+  { category: 'Freizügigkeit (Konto)', range: '0.5%' },
+  { category: 'Freizügigkeit (Wertschriften)', range: '4–6%' },
+  { category: 'Pensionskasse', range: '1–2%' },
+  { category: 'Aktien/ETFs', range: '7%' },
+  { category: 'Kryptowährungen', range: '0% (hohe Volatilität)' },
+  { category: 'Wohneigentum', range: '2%' },
+  { category: 'Investmentimmobilien', range: '4–6%' },
+  { category: 'Edelmetalle', range: '3%' },
+  { category: 'Wertgegenstände', range: '0%' },
+];
 
 const DONUT_COLORS = [
   'hsl(var(--primary))', '#34d399', '#f59e0b', '#6366f1',
@@ -96,7 +124,9 @@ export default function ClientPortalNetWorth() {
   const [assetName, setAssetName] = useState('');
   const [assetCategory, setAssetCategory] = useState<string>(ASSET_CATEGORIES[0]);
   const [assetValue, setAssetValue] = useState('');
+  const [assetExpectedReturn, setAssetExpectedReturn] = useState<string>(String(DEFAULT_RETURNS[ASSET_CATEGORIES[0]]));
   const [assetUrl, setAssetUrl] = useState('');
+  const [showReturnsRef, setShowReturnsRef] = useState(false);
 
   // Liability form
   const [liabName, setLiabName] = useState('');
@@ -231,11 +261,13 @@ export default function ClientPortalNetWorth() {
     mutationFn: async () => {
       if (!user) throw new Error('Not authenticated');
       const val = parseFloat(assetValue);
+      const returnVal = assetExpectedReturn ? parseFloat(assetExpectedReturn) : null;
       const { data, error } = await supabase.from('net_worth_assets').insert({
         user_id: user.id,
         name: assetName,
         category: assetCategory,
         value: val,
+        expected_return: returnVal,
         last_updated_date: new Date().toISOString().slice(0, 10),
         platform_url: assetUrl || null,
       }).select('id').single();
@@ -346,7 +378,7 @@ export default function ClientPortalNetWorth() {
     },
   });
 
-  const resetAssetForm = () => { setAssetName(''); setAssetCategory(ASSET_CATEGORIES[0]); setAssetValue(''); setAssetUrl(''); };
+  const resetAssetForm = () => { setAssetName(''); setAssetCategory(ASSET_CATEGORIES[0]); setAssetValue(''); setAssetExpectedReturn(String(DEFAULT_RETURNS[ASSET_CATEGORIES[0]])); setAssetUrl(''); };
   const resetLiabForm = () => { setLiabName(''); setLiabCategory(LIABILITY_CATEGORIES[0]); setLiabAmount(''); setLiabMonthlyPayment(''); setLiabInterestRate(''); setLiabEndDate(''); setLiabUrl(''); };
 
   const openDetail = (entry: any, type: 'asset' | 'liability') => {
@@ -486,13 +518,16 @@ export default function ClientPortalNetWorth() {
                 <Plus className="h-4 w-4" /> Vermögenswert
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-h-[85vh] overflow-y-auto">
               <DialogHeader><DialogTitle>Neuer Vermögenswert</DialogTitle></DialogHeader>
               <div className="space-y-4 pt-2">
                 <div><Label>Name</Label><Input value={assetName} onChange={e => setAssetName(e.target.value)} placeholder="z.B. Sparkonto UBS" /></div>
                 <div>
                   <Label>Kategorie</Label>
-                  <Select value={assetCategory} onValueChange={setAssetCategory}>
+                  <Select value={assetCategory} onValueChange={(val) => {
+                    setAssetCategory(val);
+                    setAssetExpectedReturn(String(DEFAULT_RETURNS[val] ?? 0));
+                  }}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {ASSET_CATEGORIES.map(c => <SelectItem key={c} value={c}>{ASSET_ICONS[c]} {c}</SelectItem>)}
@@ -500,6 +535,29 @@ export default function ClientPortalNetWorth() {
                   </Select>
                 </div>
                 <div><Label>Wert (CHF)</Label><Input type="number" min="0" step="100" value={assetValue} onChange={e => setAssetValue(e.target.value)} placeholder="0" /></div>
+                <div>
+                  <Label>Erwartete Rendite (% p.a.)</Label>
+                  <p className="text-[11px] text-muted-foreground mb-1">Realistische Jahresrendite nach Kosten und Inflation</p>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="range"
+                      min="0"
+                      max="15"
+                      step="0.5"
+                      value={assetExpectedReturn}
+                      onChange={e => setAssetExpectedReturn(e.target.value)}
+                      className="flex-1 accent-[hsl(var(--primary))]"
+                    />
+                    <span className="text-sm font-semibold w-12 text-right">{assetExpectedReturn}%</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="text-[11px] text-primary hover:underline mt-1"
+                    onClick={() => setShowReturnsRef(true)}
+                  >
+                    Typische Renditen →
+                  </button>
+                </div>
                 <div>
                   <Label className="flex items-center gap-1.5"><ExternalLink className="h-3.5 w-3.5" /> Link zur Plattform (optional)</Label>
                   <Input type="url" value={assetUrl} onChange={e => setAssetUrl(e.target.value)} placeholder="z.B. https://login.ubs.com" />
@@ -612,7 +670,12 @@ export default function ClientPortalNetWorth() {
                       <span className="text-base">{ASSET_ICONS[a.category] || '📦'}</span>
                       <div className="min-w-0">
                         <p className="text-sm font-medium truncate">{a.name}</p>
-                        <p className="text-[11px] text-muted-foreground">{a.category}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-[11px] text-muted-foreground">{a.category}</p>
+                          {a.expected_return != null && Number(a.expected_return) > 0 && (
+                            <p className="text-[11px] text-primary">{Number(a.expected_return)}% p.a.</p>
+                          )}
+                        </div>
                       </div>
                       {a.platform_url && (
                         <button
@@ -766,7 +829,27 @@ export default function ClientPortalNetWorth() {
                 </span>
               </div>
 
-              {/* Liability-specific details */}
+              {/* Asset projections */}
+              {detailType === 'asset' && detailEntry.expected_return != null && Number(detailEntry.expected_return) > 0 && (
+                <Card className="bg-muted/50">
+                  <CardContent className="py-2.5 space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-muted-foreground">Erwartete Rendite</span>
+                      <span className="text-xs font-semibold">{Number(detailEntry.expected_return)}% p.a.</span>
+                    </div>
+                    {[10, 20].map(years => {
+                      const fv = Number(detailEntry.value) * Math.pow(1 + Number(detailEntry.expected_return) / 100, years);
+                      return (
+                        <div key={years} className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">In {years} Jahren</span>
+                          <PrivateValue className="text-sm font-semibold">{fmtCHF(Math.round(fv))}</PrivateValue>
+                        </div>
+                      );
+                    })}
+                  </CardContent>
+                </Card>
+              )}
+
               {detailType === 'liability' && (
                 <div className="space-y-2">
                   {Number(detailEntry.monthly_payment) > 0 && (
@@ -883,6 +966,22 @@ export default function ClientPortalNetWorth() {
           )}
         </SheetContent>
       </Sheet>
+
+      {/* Typical Returns Reference Dialog */}
+      <Dialog open={showReturnsRef} onOpenChange={setShowReturnsRef}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Typische Renditen</DialogTitle></DialogHeader>
+          <div className="space-y-1 pt-2">
+            <p className="text-xs text-muted-foreground mb-3">Langfristige Durchschnittsrenditen nach Kosten (Richtwerte)</p>
+            {TYPICAL_RETURNS_TABLE.map(r => (
+              <div key={r.category} className="flex items-center justify-between py-1.5 border-b border-border/50 last:border-0">
+                <span className="text-sm">{r.category}</span>
+                <span className="text-sm font-medium">{r.range}</span>
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </ClientPortalLayout>
   );
 }
