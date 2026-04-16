@@ -25,7 +25,7 @@ const ASSET_CATEGORIES = [
   'Bargeld', 'Bankkonto', 'Säule 3a', 'Pensionskasse', 'Aktien/ETF', 'Immobilien', 'Sonstiges',
 ] as const;
 
-const LIABILITY_CATEGORIES = ['Hypothek', 'Konsumkredit', 'Sonstiges'] as const;
+const LIABILITY_CATEGORIES = ['Hypothek', 'Autoleasing', 'Privatkredit', 'Kreditkarten', 'Sonstiges'] as const;
 
 const ASSET_ICONS: Record<string, string> = {
   'Bargeld': '💵', 'Bankkonto': '🏦', 'Säule 3a': '🔐', 'Pensionskasse': '🏛️',
@@ -102,6 +102,9 @@ export default function ClientPortalNetWorth() {
   const [liabName, setLiabName] = useState('');
   const [liabCategory, setLiabCategory] = useState<string>(LIABILITY_CATEGORIES[0]);
   const [liabAmount, setLiabAmount] = useState('');
+  const [liabMonthlyPayment, setLiabMonthlyPayment] = useState('');
+  const [liabInterestRate, setLiabInterestRate] = useState('');
+  const [liabEndDate, setLiabEndDate] = useState('');
   const [liabUrl, setLiabUrl] = useState('');
 
   const { data: assets = [] } = useQuery({
@@ -260,11 +263,17 @@ export default function ClientPortalNetWorth() {
     mutationFn: async () => {
       if (!user) throw new Error('Not authenticated');
       const val = parseFloat(liabAmount);
+      const monthlyVal = liabMonthlyPayment ? parseFloat(liabMonthlyPayment) : 0;
+      const interestVal = liabInterestRate ? parseFloat(liabInterestRate) : null;
+      const endDateVal = liabEndDate || null;
       const { data, error } = await supabase.from('net_worth_liabilities').insert({
         user_id: user.id,
         name: liabName,
         category: liabCategory,
         amount: val,
+        monthly_payment: monthlyVal,
+        interest_rate: interestVal,
+        end_date: endDateVal,
         platform_url: liabUrl || null,
       }).select('id').single();
       if (error) throw error;
@@ -338,7 +347,7 @@ export default function ClientPortalNetWorth() {
   });
 
   const resetAssetForm = () => { setAssetName(''); setAssetCategory(ASSET_CATEGORIES[0]); setAssetValue(''); setAssetUrl(''); };
-  const resetLiabForm = () => { setLiabName(''); setLiabCategory(LIABILITY_CATEGORIES[0]); setLiabAmount(''); setLiabUrl(''); };
+  const resetLiabForm = () => { setLiabName(''); setLiabCategory(LIABILITY_CATEGORIES[0]); setLiabAmount(''); setLiabMonthlyPayment(''); setLiabInterestRate(''); setLiabEndDate(''); setLiabUrl(''); };
 
   const openDetail = (entry: any, type: 'asset' | 'liability') => {
     setDetailEntry(entry);
@@ -506,10 +515,10 @@ export default function ClientPortalNetWorth() {
                 <Plus className="h-4 w-4" /> Verbindlichkeit
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-h-[85vh] overflow-y-auto">
               <DialogHeader><DialogTitle>Neue Verbindlichkeit</DialogTitle></DialogHeader>
               <div className="space-y-4 pt-2">
-                <div><Label>Name</Label><Input value={liabName} onChange={e => setLiabName(e.target.value)} placeholder="z.B. Hypothek" /></div>
+                <div><Label>Name</Label><Input value={liabName} onChange={e => setLiabName(e.target.value)} placeholder="z.B. Hypothek UBS" /></div>
                 <div>
                   <Label>Kategorie</Label>
                   <Select value={liabCategory} onValueChange={setLiabCategory}>
@@ -519,11 +528,69 @@ export default function ClientPortalNetWorth() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div><Label>Betrag (CHF)</Label><Input type="number" min="0" step="100" value={liabAmount} onChange={e => setLiabAmount(e.target.value)} placeholder="0" /></div>
+                <div>
+                  <Label>Restschuld (CHF)</Label>
+                  <p className="text-[11px] text-muted-foreground mb-1">Wie viel bist du noch schuldig?</p>
+                  <Input type="number" min="0" step="100" value={liabAmount} onChange={e => setLiabAmount(e.target.value)} placeholder="0" />
+                </div>
+                <div>
+                  <Label>Monatliche Rate (CHF)</Label>
+                  <p className="text-[11px] text-muted-foreground mb-1">Was zahlst du jeden Monat an Rate?</p>
+                  <Input type="number" min="0" step="10" value={liabMonthlyPayment} onChange={e => setLiabMonthlyPayment(e.target.value)} placeholder="0" />
+                </div>
+                <div>
+                  <Label>Zinssatz pro Jahr (%) — optional</Label>
+                  <Input type="number" min="0" step="0.1" value={liabInterestRate} onChange={e => setLiabInterestRate(e.target.value)} placeholder="z.B. 1.5" />
+                </div>
+                <div>
+                  <Label>Enddatum (optional)</Label>
+                  <Input type="date" value={liabEndDate} onChange={e => setLiabEndDate(e.target.value)} />
+                </div>
                 <div>
                   <Label className="flex items-center gap-1.5"><ExternalLink className="h-3.5 w-3.5" /> Link zur Plattform (optional)</Label>
                   <Input type="url" value={liabUrl} onChange={e => setLiabUrl(e.target.value)} placeholder="z.B. https://www.postfinance.ch" />
                 </div>
+
+                {/* Impact preview */}
+                {liabAmount && parseFloat(liabAmount) > 0 && (
+                  <Card className="bg-muted/50">
+                    <CardContent className="py-3 space-y-1.5">
+                      <p className="text-xs font-medium text-muted-foreground">Auswirkungen</p>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Vermögen:</span>
+                        <span className="font-medium text-destructive">- {fmtCHF(parseFloat(liabAmount))}</span>
+                      </div>
+                      {liabMonthlyPayment && parseFloat(liabMonthlyPayment) > 0 && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Cashflow:</span>
+                          <span className="font-medium text-destructive">- {fmtCHF(parseFloat(liabMonthlyPayment))} / Mt.</span>
+                        </div>
+                      )}
+                      {liabAmount && liabMonthlyPayment && parseFloat(liabMonthlyPayment) > 0 && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Schuldenfrei in:</span>
+                          <span className="font-medium">
+                            {(() => {
+                              const months = Math.ceil(parseFloat(liabAmount) / parseFloat(liabMonthlyPayment));
+                              const years = Math.floor(months / 12);
+                              const rem = months % 12;
+                              return years > 0 ? `${years} J. ${rem} Mt.` : `${rem} Mt.`;
+                            })()}
+                          </span>
+                        </div>
+                      )}
+                      {monthlyExpenses > 0 && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">PeakScore-Effekt:</span>
+                          <span className="font-medium text-destructive">
+                            -{(parseFloat(liabAmount) / monthlyExpenses).toFixed(1)} Monate
+                          </span>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+
                 <Button onClick={() => addLiability.mutate()} disabled={!liabName || !liabAmount || parseFloat(liabAmount) <= 0 || addLiability.isPending} className="w-full">Speichern</Button>
               </div>
             </DialogContent>
@@ -610,7 +677,12 @@ export default function ClientPortalNetWorth() {
                     <button className="flex items-center gap-2.5 min-w-0 text-left" onClick={() => openDetail(l, 'liability')}>
                       <div className="min-w-0">
                         <p className="text-sm font-medium truncate">{l.name}</p>
-                        <p className="text-[11px] text-muted-foreground">{l.category}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-[11px] text-muted-foreground">{l.category}</p>
+                          {Number(l.monthly_payment) > 0 && (
+                            <p className="text-[11px] text-muted-foreground">• {fmtCHF(Number(l.monthly_payment))}/Mt.</p>
+                          )}
+                        </div>
                       </div>
                       {l.platform_url && (
                         <button
@@ -686,11 +758,55 @@ export default function ClientPortalNetWorth() {
 
               {/* Current value */}
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Aktueller Wert</span>
+                <span className="text-sm text-muted-foreground">
+                  {detailType === 'liability' ? 'Restschuld' : 'Aktueller Wert'}
+                </span>
                 <span className={cn("text-lg font-bold", detailType === 'asset' ? "text-foreground" : "text-destructive")}>
                   {fmtCHF(Number(detailType === 'asset' ? detailEntry.value : detailEntry.amount))}
                 </span>
               </div>
+
+              {/* Liability-specific details */}
+              {detailType === 'liability' && (
+                <div className="space-y-2">
+                  {Number(detailEntry.monthly_payment) > 0 && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Monatliche Rate</span>
+                      <span className="text-sm font-semibold text-destructive">{fmtCHF(Number(detailEntry.monthly_payment))} / Mt.</span>
+                    </div>
+                  )}
+                  {detailEntry.interest_rate != null && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Zinssatz</span>
+                      <span className="text-sm font-medium">{Number(detailEntry.interest_rate).toFixed(2)}%</span>
+                    </div>
+                  )}
+                  {detailEntry.end_date && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Enddatum</span>
+                      <span className="text-sm font-medium">{new Date(detailEntry.end_date).toLocaleDateString('de-CH')}</span>
+                    </div>
+                  )}
+                  {Number(detailEntry.monthly_payment) > 0 && Number(detailEntry.amount) > 0 && (
+                    <Card className="bg-muted/50">
+                      <CardContent className="py-2.5 space-y-1">
+                        <p className="text-xs font-medium text-muted-foreground">Payoff-Rechner</p>
+                        <p className="text-sm">
+                          Bei aktueller Rate schuldenfrei in:{' '}
+                          <span className="font-semibold">
+                            {(() => {
+                              const months = Math.ceil(Number(detailEntry.amount) / Number(detailEntry.monthly_payment));
+                              const years = Math.floor(months / 12);
+                              const rem = months % 12;
+                              return years > 0 ? `${years} Jahren und ${rem} Monaten` : `${rem} Monaten`;
+                            })()}
+                          </span>
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              )}
 
               {/* Last updated */}
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">

@@ -2287,7 +2287,10 @@ export type Database = {
           amount: number
           category: string
           created_at: string
+          end_date: string | null
           id: string
+          interest_rate: number | null
+          monthly_payment: number | null
           name: string
           platform_url: string | null
           updated_at: string
@@ -2297,7 +2300,10 @@ export type Database = {
           amount?: number
           category: string
           created_at?: string
+          end_date?: string | null
           id?: string
+          interest_rate?: number | null
+          monthly_payment?: number | null
           name: string
           platform_url?: string | null
           updated_at?: string
@@ -2307,7 +2313,10 @@ export type Database = {
           amount?: number
           category?: string
           created_at?: string
+          end_date?: string | null
           id?: string
+          interest_rate?: number | null
+          monthly_payment?: number | null
           name?: string
           platform_url?: string | null
           updated_at?: string
