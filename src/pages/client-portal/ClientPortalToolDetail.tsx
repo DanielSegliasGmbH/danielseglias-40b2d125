@@ -44,6 +44,7 @@ import { LohnerhoherTool } from '@/components/tools/lohnerhoher/LohnerhoherTool'
 import { MeinFinanzplanTool } from '@/components/tools/mein-finanzplan/MeinFinanzplanTool';
 import { KontenModellTool } from '@/components/tools/konten-modell/KontenModellTool';
 import { HumankapitalTool } from '@/components/tools/humankapital/HumankapitalTool';
+import { SteuerrechnerTool } from '@/components/tools/steuerrechner/SteuerrechnerTool';
 import { RecommendationCards } from '@/components/client-portal/RecommendationCards';
 import { TOOL_RECOMMENDATIONS } from '@/config/recommendationConfig';
 
@@ -161,6 +162,8 @@ export default function ClientPortalToolDetail() {
         return <KontenModellTool mode="internal" />;
       case 'humankapital':
         return <HumankapitalTool mode="internal" />;
+      case 'steuerrechner':
+        return <SteuerrechnerTool mode="internal" />;
       default:
         return (
           <Card>
