@@ -265,7 +265,7 @@ export default function ClientPortalHome() {
 
   return (
     <ClientPortalLayout>
-      <div className="max-w-2xl mx-auto space-y-5">
+      <div className="max-w-2xl mx-auto space-y-5 overflow-x-hidden w-full">
 
         {/* ── 1. HEADER ── */}
         <div className="flex items-center justify-between">
@@ -429,7 +429,7 @@ export default function ClientPortalHome() {
         </motion.div>
 
         {/* ── 3. FINANZ-COCKPIT ── */}
-        <div className="px-4">
+        <div>
           <div className="grid grid-cols-2 gap-2">
             {cockpitCards.map((card, i) => (
               <motion.div
