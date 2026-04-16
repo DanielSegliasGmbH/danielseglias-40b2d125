@@ -26,6 +26,7 @@ import { RankChangeOverlay } from '@/components/client-portal/RankChangeOverlay'
 import { useRankSystem } from '@/hooks/useRankSystem';
 import { usePeakScore } from '@/hooks/usePeakScore';
 import { FreedomCountdown } from '@/components/client-portal/FreedomCountdown';
+import { useUserAvatar } from '@/hooks/useUserAvatar';
 
 const LEVEL_ICONS = [null, Zap, Star, Trophy, Award, Crown];
 
