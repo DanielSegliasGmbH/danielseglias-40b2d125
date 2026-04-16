@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -93,14 +94,10 @@ export default function ClientPortalLibrary() {
     const cat = getCategoryById(currentArticle.categoryId);
     return (
       <ClientPortalLayout>
-        <div className="max-w-3xl mx-auto">
-          <Button
-            variant="ghost" size="sm" className="mb-6 text-muted-foreground"
-            onClick={() => setActiveArticle(null)}
-          >
-            <ArrowLeft className="h-4 w-4 mr-1" />
-            {cat ? cat.title : 'Zurück'}
-          </Button>
+        <ScreenHeader
+          title={currentArticle.title}
+          breadcrumb={['Bibliothek', cat?.title || '', currentArticle.title]}
+        />
           <ArticleDetail
             article={currentArticle}
             isRead={readSet.has(currentArticle.id)}
@@ -128,14 +125,11 @@ export default function ClientPortalLibrary() {
     const readCount = catArticles.filter(a => readSet.has(a.id)).length;
     return (
       <ClientPortalLayout>
-        <div className="max-w-4xl mx-auto">
-          <Button
-            variant="ghost" size="sm" className="mb-6 text-muted-foreground"
-            onClick={() => setActiveCategory(null)}
-          >
-            <ArrowLeft className="h-4 w-4 mr-1" />
-            Alle Kategorien
-          </Button>
+        <ScreenHeader
+          title={currentCategory.title}
+          breadcrumb={['Bibliothek', currentCategory.title]}
+          backTo="/app/client-portal/library"
+        />
           <CategoryHeader category={currentCategory} />
           <div className="mt-4 mb-6">
             <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
@@ -162,18 +156,8 @@ export default function ClientPortalLibrary() {
   // Main Library View
   return (
     <ClientPortalLayout>
+      <ScreenHeader title="📚 Wissensbibliothek" backTo="/app/client-portal" />
       <div className="max-w-5xl mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-            <BookOpen className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Wissensbibliothek</h1>
-            <p className="text-muted-foreground text-sm">
-              {readSet.size} von {allArticles.length} Artikeln gelesen
-            </p>
-          </div>
-        </div>
 
         {/* Search */}
         <div className="relative mb-6">
