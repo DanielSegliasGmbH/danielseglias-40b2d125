@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -270,6 +271,19 @@ export default function ClientPortalFriends() {
       <ScreenHeader title="Deine Finanz-Crew" backTo="/app/client-portal" />
 
       <div className="px-4 pb-32 space-y-6 max-w-lg mx-auto">
+        {/* Communities Link */}
+        <Link to="/app/client-portal/communities">
+          <Card className="border-primary/20 bg-primary/5 cursor-pointer active:scale-[0.99] transition-transform">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-lg">👥</div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-foreground">Communities</p>
+                <p className="text-[11px] text-muted-foreground">Anonymer Austausch mit Gleichgesinnten</p>
+              </div>
+              <span className="text-xs text-primary font-medium">Entdecken →</span>
+            </CardContent>
+          </Card>
+        </Link>
         {/* Invite + Add Friend sections */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
           <Card>
