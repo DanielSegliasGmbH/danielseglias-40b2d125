@@ -337,10 +337,10 @@ export function HumankapitalTool({ mode = 'internal' }: Props) {
 
             {/* Wake-up call */}
             {results.milestones.length > 0 && (
-              <Card className="border-amber-500/30 bg-amber-500/5">
+            <Card className="border-[hsl(var(--warning))]/30 bg-[hsl(var(--warning))]/5">
                 <CardContent className="py-5 space-y-3">
                   <div className="flex items-center gap-2">
-                    <AlertCircle className="h-4 w-4 text-amber-500" />
+                    <AlertCircle className="h-4 w-4 text-[hsl(var(--warning))]" />
                     <p className="text-sm font-semibold">Wichtig zu verstehen:</p>
                   </div>
                   {results.milestones.map(m => (
