@@ -820,6 +820,232 @@ export default function ClientPortalSnapshot() {
   );
 }
 
+// ── Vorsorge Step ─────────────────────────────────
+
+function VorsorgeEntryList<T extends { id: string; balance: string; provider: string; expected_return: string; link: string }>({
+  label,
+  emoji,
+  hint,
+  articleId,
+  entries,
+  skipped,
+  onToggleSkipped,
+  onAdd,
+  onRemove,
+  onUpdate,
+  newLabel,
+}: {
+  label: string;
+  emoji: string;
+  hint: string;
+  articleId?: string;
+  entries: T[];
+  skipped: boolean;
+  onToggleSkipped: (v: boolean) => void;
+  onAdd: () => void;
+  onRemove: (id: string) => void;
+  onUpdate: (id: string, field: keyof T, value: string) => void;
+  newLabel: string;
+}) {
+  const navigate = useNavigate();
+  const total = entries.reduce((s, e) => s + n(e.balance), 0);
+
+  return (
+    <Card className={cn(skipped && "opacity-60")}>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+            <span>{emoji}</span> {label}
+          </h3>
+          <label className="flex items-center gap-1.5 cursor-pointer">
+            <Checkbox
+              checked={skipped}
+              onCheckedChange={(v) => onToggleSkipped(!!v)}
+              className="h-3.5 w-3.5"
+            />
+            <span className="text-[10px] text-muted-foreground">Nicht bekannt</span>
+          </label>
+        </div>
+
+        {!skipped && (
+          <>
+            {entries.map((entry, idx) => (
+              <div key={entry.id} className="space-y-2 bg-muted/30 rounded-xl p-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-muted-foreground">
+                    {label} {entries.length > 1 ? `#${idx + 1}` : ''}
+                  </span>
+                  {entries.length > 1 && (
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onRemove(entry.id)}>
+                      <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
+                    </Button>
+                  )}
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Guthaben</Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                    <Input
+                      type="text"
+                      inputMode="decimal"
+                      value={entry.balance}
+                      onChange={(e) => onUpdate(entry.id, 'balance' as keyof T, e.target.value.replace(/[^0-9.]/g, ''))}
+                      placeholder="0"
+                      className="pl-11 text-right"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Anbieter</Label>
+                  <Input
+                    type="text"
+                    value={entry.provider}
+                    onChange={(e) => onUpdate(entry.id, 'provider' as keyof T, e.target.value)}
+                    placeholder="z.B. Swiss Life, VIAC, UBS..."
+                    maxLength={100}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Erwartete Rendite p.a. (%)</Label>
+                  <Input
+                    type="text"
+                    inputMode="decimal"
+                    value={entry.expected_return}
+                    onChange={(e) => onUpdate(entry.id, 'expected_return' as keyof T, e.target.value.replace(/[^0-9.]/g, ''))}
+                    placeholder="z.B. 5"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground flex items-center gap-1">
+                    <ExternalLink className="h-3 w-3" /> Link zum Portal (optional)
+                  </Label>
+                  <Input
+                    type="url"
+                    value={entry.link}
+                    onChange={(e) => onUpdate(entry.id, 'link' as keyof T, e.target.value)}
+                    placeholder="https://..."
+                    maxLength={500}
+                  />
+                </div>
+              </div>
+            ))}
+
+            <Button variant="outline" size="sm" className="w-full gap-1.5" onClick={onAdd}>
+              <Plus className="h-3.5 w-3.5" /> {newLabel}
+            </Button>
+
+            {total > 0 && (
+              <div className="text-right text-xs text-muted-foreground">
+                Total: <span className="font-semibold text-foreground">CHF {total.toLocaleString('de-CH')}</span>
+              </div>
+            )}
+          </>
+        )}
+
+        {hint && (
+          <div className="flex gap-2 bg-muted/50 rounded-lg p-2.5">
+            <Info className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
+            <p className="text-[11px] text-muted-foreground leading-relaxed">{hint}</p>
+          </div>
+        )}
+
+        {articleId && (
+          <InfoHint text="" articleId={articleId} className="mt-0" />
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function VorsorgeStep({
+  draft, updateDraft, updateField, updateAmount, ahvSuggestion,
+}: {
+  draft: SnapshotDraft;
+  updateDraft: (fn: (prev: SnapshotDraft) => SnapshotDraft) => void;
+  updateField: (key: keyof SnapshotDraft, field: keyof SnapshotFieldValue, value: string | boolean) => void;
+  updateAmount: (key: keyof SnapshotDraft, value: string) => void;
+  ahvSuggestion?: string;
+}) {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <span className="text-xl">🏛️</span>
+        <h2 className="text-base font-bold text-foreground">Vorsorge</h2>
+      </div>
+
+      {/* Säule 3a */}
+      <VorsorgeEntryList<Pillar3aEntry>
+        label="Säule 3a"
+        emoji="💎"
+        hint="Du findest den Betrag auf deinem 3a-Kontoauszug oder im Online-Portal."
+        articleId="3a-steuervorteile"
+        entries={draft.pillar_3a_entries}
+        skipped={draft.pillar_3a_skipped}
+        onToggleSkipped={(v) => updateDraft(d => ({ ...d, pillar_3a_skipped: v }))}
+        onAdd={() => updateDraft(d => ({ ...d, pillar_3a_entries: [...d.pillar_3a_entries, newPillar3aEntry()] }))}
+        onRemove={(id) => updateDraft(d => ({ ...d, pillar_3a_entries: d.pillar_3a_entries.filter(e => e.id !== id) }))}
+        onUpdate={(id, field, value) => updateDraft(d => ({
+          ...d,
+          pillar_3a_entries: d.pillar_3a_entries.map(e => e.id === id ? { ...e, [field]: value } : e),
+        }))}
+        newLabel="Weitere 3a hinzufügen"
+      />
+
+      {/* Freizügigkeit */}
+      <VorsorgeEntryList<FreizuegigkeitEntry>
+        label="Freizügigkeit"
+        emoji="🔄"
+        hint="Falls du in der Vergangenheit die Stelle gewechselt hast, könnte hier Geld liegen."
+        articleId="vorsorgeluecke"
+        entries={draft.freizuegigkeit_entries}
+        skipped={draft.freizuegigkeit_skipped}
+        onToggleSkipped={(v) => updateDraft(d => ({ ...d, freizuegigkeit_skipped: v }))}
+        onAdd={() => updateDraft(d => ({ ...d, freizuegigkeit_entries: [...d.freizuegigkeit_entries, newFreizuegigkeitEntry()] }))}
+        onRemove={(id) => updateDraft(d => ({ ...d, freizuegigkeit_entries: d.freizuegigkeit_entries.filter(e => e.id !== id) }))}
+        onUpdate={(id, field, value) => updateDraft(d => ({
+          ...d,
+          freizuegigkeit_entries: d.freizuegigkeit_entries.map(e => e.id === id ? { ...e, [field]: value } : e),
+        }))}
+        newLabel="Weiteres Freizügigkeitskonto"
+      />
+
+      {/* Pensionskasse */}
+      <VorsorgeEntryList<PensionskasseEntry>
+        label="Pensionskasse (BVG)"
+        emoji="🏛️"
+        hint="Diesen Betrag findest du auf deinem Pensionskassenausweis unter 'Austrittsleistung' oder 'Freizügigkeitsleistung'."
+        articleId="drei-saeulen-system"
+        entries={draft.pensionskasse_entries}
+        skipped={draft.pensionskasse_skipped}
+        onToggleSkipped={(v) => updateDraft(d => ({ ...d, pensionskasse_skipped: v }))}
+        onAdd={() => updateDraft(d => ({ ...d, pensionskasse_entries: [...d.pensionskasse_entries, newPensionskasseEntry()] }))}
+        onRemove={(id) => updateDraft(d => ({ ...d, pensionskasse_entries: d.pensionskasse_entries.filter(e => e.id !== id) }))}
+        onUpdate={(id, field, value) => updateDraft(d => ({
+          ...d,
+          pensionskasse_entries: d.pensionskasse_entries.map(e => e.id === id ? { ...e, [field]: value } : e),
+        }))}
+        newLabel="Weitere Pensionskasse"
+      />
+
+      {/* AHV - single field */}
+      <SnapshotFieldCard
+        config={{
+          key: 'ahv_annual',
+          label: 'AHV (geschätzte Jahresrente)',
+          emoji: '🇨🇭',
+          hint: 'Deine AHV-Rente wird basierend auf deinem Einkommen geschätzt. Du kannst den genauen Betrag bei deiner Ausgleichskasse anfragen.',
+          articleId: 'ahv-grundlagen',
+          isCHF: true,
+        }}
+        value={draft.ahv_annual}
+        onChange={(f, v) => updateField('ahv_annual', f, v)}
+        onAmountChange={(v) => updateAmount('ahv_annual', v)}
+        ahvSuggestion={ahvSuggestion}
+      />
+    </div>
+  );
+}
+
 // ── Bank & Cash Step ──────────────────────────────
 
 function BankCashStep({
