@@ -3201,6 +3201,39 @@ export type Database = {
         }
         Relationships: []
       }
+      shadow_twin_snapshots: {
+        Row: {
+          aggregated_data: Json
+          created_at: string
+          demographic_key: string
+          id: string
+          sample_size: number
+          twin_actions: Json
+          updated_at: string
+          week_key: string
+        }
+        Insert: {
+          aggregated_data?: Json
+          created_at?: string
+          demographic_key: string
+          id?: string
+          sample_size?: number
+          twin_actions?: Json
+          updated_at?: string
+          week_key: string
+        }
+        Update: {
+          aggregated_data?: Json
+          created_at?: string
+          demographic_key?: string
+          id?: string
+          sample_size?: number
+          twin_actions?: Json
+          updated_at?: string
+          week_key?: string
+        }
+        Relationships: []
+      }
       smart_notifications: {
         Row: {
           body: string
