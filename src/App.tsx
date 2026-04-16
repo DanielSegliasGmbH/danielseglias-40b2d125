@@ -78,6 +78,8 @@ import ClientPortalCommunities from "./pages/client-portal/ClientPortalCommuniti
 import ClientPortalHabits from "./pages/client-portal/ClientPortalHabits";
 import ClientPortalAvatar from "./pages/client-portal/ClientPortalAvatar";
 import ClientPortalManifest from "./pages/client-portal/ClientPortalManifest";
+import ClientPortalSuccessStories from "./pages/client-portal/ClientPortalSuccessStories";
+import AdminSuccessStories from "./pages/AdminSuccessStories";
 
 // Insurance Consulting Pages
 import InsuranceConsultingStart from "./pages/insurance-consulting/InsuranceConsultingStart";
@@ -251,6 +253,14 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['admin']}>
                     <AdminChat />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/success-stories"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminSuccessStories />
                   </RouteGuard>
                 }
               />
@@ -592,6 +602,14 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['client', 'admin']}>
                     <ClientPortalSettings />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/success-stories"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalSuccessStories />
                   </RouteGuard>
                 }
               />

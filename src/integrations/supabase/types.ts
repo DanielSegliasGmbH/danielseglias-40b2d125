@@ -3158,6 +3158,66 @@ export type Database = {
         }
         Relationships: []
       }
+      success_stories: {
+        Row: {
+          actions_taken: Json
+          created_at: string
+          end_result: Json
+          goals: string | null
+          id: string
+          is_active: boolean
+          motivation_count: number
+          peakscore_journey: Json | null
+          persona_age: number | null
+          persona_context: string | null
+          persona_name: string
+          published_at: string | null
+          quote: string | null
+          start_situation: Json
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          actions_taken?: Json
+          created_at?: string
+          end_result?: Json
+          goals?: string | null
+          id?: string
+          is_active?: boolean
+          motivation_count?: number
+          peakscore_journey?: Json | null
+          persona_age?: number | null
+          persona_context?: string | null
+          persona_name: string
+          published_at?: string | null
+          quote?: string | null
+          start_situation?: Json
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          actions_taken?: Json
+          created_at?: string
+          end_result?: Json
+          goals?: string | null
+          id?: string
+          is_active?: boolean
+          motivation_count?: number
+          peakscore_journey?: Json | null
+          persona_age?: number | null
+          persona_context?: string | null
+          persona_name?: string
+          published_at?: string | null
+          quote?: string | null
+          start_situation?: Json
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       system_map_edges: {
         Row: {
           created_at: string
