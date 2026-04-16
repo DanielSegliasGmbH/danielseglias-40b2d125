@@ -98,12 +98,12 @@ export default function ClientPortalLibrary() {
           title={currentArticle.title}
           breadcrumb={['Bibliothek', cat?.title || '', currentArticle.title]}
         />
+        <div className="max-w-3xl mx-auto">
           <ArticleDetail
             article={currentArticle}
             isRead={readSet.has(currentArticle.id)}
             onComplete={() => {
               markAsRead.mutate(currentArticle.id);
-              // Check if first read today
               const today = new Date().toISOString().slice(0, 10);
               const hasReadToday = readArticles.some(r =>
                 r.first_read_at?.startsWith(today) && r.article_id !== currentArticle.id
@@ -130,6 +130,7 @@ export default function ClientPortalLibrary() {
           breadcrumb={['Bibliothek', currentCategory.title]}
           backTo="/app/client-portal/library"
         />
+        <div className="max-w-4xl mx-auto">
           <CategoryHeader category={currentCategory} />
           <div className="mt-4 mb-6">
             <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
