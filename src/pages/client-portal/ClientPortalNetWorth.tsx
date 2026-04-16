@@ -263,11 +263,17 @@ export default function ClientPortalNetWorth() {
     mutationFn: async () => {
       if (!user) throw new Error('Not authenticated');
       const val = parseFloat(liabAmount);
+      const monthlyVal = liabMonthlyPayment ? parseFloat(liabMonthlyPayment) : 0;
+      const interestVal = liabInterestRate ? parseFloat(liabInterestRate) : null;
+      const endDateVal = liabEndDate || null;
       const { data, error } = await supabase.from('net_worth_liabilities').insert({
         user_id: user.id,
         name: liabName,
         category: liabCategory,
         amount: val,
+        monthly_payment: monthlyVal,
+        interest_rate: interestVal,
+        end_date: endDateVal,
         platform_url: liabUrl || null,
       }).select('id').single();
       if (error) throw error;
