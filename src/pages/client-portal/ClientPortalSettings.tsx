@@ -17,7 +17,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Shield, Download, Trash2, AlertTriangle, Eye, Swords, FileBarChart, Loader2, Lightbulb, CalendarDays, Flame, MessageCircle } from 'lucide-react';
+import { Shield, Download, Trash2, AlertTriangle, Eye, Swords, FileBarChart, Loader2, Lightbulb, CalendarDays, Flame, MessageCircle, Volume2 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
@@ -367,7 +367,7 @@ function RitualSettingsSection({ userId }: { userId?: string }) {
       if (!userId) return null;
       const { data } = await supabase
         .from('profiles')
-        .select('payday_date, weekly_ritual_enabled, streak_rescue_enabled, future_self_messages_enabled')
+        .select('payday_date, weekly_ritual_enabled, streak_rescue_enabled, future_self_messages_enabled, voice_brief_enabled, voice_weekly_enabled')
         .eq('id', userId)
         .maybeSingle();
       return {
@@ -375,6 +375,8 @@ function RitualSettingsSection({ userId }: { userId?: string }) {
         weekly_ritual_enabled: (data as any)?.weekly_ritual_enabled ?? true,
         streak_rescue_enabled: (data as any)?.streak_rescue_enabled ?? true,
         future_self_messages_enabled: (data as any)?.future_self_messages_enabled ?? true,
+        voice_brief_enabled: (data as any)?.voice_brief_enabled ?? true,
+        voice_weekly_enabled: (data as any)?.voice_weekly_enabled ?? true,
       };
     },
     enabled: !!userId,
@@ -398,6 +400,20 @@ function RitualSettingsSection({ userId }: { userId?: string }) {
   if (!ritualSettings) return null;
 
   const RITUAL_TOGGLES = [
+    {
+      key: 'voice_brief_enabled',
+      label: 'Morgens-Brief (täglich)',
+      description: 'Personalisiertes Audio-Briefing am Morgen',
+      icon: Volume2,
+      value: (ritualSettings as any).voice_brief_enabled ?? true,
+    },
+    {
+      key: 'voice_weekly_enabled',
+      label: 'Sonntag-Reflexion (wöchentlich)',
+      description: '2-Minuten Audio-Reflexion jeden Sonntag',
+      icon: Volume2,
+      value: (ritualSettings as any).voice_weekly_enabled ?? true,
+    },
     {
       key: 'weekly_ritual_enabled',
       label: 'Wochenritual (Sonntag)',

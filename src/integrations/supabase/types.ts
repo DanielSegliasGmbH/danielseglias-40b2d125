@@ -2652,6 +2652,8 @@ export type Database = {
           theme_preference: string
           updated_at: string
           user_type: string
+          voice_brief_enabled: boolean
+          voice_weekly_enabled: boolean
           weekly_ritual_enabled: boolean
         }
         Insert: {
@@ -2677,6 +2679,8 @@ export type Database = {
           theme_preference?: string
           updated_at?: string
           user_type?: string
+          voice_brief_enabled?: boolean
+          voice_weekly_enabled?: boolean
           weekly_ritual_enabled?: boolean
         }
         Update: {
@@ -2702,6 +2706,8 @@ export type Database = {
           theme_preference?: string
           updated_at?: string
           user_type?: string
+          voice_brief_enabled?: boolean
+          voice_weekly_enabled?: boolean
           weekly_ritual_enabled?: boolean
         }
         Relationships: []
@@ -3635,6 +3641,33 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      weekly_audio_reflections: {
+        Row: {
+          created_at: string
+          id: string
+          listened: boolean
+          listened_at: string | null
+          user_id: string
+          week_key: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          listened?: boolean
+          listened_at?: string | null
+          user_id: string
+          week_key: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          listened?: boolean
+          listened_at?: string | null
+          user_id?: string
+          week_key?: string
         }
         Relationships: []
       }
