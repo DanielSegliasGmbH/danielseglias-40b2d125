@@ -2062,7 +2062,7 @@ function SnapshotHistory({
                       </span>
                     )}
                     <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
-                      <span>{filled} von {TOTAL_FIELDS} Felder ausgefüllt</span>
+                      <span>{filled} von {TOTAL_FIELDS} Felder bearbeitet</span>
                       {snap.peak_score != null && <span>PeakScore: {snap.peak_score}</span>}
                     </div>
                   </div>
