@@ -642,6 +642,14 @@ function App() {
                 }
               />
               <Route
+                path="/app/client-portal/journey"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalJourney />
+                  </RouteGuard>
+                }
+              />
+              <Route
                 path="/app/client-portal/snapshot"
                 element={
                   <RouteGuard allowedRoles={['client', 'admin']}>
