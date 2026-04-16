@@ -753,6 +753,8 @@ export default function ClientPortalSnapshot() {
               >
                 {isSummary ? (
                   <SummaryStep draft={draft} onNotesChange={(v) => setDraft(prev => ({ ...prev, notes: v }))} onEdit={() => setStep(step - 1)} />
+                ) : currentStepConfig?.type === 'vorsorge' ? (
+                  <VorsorgeStep draft={draft} updateDraft={updateDraft} updateField={updateField} updateAmount={updateAmount} ahvSuggestion={ahvSuggestion} />
                 ) : currentStepConfig?.type === 'bank_cash' ? (
                   <BankCashStep draft={draft} updateDraft={updateDraft} updateField={updateField} updateAmount={updateAmount} />
                 ) : currentStepConfig?.type === 'investments' ? (
