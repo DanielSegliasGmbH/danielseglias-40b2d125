@@ -328,9 +328,9 @@ export default function ClientPortalAvatar() {
               <Button
                 className="w-full"
                 size="lg"
-                onClick={() => navigate('/app/client-portal', { replace: true })}
+                onClick={() => navigate('/app/client-portal/manifest', { replace: true })}
               >
-                <Sparkles className="mr-2 w-4 h-4" /> Los geht's
+                <Sparkles className="mr-2 w-4 h-4" /> Weiter
               </Button>
             </motion.div>
           )}
