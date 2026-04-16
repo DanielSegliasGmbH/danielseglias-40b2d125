@@ -327,6 +327,62 @@ function App() {
                   </RouteGuard>
                 }
               />
+              <Route
+                path="/app/nudge-schedule"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminNudgeSchedule />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/communities"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminCommunities />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/journey-config"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminJourneyConfig />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/truth-moments"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminTruthMoments />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/voice-scripts"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminVoiceScripts />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/groups-feed"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminGroupsFeed />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/user-analytics"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminUserAnalytics />
+                  </RouteGuard>
+                }
+              />
               {/* Protected: Customer Detail (new structure) */}
               <Route
                 path="/app/customers/:id"
