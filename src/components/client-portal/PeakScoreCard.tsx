@@ -2,7 +2,8 @@ import { motion } from 'framer-motion';
 import { ArrowUp, ArrowDown, Shield } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { usePeakScore, getPeakScoreGradient, getPeakScoreBorderColor } from '@/hooks/usePeakScore';
+import { usePeakScore, getPeakScoreGradient, getPeakScoreBorderColor, RANKS } from '@/hooks/usePeakScore';
+import { useUserAvatar } from '@/hooks/useUserAvatar';
 
 interface PeakScoreCardProps {
   onClick: () => void;
@@ -23,6 +24,8 @@ function formatScoreHuman(score: number): { months: number; days: number; text: 
 
 export function PeakScoreCard({ onClick }: PeakScoreCardProps) {
   const { score, trend, loading, hasData, rank } = usePeakScore();
+  const { completed: hasAvatar, futureSelfName, avatar } = useUserAvatar();
+  const targetScore = RANKS[5].minScore; // Souverän = 120
 
   if (loading) {
     return (
@@ -79,6 +82,21 @@ export function PeakScoreCard({ onClick }: PeakScoreCardProps) {
               <span className="text-sm font-semibold text-foreground/80 mt-1.5">
                 {rank.emoji} {rank.name}
               </span>
+
+              {/* Future self progress */}
+              {hasAvatar && futureSelfName && displayScore && (
+                <div className="w-full mt-3 space-y-1.5">
+                  <p className="text-[11px] text-muted-foreground text-center">
+                    {futureSelfName} ist auf {targetScore}. Du bist auf {score}.
+                  </p>
+                  <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary rounded-full transition-all duration-700"
+                      style={{ width: `${Math.min(100, (score / targetScore) * 100)}%` }}
+                    />
+                  </div>
+                </div>
+              )}
 
               {trend !== null && trend !== 0 && (
                 <div className={cn(

@@ -26,6 +26,7 @@ import { RankChangeOverlay } from '@/components/client-portal/RankChangeOverlay'
 import { useRankSystem } from '@/hooks/useRankSystem';
 import { usePeakScore } from '@/hooks/usePeakScore';
 import { FreedomCountdown } from '@/components/client-portal/FreedomCountdown';
+import { useUserAvatar } from '@/hooks/useUserAvatar';
 
 const LEVEL_ICONS = [null, Zap, Star, Trophy, Award, Crown];
 
@@ -62,6 +63,7 @@ export default function ClientPortalHome() {
   const { score, rank: peakRank } = usePeakScore();
   const { completed: finanzTypCompleted, info: finanzTypInfo } = useFinanzType();
   const firstName = user?.user_metadata?.first_name || 'Kunde';
+  const { futureSelfName, completed: avatarCompleted } = useUserAvatar();
 
   const { data: lifeFilmData } = useQuery({
     queryKey: ['life-film-status', user?.id],
@@ -271,7 +273,9 @@ export default function ClientPortalHome() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
-              {getGreeting(firstName)}
+              {avatarCompleted && futureSelfName
+                ? `${futureSelfName} freut sich, dich zu sehen.`
+                : getGreeting(firstName)}
             </p>
             <h1 className="text-xl font-semibold tracking-tight text-foreground mt-0.5">
               {firstName}

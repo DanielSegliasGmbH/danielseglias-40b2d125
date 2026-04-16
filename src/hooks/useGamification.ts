@@ -150,6 +150,21 @@ function emitLevelUp(level: number, label: string) {
   levelUpListeners.forEach(fn => fn(level, label));
 }
 
+// Cache for future self name to avoid re-fetching
+let _futureNameCache: { userId: string; name: string | null } | null = null;
+async function getFutureSelfName(userId: string): Promise<string | null> {
+  if (_futureNameCache?.userId === userId) return _futureNameCache.name;
+  const { data } = await supabase
+    .from('user_avatars')
+    .select('future_self_name')
+    .eq('user_id', userId)
+    .eq('avatar_completed', true)
+    .maybeSingle();
+  const name = (data as any)?.future_self_name || null;
+  _futureNameCache = { userId, name };
+  return name;
+}
+
 export function useGamification() {
   const { user } = useAuth();
   const [points, setPoints] = useState(0);
@@ -159,6 +174,7 @@ export function useGamification() {
   const prevLevelRef = useRef<number>(1);
   const pointsRef = useRef(0);
   const initializedRef = useRef(false);
+  const futureNameRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (lastAwardedPoints !== null) {
@@ -171,6 +187,9 @@ export function useGamification() {
     if (!user) { setLoading(false); return; }
 
     const init = async () => {
+      // Pre-fetch future self name
+      futureNameRef.current = await getFutureSelfName(user.id);
+
       const { data, error } = await supabase
         .from('user_gamification')
         .select('*')
@@ -276,20 +295,21 @@ export function useGamification() {
     setStreakDays(newStreak);
 
     // Toasts
+    const fn = futureNameRef.current;
     if (streakBroken) {
-      toast('Neustart – heute beginnt dein neuer Lauf 💪', {
+      toast(fn ? `${fn} wartet. Gib nicht auf. 💪` : 'Neustart – heute beginnt dein neuer Lauf 💪', {
         description: 'Ab heute zählt wieder jeder Tag!',
       });
     } else if (newStreak > 1) {
       toast(`🔥 ${newStreak} Tage in Folge!`, {
-        description: `+${loginPoints} XP · Du bleibst dran!`,
+        description: fn ? `${fn} ist beeindruckt. +${loginPoints} XP` : `+${loginPoints} XP · Du bleibst dran!`,
       });
     }
 
     if (milestoneMsg) {
       setTimeout(() => {
         toast.success(milestoneMsg, {
-          description: `${newStreak} Tage Disziplin – das ist echte Stärke.`,
+          description: fn ? `${fn} sieht deinen Fortschritt.` : `${newStreak} Tage Disziplin – das ist echte Stärke.`,
         });
       }, 1500);
     }
@@ -355,9 +375,11 @@ export function useGamification() {
       pointsRef.current = newPoints;
       setLastAwardedPoints({ amount: pointsToAdd, id: Date.now() });
 
-      toast(`+${pointsToAdd} XP`, {
-        description: getActionMessage(actionType),
-      });
+      const fn = futureNameRef.current;
+      const desc = fn
+        ? `${getActionMessage(actionType)} · Ein Schritt näher zu ${fn}.`
+        : getActionMessage(actionType);
+      toast(`+${pointsToAdd} XP`, { description: desc });
 
       if (newLevelInfo.level > oldLevel) {
         emitLevelUp(newLevelInfo.level, newLevelInfo.label);
