@@ -272,6 +272,25 @@ export default function ClientPortalSettings() {
 
         <Separator />
 
+        {/* Partner-Modus */}
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-muted-foreground px-1">Partner-Modus</p>
+          <Card className="cursor-pointer hover:shadow-sm transition-shadow" onClick={() => window.location.href = '/app/client-portal/partner'}>
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <Heart className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground">Partner verbinden</p>
+                <p className="text-[11px] text-muted-foreground leading-tight">Teile deine Finanzen mit deinem Partner</p>
+              </div>
+              <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+            </CardContent>
+          </Card>
+        </div>
+
+        <Separator />
+
         {/* Rituale */}
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground px-1">Rituale & Engagement</p>
