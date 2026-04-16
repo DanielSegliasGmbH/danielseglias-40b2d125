@@ -619,6 +619,9 @@ export default function ClientPortalHome() {
           </motion.div>
         )}
 
+        {/* ── SUCCESS STORY ── */}
+        <SuccessStoryRotator />
+
         {/* ── 7. MONATSBERICHT LINK ── */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
           <Link to="/app/client-portal/monthly-report">
