@@ -86,7 +86,7 @@ export default function ClientPortalInvite() {
   return (
     <ClientPortalLayout>
       <div className="min-h-screen bg-background">
-        <ScreenHeader title="Freunde einladen" />
+        <ScreenHeader title="Freunde einladen" backTo="/app/client-portal/friends" />
 
         <div className="px-4 py-6 max-w-lg mx-auto space-y-5 pb-24">
           {/* Hero */}

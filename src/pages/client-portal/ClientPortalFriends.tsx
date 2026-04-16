@@ -267,7 +267,7 @@ export default function ClientPortalFriends() {
 
   return (
     <ClientPortalLayout>
-      <ScreenHeader title="Deine Finanz-Crew" />
+      <ScreenHeader title="Deine Finanz-Crew" backTo="/app/client-portal" />
 
       <div className="px-4 pb-32 space-y-6 max-w-lg mx-auto">
         {/* Invite + Add Friend sections */}

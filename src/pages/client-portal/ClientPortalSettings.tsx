@@ -216,7 +216,7 @@ export default function ClientPortalSettings() {
   return (
     <ClientPortalLayout>
       <div className="max-w-2xl mx-auto space-y-6">
-        <ScreenHeader title="Einstellungen" />
+        <ScreenHeader title="Einstellungen" backTo="/app/client-portal" />
 
         {/* Darstellung */}
         <div className="space-y-2">

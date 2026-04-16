@@ -92,7 +92,7 @@ export default function ClientPortalMemories() {
   return (
     <ClientPortalLayout>
       <PageTransition>
-      <ScreenHeader title={t('clientPortal.memories', 'Erinnerungen')} />
+      <ScreenHeader title={t('clientPortal.memories', 'Erinnerungen')} showBack={false} />
       <p className="text-sm text-muted-foreground mb-6">{t('clientPortal.memoriesDesc', 'Dein persönliches Aktivitäts-Logbuch')}</p>
 
       {/* Filters */}

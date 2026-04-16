@@ -100,7 +100,7 @@ export default function ClientPortalProfileData() {
 
   return (
     <ClientPortalLayout>
-      <ScreenHeader title="Mein Finanzprofil" />
+      <ScreenHeader title="Mein Finanzprofil" backTo="/app/client-portal/settings" />
 
       {/* Checkup Banner */}
       {needsCheckup && (
