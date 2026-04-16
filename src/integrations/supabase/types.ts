@@ -3032,6 +3032,7 @@ export type Database = {
           phone: string | null
           plan: string
           referral_code: string | null
+          shadow_twin_visible: boolean
           show_truth_moments: boolean
           streak_rescue_enabled: boolean
           theme_preference: string
@@ -3060,6 +3061,7 @@ export type Database = {
           phone?: string | null
           plan?: string
           referral_code?: string | null
+          shadow_twin_visible?: boolean
           show_truth_moments?: boolean
           streak_rescue_enabled?: boolean
           theme_preference?: string
@@ -3088,6 +3090,7 @@ export type Database = {
           phone?: string | null
           plan?: string
           referral_code?: string | null
+          shadow_twin_visible?: boolean
           show_truth_moments?: boolean
           streak_rescue_enabled?: boolean
           theme_preference?: string
