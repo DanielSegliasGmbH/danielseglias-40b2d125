@@ -53,13 +53,13 @@ export default function ClientPortalAvatar() {
   const { saveAvatar } = useUserAvatar();
   const { score, rank } = usePeakScore();
   const { info: finanzTypeInfo } = useFinanzType();
-  const { metaProfile } = useMetaProfile();
+  const { profile: metaProf } = useMetaProfile();
 
   const { data: userProfile } = useQuery({
     queryKey: ['profile-basic', user?.id],
     queryFn: async () => {
       if (!user) return null;
-      const { data } = await supabase.from('profiles').select('first_name, age').eq('id', user.id).maybeSingle();
+      const { data } = await supabase.from('profiles').select('first_name').eq('id', user.id).maybeSingle();
       return data;
     },
     enabled: !!user,
@@ -71,7 +71,7 @@ export default function ClientPortalAvatar() {
   const [futureAge, setFutureAge] = useState(50);
   const [definingMoment, setDefiningMoment] = useState('');
 
-  const currentAge = userProfile?.age || metaProfile?.age || 30;
+  const currentAge = metaProf?.age || 30;
   const currentName = userProfile?.first_name || 'Du';
   const minFutureAge = currentAge + 10;
   const maxFutureAge = Math.max(minFutureAge + 40, 95);
