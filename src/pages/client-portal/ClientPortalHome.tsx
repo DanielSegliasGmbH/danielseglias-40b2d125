@@ -24,6 +24,7 @@ import { WeeklyCheckCard } from '@/components/client-portal/WeeklyCheckCard';
 import { MorningBriefCard } from '@/components/client-portal/MorningBriefCard';
 import { SundayReflectionCard } from '@/components/client-portal/SundayReflectionCard';
 import { MoodCheckinCard } from '@/components/client-portal/MoodCheckinCard';
+import { InflationTickerCard } from '@/components/client-portal/InflationTickerCard';
 import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
 import { RankWarningBanner } from '@/components/client-portal/RankWarningBanner';
 import { RankChangeOverlay } from '@/components/client-portal/RankChangeOverlay';
