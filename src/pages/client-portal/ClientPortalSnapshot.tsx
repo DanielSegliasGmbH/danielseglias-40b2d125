@@ -539,7 +539,14 @@ export default function ClientPortalSnapshot() {
         merged.investment_positions_skipped = !!parsed.investment_positions_skipped;
         if (Array.isArray(parsed.crypto_positions)) merged.crypto_positions = parsed.crypto_positions;
         merged.crypto_positions_skipped = !!parsed.crypto_positions_skipped;
-        if (Array.isArray(parsed.properties)) merged.properties = parsed.properties;
+        if (Array.isArray(parsed.properties)) {
+          merged.properties = parsed.properties.map((p: any) => ({
+            ...p,
+            property_type: p.property_type || 'residential',
+            monthly_rent: p.monthly_rent || '',
+            monthly_costs: p.monthly_costs || '',
+          }));
+        }
         merged.owns_property = !!parsed.owns_property;
         if (Array.isArray(parsed.other_assets)) merged.other_assets = parsed.other_assets;
         merged.other_assets_skipped = !!parsed.other_assets_skipped;
