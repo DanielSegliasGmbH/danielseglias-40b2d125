@@ -46,7 +46,7 @@ export default function ClientPortalTools() {
 
   return (
     <ClientPortalLayout>
-      <div className="max-w-2xl mx-auto space-y-5 overflow-x-hidden w-full">
+      <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -152,7 +152,7 @@ export default function ClientPortalTools() {
                       <p className="text-[15px] font-semibold text-foreground truncate">
                         {resolveToolText(t, tool.name_key, 'name')}
                       </p>
-                      <p className="text-[13px] text-muted-foreground truncate">
+                      <p className="text-[13px] text-muted-foreground line-clamp-2">
                         {resolveToolText(t, tool.description_key, 'description')}
                       </p>
                     </div>
