@@ -75,6 +75,7 @@ import ClientPortalToolArchive from "./pages/client-portal/ClientPortalToolArchi
 import ClientPortalCalendar from "./pages/client-portal/ClientPortalCalendar";
 import ClientPortalHabits from "./pages/client-portal/ClientPortalHabits";
 import ClientPortalAvatar from "./pages/client-portal/ClientPortalAvatar";
+import ClientPortalManifest from "./pages/client-portal/ClientPortalManifest";
 
 // Insurance Consulting Pages
 import InsuranceConsultingStart from "./pages/insurance-consulting/InsuranceConsultingStart";
