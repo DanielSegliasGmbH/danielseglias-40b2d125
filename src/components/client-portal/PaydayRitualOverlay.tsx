@@ -141,7 +141,7 @@ export function PaydayRitualOverlay() {
       <div className="flex items-center justify-center gap-4 mb-6">
         <RankAvatar rank={1} size="lg" />
         <div className="text-2xl">→</div>
-        <RankAvatar rank={6} size="lg" isFutureSelf />
+        <RankAvatar rank={6} size="lg" variant="future" />
       </div>
       <p className="text-lg font-semibold text-foreground mb-2">
         Dein Zukunfts-Ich ist dabei.
