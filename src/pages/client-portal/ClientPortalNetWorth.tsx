@@ -261,11 +261,13 @@ export default function ClientPortalNetWorth() {
     mutationFn: async () => {
       if (!user) throw new Error('Not authenticated');
       const val = parseFloat(assetValue);
+      const returnVal = assetExpectedReturn ? parseFloat(assetExpectedReturn) : null;
       const { data, error } = await supabase.from('net_worth_assets').insert({
         user_id: user.id,
         name: assetName,
         category: assetCategory,
         value: val,
+        expected_return: returnVal,
         last_updated_date: new Date().toISOString().slice(0, 10),
         platform_url: assetUrl || null,
       }).select('id').single();
@@ -376,7 +378,7 @@ export default function ClientPortalNetWorth() {
     },
   });
 
-  const resetAssetForm = () => { setAssetName(''); setAssetCategory(ASSET_CATEGORIES[0]); setAssetValue(''); setAssetUrl(''); };
+  const resetAssetForm = () => { setAssetName(''); setAssetCategory(ASSET_CATEGORIES[0]); setAssetValue(''); setAssetExpectedReturn(String(DEFAULT_RETURNS[ASSET_CATEGORIES[0]])); setAssetUrl(''); };
   const resetLiabForm = () => { setLiabName(''); setLiabCategory(LIABILITY_CATEGORIES[0]); setLiabAmount(''); setLiabMonthlyPayment(''); setLiabInterestRate(''); setLiabEndDate(''); setLiabUrl(''); };
 
   const openDetail = (entry: any, type: 'asset' | 'liability') => {
@@ -516,13 +518,16 @@ export default function ClientPortalNetWorth() {
                 <Plus className="h-4 w-4" /> Vermögenswert
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-h-[85vh] overflow-y-auto">
               <DialogHeader><DialogTitle>Neuer Vermögenswert</DialogTitle></DialogHeader>
               <div className="space-y-4 pt-2">
                 <div><Label>Name</Label><Input value={assetName} onChange={e => setAssetName(e.target.value)} placeholder="z.B. Sparkonto UBS" /></div>
                 <div>
                   <Label>Kategorie</Label>
-                  <Select value={assetCategory} onValueChange={setAssetCategory}>
+                  <Select value={assetCategory} onValueChange={(val) => {
+                    setAssetCategory(val);
+                    setAssetExpectedReturn(String(DEFAULT_RETURNS[val] ?? 0));
+                  }}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {ASSET_CATEGORIES.map(c => <SelectItem key={c} value={c}>{ASSET_ICONS[c]} {c}</SelectItem>)}
@@ -530,6 +535,29 @@ export default function ClientPortalNetWorth() {
                   </Select>
                 </div>
                 <div><Label>Wert (CHF)</Label><Input type="number" min="0" step="100" value={assetValue} onChange={e => setAssetValue(e.target.value)} placeholder="0" /></div>
+                <div>
+                  <Label>Erwartete Rendite (% p.a.)</Label>
+                  <p className="text-[11px] text-muted-foreground mb-1">Realistische Jahresrendite nach Kosten und Inflation</p>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="range"
+                      min="0"
+                      max="15"
+                      step="0.5"
+                      value={assetExpectedReturn}
+                      onChange={e => setAssetExpectedReturn(e.target.value)}
+                      className="flex-1 accent-[hsl(var(--primary))]"
+                    />
+                    <span className="text-sm font-semibold w-12 text-right">{assetExpectedReturn}%</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="text-[11px] text-primary hover:underline mt-1"
+                    onClick={() => setShowReturnsRef(true)}
+                  >
+                    Typische Renditen →
+                  </button>
+                </div>
                 <div>
                   <Label className="flex items-center gap-1.5"><ExternalLink className="h-3.5 w-3.5" /> Link zur Plattform (optional)</Label>
                   <Input type="url" value={assetUrl} onChange={e => setAssetUrl(e.target.value)} placeholder="z.B. https://login.ubs.com" />
