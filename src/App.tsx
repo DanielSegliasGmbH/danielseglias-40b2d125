@@ -74,6 +74,7 @@ import ClientPortalSnapshot from "./pages/client-portal/ClientPortalSnapshot";
 import ClientPortalToolArchive from "./pages/client-portal/ClientPortalToolArchive";
 import ClientPortalCalendar from "./pages/client-portal/ClientPortalCalendar";
 import ClientPortalXray from "./pages/client-portal/ClientPortalXray";
+import ClientPortalCommunities from "./pages/client-portal/ClientPortalCommunities";
 import ClientPortalHabits from "./pages/client-portal/ClientPortalHabits";
 import ClientPortalAvatar from "./pages/client-portal/ClientPortalAvatar";
 import ClientPortalManifest from "./pages/client-portal/ClientPortalManifest";
@@ -575,6 +576,14 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['client', 'admin']}>
                     <ClientPortalFriends />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/communities"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalCommunities />
                   </RouteGuard>
                 }
               />
