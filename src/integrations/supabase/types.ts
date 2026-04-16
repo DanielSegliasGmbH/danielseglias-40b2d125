@@ -2222,6 +2222,51 @@ export type Database = {
         }
         Relationships: []
       }
+      monthly_rituals: {
+        Row: {
+          allocation_data: Json | null
+          created_at: string
+          expenses: number | null
+          id: string
+          income: number | null
+          month_key: string
+          monthly_intention: string | null
+          peak_score_change: number | null
+          savings: number | null
+          streak_count: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allocation_data?: Json | null
+          created_at?: string
+          expenses?: number | null
+          id?: string
+          income?: number | null
+          month_key: string
+          monthly_intention?: string | null
+          peak_score_change?: number | null
+          savings?: number | null
+          streak_count?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allocation_data?: Json | null
+          created_at?: string
+          expenses?: number | null
+          id?: string
+          income?: number | null
+          month_key?: string
+          monthly_intention?: string | null
+          peak_score_change?: number | null
+          savings?: number | null
+          streak_count?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       monthly_summaries: {
         Row: {
           created_at: string
@@ -2592,18 +2637,22 @@ export type Database = {
           current_rank: number
           deletion_requested_at: string | null
           first_name: string
+          future_self_messages_enabled: boolean
           has_strategy_access: boolean
           id: string
           last_name: string
           leaderboard_visible: boolean
+          payday_date: number
           peak_score_visible: boolean
           phone: string | null
           plan: string
           referral_code: string | null
           show_truth_moments: boolean
+          streak_rescue_enabled: boolean
           theme_preference: string
           updated_at: string
           user_type: string
+          weekly_ritual_enabled: boolean
         }
         Insert: {
           account_status?: string
@@ -2613,18 +2662,22 @@ export type Database = {
           current_rank?: number
           deletion_requested_at?: string | null
           first_name: string
+          future_self_messages_enabled?: boolean
           has_strategy_access?: boolean
           id: string
           last_name: string
           leaderboard_visible?: boolean
+          payday_date?: number
           peak_score_visible?: boolean
           phone?: string | null
           plan?: string
           referral_code?: string | null
           show_truth_moments?: boolean
+          streak_rescue_enabled?: boolean
           theme_preference?: string
           updated_at?: string
           user_type?: string
+          weekly_ritual_enabled?: boolean
         }
         Update: {
           account_status?: string
@@ -2634,18 +2687,22 @@ export type Database = {
           current_rank?: number
           deletion_requested_at?: string | null
           first_name?: string
+          future_self_messages_enabled?: boolean
           has_strategy_access?: boolean
           id?: string
           last_name?: string
           leaderboard_visible?: boolean
+          payday_date?: number
           peak_score_visible?: boolean
           phone?: string | null
           plan?: string
           referral_code?: string | null
           show_truth_moments?: boolean
+          streak_rescue_enabled?: boolean
           theme_preference?: string
           updated_at?: string
           user_type?: string
+          weekly_ritual_enabled?: boolean
         }
         Relationships: []
       }
@@ -2813,6 +2870,33 @@ export type Database = {
           draft_data?: Json
           id?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      streak_rescues: {
+        Row: {
+          created_at: string
+          id: string
+          rescue_type: string
+          rescued_at: string
+          rescued_by: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          rescue_type?: string
+          rescued_at?: string
+          rescued_by?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          rescue_type?: string
+          rescued_at?: string
+          rescued_by?: string | null
           user_id?: string
         }
         Relationships: []
@@ -3584,6 +3668,39 @@ export type Database = {
           updated_at?: string
           user_id?: string
           week_key?: string
+        }
+        Relationships: []
+      }
+      weekly_reflections: {
+        Row: {
+          created_at: string
+          focus_next_week: string | null
+          id: string
+          peak_score_change: number | null
+          tasks_completed: number | null
+          user_id: string
+          week_key: string
+          xp_earned: number | null
+        }
+        Insert: {
+          created_at?: string
+          focus_next_week?: string | null
+          id?: string
+          peak_score_change?: number | null
+          tasks_completed?: number | null
+          user_id: string
+          week_key: string
+          xp_earned?: number | null
+        }
+        Update: {
+          created_at?: string
+          focus_next_week?: string | null
+          id?: string
+          peak_score_change?: number | null
+          tasks_completed?: number | null
+          user_id?: string
+          week_key?: string
+          xp_earned?: number | null
         }
         Relationships: []
       }
