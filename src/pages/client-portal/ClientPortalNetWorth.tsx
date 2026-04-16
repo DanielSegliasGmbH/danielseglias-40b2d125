@@ -824,7 +824,27 @@ export default function ClientPortalNetWorth() {
                 </span>
               </div>
 
-              {/* Liability-specific details */}
+              {/* Asset projections */}
+              {detailType === 'asset' && detailEntry.expected_return != null && Number(detailEntry.expected_return) > 0 && (
+                <Card className="bg-muted/50">
+                  <CardContent className="py-2.5 space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-muted-foreground">Erwartete Rendite</span>
+                      <span className="text-xs font-semibold">{Number(detailEntry.expected_return)}% p.a.</span>
+                    </div>
+                    {[10, 20].map(years => {
+                      const fv = Number(detailEntry.value) * Math.pow(1 + Number(detailEntry.expected_return) / 100, years);
+                      return (
+                        <div key={years} className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">In {years} Jahren</span>
+                          <PrivateValue className="text-sm font-semibold">{fmtCHF(Math.round(fv))}</PrivateValue>
+                        </div>
+                      );
+                    })}
+                  </CardContent>
+                </Card>
+              )}
+
               {detailType === 'liability' && (
                 <div className="space-y-2">
                   {Number(detailEntry.monthly_payment) > 0 && (
@@ -941,6 +961,22 @@ export default function ClientPortalNetWorth() {
           )}
         </SheetContent>
       </Sheet>
+
+      {/* Typical Returns Reference Dialog */}
+      <Dialog open={showReturnsRef} onOpenChange={setShowReturnsRef}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Typische Renditen</DialogTitle></DialogHeader>
+          <div className="space-y-1 pt-2">
+            <p className="text-xs text-muted-foreground mb-3">Langfristige Durchschnittsrenditen nach Kosten (Richtwerte)</p>
+            {TYPICAL_RETURNS_TABLE.map(r => (
+              <div key={r.category} className="flex items-center justify-between py-1.5 border-b border-border/50 last:border-0">
+                <span className="text-sm">{r.category}</span>
+                <span className="text-sm font-medium">{r.range}</span>
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </ClientPortalLayout>
   );
 }
