@@ -17,7 +17,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Shield, Download, Trash2, AlertTriangle, Eye, Swords, FileBarChart, Loader2 } from 'lucide-react';
+import { Shield, Download, Trash2, AlertTriangle, Eye, Swords, FileBarChart, Loader2, Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
@@ -27,6 +27,7 @@ interface PrivacySettings {
   peak_score_visible: boolean;
   challenges_allowed: boolean;
   auto_monthly_report: boolean;
+  show_truth_moments: boolean;
 }
 
 const PRIVACY_TOGGLES: {
@@ -59,6 +60,12 @@ const PRIVACY_TOGGLES: {
     description: 'Am Monatsanfang wird ein Rückblick erstellt',
     icon: FileBarChart,
   },
+  {
+    key: 'show_truth_moments',
+    label: 'Wahrheits-Momente anzeigen',
+    description: 'Gelegentliche Erkenntnisse basierend auf deinen Daten',
+    icon: Lightbulb,
+  },
 ];
 
 export default function ClientPortalSettings() {
@@ -72,10 +79,10 @@ export default function ClientPortalSettings() {
   const { data: settings, isLoading } = useQuery({
     queryKey: ['privacy-settings', user?.id],
     queryFn: async (): Promise<PrivacySettings> => {
-      if (!user) return { leaderboard_visible: true, peak_score_visible: true, challenges_allowed: true, auto_monthly_report: true };
+      if (!user) return { leaderboard_visible: true, peak_score_visible: true, challenges_allowed: true, auto_monthly_report: true, show_truth_moments: true };
       const { data } = await supabase
         .from('profiles')
-        .select('leaderboard_visible, peak_score_visible, challenges_allowed, auto_monthly_report')
+        .select('leaderboard_visible, peak_score_visible, challenges_allowed, auto_monthly_report, show_truth_moments')
         .eq('id', user.id)
         .maybeSingle();
       return {
@@ -83,6 +90,7 @@ export default function ClientPortalSettings() {
         peak_score_visible: data?.peak_score_visible ?? true,
         challenges_allowed: data?.challenges_allowed ?? true,
         auto_monthly_report: data?.auto_monthly_report ?? true,
+        show_truth_moments: (data as any)?.show_truth_moments ?? true,
       };
     },
     enabled: !!user,
