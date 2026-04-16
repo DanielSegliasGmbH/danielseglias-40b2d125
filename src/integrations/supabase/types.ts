@@ -2597,6 +2597,7 @@ export type Database = {
           phone: string | null
           plan: string
           referral_code: string | null
+          show_truth_moments: boolean
           theme_preference: string
           updated_at: string
           user_type: string
@@ -2617,6 +2618,7 @@ export type Database = {
           phone?: string | null
           plan?: string
           referral_code?: string | null
+          show_truth_moments?: boolean
           theme_preference?: string
           updated_at?: string
           user_type?: string
@@ -2637,6 +2639,7 @@ export type Database = {
           phone?: string | null
           plan?: string
           referral_code?: string | null
+          show_truth_moments?: boolean
           theme_preference?: string
           updated_at?: string
           user_type?: string
@@ -3365,6 +3368,27 @@ export type Database = {
           started_at?: string
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      truth_moments_shown: {
+        Row: {
+          id: string
+          moment_id: string
+          shown_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          moment_id: string
+          shown_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          moment_id?: string
+          shown_at?: string
+          user_id?: string
         }
         Relationships: []
       }
