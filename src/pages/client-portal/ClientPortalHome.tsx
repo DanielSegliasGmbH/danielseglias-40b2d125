@@ -300,6 +300,9 @@ export default function ClientPortalHome() {
           <NotificationBell />
         </div>
 
+        {/* ── JOURNEY NUDGE ── */}
+        <JourneyNudgeCard />
+
         {/* ── PEAKSCORE HERO ── */}
         <MorningBriefCard />
         <MoodCheckinCard />
