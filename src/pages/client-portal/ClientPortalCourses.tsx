@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Lock, ChevronRight, Construction, GraduationCap } from 'lucide-react';

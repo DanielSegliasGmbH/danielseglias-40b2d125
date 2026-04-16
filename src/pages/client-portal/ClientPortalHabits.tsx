@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useHabitTracker } from '@/hooks/useHabitTracker';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

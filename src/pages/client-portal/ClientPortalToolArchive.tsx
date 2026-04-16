@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { useToolSnapshots, ToolSnapshot } from '@/hooks/useToolSnapshots';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

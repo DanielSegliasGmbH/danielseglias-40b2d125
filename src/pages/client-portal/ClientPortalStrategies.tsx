@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { PlatformSelector } from '@/components/client-portal/strategy/PlatformSelector';
 import { StrategySection } from '@/components/client-portal/strategy/StrategySection';
 import { GlidepathSection } from '@/components/client-portal/strategy/GlidepathSection';
