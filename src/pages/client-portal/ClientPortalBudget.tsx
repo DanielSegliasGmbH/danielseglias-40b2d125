@@ -427,7 +427,7 @@ export default function ClientPortalBudget() {
                 </PrivateValue>
               </div>
 
-              {fixedExpenses.length === 0 ? (
+              {fixedExpensesRaw.length === 0 ? (
                 <Card>
                   <CardContent className="py-6 text-center">
                     <p className="text-sm text-muted-foreground">Noch keine Fixkosten erfasst.</p>
@@ -435,7 +435,7 @@ export default function ClientPortalBudget() {
                   </CardContent>
                 </Card>
               ) : (
-                fixedExpenses.map((fix: any, i: number) => (
+                fixedExpensesRaw.map((fix: any, i: number) => (
                   <motion.div key={fix.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
                     <Card>
                       <CardContent className="flex items-center justify-between py-2.5 px-4">
@@ -733,7 +733,7 @@ export default function ClientPortalBudget() {
               </CardContent>
             </Card>
 
-            {expenses.length === 0 && fixedExpenses.length === 0 && budgets.length === 0 && (
+            {expenses.length === 0 && fixedExpensesRaw.length === 0 && budgets.length === 0 && (
               <Card>
                 <CardContent className="py-10 text-center">
                   <p className="text-muted-foreground text-sm">
