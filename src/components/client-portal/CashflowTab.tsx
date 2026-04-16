@@ -10,9 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
-import { Plus, Wallet, TrendingDown, TrendingUp, PiggyBank, Trash2, ExternalLink } from 'lucide-react';
+import { Plus, Wallet, TrendingDown, TrendingUp, Trash2, Zap, Trophy, ChevronDown, ChevronUp } from 'lucide-react';
 import { PrivateValue } from '@/components/client-portal/PrivateValue';
-import { InfoHint } from '@/components/client-portal/InfoHint';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -45,10 +44,15 @@ interface CashflowTabProps {
 export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }: CashflowTabProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [incomeDialogOpen, setIncomeDialogOpen] = useState(false);
+  const [expenseDialogOpen, setExpenseDialogOpen] = useState(false);
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState('monatlich');
+  const [expName, setExpName] = useState('');
+  const [expAmount, setExpAmount] = useState('');
+  const [expCategory, setExpCategory] = useState('fix');
+  const [showDetails, setShowDetails] = useState(false);
 
   // Fetch passive income sources
   const { data: incomeSources = [] } = useQuery({
@@ -95,10 +99,8 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['income-sources'] });
       toast.success('Einnahmequelle hinzugefügt ✓');
-      setName('');
-      setAmount('');
-      setFrequency('monatlich');
-      setDialogOpen(false);
+      setName(''); setAmount(''); setFrequency('monatlich');
+      setIncomeDialogOpen(false);
     },
     onError: () => toast.error('Fehler beim Speichern'),
   });
@@ -120,313 +122,401 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
     [incomeSources]
   );
 
-  // Estimate monthly loan payments (simplified: assume total liabilities / 120 months = 10 year payoff)
   const totalLiabilities = useMemo(() =>
     snapshotLiabilities.reduce((sum, l) => sum + Number(l.amount || 0), 0),
     [snapshotLiabilities]
   );
   const estimatedMonthlyLoanPayment = totalLiabilities > 0 ? Math.round(totalLiabilities / 120) : 0;
 
+  const jobIncome = monthlyIncome;
   const totalIncome = monthlyIncome + passiveMonthly;
   const totalExpenses = fixedCosts + totalVariableExpenses + estimatedMonthlyLoanPayment;
   const cashflow = totalIncome - totalExpenses;
-  const savingsRate = totalIncome > 0 ? Math.round((cashflow / totalIncome) * 100) : 0;
 
-  // PeakScore impact estimate: savings per year / monthly expenses
+  // Rich Dad: Financial Freedom %
+  const freedomPercent = jobIncome > 0 ? Math.min(Math.round((passiveMonthly / jobIncome) * 100), 999) : passiveMonthly > 0 ? 100 : 0;
+  const isFinanciallyFree = passiveMonthly >= jobIncome && jobIncome > 0;
+
+  // PeakScore
   const annualSavings = Math.max(0, cashflow) * 12;
   const peakScoreImpactMonths = totalExpenses > 0 ? annualSavings / totalExpenses : 0;
 
-  // Bar chart widths
-  const maxBar = Math.max(totalIncome, totalExpenses, 1);
-  const incomeBarPct = (totalIncome / maxBar) * 100;
-  const expenseBarPct = (totalExpenses / maxBar) * 100;
-
   return (
-    <div className="space-y-5">
-      {/* SECTION 1: EINKOMMEN */}
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-        <Card>
-          <CardContent className="p-5 space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                <Wallet className="h-4 w-4 text-emerald-600" />
-              </div>
-              <h2 className="text-sm font-bold text-foreground">Einkommen</h2>
-            </div>
+    <div className="space-y-4">
+      {/* ═══ TWO COLUMN LAYOUT ═══ */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-            {/* Salary */}
-            <div className="flex items-center justify-between py-2">
-              <div>
-                <p className="text-sm text-foreground">Bruttolohn (Finanzprofil)</p>
-                <p className="text-[11px] text-muted-foreground">Monatlich</p>
-              </div>
-              <PrivateValue className="text-sm font-semibold text-foreground">
-                {monthlyIncome > 0 ? fmtCHF(monthlyIncome) : '–'}
-              </PrivateValue>
-            </div>
-
-            <Separator />
-
-            {/* Passive income sources */}
-            <div className="space-y-2">
-              <p className="text-xs font-medium text-muted-foreground">Passive Einnahmen</p>
-              {incomeSources.length === 0 && (
-                <p className="text-xs text-muted-foreground italic">Noch keine Einnahmequellen erfasst.</p>
-              )}
-              {incomeSources.map((src) => (
-                <div key={src.id} className="flex items-center justify-between py-1.5">
-                  <div>
-                    <p className="text-sm text-foreground">{src.name}</p>
-                    <p className="text-[11px] text-muted-foreground">
-                      {frequencyLabel(src.frequency)} · {fmtCHF(toMonthly(Number(src.amount), src.frequency))}/Mt.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <PrivateValue className="text-sm font-medium text-foreground">
-                      {fmtCHF(Number(src.amount))}/{src.frequency === 'monatlich' ? 'Mt.' : src.frequency === 'quartalsweise' ? 'Qt.' : 'J.'}
-                    </PrivateValue>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                      onClick={() => deleteSource.mutate(src.id)}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
+        {/* ─── LEFT: EINNAHMEN ─── */}
+        <motion.div initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
+          <Card className="border-emerald-500/20 h-full">
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                  <Wallet className="h-4 w-4 text-emerald-600" />
                 </div>
-              ))}
-
-              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="w-full gap-1.5 mt-1">
-                    <Plus className="h-3.5 w-3.5" />
-                    Einnahmequelle hinzufügen
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-lg">
-                  <DialogHeader>
-                    <DialogTitle>Neue Einnahmequelle</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4 pt-2">
-                    <div>
-                      <Label>Bezeichnung</Label>
-                      <Input value={name} onChange={e => setName(e.target.value)} placeholder="z.B. Mieteinnahmen" />
-                    </div>
-                    <div>
-                      <Label>Betrag (CHF)</Label>
-                      <Input type="number" min="0" step="10" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" />
-                    </div>
-                    <div>
-                      <Label>Häufigkeit</Label>
-                      <Select value={frequency} onValueChange={setFrequency}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {FREQUENCY_OPTIONS.map(f => (
-                            <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <Button
-                      className="w-full"
-                      onClick={() => addSource.mutate()}
-                      disabled={!name.trim() || !amount || parseFloat(amount) <= 0 || addSource.isPending}
-                    >
-                      Hinzufügen
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-
-            <Separator />
-
-            {/* Total income */}
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-bold text-foreground">Total monatliches Einkommen</span>
-              <PrivateValue className="text-lg font-black text-emerald-600">
-                {fmtCHF(totalIncome)}
-              </PrivateValue>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
-
-      {/* SECTION 2: AUSGABEN & VERBINDLICHKEITEN */}
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-        <Card>
-          <CardContent className="p-5 space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center">
-                <TrendingDown className="h-4 w-4 text-destructive" />
+                <h2 className="text-sm font-bold text-foreground">Einnahmen 💰</h2>
               </div>
-              <h2 className="text-sm font-bold text-foreground">Ausgaben & Verbindlichkeiten</h2>
-            </div>
 
-            {/* Fixed costs */}
-            <div className="flex items-center justify-between py-2">
-              <div>
-                <p className="text-sm text-foreground">Fixkosten (Finanzprofil)</p>
-                <p className="text-[11px] text-muted-foreground">Miete, Krankenkasse, Versicherungen etc.</p>
-                <InfoHint text="Fixkosten sind regelmässige Ausgaben, die jeden Monat gleich bleiben." articleId="inflation-risiko" />
-              </div>
-              <PrivateValue className="text-sm font-semibold text-foreground">
-                {fixedCosts > 0 ? fmtCHF(fixedCosts) : '–'}
-              </PrivateValue>
-            </div>
-
-            <Separator />
-
-            {/* Variable expenses */}
-            <div className="flex items-center justify-between py-2">
-              <div>
-                <p className="text-sm text-foreground">Variable Ausgaben (diesen Monat)</p>
-                <p className="text-[11px] text-muted-foreground">Aus deinem Budget-Tracking</p>
-                <InfoHint text="Variable Kosten schwanken monatlich – z.B. Essen, Freizeit, Shopping." />
-              </div>
-              <PrivateValue className="text-sm font-semibold text-foreground">
-                {fmtCHF(totalVariableExpenses)}
-              </PrivateValue>
-            </div>
-
-            {/* Loan payments */}
-            {estimatedMonthlyLoanPayment > 0 && (
-              <>
-                <Separator />
-                <div className="flex items-center justify-between py-2">
-                  <div>
-                    <p className="text-sm text-foreground">Kredit-/Schuldentilgung</p>
-                    <p className="text-[11px] text-muted-foreground">
-                      Geschätzt aus Verbindlichkeiten ({fmtCHF(totalLiabilities)} total)
-                    </p>
-                  </div>
-                  <PrivateValue className="text-sm font-semibold text-foreground">
-                    ~{fmtCHF(estimatedMonthlyLoanPayment)}
+              {/* Aus Arbeit */}
+              <div className="space-y-1">
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Aus Arbeit</p>
+                <div className="flex items-center justify-between py-1.5 px-2 rounded-lg bg-emerald-500/5">
+                  <span className="text-sm text-foreground">Lohn</span>
+                  <PrivateValue className="text-sm font-semibold text-emerald-600">
+                    {jobIncome > 0 ? fmtCHF(jobIncome) : '–'}
                   </PrivateValue>
                 </div>
-              </>
-            )}
+              </div>
 
-            <Separator />
+              <Separator className="opacity-50" />
 
-            {/* Total expenses */}
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-bold text-foreground">Total monatliche Ausgaben</span>
-              <PrivateValue className="text-lg font-black text-destructive">
-                {fmtCHF(totalExpenses)}
-              </PrivateValue>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+              {/* Aus Assets */}
+              <div className="space-y-1">
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Aus Assets (passiv)</p>
+                {incomeSources.length === 0 ? (
+                  <p className="text-xs text-muted-foreground italic px-2 py-1">Noch keine passiven Einnahmen</p>
+                ) : (
+                  incomeSources.map(src => (
+                    <div key={src.id} className="flex items-center justify-between py-1.5 px-2 rounded-lg bg-emerald-500/5">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm text-foreground truncate">{src.name}</p>
+                        <p className="text-[10px] text-muted-foreground">{frequencyLabel(src.frequency)}</p>
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <PrivateValue className="text-sm font-medium text-emerald-600">
+                          {fmtCHF(toMonthly(Number(src.amount), src.frequency))}
+                        </PrivateValue>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-destructive" onClick={() => deleteSource.mutate(src.id)}>
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                )}
 
-      {/* SECTION 3: CASHFLOW RESULT */}
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                <Dialog open={incomeDialogOpen} onOpenChange={setIncomeDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm" className="w-full gap-1.5 mt-1 border-emerald-500/20 text-emerald-600 hover:bg-emerald-500/5">
+                      <Plus className="h-3.5 w-3.5" /> Einnahmequelle hinzufügen
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-lg">
+                    <DialogHeader>
+                      <DialogTitle>Neue Einnahmequelle</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 pt-2">
+                      <div>
+                        <Label>Bezeichnung</Label>
+                        <Input value={name} onChange={e => setName(e.target.value)} placeholder="z.B. Mieteinnahmen, Dividenden" />
+                      </div>
+                      <div>
+                        <Label>Betrag (CHF)</Label>
+                        <Input type="number" min="0" step="10" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" />
+                      </div>
+                      <div>
+                        <Label>Häufigkeit</Label>
+                        <Select value={frequency} onValueChange={setFrequency}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {FREQUENCY_OPTIONS.map(f => (
+                              <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <Button className="w-full" onClick={() => addSource.mutate()} disabled={!name.trim() || !amount || parseFloat(amount) <= 0 || addSource.isPending}>
+                        Hinzufügen
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              <Separator className="opacity-50" />
+
+              {/* Total */}
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-sm font-bold text-foreground">Einnahmen gesamt</span>
+                <PrivateValue className="text-base font-black text-emerald-600">
+                  {fmtCHF(totalIncome)}/Mt.
+                </PrivateValue>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* ─── RIGHT: AUSGABEN ─── */}
+        <motion.div initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4, delay: 0.05 }}>
+          <Card className="border-destructive/20 h-full">
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center">
+                  <TrendingDown className="h-4 w-4 text-destructive" />
+                </div>
+                <h2 className="text-sm font-bold text-foreground">Ausgaben 💸</h2>
+              </div>
+
+              {/* Fixkosten */}
+              <div className="space-y-1">
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Fixkosten</p>
+                <div className="flex items-center justify-between py-1.5 px-2 rounded-lg bg-destructive/5">
+                  <div>
+                    <span className="text-sm text-foreground">Miete, KK, Versicherungen</span>
+                    <p className="text-[10px] text-muted-foreground">Aus Finanzprofil</p>
+                  </div>
+                  <PrivateValue className="text-sm font-semibold text-destructive">
+                    {fixedCosts > 0 ? fmtCHF(fixedCosts) : '–'}
+                  </PrivateValue>
+                </div>
+              </div>
+
+              <Separator className="opacity-50" />
+
+              {/* Variable Kosten */}
+              <div className="space-y-1">
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Variable Kosten</p>
+                <div className="flex items-center justify-between py-1.5 px-2 rounded-lg bg-destructive/5">
+                  <div>
+                    <span className="text-sm text-foreground">Essen, Freizeit, etc.</span>
+                    <p className="text-[10px] text-muted-foreground">Budget-Tracking diesen Monat</p>
+                  </div>
+                  <PrivateValue className="text-sm font-semibold text-destructive">
+                    {fmtCHF(totalVariableExpenses)}
+                  </PrivateValue>
+                </div>
+              </div>
+
+              {/* Verbindlichkeiten-Raten */}
+              {estimatedMonthlyLoanPayment > 0 && (
+                <>
+                  <Separator className="opacity-50" />
+                  <div className="space-y-1">
+                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Verbindlichkeiten-Raten</p>
+                    {snapshotLiabilities.map((l, i) => (
+                      <div key={i} className="flex items-center justify-between py-1 px-2 rounded-lg bg-destructive/5">
+                        <span className="text-sm text-foreground truncate">{l.name}</span>
+                        <PrivateValue className="text-xs text-muted-foreground shrink-0">
+                          ~{fmtCHF(Number(l.amount || 0) / 120)}/Mt.
+                        </PrivateValue>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              <Separator className="opacity-50" />
+
+              {/* Total */}
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-sm font-bold text-foreground">Ausgaben gesamt</span>
+                <PrivateValue className="text-base font-black text-destructive">
+                  {fmtCHF(totalExpenses)}/Mt.
+                </PrivateValue>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+
+      {/* ═══ CASHFLOW RESULT ═══ */}
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.15 }}>
         <Card className={cn(
-          'border-2',
-          cashflow >= 0 ? 'border-emerald-500/30' : 'border-destructive/30'
+          'border-2 overflow-hidden',
+          cashflow >= 0 ? 'border-emerald-500/40' : 'border-destructive/40'
         )}>
-          <CardContent className="p-5 space-y-5">
-            <div className="flex items-center gap-2">
-              <div className={cn(
-                'w-8 h-8 rounded-lg flex items-center justify-center',
-                cashflow >= 0 ? 'bg-emerald-500/10' : 'bg-destructive/10'
-              )}>
-                {cashflow >= 0
-                  ? <TrendingUp className="h-4 w-4 text-emerald-600" />
-                  : <TrendingDown className="h-4 w-4 text-destructive" />
-                }
-              </div>
-              <h2 className="text-sm font-bold text-foreground">Cashflow Ergebnis</h2>
-            </div>
-
-            {/* Visual bars */}
-            <div className="space-y-3">
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Einkommen</span>
-                  <PrivateValue className="font-medium text-emerald-600">{fmtCHF(totalIncome)}</PrivateValue>
-                </div>
-                <div className="h-4 w-full bg-muted rounded-full overflow-hidden">
-                  <motion.div
-                    className="h-full rounded-full bg-emerald-500"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${incomeBarPct}%` }}
-                    transition={{ duration: 0.8, ease: 'easeOut' }}
-                  />
-                </div>
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Ausgaben</span>
-                  <PrivateValue className="font-medium text-destructive">{fmtCHF(totalExpenses)}</PrivateValue>
-                </div>
-                <div className="h-4 w-full bg-muted rounded-full overflow-hidden">
-                  <motion.div
-                    className="h-full rounded-full bg-destructive"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${expenseBarPct}%` }}
-                    transition={{ duration: 0.8, ease: 'easeOut', delay: 0.1 }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Result */}
-            <div className="text-center space-y-2">
+          <CardContent className="p-0">
+            {/* Main cashflow display */}
+            <div className={cn(
+              'p-5 text-center',
+              cashflow >= 0 ? 'bg-emerald-500/5' : 'bg-destructive/5'
+            )}>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Dein Cashflow</p>
               <PrivateValue className={cn(
-                'text-3xl font-black block',
+                'text-3xl sm:text-4xl font-black block',
                 cashflow >= 0 ? 'text-emerald-600' : 'text-destructive'
               )}>
                 {cashflow >= 0 ? '+' : ''}{fmtCHF(cashflow)} / Monat
               </PrivateValue>
-              <p className="text-sm text-muted-foreground">
-                {cashflow >= 0 ? 'übrig' : 'Defizit'}
+              <p className={cn('text-sm mt-1', cashflow >= 0 ? 'text-emerald-600/80' : 'text-destructive/80')}>
+                {cashflow >= 0
+                  ? `Du sparst ${fmtCHF(cashflow)} pro Monat 🎯`
+                  : `Du gibst ${fmtCHF(Math.abs(cashflow))} zu viel aus ⚠️`
+                }
               </p>
             </div>
 
-            {/* Savings rate */}
-            {totalIncome > 0 && (
-              <>
-                <div className="flex items-center justify-center gap-2">
-                  <PiggyBank className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">Sparquote:</span>
-                  <PrivateValue className={cn(
-                    'text-sm font-bold',
-                    savingsRate >= 20 ? 'text-emerald-600' : savingsRate >= 0 ? 'text-foreground' : 'text-destructive'
-                  )}>
-                    {savingsRate}%
+            {/* Rich Dad Moment */}
+            <div className="p-5 space-y-4 border-t border-border/50">
+              <div className="flex items-center gap-2 justify-center">
+                <Zap className="h-4 w-4 text-amber-500" />
+                <p className="text-xs font-bold text-foreground uppercase tracking-wider">Rich Dad Moment</p>
+                <Zap className="h-4 w-4 text-amber-500" />
+              </div>
+
+              {/* Job vs Passive Income */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="text-center p-3 rounded-xl bg-muted/50">
+                  <p className="text-[10px] text-muted-foreground uppercase font-semibold">Aus Arbeit</p>
+                  <PrivateValue className="text-base font-bold text-foreground block mt-0.5">
+                    {fmtCHF(jobIncome)}
                   </PrivateValue>
                 </div>
-                <InfoHint text="Eine Sparquote von 20% oder mehr gilt als gesund und stärkt deinen PeakScore nachhaltig." articleId="case-junge-familie" />
-              </>
-            )}
+                <div className="text-center p-3 rounded-xl bg-amber-500/5 border border-amber-500/20">
+                  <p className="text-[10px] text-amber-600 uppercase font-semibold">Passiv</p>
+                  <PrivateValue className="text-base font-bold text-amber-600 block mt-0.5">
+                    {fmtCHF(passiveMonthly)}
+                  </PrivateValue>
+                </div>
+              </div>
 
-            {/* PeakScore impact */}
-            {cashflow > 0 && totalExpenses > 0 && (
-              <div className="p-3 rounded-xl bg-primary/5 border border-primary/20">
-                <p className="text-xs text-muted-foreground text-center">
-                  💡 Bei dieser Sparquote gewinnst du ca.{' '}
-                  <span className="font-bold text-primary">{formatToolImpact(peakScoreImpactMonths)}</span>.{' '}
-                  Jeder gesparte Franken = mehr Freiheit.
+              {/* Freedom Gauge */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">Finanzielle Freiheit</span>
+                  <PrivateValue className={cn(
+                    'font-bold',
+                    freedomPercent >= 100 ? 'text-amber-500' : freedomPercent >= 50 ? 'text-emerald-600' : 'text-foreground'
+                  )}>
+                    {freedomPercent}%
+                  </PrivateValue>
+                </div>
+                <div className="h-3 w-full bg-muted rounded-full overflow-hidden relative">
+                  <motion.div
+                    className={cn(
+                      'h-full rounded-full',
+                      freedomPercent >= 100 ? 'bg-gradient-to-r from-amber-400 to-amber-500' : 'bg-gradient-to-r from-emerald-400 to-emerald-500'
+                    )}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${Math.min(freedomPercent, 100)}%` }}
+                    transition={{ duration: 1.2, ease: 'easeOut', delay: 0.3 }}
+                  />
+                  {/* 100% marker */}
+                  <div className="absolute right-0 top-0 bottom-0 w-0.5 bg-foreground/20" />
+                </div>
+                <p className="text-[11px] text-center text-muted-foreground">
+                  Finanziell frei bei 100% — passives Einkommen deckt dein Arbeitseinkommen
                 </p>
               </div>
-            )}
 
+              {/* Freedom Message */}
+              {isFinanciallyFree ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-center"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <Trophy className="h-5 w-5 text-amber-500" />
+                    <span className="text-sm font-bold text-amber-600">Du bist finanziell frei!</span>
+                    <Trophy className="h-5 w-5 text-amber-500" />
+                  </div>
+                  <p className="text-xs text-amber-600/80 mt-1">
+                    Deine Assets tragen dich. Du könntest aufhören zu arbeiten. 🎉
+                  </p>
+                </motion.div>
+              ) : passiveMonthly > 0 ? (
+                <div className="p-3 rounded-xl bg-primary/5 border border-primary/20 text-center">
+                  <p className="text-xs text-muted-foreground">
+                    Dir fehlen noch <span className="font-bold text-foreground">{fmtCHF(jobIncome - passiveMonthly)}</span> passives Einkommen bis zur finanziellen Freiheit.
+                  </p>
+                </div>
+              ) : (
+                <div className="p-3 rounded-xl bg-muted/50 text-center">
+                  <p className="text-xs text-muted-foreground">
+                    Starte mit passivem Einkommen — jeder Franken bringt dich näher an deine Freiheit.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* PeakScore Impact */}
+            {cashflow > 0 && totalExpenses > 0 && (
+              <div className="px-5 pb-4 pt-0">
+                <div className="p-3 rounded-xl bg-primary/5 border border-primary/20 text-center">
+                  <p className="text-xs text-muted-foreground">
+                    💡 Bei diesem Cashflow verbessert sich dein PeakScore um ca.{' '}
+                    <span className="font-bold text-primary">{formatToolImpact(peakScoreImpactMonths)}</span> pro Jahr.
+                  </p>
+                </div>
+              </div>
+            )}
             {cashflow < 0 && (
-              <div className="p-3 rounded-xl bg-destructive/5 border border-destructive/20">
-                <p className="text-xs text-destructive text-center">
-                  ⚠️ Du gibst mehr aus als du einnimmst. Dein PeakScore sinkt damit stetig.
-                  Reduziere Ausgaben oder erhöhe dein Einkommen.
-                </p>
+              <div className="px-5 pb-4 pt-0">
+                <div className="p-3 rounded-xl bg-destructive/5 border border-destructive/20 text-center">
+                  <p className="text-xs text-destructive">
+                    ⚠️ Negativer Cashflow: Dein PeakScore sinkt stetig. Reduziere Ausgaben oder erhöhe dein Einkommen.
+                  </p>
+                </div>
               </div>
             )}
           </CardContent>
         </Card>
       </motion.div>
+
+      {/* ═══ DETAILS TOGGLE ═══ */}
+      <Button
+        variant="outline"
+        className="w-full gap-2"
+        onClick={() => setShowDetails(v => !v)}
+      >
+        {showDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+        {showDetails ? 'Weniger anzeigen' : 'Detailansicht'}
+      </Button>
+
+      {showDetails && (
+        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-3">
+          {/* Detailed income list */}
+          <Card>
+            <CardContent className="p-4 space-y-2">
+              <p className="text-xs font-semibold text-muted-foreground uppercase">Alle Einnahmequellen</p>
+              <div className="flex items-center justify-between py-1.5">
+                <span className="text-sm">Lohn (Arbeit)</span>
+                <PrivateValue className="text-sm font-medium">{fmtCHF(jobIncome)}/Mt.</PrivateValue>
+              </div>
+              {incomeSources.map(src => (
+                <div key={src.id} className="flex items-center justify-between py-1.5">
+                  <div>
+                    <span className="text-sm">{src.name}</span>
+                    <span className="text-[10px] text-muted-foreground ml-1">({frequencyLabel(src.frequency)})</span>
+                  </div>
+                  <PrivateValue className="text-sm font-medium">{fmtCHF(toMonthly(Number(src.amount), src.frequency))}/Mt.</PrivateValue>
+                </div>
+              ))}
+              <Separator />
+              <div className="flex items-center justify-between font-bold">
+                <span className="text-sm">Total</span>
+                <PrivateValue className="text-sm text-emerald-600">{fmtCHF(totalIncome)}/Mt.</PrivateValue>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Detailed expenses */}
+          <Card>
+            <CardContent className="p-4 space-y-2">
+              <p className="text-xs font-semibold text-muted-foreground uppercase">Alle Ausgaben</p>
+              <div className="flex items-center justify-between py-1.5">
+                <span className="text-sm">Fixkosten</span>
+                <PrivateValue className="text-sm font-medium">{fmtCHF(fixedCosts)}/Mt.</PrivateValue>
+              </div>
+              <div className="flex items-center justify-between py-1.5">
+                <span className="text-sm">Variable Kosten</span>
+                <PrivateValue className="text-sm font-medium">{fmtCHF(totalVariableExpenses)}/Mt.</PrivateValue>
+              </div>
+              {estimatedMonthlyLoanPayment > 0 && (
+                <div className="flex items-center justify-between py-1.5">
+                  <span className="text-sm">Verbindlichkeiten</span>
+                  <PrivateValue className="text-sm font-medium">~{fmtCHF(estimatedMonthlyLoanPayment)}/Mt.</PrivateValue>
+                </div>
+              )}
+              <Separator />
+              <div className="flex items-center justify-between font-bold">
+                <span className="text-sm">Total</span>
+                <PrivateValue className="text-sm text-destructive">{fmtCHF(totalExpenses)}/Mt.</PrivateValue>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
     </div>
   );
 }
