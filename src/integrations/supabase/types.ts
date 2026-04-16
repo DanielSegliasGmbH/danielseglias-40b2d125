@@ -2441,6 +2441,7 @@ export type Database = {
           last_confirmed_at: string | null
           monthly_income: number | null
           occupation: string | null
+          professional_status: string | null
           risk_tolerance: number | null
           savings_rate: number | null
           tax_burden: number | null
@@ -2460,6 +2461,7 @@ export type Database = {
           last_confirmed_at?: string | null
           monthly_income?: number | null
           occupation?: string | null
+          professional_status?: string | null
           risk_tolerance?: number | null
           savings_rate?: number | null
           tax_burden?: number | null
@@ -2479,6 +2481,7 @@ export type Database = {
           last_confirmed_at?: string | null
           monthly_income?: number | null
           occupation?: string | null
+          professional_status?: string | null
           risk_tolerance?: number | null
           savings_rate?: number | null
           tax_burden?: number | null
