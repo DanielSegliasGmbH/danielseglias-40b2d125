@@ -100,6 +100,31 @@ interface DebtItem {
   amount: string;
 }
 
+// New list entry types for Vorsorge
+interface Pillar3aEntry {
+  id: string;
+  balance: string;
+  provider: string;
+  expected_return: string;
+  link: string;
+}
+
+interface FreizuegigkeitEntry {
+  id: string;
+  balance: string;
+  provider: string;
+  expected_return: string;
+  link: string;
+}
+
+interface PensionskasseEntry {
+  id: string;
+  balance: string;
+  provider: string;
+  expected_return: string;
+  link: string;
+}
+
 interface SnapshotDraft {
   // Step 0: Vorsorge
   pillar_3a: SnapshotFieldValue;
