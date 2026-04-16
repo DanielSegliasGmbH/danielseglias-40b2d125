@@ -1313,12 +1313,12 @@ function InvestmentsStep({
   }));
 
   // Property helpers
-  const addProperty = () => updateDraft(d => ({ ...d, properties: [...d.properties, newProperty()] }));
+  const addProperty = (type: 'residential' | 'investment' = 'residential') => updateDraft(d => ({ ...d, properties: [...d.properties, newProperty(type)] }));
   const removeProperty = (id: string) => updateDraft(d => ({ ...d, properties: d.properties.filter(p => p.id !== id) }));
   const updateProp = (id: string, field: keyof Property, value: string) => updateDraft(d => ({
     ...d, properties: d.properties.map(p => p.id === id ? {
       ...p,
-      [field]: ['market_value', 'equity_invested', 'mortgage_amount', 'mortgage_rate'].includes(field) ? cleanNum(value) : value,
+      [field]: ['market_value', 'equity_invested', 'mortgage_amount', 'mortgage_rate', 'monthly_rent', 'monthly_costs'].includes(field) ? cleanNum(value) : value,
     } : p),
   }));
 
