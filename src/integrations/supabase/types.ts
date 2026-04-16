@@ -2550,6 +2550,7 @@ export type Database = {
           id: string
           last_updated_date: string
           name: string
+          ownership_tag: string
           platform_url: string | null
           updated_at: string
           user_id: string
@@ -2562,6 +2563,7 @@ export type Database = {
           id?: string
           last_updated_date?: string
           name: string
+          ownership_tag?: string
           platform_url?: string | null
           updated_at?: string
           user_id: string
@@ -2574,6 +2576,7 @@ export type Database = {
           id?: string
           last_updated_date?: string
           name?: string
+          ownership_tag?: string
           platform_url?: string | null
           updated_at?: string
           user_id?: string
@@ -2591,6 +2594,7 @@ export type Database = {
           interest_rate: number | null
           monthly_payment: number | null
           name: string
+          ownership_tag: string
           platform_url: string | null
           updated_at: string
           user_id: string
@@ -2604,6 +2608,7 @@ export type Database = {
           interest_rate?: number | null
           monthly_payment?: number | null
           name: string
+          ownership_tag?: string
           platform_url?: string | null
           updated_at?: string
           user_id: string
@@ -2617,6 +2622,7 @@ export type Database = {
           interest_rate?: number | null
           monthly_payment?: number | null
           name?: string
+          ownership_tag?: string
           platform_url?: string | null
           updated_at?: string
           user_id?: string
@@ -2851,6 +2857,136 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      partner_conflict_entries: {
+        Row: {
+          created_at: string
+          how_i_feel: string | null
+          id: string
+          partnership_id: string
+          revealed_at: string | null
+          round: number
+          user_id: string
+          what_happened: string | null
+          what_i_wish: string | null
+        }
+        Insert: {
+          created_at?: string
+          how_i_feel?: string | null
+          id?: string
+          partnership_id: string
+          revealed_at?: string | null
+          round?: number
+          user_id: string
+          what_happened?: string | null
+          what_i_wish?: string | null
+        }
+        Update: {
+          created_at?: string
+          how_i_feel?: string | null
+          id?: string
+          partnership_id?: string
+          revealed_at?: string | null
+          round?: number
+          user_id?: string
+          what_happened?: string | null
+          what_i_wish?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_conflict_entries_partnership_id_fkey"
+            columns: ["partnership_id"]
+            isOneToOne: false
+            referencedRelation: "partnerships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partner_joint_goals: {
+        Row: {
+          category: string | null
+          created_at: string
+          current_amount: number
+          id: string
+          is_completed: boolean
+          partnership_id: string
+          target_amount: number | null
+          target_date: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          current_amount?: number
+          id?: string
+          is_completed?: boolean
+          partnership_id: string
+          target_amount?: number | null
+          target_date?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          current_amount?: number
+          id?: string
+          is_completed?: boolean
+          partnership_id?: string
+          target_amount?: number | null
+          target_date?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_joint_goals_partnership_id_fkey"
+            columns: ["partnership_id"]
+            isOneToOne: false
+            referencedRelation: "partnerships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partnerships: {
+        Row: {
+          created_at: string
+          dissolved_at: string | null
+          id: string
+          invite_email: string | null
+          sharing_settings: Json
+          started_at: string | null
+          status: string
+          updated_at: string
+          user_id_1: string
+          user_id_2: string | null
+        }
+        Insert: {
+          created_at?: string
+          dissolved_at?: string | null
+          id?: string
+          invite_email?: string | null
+          sharing_settings?: Json
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id_1: string
+          user_id_2?: string | null
+        }
+        Update: {
+          created_at?: string
+          dissolved_at?: string | null
+          id?: string
+          invite_email?: string | null
+          sharing_settings?: Json
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id_1?: string
+          user_id_2?: string | null
+        }
+        Relationships: []
       }
       peak_scores: {
         Row: {
