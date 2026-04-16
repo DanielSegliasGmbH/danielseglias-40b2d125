@@ -1682,6 +1682,36 @@ export type Database = {
         }
         Relationships: []
       }
+      document_extractions: {
+        Row: {
+          created_at: string
+          document_type: string
+          extracted_at: string
+          extraction_successful: boolean
+          fields_extracted_count: number
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          document_type: string
+          extracted_at?: string
+          extraction_successful?: boolean
+          fields_extracted_count?: number
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          document_type?: string
+          extracted_at?: string
+          extraction_successful?: boolean
+          fields_extracted_count?: number
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       financial_snapshots: {
         Row: {
           created_at: string

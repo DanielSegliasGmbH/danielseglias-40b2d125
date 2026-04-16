@@ -21,6 +21,7 @@ import {
   ArrowLeft, ArrowRight, Loader2, Trash2, ChevronRight,
   Info, ExternalLink, Plus, Zap, CheckCircle, AlertTriangle, ChevronDown,
 } from 'lucide-react';
+import { DocumentUploadButton } from '@/components/client-portal/DocumentUploadButton';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
@@ -989,6 +990,59 @@ function VorsorgeStep({
         <h2 className="text-base font-bold text-foreground">Vorsorge</h2>
       </div>
 
+      {/* AI Document Upload Buttons */}
+      <div className="grid grid-cols-1 gap-2">
+        <DocumentUploadButton
+          documentType="pensionskasse"
+          onExtracted={(data) => {
+            const d = data as Record<string, unknown>;
+            if (d.austrittsleistung || d.freizuegigkeitsleistung || d.pensionskasse_name) {
+              updateDraft(prev => ({
+                ...prev,
+                pensionskasse_entries: prev.pensionskasse_entries.map((e, i) => i === 0 ? {
+                  ...e,
+                  balance: String(d.austrittsleistung || d.freizuegigkeitsleistung || e.balance),
+                  provider: String(d.pensionskasse_name || e.provider),
+                } : e),
+              }));
+            }
+          }}
+        />
+        <DocumentUploadButton
+          documentType="pillar_3a"
+          onExtracted={(data) => {
+            const d = data as Record<string, unknown>;
+            if (d.guthaben || d.anbieter) {
+              updateDraft(prev => ({
+                ...prev,
+                pillar_3a_entries: prev.pillar_3a_entries.map((e, i) => i === 0 ? {
+                  ...e,
+                  balance: String(d.guthaben || e.balance),
+                  provider: String(d.anbieter || e.provider),
+                  expected_return: d.rendite_ytd ? String(d.rendite_ytd) : e.expected_return,
+                } : e),
+              }));
+            }
+          }}
+        />
+        <DocumentUploadButton
+          documentType="freizuegigkeit"
+          onExtracted={(data) => {
+            const d = data as Record<string, unknown>;
+            if (d.guthaben || d.anbieter) {
+              updateDraft(prev => ({
+                ...prev,
+                freizuegigkeit_entries: prev.freizuegigkeit_entries.map((e, i) => i === 0 ? {
+                  ...e,
+                  balance: String(d.guthaben || e.balance),
+                  provider: String(d.anbieter || e.provider),
+                } : e),
+              }));
+            }
+          }}
+        />
+      </div>
+
       {/* Säule 3a */}
       <VorsorgeEntryList<Pillar3aEntry>
         label="Säule 3a (inkl. Wertschriften-3a)"
@@ -1096,6 +1150,24 @@ function BankCashStep({
         <span className="text-xl">🏦</span>
         <h2 className="text-base font-bold text-foreground">Bankkonten & Bargeld</h2>
       </div>
+
+      <DocumentUploadButton
+        documentType="kontoauszug"
+        onExtracted={(data) => {
+          const d = data as Record<string, unknown>;
+          if (d.kontostand || d.bankname) {
+            updateDraft(prev => ({
+              ...prev,
+              bank_accounts: prev.bank_accounts.map((a, i) => i === 0 ? {
+                ...a,
+                balance: String(d.kontostand || a.balance),
+                bank: String(d.bankname || a.bank),
+                name: String(d.kontobezeichnung || a.name),
+              } : a),
+            }));
+          }
+        }}
+      />
 
       {/* ── Bankkonten ── */}
       <Card className={cn(draft.bank_accounts_skipped && "opacity-60")}>
@@ -1351,6 +1423,26 @@ function InvestmentsStep({
         <span className="text-xl">📈</span>
         <h2 className="text-base font-bold text-foreground">Investments & Immobilien</h2>
       </div>
+
+      <DocumentUploadButton
+        documentType="depot"
+        onExtracted={(data) => {
+          const d = data as Record<string, unknown>;
+          if (d.gesamtwert || d.plattform) {
+            updateDraft(prev => {
+              const existing = prev.investment_positions.length > 0 ? prev.investment_positions : [newInvestment()];
+              return {
+                ...prev,
+                investment_positions: existing.map((inv, i) => i === 0 ? {
+                  ...inv,
+                  value: String(d.gesamtwert || inv.value),
+                  platform: String(d.plattform || inv.platform),
+                } : inv),
+              };
+            });
+          }
+        }}
+      />
 
       {/* ── Aktien, ETFs & Fonds ── */}
       <Card className={cn(draft.investment_positions_skipped && "opacity-60")}>
@@ -1746,6 +1838,71 @@ function LiabilitiesStep({
       <div className="flex items-center gap-2">
         <span className="text-xl">📉</span>
         <h2 className="text-base font-bold text-foreground">Verbindlichkeiten</h2>
+      </div>
+
+      <div className="grid grid-cols-1 gap-2">
+        <DocumentUploadButton
+          documentType="hypothek"
+          onExtracted={(data) => {
+            const d = data as Record<string, unknown>;
+            if (d.restschuld) {
+              updateDraft(prev => {
+                const existing = prev.credits.length > 0 ? prev.credits : [newCredit()];
+                return {
+                  ...prev,
+                  credits: existing.map((c, i) => i === 0 ? {
+                    ...c,
+                    name: String(d.anbieter || 'Hypothek'),
+                    remaining: String(d.restschuld || c.remaining),
+                    monthly_payment: String(d.monatliche_rate || c.monthly_payment),
+                    interest_rate: String(d.zinssatz || c.interest_rate),
+                  } : c),
+                };
+              });
+            }
+          }}
+        />
+        <DocumentUploadButton
+          documentType="leasing"
+          onExtracted={(data) => {
+            const d = data as Record<string, unknown>;
+            if (d.restschuld || d.monatliche_rate) {
+              updateDraft(prev => {
+                const newEntry = newCredit();
+                return {
+                  ...prev,
+                  credits: [...prev.credits, {
+                    ...newEntry,
+                    name: String(d.anbieter || 'Leasing'),
+                    remaining: String(d.restschuld || ''),
+                    monthly_payment: String(d.monatliche_rate || ''),
+                  }],
+                };
+              });
+            }
+          }}
+        />
+        <DocumentUploadButton
+          documentType="kredit"
+          onExtracted={(data) => {
+            const d = data as Record<string, unknown>;
+            if (d.restschuld) {
+              updateDraft(prev => {
+                const newEntry = newCredit();
+                return {
+                  ...prev,
+                  credits: [...prev.credits, {
+                    ...newEntry,
+                    name: String(d.anbieter || 'Kredit'),
+                    remaining: String(d.restschuld || ''),
+                    monthly_payment: String(d.monatliche_rate || ''),
+                    interest_rate: String(d.zinssatz || ''),
+                  }],
+                };
+              });
+            }
+          }}
+        />
       </div>
 
       {/* Hypotheken (auto-filled) */}
