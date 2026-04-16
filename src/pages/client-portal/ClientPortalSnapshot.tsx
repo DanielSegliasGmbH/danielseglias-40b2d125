@@ -19,8 +19,9 @@ import { toast } from '@/hooks/use-toast';
 import {
   Camera, History, TrendingUp, TrendingDown, Minus,
   ArrowLeft, ArrowRight, Loader2, Trash2, ChevronRight,
-  Info, ExternalLink, Plus, Zap, CheckCircle,
+  Info, ExternalLink, Plus, Zap, CheckCircle, AlertTriangle, ChevronDown,
 } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 import { format } from 'date-fns';
