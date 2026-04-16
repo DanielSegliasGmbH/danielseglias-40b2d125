@@ -622,6 +622,9 @@ export default function ClientPortalHome() {
         {/* ── SUCCESS STORY ── */}
         <SuccessStoryRotator />
 
+        {/* ── SCHATTEN-ZWILLING ── */}
+        <ShadowTwinCard />
+
         {/* ── PARTNER MODE CARD ── */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.33 }}>
           <Link to="/app/client-portal/partner">
