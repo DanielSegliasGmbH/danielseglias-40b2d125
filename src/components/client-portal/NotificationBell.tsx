@@ -163,7 +163,7 @@ export function NotificationBell() {
 
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col">
-          <SheetHeader className="px-5 pb-3 border-b border-border shrink-0" style={{ paddingTop: 'calc(max(env(safe-area-inset-top, 0px), 44px) + 8px)' }}>
+          <SheetHeader className="px-5 pb-3 pr-16 border-b border-border shrink-0" style={{ paddingTop: 'calc(max(env(safe-area-inset-top, 0px), 44px) + 8px)' }}>
             <div className="flex items-center justify-between">
               <SheetTitle className="text-base">🔔 Erinnerungen</SheetTitle>
               {unreadCount > 0 && (
@@ -174,7 +174,7 @@ export function NotificationBell() {
                   onClick={handleMarkAllRead}
                 >
                   <CheckCheck className="h-3.5 w-3.5" />
-                  Alle als gelesen markieren
+                  Alle gelesen
                 </Button>
               )}
             </div>
