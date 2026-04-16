@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, TrendingUp, User, Users, HelpCircle, Globe, Crown, Wallet, PiggyBank, Landmark, Gift, Settings, FileBarChart, Camera, Archive, CalendarDays, CheckSquare } from 'lucide-react';
+import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, TrendingUp, User, Users, HelpCircle, Globe, Crown, Wallet, PiggyBank, Landmark, Gift, Settings, FileBarChart, Camera, Archive, CalendarDays, CheckSquare, Scroll } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
