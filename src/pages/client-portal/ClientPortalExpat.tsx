@@ -305,11 +305,11 @@ export default function ClientPortalExpat() {
     }
     setShowChecklist(true);
     if (!xpAwarded) {
-      awardAction('tool_used', 50, 'expat-plan');
+      awardPoints('tool_used', 'expat-plan');
       setXpAwarded(true);
       toast.success('+50 XP für deinen Expat-Plan!');
     }
-  }, [selectedCountry, xpAwarded, awardAction]);
+  }, [selectedCountry, xpAwarded, awardPoints]);
 
   const handleAddTasks = useCallback(async (tasks: string[]) => {
     if (!user) return;
