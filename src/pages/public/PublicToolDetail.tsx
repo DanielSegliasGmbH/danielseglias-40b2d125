@@ -38,6 +38,7 @@ import { LohnerhoherTool } from '@/components/tools/lohnerhoher/LohnerhoherTool'
 import { MeinFinanzplanTool } from '@/components/tools/mein-finanzplan/MeinFinanzplanTool';
 import { KontenModellTool } from '@/components/tools/konten-modell/KontenModellTool';
 import { HumankapitalTool } from '@/components/tools/humankapital/HumankapitalTool';
+import { SteuerrechnerTool } from '@/components/tools/steuerrechner/SteuerrechnerTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -256,6 +257,10 @@ export default function PublicToolDetail() {
               ) : slug === 'humankapital' ? (
                 <div className="mb-8">
                   <HumankapitalTool mode="public" />
+                </div>
+              ) : slug === 'steuerrechner' ? (
+                <div className="mb-8">
+                  <SteuerrechnerTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">

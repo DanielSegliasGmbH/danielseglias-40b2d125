@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Wrench, Calculator, PieChart, TrendingUp, FileText, Clock, ClipboardCheck, ChevronRight, LucideIcon } from 'lucide-react';
+import { Wrench, Calculator, PieChart, TrendingUp, FileText, Clock, ClipboardCheck, ChevronRight, Briefcase, Receipt, LucideIcon } from 'lucide-react';
 import { useAllTools, useUpdateTool } from '@/hooks/useTools';
 import { groupToolsByCluster } from '@/config/toolClusters';
 import { toast } from 'sonner';
@@ -19,6 +19,8 @@ const iconMap: Record<string, LucideIcon> = {
   'file-text': FileText,
   'wrench': Wrench,
   'ClipboardCheck': ClipboardCheck,
+  'Briefcase': Briefcase,
+  'Receipt': Receipt,
 };
 
 export default function AdminTools() {
