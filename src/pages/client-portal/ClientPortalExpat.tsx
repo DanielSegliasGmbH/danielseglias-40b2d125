@@ -295,7 +295,7 @@ export default function ClientPortalExpat() {
   const [showChecklist, setShowChecklist] = useState(false);
   const [xpAwarded, setXpAwarded] = useState(false);
   const { user } = useAuth();
-  const { awardAction } = useGamification();
+  const { awardPoints } = useGamification();
   const navigate = useNavigate();
 
   const handleStartPlan = useCallback(() => {
