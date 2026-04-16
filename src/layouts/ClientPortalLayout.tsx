@@ -3,7 +3,9 @@ import { LevelUpCelebration } from '@/components/client-portal/LevelUpCelebratio
 import { TruthMomentOverlay } from '@/components/client-portal/TruthMomentOverlay';
 import { PaydayRitualOverlay } from '@/components/client-portal/PaydayRitualOverlay';
 import { StreakRescueOverlay } from '@/components/client-portal/StreakRescueOverlay';
+import { UnlockCelebration } from '@/components/client-portal/UnlockCelebration';
 import { useSmartNotifications } from '@/hooks/useSmartNotifications';
+import { useFeatureUnlock } from '@/hooks/useFeatureUnlock';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
