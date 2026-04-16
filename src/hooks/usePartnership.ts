@@ -59,7 +59,7 @@ export function usePartnership() {
         .limit(1)
         .maybeSingle();
       if (error) throw error;
-      return data as Partnership | null;
+      return data as unknown as Partnership | null;
     },
     enabled: !!user,
   });
@@ -267,7 +267,7 @@ export function usePendingInvitation() {
         .is('user_id_2', null)
         .maybeSingle();
       if (error) throw error;
-      return data as Partnership | null;
+      return data as unknown as Partnership | null;
     },
     enabled: !!user?.email,
   });

@@ -38,6 +38,7 @@ import {
   useSubmitConflictEntry,
   useUpdateSharingSettings,
   usePendingInvitation,
+  type ConflictEntry,
 } from '@/hooks/usePartnership';
 
 /* ── No Partnership: Invite Flow ── */
