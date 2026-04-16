@@ -465,6 +465,14 @@ function App() {
                 }
               />
               <Route
+                path="/app/client-portal/avatar"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalAvatar />
+                  </RouteGuard>
+                }
+              />
+              <Route
                 path="/app/client-portal/life-film"
                 element={
                   <RouteGuard allowedRoles={['client', 'admin']}>
