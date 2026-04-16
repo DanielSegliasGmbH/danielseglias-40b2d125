@@ -2,10 +2,11 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserAvatar } from '@/hooks/useUserAvatar';
-import { usePeakScore, getRankForScore, RANKS } from '@/hooks/usePeakScore';
+import { usePeakScore } from '@/hooks/usePeakScore';
 import { useFinanzType } from '@/hooks/useFinanzType';
-import { useGamification } from '@/hooks/useGamification';
+import { useMetaProfile } from '@/hooks/useMetaProfile';
 import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent } from '@/components/ui/card';
@@ -48,11 +49,21 @@ const NAME_CATEGORIES = [
 
 export default function ClientPortalAvatar() {
   const navigate = useNavigate();
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const { saveAvatar } = useUserAvatar();
   const { score, rank } = usePeakScore();
   const { info: finanzTypeInfo } = useFinanzType();
-  const { awardXP } = useGamification();
+  const { metaProfile } = useMetaProfile();
+
+  const { data: userProfile } = useQuery({
+    queryKey: ['profile-basic', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase.from('profiles').select('first_name, age').eq('id', user.id).maybeSingle();
+      return data;
+    },
+    enabled: !!user,
+  });
 
   const [step, setStep] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -60,8 +71,8 @@ export default function ClientPortalAvatar() {
   const [futureAge, setFutureAge] = useState(50);
   const [definingMoment, setDefiningMoment] = useState('');
 
-  const currentAge = profile?.age || 30;
-  const currentName = profile?.first_name || 'Du';
+  const currentAge = userProfile?.age || metaProfile?.age || 30;
+  const currentName = userProfile?.first_name || 'Du';
   const minFutureAge = currentAge + 10;
   const maxFutureAge = Math.max(minFutureAge + 40, 95);
 
