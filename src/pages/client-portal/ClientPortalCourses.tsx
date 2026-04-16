@@ -33,17 +33,8 @@ export default function ClientPortalCourses() {
 
   return (
     <ClientPortalLayout>
+      <ScreenHeader title="🎓 Videokurs" backTo="/app/client-portal" />
       <div className="max-w-5xl mx-auto space-y-6">
-        {/* Header */}
-        <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-1 flex items-center gap-3">
-            <GraduationCap className="h-7 w-7 text-primary" />
-            Videokurs
-          </h1>
-          <p className="text-sm lg:text-base text-muted-foreground">
-            Dein persönlicher Finanz-Kurs – Schritt für Schritt zu mehr Klarheit.
-          </p>
-        </div>
 
         {/* MVP Hinweis */}
         <Card className="border-primary/20 bg-[hsl(var(--accent))]/30">
