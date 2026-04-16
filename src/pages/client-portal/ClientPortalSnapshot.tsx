@@ -1940,7 +1940,8 @@ function SummaryStep({ draft, onNotesChange, onEdit }: { draft: SnapshotDraft; o
 
   // Completeness — count fields as "addressed" if value entered OR "Nicht bekannt" checked
   const TOTAL_FIELDS = 15;
-  const simpleFieldKeys = ['pillar_3a', 'freizuegigkeit', 'pensionskasse', 'ahv_annual', 'cash',
+  // Simple single-value fields (ahv_annual, cash, income, expenses, insurance)
+  const simpleFieldKeys = ['ahv_annual', 'cash',
     'monthly_income', 'monthly_expenses', 'insurance_monthly'] as (keyof SnapshotDraft)[];
 
   let filledCount = 0;
@@ -1959,7 +1960,11 @@ function SummaryStep({ draft, onNotesChange, onEdit }: { draft: SnapshotDraft; o
     }
   });
 
-  const listFields: { skippedKey: keyof SnapshotDraft; listKey?: keyof SnapshotDraft }[] = [
+  // List-based fields (including new Vorsorge lists)
+  const listFields: { skippedKey: keyof SnapshotDraft; listKey: keyof SnapshotDraft; balanceKey?: string }[] = [
+    { skippedKey: 'pillar_3a_skipped', listKey: 'pillar_3a_entries', balanceKey: 'balance' },
+    { skippedKey: 'freizuegigkeit_skipped', listKey: 'freizuegigkeit_entries', balanceKey: 'balance' },
+    { skippedKey: 'pensionskasse_skipped', listKey: 'pensionskasse_entries', balanceKey: 'balance' },
     { skippedKey: 'bank_accounts_skipped', listKey: 'bank_accounts' },
     { skippedKey: 'valuables_skipped', listKey: 'valuables' },
     { skippedKey: 'investment_positions_skipped', listKey: 'investment_positions' },
@@ -1969,13 +1974,23 @@ function SummaryStep({ draft, onNotesChange, onEdit }: { draft: SnapshotDraft; o
     { skippedKey: 'debts_skipped', listKey: 'debts' },
   ];
 
-  listFields.forEach(({ skippedKey, listKey }) => {
+  listFields.forEach(({ skippedKey, listKey, balanceKey }) => {
     if (draft[skippedKey]) {
       unknownCount++;
-    } else if (listKey && Array.isArray(draft[listKey]) && (draft[listKey] as unknown[]).length > 0) {
-      filledCount++;
     } else {
-      untouchedCount++;
+      const list = draft[listKey];
+      if (Array.isArray(list) && list.length > 0) {
+        // For Vorsorge entries, check if at least one has a balance
+        if (balanceKey) {
+          const hasValue = list.some((e: Record<string, string>) => e[balanceKey] && String(e[balanceKey]).trim() !== '');
+          if (hasValue) filledCount++;
+          else untouchedCount++;
+        } else {
+          filledCount++;
+        }
+      } else {
+        untouchedCount++;
+      }
     }
   });
 
