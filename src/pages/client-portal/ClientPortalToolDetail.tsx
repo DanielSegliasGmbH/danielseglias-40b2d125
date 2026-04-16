@@ -45,6 +45,7 @@ import { MeinFinanzplanTool } from '@/components/tools/mein-finanzplan/MeinFinan
 import { KontenModellTool } from '@/components/tools/konten-modell/KontenModellTool';
 import { HumankapitalTool } from '@/components/tools/humankapital/HumankapitalTool';
 import { SteuerrechnerTool } from '@/components/tools/steuerrechner/SteuerrechnerTool';
+import { AhvTrackerTool } from '@/components/tools/ahv-tracker/AhvTrackerTool';
 import { RecommendationCards } from '@/components/client-portal/RecommendationCards';
 import { TOOL_RECOMMENDATIONS } from '@/config/recommendationConfig';
 
@@ -164,6 +165,8 @@ export default function ClientPortalToolDetail() {
         return <HumankapitalTool mode="internal" />;
       case 'steuerrechner':
         return <SteuerrechnerTool mode="internal" />;
+      case 'ahv-tracker':
+        return <AhvTrackerTool mode="internal" />;
       default:
         return (
           <Card>

@@ -38,6 +38,7 @@ const TOOL_LABELS: Record<string, string> = {
   'konten-modell': 'Konten-Modell',
   'humankapital': 'Humankapital',
   'steuerrechner': 'Steuerrechner Schweiz',
+  'ahv-tracker': 'AHV-Tracker',
   'lebenzeit-rechner': 'Lebenszeit-Rechner',
   'recovery-analyse': 'Recovery-Analyse',
   'zeitverlust-simulator': 'Zeitverlust-Simulator',
