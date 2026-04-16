@@ -63,6 +63,7 @@ export default function ClientPortalHome() {
   const { score, rank: peakRank } = usePeakScore();
   const { completed: finanzTypCompleted, info: finanzTypInfo } = useFinanzType();
   const firstName = user?.user_metadata?.first_name || 'Kunde';
+  const { futureSelfName, completed: avatarCompleted } = useUserAvatar();
 
   const { data: lifeFilmData } = useQuery({
     queryKey: ['life-film-status', user?.id],
