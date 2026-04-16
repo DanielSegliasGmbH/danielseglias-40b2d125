@@ -392,6 +392,18 @@ function sumDebts(items: DebtItem[]): number {
   return items.reduce((sum, d) => sum + n(d.amount), 0);
 }
 
+function sumPillar3a(items: Pillar3aEntry[]): number {
+  return items.reduce((s, e) => s + n(e.balance), 0);
+}
+
+function sumFreizuegigkeit(items: FreizuegigkeitEntry[]): number {
+  return items.reduce((s, e) => s + n(e.balance), 0);
+}
+
+function sumPensionskasse(items: PensionskasseEntry[]): number {
+  return items.reduce((s, e) => s + n(e.balance), 0);
+}
+
 function computeNetWorth(d: SnapshotDraft): number {
   const bankTotal = d.bank_accounts_skipped ? 0 : sumBankAccounts(d.bank_accounts);
   const cashTotal = d.cash.skipped ? 0 : n(d.cash.amount);
@@ -402,6 +414,17 @@ function computeNetWorth(d: SnapshotDraft): number {
   const otherTotal = d.other_assets_skipped ? 0 : sumOtherAssets(d.other_assets);
   const creditsTotal = d.credits_skipped ? 0 : sumCredits(d.credits);
   const debtsTotal = d.debts_skipped ? 0 : sumDebts(d.debts);
+
+  // New list-based Vorsorge
+  const p3a = d.pillar_3a_skipped ? 0 : sumPillar3a(d.pillar_3a_entries);
+  const fz = d.freizuegigkeit_skipped ? 0 : sumFreizuegigkeit(d.freizuegigkeit_entries);
+  const pk = d.pensionskasse_skipped ? 0 : sumPensionskasse(d.pensionskasse_entries);
+
+  // Legacy single-field Vorsorge (for old snapshots without entries)
+  const legacyP3a = (!d.pillar_3a_entries || d.pillar_3a_entries.length === 0) ? n(d.pillar_3a.amount) : 0;
+  const legacyFz = (!d.freizuegigkeit_entries || d.freizuegigkeit_entries.length === 0) ? n(d.freizuegigkeit.amount) : 0;
+  const legacyPk = (!d.pensionskasse_entries || d.pensionskasse_entries.length === 0) ? n(d.pensionskasse.amount) : 0;
+
   // Legacy fields for old snapshots
   const legacySavings = d.savings ? n(d.savings.amount) : 0;
   const legacyInvestments = d.investments ? n(d.investments.amount) : 0;
@@ -410,9 +433,10 @@ function computeNetWorth(d: SnapshotDraft): number {
   const legacyMortgage = d.mortgage ? n(d.mortgage.amount) : 0;
   const legacyConsumer = d.consumer_debt ? n(d.consumer_debt.amount) : 0;
   const legacyOther = d.other_debt ? n(d.other_debt.amount) : 0;
+
   return bankTotal + cashTotal + valuablesTotal + investTotal + cryptoTotal + propertyEquity + otherTotal +
     legacySavings + legacyInvestments + legacyRE + legacyEmergency +
-    n(d.pillar_3a.amount) + n(d.freizuegigkeit.amount) + n(d.pensionskasse.amount) -
+    p3a + fz + pk + legacyP3a + legacyFz + legacyPk -
     creditsTotal - debtsTotal - legacyMortgage - legacyConsumer - legacyOther;
 }
 
