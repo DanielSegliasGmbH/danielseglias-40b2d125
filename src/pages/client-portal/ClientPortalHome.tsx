@@ -29,6 +29,7 @@ import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
 import { SuccessStoryRotator } from '@/components/client-portal/SuccessStoryRotator';
 import { ShadowTwinCard } from '@/components/client-portal/ShadowTwinCard';
 import { LastPlanDashboardCard } from '@/components/client-portal/LastPlanDashboardCard';
+import { ProfessionDashboardTips } from '@/components/client-portal/ProfessionDashboardTips';
 import { RankWarningBanner } from '@/components/client-portal/RankWarningBanner';
 import { RankChangeOverlay } from '@/components/client-portal/RankChangeOverlay';
 import { useRankSystem } from '@/hooks/useRankSystem';
@@ -629,6 +630,9 @@ export default function ClientPortalHome() {
 
         {/* ── LETZTER PLAN ── */}
         <LastPlanDashboardCard />
+
+        {/* ── PROFESSION TIPS ── */}
+        <ProfessionDashboardTips />
 
         {/* ── PARTNER MODE CARD ── */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.33 }}>
