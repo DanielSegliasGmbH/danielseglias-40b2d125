@@ -22,7 +22,7 @@ export function PaydayRitualOverlay() {
   const { shouldShowRitual, saveRitual } = usePaydayRitual();
   const { points, streakDays, awardPoints } = useGamification();
   const { score, totalAssets, totalLiabilities, monthlyExpenses } = usePeakScore();
-  const { futureSelfName, avatarData } = useUserAvatar();
+  const { futureSelfName } = useUserAvatar();
   const [dismissed, setDismissed] = useState(false);
   const [step, setStep] = useState(0);
 
