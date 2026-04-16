@@ -273,7 +273,9 @@ export default function ClientPortalHome() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
-              {getGreeting(firstName)}
+              {avatarCompleted && futureSelfName
+                ? `${futureSelfName} freut sich, dich zu sehen.`
+                : getGreeting(firstName)}
             </p>
             <h1 className="text-xl font-semibold tracking-tight text-foreground mt-0.5">
               {firstName}
