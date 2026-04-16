@@ -435,6 +435,13 @@ function RitualSettingsSection({ userId }: { userId?: string }) {
       icon: MessageCircle,
       value: ritualSettings.future_self_messages_enabled,
     },
+    {
+      key: 'mood_checkin_enabled',
+      label: 'Wöchentlicher Mood-Check',
+      description: 'Montags-Check: Wie geht es dir mit deinen Finanzen?',
+      icon: MessageCircle,
+      value: (ritualSettings as any).mood_checkin_enabled ?? true,
+    },
   ];
 
   return (
