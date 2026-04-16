@@ -622,6 +622,9 @@ export default function ClientPortalHome() {
           </motion.div>
         )}
 
+        {/* ── JOURNEY WIDGET ── */}
+        <JourneyDashboardWidget />
+
         {/* ── SUCCESS STORY ── */}
         <SuccessStoryRotator />
 
