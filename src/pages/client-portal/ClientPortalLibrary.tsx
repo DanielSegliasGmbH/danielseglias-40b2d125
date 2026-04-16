@@ -98,7 +98,7 @@ export default function ClientPortalLibrary() {
           title={currentArticle.title}
           breadcrumb={['Bibliothek', cat?.title || '', currentArticle.title]}
         />
-        <div className="max-w-3xl mx-auto">
+        <div className="w-full max-w-2xl lg:max-w-3xl mx-auto">
           <ArticleDetail
             article={currentArticle}
             isRead={readSet.has(currentArticle.id)}
@@ -130,7 +130,7 @@ export default function ClientPortalLibrary() {
           breadcrumb={['Bibliothek', currentCategory.title]}
           backTo="/app/client-portal/library"
         />
-        <div className="max-w-4xl mx-auto">
+        <div className="w-full max-w-2xl lg:max-w-4xl mx-auto">
           <CategoryHeader category={currentCategory} />
           <div className="mt-4 mb-6">
             <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
@@ -158,7 +158,7 @@ export default function ClientPortalLibrary() {
   return (
     <ClientPortalLayout>
       <ScreenHeader title="📚 Wissensbibliothek" backTo="/app/client-portal" />
-      <div className="max-w-5xl mx-auto">
+      <div className="w-full max-w-2xl lg:max-w-5xl mx-auto">
 
         {/* Search */}
         <div className="relative mb-6">

@@ -149,7 +149,7 @@ export default function ClientPortalStrategies() {
   return (
     <ClientPortalLayout>
       <ScreenHeader title="Anlageberatung" backTo="/app/client-portal" />
-      <div className="max-w-5xl mx-auto space-y-6 sm:space-y-10 pb-24 sm:pb-12 px-1 sm:px-0">
+      <div className="w-full max-w-2xl lg:max-w-5xl mx-auto space-y-6 sm:space-y-10 pb-24 sm:pb-12">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
             <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
