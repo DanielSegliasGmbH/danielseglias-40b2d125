@@ -6,6 +6,8 @@ import { useGamification, getLevel, LEVELS } from '@/hooks/useGamification';
 import { usePeakScore } from '@/hooks/usePeakScore';
 import { useFinanzType } from '@/hooks/useFinanzType';
 import { supabase } from '@/integrations/supabase/client';
+import { useMetaProfile } from '@/hooks/useMetaProfile';
+import { getProfessionInfo } from '@/config/professionConfig';
 import { AppLayout } from '@/components/AppLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent } from '@/components/ui/card';
