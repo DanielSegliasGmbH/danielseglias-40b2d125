@@ -580,6 +580,14 @@ function App() {
                 }
               />
               <Route
+                path="/app/client-portal/communities"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalCommunities />
+                  </RouteGuard>
+                }
+              />
+              <Route
                 path="/app/client-portal/settings"
                 element={
                   <RouteGuard allowedRoles={['client', 'admin']}>
