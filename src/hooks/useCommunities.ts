@@ -19,7 +19,8 @@ export function useCommunities() {
   const queryClient = useQueryClient();
   const { awardPoints } = useGamification();
   const { score } = usePeakScore();
-  const rank = score !== null ? getRankForScore(score) : { level: 1, emoji: '🌱' };
+  const rankInfo = score !== null ? getRankForScore(score) : null;
+  const rank = rankInfo || { rank: 1, name: 'Anfänger', emoji: '🌱', minMonths: 0, maxMonths: 2 };
 
   // All active groups
   const { data: groups = [], isLoading: groupsLoading } = useQuery({
@@ -62,7 +63,7 @@ export function useCommunities() {
       if (!user) throw new Error('Not authenticated');
       if (memberships.length >= 5) throw new Error('Maximum 5 Gruppen erlaubt');
 
-      const anonUsername = generateAnonUsername(rank.level);
+      const anonUsername = generateAnonUsername(rank.rank);
       const { error } = await supabase
         .from('community_group_members')
         .insert({ user_id: user.id, group_id: groupId, anon_username: anonUsername });
