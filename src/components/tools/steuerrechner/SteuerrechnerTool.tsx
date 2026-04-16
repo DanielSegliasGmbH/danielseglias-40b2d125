@@ -147,7 +147,7 @@ export function SteuerrechnerTool({ mode = 'internal' }: Props) {
                   </SelectContent>
                 </Select>
                 {effectiveCanton && !isSupported && (
-                  <p className="text-[11px] text-amber-600 mt-1">
+                  <p className="text-[11px] text-destructive/70 mt-1">
                     Für diesen Kanton wird der Schweizer Durchschnitt verwendet.
                   </p>
                 )}
@@ -319,7 +319,7 @@ export function SteuerrechnerTool({ mode = 'internal' }: Props) {
                   Das sind <span className="font-semibold text-foreground">{result.effectiveRate}%</span> deines Einkommens.
                 </p>
                 {result.isApproximation && (
-                  <p className="text-xs text-amber-600 mt-2 flex items-center justify-center gap-1">
+                  <p className="text-xs text-destructive/70 mt-2 flex items-center justify-center gap-1">
                     <Info className="h-3 w-3" /> Näherungswert (Schweizer Durchschnitt)
                   </p>
                 )}
