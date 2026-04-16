@@ -275,7 +275,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
             <LanguageSwitcher />
             <span className="text-sm text-muted-foreground">{firstName}</span>
           </div>
-          <div className="p-4 lg:p-8 overflow-x-hidden max-w-full">
+          <div className="p-4 lg:p-8 overflow-x-hidden w-full min-w-0">
             {children}
           </div>
         </main>
