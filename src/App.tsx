@@ -116,6 +116,13 @@ import { PageViewTracker } from "./components/PageViewTracker";
 import AdminAutomations from "./pages/AdminAutomations";
 import AdminAnalyticsDashboard from "./pages/AdminAnalyticsDashboard";
 import AdminCtaManagement from "./pages/AdminCtaManagement";
+import AdminNudgeSchedule from "./pages/AdminNudgeSchedule";
+import AdminCommunities from "./pages/AdminCommunities";
+import AdminJourneyConfig from "./pages/AdminJourneyConfig";
+import AdminTruthMoments from "./pages/AdminTruthMoments";
+import AdminVoiceScripts from "./pages/AdminVoiceScripts";
+import AdminGroupsFeed from "./pages/AdminGroupsFeed";
+import AdminUserAnalytics from "./pages/AdminUserAnalytics";
 
 // Public Pages (no auth required)
 import MinimalLanding from "./pages/public/MinimalLanding";
