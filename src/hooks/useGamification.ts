@@ -375,9 +375,11 @@ export function useGamification() {
       pointsRef.current = newPoints;
       setLastAwardedPoints({ amount: pointsToAdd, id: Date.now() });
 
-      toast(`+${pointsToAdd} XP`, {
-        description: getActionMessage(actionType),
-      });
+      const fn = futureNameRef.current;
+      const desc = fn
+        ? `${getActionMessage(actionType)} · Ein Schritt näher zu ${fn}.`
+        : getActionMessage(actionType);
+      toast(`+${pointsToAdd} XP`, { description: desc });
 
       if (newLevelInfo.level > oldLevel) {
         emitLevelUp(newLevelInfo.level, newLevelInfo.label);
