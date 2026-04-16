@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, Clock, Globe, Users, ExternalLink, ClipboardCheck, Briefcase, Receipt, LucideIcon } from 'lucide-react';
+import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, Clock, Globe, Users, ExternalLink, ClipboardCheck, Briefcase, Receipt, Landmark, LucideIcon } from 'lucide-react';
 import { useUpdateTool, Tool } from '@/hooks/useTools';
 import { toast } from 'sonner';
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
@@ -40,6 +40,7 @@ import { MeinFinanzplanTool } from '@/components/tools/mein-finanzplan/MeinFinan
 import { KontenModellTool } from '@/components/tools/konten-modell/KontenModellTool';
 import { HumankapitalTool } from '@/components/tools/humankapital/HumankapitalTool';
 import { SteuerrechnerTool } from '@/components/tools/steuerrechner/SteuerrechnerTool';
+import { AhvTrackerTool } from '@/components/tools/ahv-tracker/AhvTrackerTool';
 import { VersicherungsCheckTool } from '@/components/tools/versicherungs-check/VersicherungsCheckTool';
 
 // Icon mapping
@@ -52,6 +53,7 @@ const iconMap: Record<string, LucideIcon> = {
   'ClipboardCheck': ClipboardCheck,
   'Briefcase': Briefcase,
   'Receipt': Receipt,
+  'Landmark': Landmark,
 };
 
 export default function AdminToolDetail() {
@@ -183,6 +185,8 @@ export default function AdminToolDetail() {
         return <HumankapitalTool mode="internal" />;
       case 'steuerrechner':
         return <SteuerrechnerTool mode="internal" />;
+      case 'ahv-tracker':
+        return <AhvTrackerTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">

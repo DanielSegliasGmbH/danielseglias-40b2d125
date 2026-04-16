@@ -39,6 +39,7 @@ import { MeinFinanzplanTool } from '@/components/tools/mein-finanzplan/MeinFinan
 import { KontenModellTool } from '@/components/tools/konten-modell/KontenModellTool';
 import { HumankapitalTool } from '@/components/tools/humankapital/HumankapitalTool';
 import { SteuerrechnerTool } from '@/components/tools/steuerrechner/SteuerrechnerTool';
+import { AhvTrackerTool } from '@/components/tools/ahv-tracker/AhvTrackerTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -261,6 +262,10 @@ export default function PublicToolDetail() {
               ) : slug === 'steuerrechner' ? (
                 <div className="mb-8">
                   <SteuerrechnerTool mode="public" />
+                </div>
+              ) : slug === 'ahv-tracker' ? (
+                <div className="mb-8">
+                  <AhvTrackerTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
