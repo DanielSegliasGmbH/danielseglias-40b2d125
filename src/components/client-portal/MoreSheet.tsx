@@ -44,9 +44,10 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
       onClick={() => onOpenChange(false)}
       className={cn(
         "flex items-center justify-between w-full px-4 py-3.5 rounded-xl",
-        "bg-muted/50 hover:bg-muted transition-colors",
-        "active:scale-[0.98] touch-manipulation"
+        "bg-muted/50 transition-colors touch-manipulation",
+        "active:bg-muted more-sheet-item"
       )}
+      style={{ WebkitTapHighlightColor: 'transparent' }}
     >
       <div className="flex items-center gap-3">
         <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -60,7 +61,7 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="rounded-t-3xl max-h-[85vh] overflow-y-auto" style={{ paddingBottom: 'calc(40px + env(safe-area-inset-bottom, 0px))' }}>
+      <SheetContent side="bottom" className="rounded-t-3xl max-h-[85vh] overflow-y-auto touch-pan-y" style={{ paddingBottom: 'calc(40px + env(safe-area-inset-bottom, 0px))', touchAction: 'pan-y' }}>
         <SheetHeader className="pb-3">
           <SheetTitle className="text-base">{t('clientPortal.more')}</SheetTitle>
         </SheetHeader>
