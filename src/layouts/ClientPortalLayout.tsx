@@ -91,6 +91,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
   const { data: settings } = useCustomerPortalSettings();
   const { data: unreadCount = 0 } = useUnreadCount();
   useSmartNotifications();
+  const { newlyUnlocked, clearNewlyUnlocked } = useFeatureUnlock();
   
   const previewCustomerId = usePreviewCustomerId();
   const isAdminPreview = role === 'admin' && !!previewCustomerId;
@@ -305,6 +306,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
         <TruthMomentOverlay />
         <PaydayRitualOverlay />
         <StreakRescueOverlay />
+        <UnlockCelebration newlyUnlocked={newlyUnlocked} onDismiss={clearNewlyUnlocked} />
       </div>
     </TooltipProvider>
     </PrivacyModeProvider>
