@@ -57,7 +57,7 @@ export default function ClientPortalXray() {
       if (error) throw error;
 
       queryClient.invalidateQueries({ queryKey: ['financial-xray', user.id, monthKey] });
-      await awardPoints('tool_used', 'xray_reviewed', 100);
+      await awardPoints('tool_used', 'xray_reviewed');
       toast.success('+100 XP für dein Finanz-Röntgenbild!');
     } catch (err: any) {
       console.error('Xray generation error:', err);
@@ -109,7 +109,7 @@ export default function ClientPortalXray() {
       queryClient.invalidateQueries({ queryKey: ['financial-xray', user.id, monthKey] });
       queryClient.invalidateQueries({ queryKey: ['open-tasks-count'] });
 
-      await awardPoints('task_completed', 'xray_tasks_created', 250);
+      await awardPoints('task_completed', 'xray_tasks_created');
       toast.success(`${taskLines.length} Aufgaben erstellt! +250 XP Bonus 🎉`);
     } catch (err) {
       console.error(err);
@@ -122,7 +122,7 @@ export default function ClientPortalXray() {
   return (
     <ClientPortalLayout>
       <div className="max-w-2xl mx-auto space-y-5">
-        <ScreenHeader title="Finanz-Röntgenbild" subtitle={getMonthLabel()} />
+        <ScreenHeader title={`Finanz-Röntgenbild — ${getMonthLabel()}`} />
 
         {isLoading ? (
           <div className="flex justify-center py-16">
