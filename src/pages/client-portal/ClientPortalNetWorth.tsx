@@ -677,7 +677,12 @@ export default function ClientPortalNetWorth() {
                     <button className="flex items-center gap-2.5 min-w-0 text-left" onClick={() => openDetail(l, 'liability')}>
                       <div className="min-w-0">
                         <p className="text-sm font-medium truncate">{l.name}</p>
-                        <p className="text-[11px] text-muted-foreground">{l.category}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-[11px] text-muted-foreground">{l.category}</p>
+                          {Number(l.monthly_payment) > 0 && (
+                            <p className="text-[11px] text-muted-foreground">• {fmtCHF(Number(l.monthly_payment))}/Mt.</p>
+                          )}
+                        </div>
                       </div>
                       {l.platform_url && (
                         <button
@@ -753,11 +758,55 @@ export default function ClientPortalNetWorth() {
 
               {/* Current value */}
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Aktueller Wert</span>
+                <span className="text-sm text-muted-foreground">
+                  {detailType === 'liability' ? 'Restschuld' : 'Aktueller Wert'}
+                </span>
                 <span className={cn("text-lg font-bold", detailType === 'asset' ? "text-foreground" : "text-destructive")}>
                   {fmtCHF(Number(detailType === 'asset' ? detailEntry.value : detailEntry.amount))}
                 </span>
               </div>
+
+              {/* Liability-specific details */}
+              {detailType === 'liability' && (
+                <div className="space-y-2">
+                  {Number(detailEntry.monthly_payment) > 0 && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Monatliche Rate</span>
+                      <span className="text-sm font-semibold text-destructive">{fmtCHF(Number(detailEntry.monthly_payment))} / Mt.</span>
+                    </div>
+                  )}
+                  {detailEntry.interest_rate != null && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Zinssatz</span>
+                      <span className="text-sm font-medium">{Number(detailEntry.interest_rate).toFixed(2)}%</span>
+                    </div>
+                  )}
+                  {detailEntry.end_date && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Enddatum</span>
+                      <span className="text-sm font-medium">{new Date(detailEntry.end_date).toLocaleDateString('de-CH')}</span>
+                    </div>
+                  )}
+                  {Number(detailEntry.monthly_payment) > 0 && Number(detailEntry.amount) > 0 && (
+                    <Card className="bg-muted/50">
+                      <CardContent className="py-2.5 space-y-1">
+                        <p className="text-xs font-medium text-muted-foreground">Payoff-Rechner</p>
+                        <p className="text-sm">
+                          Bei aktueller Rate schuldenfrei in:{' '}
+                          <span className="font-semibold">
+                            {(() => {
+                              const months = Math.ceil(Number(detailEntry.amount) / Number(detailEntry.monthly_payment));
+                              const years = Math.floor(months / 12);
+                              const rem = months % 12;
+                              return years > 0 ? `${years} Jahren und ${rem} Monaten` : `${rem} Monaten`;
+                            })()}
+                          </span>
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              )}
 
               {/* Last updated */}
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">

@@ -118,7 +118,7 @@ export function useCashflowData(selectedMonth?: string): CashflowData {
       if (!user) return [];
       const { data, error } = await supabase
         .from('net_worth_liabilities')
-        .select('id, name, amount')
+        .select('id, name, amount, monthly_payment')
         .eq('user_id', user.id);
       if (error) throw error;
       return data || [];
@@ -192,13 +192,15 @@ export function useCashflowData(selectedMonth?: string): CashflowData {
     }));
     const fixedExpensesTotal = fixedExpenseItems.reduce((s, i) => s + i.monthlyAmount, 0);
 
-    // Liability items from snapshot
-    const liabilityItems: CashflowItem[] = snapshotLiabilities.map((l: any) => ({
-      label: l.name,
-      monthlyAmount: Math.round(Number(l.amount || 0) / 120),
+    // Liability items from snapshot — use monthly_payment if available, else estimate
+    const liabilityItems: CashflowItem[] = snapshotLiabilities.map((l: Record<string, unknown>) => ({
+      label: String(l.name),
+      monthlyAmount: Number(l.monthly_payment || 0) > 0
+        ? Number(l.monthly_payment)
+        : Math.round(Number(l.amount || 0) / 120),
       source: 'snapshot' as const,
       sourceLabel: 'Aus Snapshot',
-      id: l.id,
+      id: String(l.id),
     }));
     const liabilityTotal = liabilityItems.reduce((s, i) => s + i.monthlyAmount, 0);
 
