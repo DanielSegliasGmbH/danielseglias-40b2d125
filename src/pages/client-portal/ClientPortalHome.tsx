@@ -21,6 +21,8 @@ import { WeeklyOverviewCard } from '@/components/client-portal/WeeklyOverviewCar
 import { useFinanzType } from '@/hooks/useFinanzType';
 import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
 import { WeeklyCheckCard } from '@/components/client-portal/WeeklyCheckCard';
+import { MorningBriefCard } from '@/components/client-portal/MorningBriefCard';
+import { SundayReflectionCard } from '@/components/client-portal/SundayReflectionCard';
 import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
 import { RankWarningBanner } from '@/components/client-portal/RankWarningBanner';
 import { RankChangeOverlay } from '@/components/client-portal/RankChangeOverlay';
@@ -291,8 +293,10 @@ export default function ClientPortalHome() {
         </div>
 
         {/* ── PEAKSCORE HERO ── */}
+        <MorningBriefCard />
         <PeakScoreCard onClick={() => navigate('/app/client-portal/peak-score')} />
         <FreedomCountdown />
+        <SundayReflectionCard />
         <WeeklyCheckCard />
         <RankWarningBanner />
 

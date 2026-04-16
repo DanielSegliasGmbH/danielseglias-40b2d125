@@ -17,7 +17,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Shield, Download, Trash2, AlertTriangle, Eye, Swords, FileBarChart, Loader2, Lightbulb, CalendarDays, Flame, MessageCircle } from 'lucide-react';
+import { Shield, Download, Trash2, AlertTriangle, Eye, Swords, FileBarChart, Loader2, Lightbulb, CalendarDays, Flame, MessageCircle, Volume2 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
@@ -398,6 +398,20 @@ function RitualSettingsSection({ userId }: { userId?: string }) {
   if (!ritualSettings) return null;
 
   const RITUAL_TOGGLES = [
+    {
+      key: 'voice_brief_enabled',
+      label: 'Morgens-Brief (täglich)',
+      description: 'Personalisiertes Audio-Briefing am Morgen',
+      icon: Volume2,
+      value: (ritualSettings as any).voice_brief_enabled ?? true,
+    },
+    {
+      key: 'voice_weekly_enabled',
+      label: 'Sonntag-Reflexion (wöchentlich)',
+      description: '2-Minuten Audio-Reflexion jeden Sonntag',
+      icon: Volume2,
+      value: (ritualSettings as any).voice_weekly_enabled ?? true,
+    },
     {
       key: 'weekly_ritual_enabled',
       label: 'Wochenritual (Sonntag)',
