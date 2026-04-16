@@ -73,11 +73,14 @@ interface CryptoPosition {
 
 interface Property {
   id: string;
+  property_type: 'residential' | 'investment';
   description: string;
   market_value: string;
   equity_invested: string;
   mortgage_amount: string;
   mortgage_rate: string;
+  monthly_rent: string;       // investment only
+  monthly_costs: string;      // investment only
   link: string;
 }
 
@@ -221,13 +224,16 @@ const newCrypto = (): CryptoPosition => ({
   link: '',
 });
 
-const newProperty = (): Property => ({
+const newProperty = (type: 'residential' | 'investment' = 'residential'): Property => ({
   id: crypto.randomUUID(),
+  property_type: type,
   description: '',
   market_value: '',
   equity_invested: '',
   mortgage_amount: '',
   mortgage_rate: '',
+  monthly_rent: '',
+  monthly_costs: '',
   link: '',
 });
 
@@ -533,7 +539,14 @@ export default function ClientPortalSnapshot() {
         merged.investment_positions_skipped = !!parsed.investment_positions_skipped;
         if (Array.isArray(parsed.crypto_positions)) merged.crypto_positions = parsed.crypto_positions;
         merged.crypto_positions_skipped = !!parsed.crypto_positions_skipped;
-        if (Array.isArray(parsed.properties)) merged.properties = parsed.properties;
+        if (Array.isArray(parsed.properties)) {
+          merged.properties = parsed.properties.map((p: any) => ({
+            ...p,
+            property_type: p.property_type || 'residential',
+            monthly_rent: p.monthly_rent || '',
+            monthly_costs: p.monthly_costs || '',
+          }));
+        }
         merged.owns_property = !!parsed.owns_property;
         if (Array.isArray(parsed.other_assets)) merged.other_assets = parsed.other_assets;
         merged.other_assets_skipped = !!parsed.other_assets_skipped;
@@ -1307,12 +1320,12 @@ function InvestmentsStep({
   }));
 
   // Property helpers
-  const addProperty = () => updateDraft(d => ({ ...d, properties: [...d.properties, newProperty()] }));
+  const addProperty = (type: 'residential' | 'investment' = 'residential') => updateDraft(d => ({ ...d, properties: [...d.properties, newProperty(type)] }));
   const removeProperty = (id: string) => updateDraft(d => ({ ...d, properties: d.properties.filter(p => p.id !== id) }));
   const updateProp = (id: string, field: keyof Property, value: string) => updateDraft(d => ({
     ...d, properties: d.properties.map(p => p.id === id ? {
       ...p,
-      [field]: ['market_value', 'equity_invested', 'mortgage_amount', 'mortgage_rate'].includes(field) ? cleanNum(value) : value,
+      [field]: ['market_value', 'equity_invested', 'mortgage_amount', 'mortgage_rate', 'monthly_rent', 'monthly_costs'].includes(field) ? cleanNum(value) : value,
     } : p),
   }));
 
@@ -1466,7 +1479,7 @@ function InvestmentsStep({
           </div>
 
           <div className="flex items-center gap-3">
-            <Label className="text-xs text-muted-foreground">Besitzt du Wohneigentum?</Label>
+            <Label className="text-xs text-muted-foreground">Besitzt du Immobilien?</Label>
             <div className="flex gap-2">
               <Button size="sm" variant={draft.owns_property ? "default" : "outline"} className="h-7 text-xs px-3" onClick={() => toggleProperty(true)}>Ja</Button>
               <Button size="sm" variant={!draft.owns_property ? "default" : "outline"} className="h-7 text-xs px-3" onClick={() => toggleProperty(false)}>Nein</Button>
@@ -1477,6 +1490,13 @@ function InvestmentsStep({
             <>
               {draft.properties.map((prop, idx) => {
                 const equity = n(prop.market_value) - n(prop.mortgage_amount);
+                const isInvestment = prop.property_type === 'investment';
+                const yearlyRent = n(prop.monthly_rent) * 12;
+                const yearlyCosts = n(prop.monthly_costs) * 12;
+                const netYield = n(prop.market_value) > 0
+                  ? Math.round((yearlyRent - yearlyCosts) / n(prop.market_value) * 1000) / 10
+                  : 0;
+
                 return (
                   <div key={prop.id} className="space-y-2 p-3 bg-muted/30 rounded-lg relative">
                     {draft.properties.length > 1 && (
@@ -1485,9 +1505,35 @@ function InvestmentsStep({
                       </button>
                     )}
                     <p className="text-[10px] font-medium text-muted-foreground">Immobilie {idx + 1}</p>
+
+                    {/* Property Type Toggle */}
+                    <div className="flex gap-2 p-1 bg-muted rounded-lg">
+                      <button
+                        onClick={() => updateProp(prop.id, 'property_type', 'residential')}
+                        className={cn(
+                          "flex-1 py-1.5 px-2 rounded text-xs font-medium transition-all text-center",
+                          !isInvestment ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+                        )}
+                      >
+                        🏠 Wohneigentum
+                      </button>
+                      <button
+                        onClick={() => updateProp(prop.id, 'property_type', 'investment')}
+                        className={cn(
+                          "flex-1 py-1.5 px-2 rounded text-xs font-medium transition-all text-center",
+                          isInvestment ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+                        )}
+                      >
+                        🏢 Investmentimmobilie
+                      </button>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">
+                      {isInvestment ? 'Vermietet — zählt als passive Einnahme im Cashflow' : 'Selbst bewohnt — keine Mieteinnahmen'}
+                    </p>
+
                     <div className="space-y-1">
                       <Label className="text-xs text-muted-foreground">Beschreibung</Label>
-                      <Input value={prop.description} onChange={(e) => updateProp(prop.id, 'description', e.target.value)} placeholder="z.B. 3.5-Zi-Wohnung Zürich" maxLength={200} />
+                      <Input value={prop.description} onChange={(e) => updateProp(prop.id, 'description', e.target.value)} placeholder={isInvestment ? "z.B. Renditeliegenschaft Basel" : "z.B. 3.5-Zi-Wohnung Zürich"} maxLength={200} />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div className="space-y-1">
@@ -1521,7 +1567,40 @@ function InvestmentsStep({
                         </div>
                       </div>
                     </div>
-                    {(n(prop.market_value) > 0 || n(prop.mortgage_amount) > 0) && (
+
+                    {/* Investment-only fields */}
+                    {isInvestment && (
+                      <>
+                        <Separator />
+                        <p className="text-[10px] font-medium text-muted-foreground">Mieteinnahmen & Kosten</p>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="space-y-1">
+                            <Label className="text-xs text-muted-foreground">Monatl. Mieteinnahmen</Label>
+                            <div className="relative">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                              <Input type="text" inputMode="decimal" value={prop.monthly_rent} onChange={(e) => updateProp(prop.id, 'monthly_rent', e.target.value)} placeholder="0" className="pl-11 text-right" />
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs text-muted-foreground">Monatl. Nebenkosten / Instandhaltung</Label>
+                            <div className="relative">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                              <Input type="text" inputMode="decimal" value={prop.monthly_costs} onChange={(e) => updateProp(prop.id, 'monthly_costs', e.target.value)} placeholder="0" className="pl-11 text-right" />
+                            </div>
+                          </div>
+                        </div>
+                        {n(prop.market_value) > 0 && n(prop.monthly_rent) > 0 && (
+                          <div className="flex gap-2 bg-primary/5 rounded-lg p-2.5">
+                            <TrendingUp className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                            <p className="text-[11px] text-primary font-medium">
+                              Nettomietrendite: {netYield}% p.a. · Netto CHF {Math.round(yearlyRent - yearlyCosts).toLocaleString('de-CH')} / Jahr
+                            </p>
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                    {(n(prop.market_value) > 0 || n(prop.mortgage_amount) > 0) && !isInvestment && (
                       <div className="flex gap-2 bg-primary/5 rounded-lg p-2.5">
                         <Info className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
                         <p className="text-[11px] text-primary font-medium">
@@ -1530,15 +1609,22 @@ function InvestmentsStep({
                       </div>
                     )}
                     <div className="space-y-1">
-                      <Label className="text-xs text-muted-foreground flex items-center gap-1"><ExternalLink className="h-3 w-3" /> Link zum Hypothekaranbieter (optional)</Label>
+                      <Label className="text-xs text-muted-foreground flex items-center gap-1">
+                        <ExternalLink className="h-3 w-3" /> {isInvestment ? 'Link zur Verwaltungsplattform (optional)' : 'Link zum Hypothekaranbieter (optional)'}
+                      </Label>
                       <Input type="url" value={prop.link} onChange={(e) => updateProp(prop.id, 'link', e.target.value)} placeholder="https://..." maxLength={500} />
                     </div>
                   </div>
                 );
               })}
-              <Button variant="outline" size="sm" onClick={addProperty} className="w-full gap-1.5 text-xs">
-                <Plus className="h-3.5 w-3.5" /> Weitere Immobilie hinzufügen
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => addProperty('residential')} className="flex-1 gap-1.5 text-xs">
+                  <Plus className="h-3.5 w-3.5" /> 🏠 Wohneigentum
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => addProperty('investment')} className="flex-1 gap-1.5 text-xs">
+                  <Plus className="h-3.5 w-3.5" /> 🏢 Investment
+                </Button>
+              </div>
             </>
           )}
         </CardContent>
