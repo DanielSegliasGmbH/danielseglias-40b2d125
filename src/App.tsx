@@ -83,6 +83,7 @@ import AdminSuccessStories from "./pages/AdminSuccessStories";
 import ClientPortalPartner from "./pages/client-portal/ClientPortalPartner";
 import ClientPortalLastPlan from "./pages/client-portal/ClientPortalLastPlan";
 import ClientPortalExpat from "./pages/client-portal/ClientPortalExpat";
+import ClientPortalJourney from "./pages/client-portal/ClientPortalJourney";
 
 // Insurance Consulting Pages
 import InsuranceConsultingStart from "./pages/insurance-consulting/InsuranceConsultingStart";
