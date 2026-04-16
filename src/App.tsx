@@ -474,6 +474,14 @@ function App() {
                 }
               />
               <Route
+                path="/app/client-portal/manifest"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalManifest />
+                  </RouteGuard>
+                }
+              />
+              <Route
                 path="/app/client-portal/life-film"
                 element={
                   <RouteGuard allowedRoles={['client', 'admin']}>
