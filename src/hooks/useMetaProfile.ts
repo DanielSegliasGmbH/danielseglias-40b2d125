@@ -14,6 +14,7 @@ export interface MetaProfile {
   debts: number | null;
   age: number | null;
   occupation: string | null;
+  professional_status: string | null;
   financial_goal: string | null;
   tax_burden: number | null;
   risk_tolerance: number | null;
@@ -31,6 +32,7 @@ export const META_FIELD_MAP: Record<string, { label: string; unit?: string; grou
   debts: { label: 'Schulden', unit: 'CHF', group: 'finance' },
   age: { label: 'Alter', group: 'personal' },
   occupation: { label: 'Beruf', group: 'personal' },
+  professional_status: { label: 'Beruflicher Status', group: 'personal' },
   financial_goal: { label: 'Finanzziel', group: 'personal' },
   tax_burden: { label: 'Steuerbelastung', unit: '%', group: 'finance' },
   risk_tolerance: { label: 'Risikobereitschaft (1-10)', group: 'personal' },
