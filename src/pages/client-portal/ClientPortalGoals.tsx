@@ -40,6 +40,22 @@ const CATEGORIES = [
   { value: 'Sonstiges', icon: Target },
 ];
 
+const MISSION_PREFIXES = [
+  { emoji: '🎯', label: 'Projekt' },
+  { emoji: '🚀', label: 'Mission' },
+  { emoji: '🌟', label: 'Operation' },
+  { emoji: '💎', label: 'Vision' },
+  { emoji: '🔥', label: 'Quest' },
+];
+
+const MISSION_EXAMPLES = [
+  'Projekt Sabbatical',
+  'Mission: Eigener Hof',
+  'Operation Frühpension',
+  'Vision Familienhaus',
+  'Quest: CHF 100\'000',
+];
+
 function getProgressEmoji(pct: number): string {
   if (pct >= 100) return '🏆';
   if (pct >= 75) return '🌳';
@@ -59,6 +75,7 @@ function getDaysRemainingBadge(targetDate: string | null) {
 interface GoalRow {
   id: string;
   title: string;
+  mission_name: string | null;
   target_amount: number | null;
   current_amount: number;
   target_date: string | null;
@@ -74,6 +91,7 @@ export default function ClientPortalGoals() {
   const qc = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [title, setTitle] = useState('');
+  const [missionName, setMissionName] = useState('');
   const [targetAmount, setTargetAmount] = useState('');
   const [targetDate, setTargetDate] = useState<Date | undefined>();
   const [category, setCategory] = useState('Sonstiges');
@@ -98,17 +116,20 @@ export default function ClientPortalGoals() {
       const { error } = await supabase.from('client_goals').insert({
         user_id: user!.id,
         title: title.trim(),
+        mission_name: missionName.trim() || null,
         target_amount: targetAmount ? Number(targetAmount) : null,
         target_date: targetDate ? format(targetDate, 'yyyy-MM-dd') : null,
         category,
-      });
+      } as any);
       if (error) throw error;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['client-goals'] });
-      toast.success('Ziel hinzugefügt ✓');
+      const displayName = missionName.trim() || title.trim();
+      toast.success(`${displayName} — Ziel hinzugefügt ✓`);
       awardPoints('goal_added', `goal_${Date.now()}`);
       setTitle('');
+      setMissionName('');
       setTargetAmount('');
       setTargetDate(undefined);
       setCategory('Sonstiges');
@@ -203,8 +224,54 @@ export default function ClientPortalGoals() {
               <DialogTitle>Neues Ziel erstellen</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 pt-2">
+              {/* Mission Name */}
+              <div className="space-y-2">
+                <Label>Mission-Name <span className="text-muted-foreground text-xs font-normal">(optional)</span></Label>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Gib dieser Mission einen Namen, der dich inspiriert. Nicht nur «Auto kaufen». Sondern «Operation Freiheit» oder «Projekt Traumauto».
+                </p>
+                <div className="flex flex-wrap gap-1.5 mb-1">
+                  {MISSION_PREFIXES.map(p => (
+                    <button
+                      key={p.label}
+                      type="button"
+                      onClick={() => setMissionName(prev => {
+                        const stripped = prev.replace(/^(Projekt|Mission|Operation|Vision|Quest):?\s*/i, '').trim();
+                        return `${p.label} ${stripped}`;
+                      })}
+                      className={cn(
+                        "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors",
+                        missionName.startsWith(p.label)
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border bg-muted/50 text-muted-foreground hover:border-primary/40"
+                      )}
+                    >
+                      {p.emoji} {p.label}
+                    </button>
+                  ))}
+                </div>
+                <Input
+                  value={missionName}
+                  onChange={e => setMissionName(e.target.value)}
+                  placeholder="z.B. Operation Freiheit"
+                  className="text-base"
+                />
+                <div className="flex flex-wrap gap-x-3 gap-y-0.5">
+                  {MISSION_EXAMPLES.map(ex => (
+                    <button
+                      key={ex}
+                      type="button"
+                      onClick={() => setMissionName(ex)}
+                      className="text-[11px] text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      {ex}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="space-y-1.5">
-                <Label>Titel *</Label>
+                <Label>Titel / Beschreibung *</Label>
                 <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="z.B. Notgroschen aufbauen" />
               </div>
               <div className="space-y-1.5">
@@ -268,6 +335,9 @@ function GoalCard({ goal, index, onDelete, monthlyExpenses, completed }: {
     ? Math.min(100, Math.round((goal.current_amount / goal.target_amount) * 100))
     : null;
 
+  const displayName = goal.mission_name || goal.title;
+  const subtitle = goal.mission_name ? goal.title : null;
+
   const updateAmount = useMutation({
     mutationFn: async () => {
       const val = parseFloat(newAmount);
@@ -299,17 +369,24 @@ function GoalCard({ goal, index, onDelete, monthlyExpenses, completed }: {
       )}>
         <CardContent className="p-4">
           {/* Top row: title + date badge */}
-          <div className="flex items-start justify-between gap-2 mb-2">
-            <div className="flex items-center gap-2 min-w-0 flex-1">
-              {progress !== null && (
-                <span className="text-lg leading-none">{getProgressEmoji(progress)}</span>
+          <div className="flex items-start justify-between gap-2 mb-1">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                {progress !== null && (
+                  <span className="text-lg leading-none shrink-0">{getProgressEmoji(progress)}</span>
+                )}
+                <h3 className={cn(
+                  "text-lg font-bold text-foreground leading-tight truncate",
+                  completed && "line-through text-muted-foreground"
+                )}>
+                  {displayName}
+                </h3>
+              </div>
+              {subtitle && (
+                <p className="text-[13px] text-muted-foreground mt-0.5 truncate pl-7">
+                  {subtitle}
+                </p>
               )}
-              <h3 className={cn(
-                "text-[15px] font-bold text-foreground leading-tight truncate",
-                completed && "line-through text-muted-foreground"
-              )}>
-                {goal.title}
-              </h3>
             </div>
             <div className="flex items-center gap-1.5 shrink-0">
               {getDaysRemainingBadge(goal.target_date)}
@@ -321,7 +398,7 @@ function GoalCard({ goal, index, onDelete, monthlyExpenses, completed }: {
 
           {/* Progress bar */}
           {progress !== null && (
-            <div className="mb-2">
+            <div className="mb-2 mt-2">
               <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                 <motion.div
                   className="h-full rounded-full bg-primary"
