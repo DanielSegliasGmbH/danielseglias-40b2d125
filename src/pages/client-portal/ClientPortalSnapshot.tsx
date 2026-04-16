@@ -2008,12 +2008,21 @@ function SnapshotHistory({
         const TOTAL_FIELDS = 15;
         const fieldKeys = ['pillar_3a', 'freizuegigkeit', 'pensionskasse', 'ahv_annual', 'cash',
           'monthly_income', 'monthly_expenses', 'insurance_monthly'];
-        const simpleSkipped = fieldKeys.filter(k => data[k]?.skipped).length;
-        const listSkipped = ['bank_accounts_skipped', 'valuables_skipped', 'investment_positions_skipped',
-          'crypto_positions_skipped', 'other_assets_skipped', 'credits_skipped', 'debts_skipped']
-          .filter(k => data[k]).length;
-        const skipped = simpleSkipped + listSkipped;
-        const filled = TOTAL_FIELDS - skipped;
+        const listSkipKeys = ['bank_accounts_skipped', 'valuables_skipped', 'investment_positions_skipped',
+          'crypto_positions_skipped', 'other_assets_skipped', 'credits_skipped', 'debts_skipped'];
+        let addressed = 0;
+        fieldKeys.forEach(k => {
+          const v = data[k];
+          if (v?.skipped || (v?.amount && String(v.amount).trim() !== '')) addressed++;
+        });
+        listSkipKeys.forEach(k => {
+          if (data[k]) addressed++;
+          else {
+            const listKey = k.replace('_skipped', '');
+            if (Array.isArray(data[listKey]) && data[listKey].length > 0) addressed++;
+          }
+        });
+        const filled = addressed;
 
         const isSelected = selected.includes(snap.id);
 
