@@ -40,6 +40,7 @@ import { KontenModellTool } from '@/components/tools/konten-modell/KontenModellT
 import { HumankapitalTool } from '@/components/tools/humankapital/HumankapitalTool';
 import { SteuerrechnerTool } from '@/components/tools/steuerrechner/SteuerrechnerTool';
 import { AhvTrackerTool } from '@/components/tools/ahv-tracker/AhvTrackerTool';
+import { KrankenkassenTrackerTool } from '@/components/tools/krankenkassen-tracker/KrankenkassenTrackerTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -266,6 +267,10 @@ export default function PublicToolDetail() {
               ) : slug === 'ahv-tracker' ? (
                 <div className="mb-8">
                   <AhvTrackerTool mode="public" />
+                </div>
+              ) : slug === 'krankenkassen-tracker' ? (
+                <div className="mb-8">
+                  <KrankenkassenTrackerTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
