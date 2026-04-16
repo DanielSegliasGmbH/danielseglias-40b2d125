@@ -540,6 +540,19 @@ export default function ClientPortalSnapshot() {
         merged.credits_skipped = !!parsed.credits_skipped;
         if (Array.isArray(parsed.debts)) merged.debts = parsed.debts;
         merged.debts_skipped = !!parsed.debts_skipped;
+        // Restore Vorsorge lists
+        if (Array.isArray(parsed.pillar_3a_entries) && parsed.pillar_3a_entries.length > 0) {
+          merged.pillar_3a_entries = parsed.pillar_3a_entries;
+        }
+        merged.pillar_3a_skipped = !!parsed.pillar_3a_skipped;
+        if (Array.isArray(parsed.freizuegigkeit_entries) && parsed.freizuegigkeit_entries.length > 0) {
+          merged.freizuegigkeit_entries = parsed.freizuegigkeit_entries;
+        }
+        merged.freizuegigkeit_skipped = !!parsed.freizuegigkeit_skipped;
+        if (Array.isArray(parsed.pensionskasse_entries) && parsed.pensionskasse_entries.length > 0) {
+          merged.pensionskasse_entries = parsed.pensionskasse_entries;
+        }
+        merged.pensionskasse_skipped = !!parsed.pensionskasse_skipped;
         setDraft(merged);
         setStep(savedDraft.current_step || 0);
       } catch { /* ignore parse errors */ }
