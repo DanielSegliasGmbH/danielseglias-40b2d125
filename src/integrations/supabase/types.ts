@@ -1521,6 +1521,36 @@ export type Database = {
         }
         Relationships: []
       }
+      financial_xrays: {
+        Row: {
+          created_at: string
+          id: string
+          month_key: string
+          report_markdown: string
+          tasks_created: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          month_key: string
+          report_markdown: string
+          tasks_created?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          month_key?: string
+          report_markdown?: string
+          tasks_created?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       finanz_type_results: {
         Row: {
           answers: Json
