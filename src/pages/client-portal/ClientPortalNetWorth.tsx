@@ -347,7 +347,7 @@ export default function ClientPortalNetWorth() {
   });
 
   const resetAssetForm = () => { setAssetName(''); setAssetCategory(ASSET_CATEGORIES[0]); setAssetValue(''); setAssetUrl(''); };
-  const resetLiabForm = () => { setLiabName(''); setLiabCategory(LIABILITY_CATEGORIES[0]); setLiabAmount(''); setLiabUrl(''); };
+  const resetLiabForm = () => { setLiabName(''); setLiabCategory(LIABILITY_CATEGORIES[0]); setLiabAmount(''); setLiabMonthlyPayment(''); setLiabInterestRate(''); setLiabEndDate(''); setLiabUrl(''); };
 
   const openDetail = (entry: any, type: 'asset' | 'liability') => {
     setDetailEntry(entry);
@@ -515,10 +515,10 @@ export default function ClientPortalNetWorth() {
                 <Plus className="h-4 w-4" /> Verbindlichkeit
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-h-[85vh] overflow-y-auto">
               <DialogHeader><DialogTitle>Neue Verbindlichkeit</DialogTitle></DialogHeader>
               <div className="space-y-4 pt-2">
-                <div><Label>Name</Label><Input value={liabName} onChange={e => setLiabName(e.target.value)} placeholder="z.B. Hypothek" /></div>
+                <div><Label>Name</Label><Input value={liabName} onChange={e => setLiabName(e.target.value)} placeholder="z.B. Hypothek UBS" /></div>
                 <div>
                   <Label>Kategorie</Label>
                   <Select value={liabCategory} onValueChange={setLiabCategory}>
@@ -528,11 +528,69 @@ export default function ClientPortalNetWorth() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div><Label>Betrag (CHF)</Label><Input type="number" min="0" step="100" value={liabAmount} onChange={e => setLiabAmount(e.target.value)} placeholder="0" /></div>
+                <div>
+                  <Label>Restschuld (CHF)</Label>
+                  <p className="text-[11px] text-muted-foreground mb-1">Wie viel bist du noch schuldig?</p>
+                  <Input type="number" min="0" step="100" value={liabAmount} onChange={e => setLiabAmount(e.target.value)} placeholder="0" />
+                </div>
+                <div>
+                  <Label>Monatliche Rate (CHF)</Label>
+                  <p className="text-[11px] text-muted-foreground mb-1">Was zahlst du jeden Monat an Rate?</p>
+                  <Input type="number" min="0" step="10" value={liabMonthlyPayment} onChange={e => setLiabMonthlyPayment(e.target.value)} placeholder="0" />
+                </div>
+                <div>
+                  <Label>Zinssatz pro Jahr (%) — optional</Label>
+                  <Input type="number" min="0" step="0.1" value={liabInterestRate} onChange={e => setLiabInterestRate(e.target.value)} placeholder="z.B. 1.5" />
+                </div>
+                <div>
+                  <Label>Enddatum (optional)</Label>
+                  <Input type="date" value={liabEndDate} onChange={e => setLiabEndDate(e.target.value)} />
+                </div>
                 <div>
                   <Label className="flex items-center gap-1.5"><ExternalLink className="h-3.5 w-3.5" /> Link zur Plattform (optional)</Label>
                   <Input type="url" value={liabUrl} onChange={e => setLiabUrl(e.target.value)} placeholder="z.B. https://www.postfinance.ch" />
                 </div>
+
+                {/* Impact preview */}
+                {liabAmount && parseFloat(liabAmount) > 0 && (
+                  <Card className="bg-muted/50">
+                    <CardContent className="py-3 space-y-1.5">
+                      <p className="text-xs font-medium text-muted-foreground">Auswirkungen</p>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Vermögen:</span>
+                        <span className="font-medium text-destructive">- {fmtCHF(parseFloat(liabAmount))}</span>
+                      </div>
+                      {liabMonthlyPayment && parseFloat(liabMonthlyPayment) > 0 && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Cashflow:</span>
+                          <span className="font-medium text-destructive">- {fmtCHF(parseFloat(liabMonthlyPayment))} / Mt.</span>
+                        </div>
+                      )}
+                      {liabAmount && liabMonthlyPayment && parseFloat(liabMonthlyPayment) > 0 && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Schuldenfrei in:</span>
+                          <span className="font-medium">
+                            {(() => {
+                              const months = Math.ceil(parseFloat(liabAmount) / parseFloat(liabMonthlyPayment));
+                              const years = Math.floor(months / 12);
+                              const rem = months % 12;
+                              return years > 0 ? `${years} J. ${rem} Mt.` : `${rem} Mt.`;
+                            })()}
+                          </span>
+                        </div>
+                      )}
+                      {monthlyExpenses > 0 && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">PeakScore-Effekt:</span>
+                          <span className="font-medium text-destructive">
+                            -{(parseFloat(liabAmount) / monthlyExpenses).toFixed(1)} Monate
+                          </span>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+
                 <Button onClick={() => addLiability.mutate()} disabled={!liabName || !liabAmount || parseFloat(liabAmount) <= 0 || addLiability.isPending} className="w-full">Speichern</Button>
               </div>
             </DialogContent>
