@@ -302,7 +302,7 @@ function GoalForm({ onComplete }: { onComplete: (xp?: number) => void }) {
         <Card key={g.id} className="transition-all">
           <CardContent className="p-3 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-foreground">{g.title}</span>
+              <span className="text-sm font-medium text-foreground">{(g as any).mission_name || g.title}</span>
               <span className="text-xs text-muted-foreground">
                 CHF {g.current_amount?.toLocaleString('de-CH')}
                 {g.target_amount ? ` / ${g.target_amount.toLocaleString('de-CH')}` : ''}
