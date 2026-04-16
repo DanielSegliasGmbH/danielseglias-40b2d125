@@ -2065,6 +2065,51 @@ export type Database = {
           },
         ]
       }
+      last_plan_progress: {
+        Row: {
+          beguenstigte: Json
+          created_at: string
+          dismissed_until: string | null
+          id: string
+          opted_in: boolean
+          opted_in_at: string | null
+          patientenverfuegung: Json
+          testament: Json
+          todesfall_dokumente: Json
+          updated_at: string
+          user_id: string
+          vorsorgeauftrag: Json
+        }
+        Insert: {
+          beguenstigte?: Json
+          created_at?: string
+          dismissed_until?: string | null
+          id?: string
+          opted_in?: boolean
+          opted_in_at?: string | null
+          patientenverfuegung?: Json
+          testament?: Json
+          todesfall_dokumente?: Json
+          updated_at?: string
+          user_id: string
+          vorsorgeauftrag?: Json
+        }
+        Update: {
+          beguenstigte?: Json
+          created_at?: string
+          dismissed_until?: string | null
+          id?: string
+          opted_in?: boolean
+          opted_in_at?: string | null
+          patientenverfuegung?: Json
+          testament?: Json
+          todesfall_dokumente?: Json
+          updated_at?: string
+          user_id?: string
+          vorsorgeauftrag?: Json
+        }
+        Relationships: []
+      }
       lead_rate_limits: {
         Row: {
           created_at: string
