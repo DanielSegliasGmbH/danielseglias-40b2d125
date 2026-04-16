@@ -43,6 +43,13 @@ import {
   GraduationCap,
   Zap,
   BarChart3,
+  Map,
+  Megaphone,
+  UsersRound,
+  Lightbulb,
+  Mic,
+  Newspaper,
+  PieChart,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
