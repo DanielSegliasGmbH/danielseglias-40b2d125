@@ -1982,7 +1982,8 @@ function SummaryStep({ draft, onNotesChange, onEdit }: { draft: SnapshotDraft; o
       if (Array.isArray(list) && list.length > 0) {
         // For Vorsorge entries, check if at least one has a balance
         if (balanceKey) {
-          const hasValue = list.some((e: Record<string, string>) => e[balanceKey] && String(e[balanceKey]).trim() !== '');
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const hasValue = list.some((e: { balance?: string }) => e.balance && String(e.balance).trim() !== '');
           if (hasValue) filledCount++;
           else untouchedCount++;
         } else {
