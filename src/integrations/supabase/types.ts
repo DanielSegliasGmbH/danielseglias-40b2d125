@@ -2250,6 +2250,7 @@ export type Database = {
         Row: {
           category: string
           created_at: string
+          expected_return: number | null
           id: string
           last_updated_date: string
           name: string
@@ -2261,6 +2262,7 @@ export type Database = {
         Insert: {
           category: string
           created_at?: string
+          expected_return?: number | null
           id?: string
           last_updated_date?: string
           name: string
@@ -2272,6 +2274,7 @@ export type Database = {
         Update: {
           category?: string
           created_at?: string
+          expected_return?: number | null
           id?: string
           last_updated_date?: string
           name?: string
