@@ -53,6 +53,8 @@ import ClientPortalCourses from "./pages/client-portal/ClientPortalCourses";
 import ClientPortalCourseModule from "./pages/client-portal/ClientPortalCourseModule";
 import ClientPortalCoach from "./pages/client-portal/ClientPortalCoach";
 import ClientPortalCoachModule from "./pages/client-portal/ClientPortalCoachModule";
+import ClientPortalCoachNewcomer from "./pages/client-portal/ClientPortalCoachNewcomer";
+import ClientPortalCoachNewcomerModule from "./pages/client-portal/ClientPortalCoachNewcomerModule";
 import AdminCourses from "./pages/AdminCourses";
 import ClientPortalPremium from "./pages/client-portal/ClientPortalPremium";
 import ClientPortalMemories from "./pages/client-portal/ClientPortalMemories";
@@ -434,6 +436,22 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['client', 'admin']}>
                     <ClientPortalCoachModule />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/coach-newcomer"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalCoachNewcomer />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/coach-newcomer/:moduleKey"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalCoachNewcomerModule />
                   </RouteGuard>
                 }
               />
