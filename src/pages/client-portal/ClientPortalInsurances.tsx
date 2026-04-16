@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -367,12 +368,8 @@ export default function ClientPortalInsurances() {
   // ─── Grid view ───────────────────────────────────────────────
   return (
     <ClientPortalLayout>
+      <ScreenHeader title="🛡️ Meine Produkte" backTo="/app/client-portal" />
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Meine Produkte</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">Versicherungen, Vorsorge und Anlagen im Überblick</p>
-          </div>
           {customerId && (
             <Button onClick={openAdd} className="gap-2">
               <Plus className="h-4 w-4" /> Produkt hinzufügen
