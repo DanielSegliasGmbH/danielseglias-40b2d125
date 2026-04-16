@@ -267,7 +267,7 @@ function GoalForm({ onComplete }: { onComplete: (xp?: number) => void }) {
       if (!user?.id) return [];
       const { data } = await supabase
         .from('client_goals')
-        .select('id, title, current_amount, target_amount')
+        .select('id, title, mission_name, current_amount, target_amount')
         .eq('user_id', user.id)
         .eq('is_completed', false)
         .order('created_at', { ascending: false })
