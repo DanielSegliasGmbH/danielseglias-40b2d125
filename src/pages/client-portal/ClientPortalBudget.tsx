@@ -26,6 +26,7 @@ import { useGamification } from '@/hooks/useGamification';
 import { usePeakScore } from '@/hooks/usePeakScore';
 import { PeakScoreImpact } from '@/components/client-portal/PeakScoreImpact';
 import { CashflowTab } from '@/components/client-portal/CashflowTab';
+import { useCashflowData } from '@/hooks/useCashflowData';
 
 const CATEGORIES = [
   'Wohnen',
