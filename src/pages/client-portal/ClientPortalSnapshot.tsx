@@ -100,12 +100,44 @@ interface DebtItem {
   amount: string;
 }
 
+// New list entry types for Vorsorge
+interface Pillar3aEntry {
+  id: string;
+  balance: string;
+  provider: string;
+  expected_return: string;
+  link: string;
+}
+
+interface FreizuegigkeitEntry {
+  id: string;
+  balance: string;
+  provider: string;
+  expected_return: string;
+  link: string;
+}
+
+interface PensionskasseEntry {
+  id: string;
+  balance: string;
+  provider: string;
+  expected_return: string;
+  link: string;
+}
+
 interface SnapshotDraft {
-  // Step 0: Vorsorge
+  // Step 0: Vorsorge (legacy single fields kept for backward compat)
   pillar_3a: SnapshotFieldValue;
   freizuegigkeit: SnapshotFieldValue;
   pensionskasse: SnapshotFieldValue;
   ahv_annual: SnapshotFieldValue;
+  // Step 0: Vorsorge (new dynamic lists)
+  pillar_3a_entries: Pillar3aEntry[];
+  pillar_3a_skipped: boolean;
+  freizuegigkeit_entries: FreizuegigkeitEntry[];
+  freizuegigkeit_skipped: boolean;
+  pensionskasse_entries: PensionskasseEntry[];
+  pensionskasse_skipped: boolean;
   // Step 1: Bankkonten & Bargeld
   bank_accounts: BankAccount[];
   bank_accounts_skipped: boolean;
@@ -144,6 +176,18 @@ interface SnapshotDraft {
 }
 
 const DEFAULT_FIELD: SnapshotFieldValue = { amount: '', provider: '', link: '', skipped: false };
+
+const newPillar3aEntry = (): Pillar3aEntry => ({
+  id: crypto.randomUUID(), balance: '', provider: '', expected_return: '', link: '',
+});
+
+const newFreizuegigkeitEntry = (): FreizuegigkeitEntry => ({
+  id: crypto.randomUUID(), balance: '', provider: '', expected_return: '', link: '',
+});
+
+const newPensionskasseEntry = (): PensionskasseEntry => ({
+  id: crypto.randomUUID(), balance: '', provider: '', expected_return: '', link: '',
+});
 
 const newBankAccount = (): BankAccount => ({
   id: crypto.randomUUID(),
@@ -211,6 +255,12 @@ const EMPTY_DRAFT: SnapshotDraft = {
   freizuegigkeit: { ...DEFAULT_FIELD },
   pensionskasse: { ...DEFAULT_FIELD },
   ahv_annual: { ...DEFAULT_FIELD },
+  pillar_3a_entries: [newPillar3aEntry()],
+  pillar_3a_skipped: false,
+  freizuegigkeit_entries: [newFreizuegigkeitEntry()],
+  freizuegigkeit_skipped: false,
+  pensionskasse_entries: [newPensionskasseEntry()],
+  pensionskasse_skipped: false,
   bank_accounts: [newBankAccount()],
   bank_accounts_skipped: false,
   cash: { ...DEFAULT_FIELD },
@@ -259,7 +309,7 @@ interface FieldConfig {
 interface StepConfig {
   title: string;
   emoji: string;
-  type: 'fields' | 'bank_cash' | 'investments' | 'liabilities';
+  type: 'fields' | 'bank_cash' | 'investments' | 'liabilities' | 'vorsorge';
   fields?: FieldConfig[];
 }
 
@@ -267,47 +317,7 @@ const STEPS: StepConfig[] = [
   {
     title: 'Vorsorge',
     emoji: '🏛️',
-    type: 'fields',
-    fields: [
-      {
-        key: 'pillar_3a',
-        label: 'Säule 3a',
-        emoji: '💎',
-        hint: 'Du findest den Betrag auf deinem 3a-Kontoauszug oder im Online-Portal.',
-        articleId: '3a-steuervorteile',
-        showProvider: true,
-        showLink: true,
-        isCHF: true,
-      },
-      {
-        key: 'freizuegigkeit',
-        label: 'Freizügigkeit',
-        emoji: '🔄',
-        hint: 'Falls du in der Vergangenheit die Stelle gewechselt hast, könnte hier Geld liegen.',
-        articleId: 'vorsorgeluecke',
-        showProvider: true,
-        showLink: true,
-        isCHF: true,
-      },
-      {
-        key: 'pensionskasse',
-        label: 'Pensionskasse (BVG)',
-        emoji: '🏛️',
-        hint: "Diesen Betrag findest du auf deinem Pensionskassenausweis unter 'Austrittsleistung' oder 'Freizügigkeitsleistung'.",
-        articleId: 'drei-saeulen-system',
-        showProvider: true,
-        showLink: true,
-        isCHF: true,
-      },
-      {
-        key: 'ahv_annual',
-        label: 'AHV (geschätzte Jahresrente)',
-        emoji: '🇨🇭',
-        hint: 'Deine AHV-Rente wird basierend auf deinem Einkommen geschätzt. Du kannst den genauen Betrag bei deiner Ausgleichskasse anfragen.',
-        articleId: 'ahv-grundlagen',
-        isCHF: true,
-      },
-    ],
+    type: 'vorsorge',
   },
   {
     title: 'Bankkonten & Bargeld',
@@ -382,6 +392,18 @@ function sumDebts(items: DebtItem[]): number {
   return items.reduce((sum, d) => sum + n(d.amount), 0);
 }
 
+function sumPillar3a(items: Pillar3aEntry[]): number {
+  return items.reduce((s, e) => s + n(e.balance), 0);
+}
+
+function sumFreizuegigkeit(items: FreizuegigkeitEntry[]): number {
+  return items.reduce((s, e) => s + n(e.balance), 0);
+}
+
+function sumPensionskasse(items: PensionskasseEntry[]): number {
+  return items.reduce((s, e) => s + n(e.balance), 0);
+}
+
 function computeNetWorth(d: SnapshotDraft): number {
   const bankTotal = d.bank_accounts_skipped ? 0 : sumBankAccounts(d.bank_accounts);
   const cashTotal = d.cash.skipped ? 0 : n(d.cash.amount);
@@ -392,6 +414,17 @@ function computeNetWorth(d: SnapshotDraft): number {
   const otherTotal = d.other_assets_skipped ? 0 : sumOtherAssets(d.other_assets);
   const creditsTotal = d.credits_skipped ? 0 : sumCredits(d.credits);
   const debtsTotal = d.debts_skipped ? 0 : sumDebts(d.debts);
+
+  // New list-based Vorsorge
+  const p3a = d.pillar_3a_skipped ? 0 : sumPillar3a(d.pillar_3a_entries);
+  const fz = d.freizuegigkeit_skipped ? 0 : sumFreizuegigkeit(d.freizuegigkeit_entries);
+  const pk = d.pensionskasse_skipped ? 0 : sumPensionskasse(d.pensionskasse_entries);
+
+  // Legacy single-field Vorsorge (for old snapshots without entries)
+  const legacyP3a = (!d.pillar_3a_entries || d.pillar_3a_entries.length === 0) ? n(d.pillar_3a.amount) : 0;
+  const legacyFz = (!d.freizuegigkeit_entries || d.freizuegigkeit_entries.length === 0) ? n(d.freizuegigkeit.amount) : 0;
+  const legacyPk = (!d.pensionskasse_entries || d.pensionskasse_entries.length === 0) ? n(d.pensionskasse.amount) : 0;
+
   // Legacy fields for old snapshots
   const legacySavings = d.savings ? n(d.savings.amount) : 0;
   const legacyInvestments = d.investments ? n(d.investments.amount) : 0;
@@ -400,9 +433,10 @@ function computeNetWorth(d: SnapshotDraft): number {
   const legacyMortgage = d.mortgage ? n(d.mortgage.amount) : 0;
   const legacyConsumer = d.consumer_debt ? n(d.consumer_debt.amount) : 0;
   const legacyOther = d.other_debt ? n(d.other_debt.amount) : 0;
+
   return bankTotal + cashTotal + valuablesTotal + investTotal + cryptoTotal + propertyEquity + otherTotal +
     legacySavings + legacyInvestments + legacyRE + legacyEmergency +
-    n(d.pillar_3a.amount) + n(d.freizuegigkeit.amount) + n(d.pensionskasse.amount) -
+    p3a + fz + pk + legacyP3a + legacyFz + legacyPk -
     creditsTotal - debtsTotal - legacyMortgage - legacyConsumer - legacyOther;
 }
 
@@ -506,6 +540,19 @@ export default function ClientPortalSnapshot() {
         merged.credits_skipped = !!parsed.credits_skipped;
         if (Array.isArray(parsed.debts)) merged.debts = parsed.debts;
         merged.debts_skipped = !!parsed.debts_skipped;
+        // Restore Vorsorge lists
+        if (Array.isArray(parsed.pillar_3a_entries) && parsed.pillar_3a_entries.length > 0) {
+          merged.pillar_3a_entries = parsed.pillar_3a_entries;
+        }
+        merged.pillar_3a_skipped = !!parsed.pillar_3a_skipped;
+        if (Array.isArray(parsed.freizuegigkeit_entries) && parsed.freizuegigkeit_entries.length > 0) {
+          merged.freizuegigkeit_entries = parsed.freizuegigkeit_entries;
+        }
+        merged.freizuegigkeit_skipped = !!parsed.freizuegigkeit_skipped;
+        if (Array.isArray(parsed.pensionskasse_entries) && parsed.pensionskasse_entries.length > 0) {
+          merged.pensionskasse_entries = parsed.pensionskasse_entries;
+        }
+        merged.pensionskasse_skipped = !!parsed.pensionskasse_skipped;
         setDraft(merged);
         setStep(savedDraft.current_step || 0);
       } catch { /* ignore parse errors */ }
@@ -706,6 +753,8 @@ export default function ClientPortalSnapshot() {
               >
                 {isSummary ? (
                   <SummaryStep draft={draft} onNotesChange={(v) => setDraft(prev => ({ ...prev, notes: v }))} onEdit={() => setStep(step - 1)} />
+                ) : currentStepConfig?.type === 'vorsorge' ? (
+                  <VorsorgeStep draft={draft} updateDraft={updateDraft} updateField={updateField} updateAmount={updateAmount} ahvSuggestion={ahvSuggestion} />
                 ) : currentStepConfig?.type === 'bank_cash' ? (
                   <BankCashStep draft={draft} updateDraft={updateDraft} updateField={updateField} updateAmount={updateAmount} />
                 ) : currentStepConfig?.type === 'investments' ? (
@@ -768,6 +817,232 @@ export default function ClientPortalSnapshot() {
         </Tabs>
       </div>
     </ClientPortalLayout>
+  );
+}
+
+// ── Vorsorge Step ─────────────────────────────────
+
+function VorsorgeEntryList<T extends { id: string; balance: string; provider: string; expected_return: string; link: string }>({
+  label,
+  emoji,
+  hint,
+  articleId,
+  entries,
+  skipped,
+  onToggleSkipped,
+  onAdd,
+  onRemove,
+  onUpdate,
+  newLabel,
+}: {
+  label: string;
+  emoji: string;
+  hint: string;
+  articleId?: string;
+  entries: T[];
+  skipped: boolean;
+  onToggleSkipped: (v: boolean) => void;
+  onAdd: () => void;
+  onRemove: (id: string) => void;
+  onUpdate: (id: string, field: keyof T, value: string) => void;
+  newLabel: string;
+}) {
+  const navigate = useNavigate();
+  const total = entries.reduce((s, e) => s + n(e.balance), 0);
+
+  return (
+    <Card className={cn(skipped && "opacity-60")}>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+            <span>{emoji}</span> {label}
+          </h3>
+          <label className="flex items-center gap-1.5 cursor-pointer">
+            <Checkbox
+              checked={skipped}
+              onCheckedChange={(v) => onToggleSkipped(!!v)}
+              className="h-3.5 w-3.5"
+            />
+            <span className="text-[10px] text-muted-foreground">Nicht bekannt</span>
+          </label>
+        </div>
+
+        {!skipped && (
+          <>
+            {entries.map((entry, idx) => (
+              <div key={entry.id} className="space-y-2 bg-muted/30 rounded-xl p-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-muted-foreground">
+                    {label} {entries.length > 1 ? `#${idx + 1}` : ''}
+                  </span>
+                  {entries.length > 1 && (
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onRemove(entry.id)}>
+                      <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
+                    </Button>
+                  )}
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Guthaben</Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">CHF</span>
+                    <Input
+                      type="text"
+                      inputMode="decimal"
+                      value={entry.balance}
+                      onChange={(e) => onUpdate(entry.id, 'balance' as keyof T, e.target.value.replace(/[^0-9.]/g, ''))}
+                      placeholder="0"
+                      className="pl-11 text-right"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Anbieter</Label>
+                  <Input
+                    type="text"
+                    value={entry.provider}
+                    onChange={(e) => onUpdate(entry.id, 'provider' as keyof T, e.target.value)}
+                    placeholder="z.B. Swiss Life, VIAC, UBS..."
+                    maxLength={100}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Erwartete Rendite p.a. (%)</Label>
+                  <Input
+                    type="text"
+                    inputMode="decimal"
+                    value={entry.expected_return}
+                    onChange={(e) => onUpdate(entry.id, 'expected_return' as keyof T, e.target.value.replace(/[^0-9.]/g, ''))}
+                    placeholder="z.B. 5"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground flex items-center gap-1">
+                    <ExternalLink className="h-3 w-3" /> Link zum Portal (optional)
+                  </Label>
+                  <Input
+                    type="url"
+                    value={entry.link}
+                    onChange={(e) => onUpdate(entry.id, 'link' as keyof T, e.target.value)}
+                    placeholder="https://..."
+                    maxLength={500}
+                  />
+                </div>
+              </div>
+            ))}
+
+            <Button variant="outline" size="sm" className="w-full gap-1.5" onClick={onAdd}>
+              <Plus className="h-3.5 w-3.5" /> {newLabel}
+            </Button>
+
+            {total > 0 && (
+              <div className="text-right text-xs text-muted-foreground">
+                Total: <span className="font-semibold text-foreground">CHF {total.toLocaleString('de-CH')}</span>
+              </div>
+            )}
+          </>
+        )}
+
+        {hint && (
+          <div className="flex gap-2 bg-muted/50 rounded-lg p-2.5">
+            <Info className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
+            <p className="text-[11px] text-muted-foreground leading-relaxed">{hint}</p>
+          </div>
+        )}
+
+        {articleId && (
+          <InfoHint text="" articleId={articleId} className="mt-0" />
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function VorsorgeStep({
+  draft, updateDraft, updateField, updateAmount, ahvSuggestion,
+}: {
+  draft: SnapshotDraft;
+  updateDraft: (fn: (prev: SnapshotDraft) => SnapshotDraft) => void;
+  updateField: (key: keyof SnapshotDraft, field: keyof SnapshotFieldValue, value: string | boolean) => void;
+  updateAmount: (key: keyof SnapshotDraft, value: string) => void;
+  ahvSuggestion?: string;
+}) {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <span className="text-xl">🏛️</span>
+        <h2 className="text-base font-bold text-foreground">Vorsorge</h2>
+      </div>
+
+      {/* Säule 3a */}
+      <VorsorgeEntryList<Pillar3aEntry>
+        label="Säule 3a"
+        emoji="💎"
+        hint="Du findest den Betrag auf deinem 3a-Kontoauszug oder im Online-Portal."
+        articleId="3a-steuervorteile"
+        entries={draft.pillar_3a_entries}
+        skipped={draft.pillar_3a_skipped}
+        onToggleSkipped={(v) => updateDraft(d => ({ ...d, pillar_3a_skipped: v }))}
+        onAdd={() => updateDraft(d => ({ ...d, pillar_3a_entries: [...d.pillar_3a_entries, newPillar3aEntry()] }))}
+        onRemove={(id) => updateDraft(d => ({ ...d, pillar_3a_entries: d.pillar_3a_entries.filter(e => e.id !== id) }))}
+        onUpdate={(id, field, value) => updateDraft(d => ({
+          ...d,
+          pillar_3a_entries: d.pillar_3a_entries.map(e => e.id === id ? { ...e, [field]: value } : e),
+        }))}
+        newLabel="Weitere 3a hinzufügen"
+      />
+
+      {/* Freizügigkeit */}
+      <VorsorgeEntryList<FreizuegigkeitEntry>
+        label="Freizügigkeit"
+        emoji="🔄"
+        hint="Falls du in der Vergangenheit die Stelle gewechselt hast, könnte hier Geld liegen."
+        articleId="vorsorgeluecke"
+        entries={draft.freizuegigkeit_entries}
+        skipped={draft.freizuegigkeit_skipped}
+        onToggleSkipped={(v) => updateDraft(d => ({ ...d, freizuegigkeit_skipped: v }))}
+        onAdd={() => updateDraft(d => ({ ...d, freizuegigkeit_entries: [...d.freizuegigkeit_entries, newFreizuegigkeitEntry()] }))}
+        onRemove={(id) => updateDraft(d => ({ ...d, freizuegigkeit_entries: d.freizuegigkeit_entries.filter(e => e.id !== id) }))}
+        onUpdate={(id, field, value) => updateDraft(d => ({
+          ...d,
+          freizuegigkeit_entries: d.freizuegigkeit_entries.map(e => e.id === id ? { ...e, [field]: value } : e),
+        }))}
+        newLabel="Weiteres Freizügigkeitskonto"
+      />
+
+      {/* Pensionskasse */}
+      <VorsorgeEntryList<PensionskasseEntry>
+        label="Pensionskasse (BVG)"
+        emoji="🏛️"
+        hint="Diesen Betrag findest du auf deinem Pensionskassenausweis unter 'Austrittsleistung' oder 'Freizügigkeitsleistung'."
+        articleId="drei-saeulen-system"
+        entries={draft.pensionskasse_entries}
+        skipped={draft.pensionskasse_skipped}
+        onToggleSkipped={(v) => updateDraft(d => ({ ...d, pensionskasse_skipped: v }))}
+        onAdd={() => updateDraft(d => ({ ...d, pensionskasse_entries: [...d.pensionskasse_entries, newPensionskasseEntry()] }))}
+        onRemove={(id) => updateDraft(d => ({ ...d, pensionskasse_entries: d.pensionskasse_entries.filter(e => e.id !== id) }))}
+        onUpdate={(id, field, value) => updateDraft(d => ({
+          ...d,
+          pensionskasse_entries: d.pensionskasse_entries.map(e => e.id === id ? { ...e, [field]: value } : e),
+        }))}
+        newLabel="Weitere Pensionskasse"
+      />
+
+      {/* AHV - single field */}
+      <SnapshotFieldCard
+        config={{
+          key: 'ahv_annual',
+          label: 'AHV (geschätzte Jahresrente)',
+          emoji: '🇨🇭',
+          hint: 'Deine AHV-Rente wird basierend auf deinem Einkommen geschätzt. Du kannst den genauen Betrag bei deiner Ausgleichskasse anfragen.',
+          articleId: 'ahv-grundlagen',
+          isCHF: true,
+        }}
+        value={draft.ahv_annual}
+        onChange={(f, v) => updateField('ahv_annual', f, v)}
+        onAmountChange={(v) => updateAmount('ahv_annual', v)}
+        ahvSuggestion={ahvSuggestion}
+      />
+    </div>
   );
 }
 
@@ -1629,7 +1904,11 @@ function SummaryStep({ draft, onNotesChange, onEdit }: { draft: SnapshotDraft; o
   const otherTotal = draft.other_assets_skipped ? 0 : sumOtherAssets(draft.other_assets);
   const creditsTotal = draft.credits_skipped ? 0 : sumCredits(draft.credits);
   const debtsTotal = draft.debts_skipped ? 0 : sumDebts(draft.debts);
-  const totalPension = n(draft.pillar_3a.amount) + n(draft.freizuegigkeit.amount) + n(draft.pensionskasse.amount);
+  const p3aTotal = draft.pillar_3a_skipped ? 0 : sumPillar3a(draft.pillar_3a_entries);
+  const fzTotal = draft.freizuegigkeit_skipped ? 0 : sumFreizuegigkeit(draft.freizuegigkeit_entries);
+  const pkTotal = draft.pensionskasse_skipped ? 0 : sumPensionskasse(draft.pensionskasse_entries);
+  // Legacy fallback for old snapshots
+  const totalPension = (p3aTotal || n(draft.pillar_3a.amount)) + (fzTotal || n(draft.freizuegigkeit.amount)) + (pkTotal || n(draft.pensionskasse.amount));
   const legacyDebt = (draft.mortgage ? n(draft.mortgage.amount) : 0) + (draft.consumer_debt ? n(draft.consumer_debt.amount) : 0) + (draft.other_debt ? n(draft.other_debt.amount) : 0);
   const totalDebt = propertyMortgages + creditsTotal + debtsTotal + legacyDebt;
   const totalAssets = bankTotal + cashTotal + valuablesTotal + investTotal + cryptoTotal + propertyTotal + otherTotal + totalPension;
@@ -1661,7 +1940,8 @@ function SummaryStep({ draft, onNotesChange, onEdit }: { draft: SnapshotDraft; o
 
   // Completeness — count fields as "addressed" if value entered OR "Nicht bekannt" checked
   const TOTAL_FIELDS = 15;
-  const simpleFieldKeys = ['pillar_3a', 'freizuegigkeit', 'pensionskasse', 'ahv_annual', 'cash',
+  // Simple single-value fields (ahv_annual, cash, income, expenses, insurance)
+  const simpleFieldKeys = ['ahv_annual', 'cash',
     'monthly_income', 'monthly_expenses', 'insurance_monthly'] as (keyof SnapshotDraft)[];
 
   let filledCount = 0;
@@ -1680,7 +1960,11 @@ function SummaryStep({ draft, onNotesChange, onEdit }: { draft: SnapshotDraft; o
     }
   });
 
-  const listFields: { skippedKey: keyof SnapshotDraft; listKey?: keyof SnapshotDraft }[] = [
+  // List-based fields (including new Vorsorge lists)
+  const listFields: { skippedKey: keyof SnapshotDraft; listKey: keyof SnapshotDraft; balanceKey?: string }[] = [
+    { skippedKey: 'pillar_3a_skipped', listKey: 'pillar_3a_entries', balanceKey: 'balance' },
+    { skippedKey: 'freizuegigkeit_skipped', listKey: 'freizuegigkeit_entries', balanceKey: 'balance' },
+    { skippedKey: 'pensionskasse_skipped', listKey: 'pensionskasse_entries', balanceKey: 'balance' },
     { skippedKey: 'bank_accounts_skipped', listKey: 'bank_accounts' },
     { skippedKey: 'valuables_skipped', listKey: 'valuables' },
     { skippedKey: 'investment_positions_skipped', listKey: 'investment_positions' },
@@ -1690,13 +1974,24 @@ function SummaryStep({ draft, onNotesChange, onEdit }: { draft: SnapshotDraft; o
     { skippedKey: 'debts_skipped', listKey: 'debts' },
   ];
 
-  listFields.forEach(({ skippedKey, listKey }) => {
+  listFields.forEach(({ skippedKey, listKey, balanceKey }) => {
     if (draft[skippedKey]) {
       unknownCount++;
-    } else if (listKey && Array.isArray(draft[listKey]) && (draft[listKey] as unknown[]).length > 0) {
-      filledCount++;
     } else {
-      untouchedCount++;
+      const list = draft[listKey];
+      if (Array.isArray(list) && list.length > 0) {
+        // For Vorsorge entries, check if at least one has a balance
+        if (balanceKey) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const hasValue = list.some((e: { balance?: string }) => e.balance && String(e.balance).trim() !== '');
+          if (hasValue) filledCount++;
+          else untouchedCount++;
+        } else {
+          filledCount++;
+        }
+      } else {
+        untouchedCount++;
+      }
     }
   });
 
