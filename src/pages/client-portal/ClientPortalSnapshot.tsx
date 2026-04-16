@@ -1829,11 +1829,20 @@ function SummaryStep({ draft, onNotesChange, onEdit }: { draft: SnapshotDraft; o
                 {completenessPercent}%
               </span>
             </div>
-            <div className="space-y-1 flex-1">
+            <div className="space-y-1.5 flex-1">
               <p className="text-sm font-medium text-foreground">
-                Du hast {filledCount} von {TOTAL_FIELDS} Felder ausgefüllt
+                {addressedCount} von {TOTAL_FIELDS} Felder bearbeitet
               </p>
-              <p className="text-[11px] text-muted-foreground">{motivationalText}</p>
+              {filledCount > 0 && (
+                <p className="text-[11px] text-muted-foreground">{filledCount} Felder ausgefüllt</p>
+              )}
+              {unknownCount > 0 && (
+                <p className="text-[11px] text-muted-foreground">{unknownCount} als «Nicht bekannt» markiert</p>
+              )}
+              {untouchedCount > 0 && (
+                <p className="text-[11px] text-muted-foreground/60">{untouchedCount} Felder übersprungen</p>
+              )}
+              <p className="text-[11px] text-muted-foreground mt-1">{motivationalText}</p>
             </div>
           </div>
         </CardContent>
