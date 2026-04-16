@@ -295,20 +295,21 @@ export function useGamification() {
     setStreakDays(newStreak);
 
     // Toasts
+    const fn = futureNameRef.current;
     if (streakBroken) {
-      toast('Neustart – heute beginnt dein neuer Lauf 💪', {
+      toast(fn ? `${fn} wartet. Gib nicht auf. 💪` : 'Neustart – heute beginnt dein neuer Lauf 💪', {
         description: 'Ab heute zählt wieder jeder Tag!',
       });
     } else if (newStreak > 1) {
       toast(`🔥 ${newStreak} Tage in Folge!`, {
-        description: `+${loginPoints} XP · Du bleibst dran!`,
+        description: fn ? `${fn} ist beeindruckt. +${loginPoints} XP` : `+${loginPoints} XP · Du bleibst dran!`,
       });
     }
 
     if (milestoneMsg) {
       setTimeout(() => {
         toast.success(milestoneMsg, {
-          description: `${newStreak} Tage Disziplin – das ist echte Stärke.`,
+          description: fn ? `${fn} sieht deinen Fortschritt.` : `${newStreak} Tage Disziplin – das ist echte Stärke.`,
         });
       }, 1500);
     }
