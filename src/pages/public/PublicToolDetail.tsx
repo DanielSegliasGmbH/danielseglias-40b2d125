@@ -42,6 +42,7 @@ import { SteuerrechnerTool } from '@/components/tools/steuerrechner/Steuerrechne
 import { AhvTrackerTool } from '@/components/tools/ahv-tracker/AhvTrackerTool';
 import { KrankenkassenTrackerTool } from '@/components/tools/krankenkassen-tracker/KrankenkassenTrackerTool';
 import { SozialabgabenUebersichtTool } from '@/components/tools/sozialabgaben-uebersicht/SozialabgabenUebersichtTool';
+import { LebenserwartungTool } from '@/components/tools/lebenserwartung/LebenserwartungTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -276,6 +277,10 @@ export default function PublicToolDetail() {
               ) : slug === 'sozialabgaben-uebersicht' ? (
                 <div className="mb-8">
                   <SozialabgabenUebersichtTool mode="public" />
+                </div>
+              ) : slug === 'lebenserwartung' ? (
+                <div className="mb-8">
+                  <LebenserwartungTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">

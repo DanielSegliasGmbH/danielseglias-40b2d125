@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, Clock, Globe, Users, ExternalLink, ClipboardCheck, Briefcase, Receipt, Landmark, Heart, Shield, LucideIcon } from 'lucide-react';
+import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, Clock, Globe, Users, ExternalLink, ClipboardCheck, Briefcase, Receipt, Landmark, Heart, Shield, Hourglass, LucideIcon } from 'lucide-react';
 import { useUpdateTool, Tool } from '@/hooks/useTools';
 import { toast } from 'sonner';
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
@@ -43,6 +43,7 @@ import { SteuerrechnerTool } from '@/components/tools/steuerrechner/Steuerrechne
 import { AhvTrackerTool } from '@/components/tools/ahv-tracker/AhvTrackerTool';
 import { KrankenkassenTrackerTool } from '@/components/tools/krankenkassen-tracker/KrankenkassenTrackerTool';
 import { SozialabgabenUebersichtTool } from '@/components/tools/sozialabgaben-uebersicht/SozialabgabenUebersichtTool';
+import { LebenserwartungTool } from '@/components/tools/lebenserwartung/LebenserwartungTool';
 import { VersicherungsCheckTool } from '@/components/tools/versicherungs-check/VersicherungsCheckTool';
 
 // Icon mapping
@@ -58,6 +59,7 @@ const iconMap: Record<string, LucideIcon> = {
   'Landmark': Landmark,
   'Heart': Heart,
   'Shield': Shield,
+  'Hourglass': Hourglass,
 };
 
 export default function AdminToolDetail() {
@@ -195,6 +197,8 @@ export default function AdminToolDetail() {
         return <KrankenkassenTrackerTool mode="internal" />;
       case 'sozialabgaben-uebersicht':
         return <SozialabgabenUebersichtTool mode="internal" />;
+      case 'lebenserwartung':
+        return <LebenserwartungTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">
