@@ -126,11 +126,18 @@ interface PensionskasseEntry {
 }
 
 interface SnapshotDraft {
-  // Step 0: Vorsorge
+  // Step 0: Vorsorge (legacy single fields kept for backward compat)
   pillar_3a: SnapshotFieldValue;
   freizuegigkeit: SnapshotFieldValue;
   pensionskasse: SnapshotFieldValue;
   ahv_annual: SnapshotFieldValue;
+  // Step 0: Vorsorge (new dynamic lists)
+  pillar_3a_entries: Pillar3aEntry[];
+  pillar_3a_skipped: boolean;
+  freizuegigkeit_entries: FreizuegigkeitEntry[];
+  freizuegigkeit_skipped: boolean;
+  pensionskasse_entries: PensionskasseEntry[];
+  pensionskasse_skipped: boolean;
   // Step 1: Bankkonten & Bargeld
   bank_accounts: BankAccount[];
   bank_accounts_skipped: boolean;
@@ -169,6 +176,18 @@ interface SnapshotDraft {
 }
 
 const DEFAULT_FIELD: SnapshotFieldValue = { amount: '', provider: '', link: '', skipped: false };
+
+const newPillar3aEntry = (): Pillar3aEntry => ({
+  id: crypto.randomUUID(), balance: '', provider: '', expected_return: '', link: '',
+});
+
+const newFreizuegigkeitEntry = (): FreizuegigkeitEntry => ({
+  id: crypto.randomUUID(), balance: '', provider: '', expected_return: '', link: '',
+});
+
+const newPensionskasseEntry = (): PensionskasseEntry => ({
+  id: crypto.randomUUID(), balance: '', provider: '', expected_return: '', link: '',
+});
 
 const newBankAccount = (): BankAccount => ({
   id: crypto.randomUUID(),
