@@ -21,6 +21,7 @@ import {
   ArrowLeft, ArrowRight, Loader2, Trash2, ChevronRight,
   Info, ExternalLink, Plus, Zap, CheckCircle, AlertTriangle, ChevronDown,
 } from 'lucide-react';
+import { DocumentUploadButton } from '@/components/client-portal/DocumentUploadButton';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
