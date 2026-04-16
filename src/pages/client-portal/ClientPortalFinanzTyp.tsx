@@ -1,17 +1,18 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useGamification } from '@/hooks/useGamification';
 import { supabase } from '@/integrations/supabase/client';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Sparkles, Zap, AlertTriangle, Target, Share2, Download, Loader2 } from 'lucide-react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { ArrowLeft, ArrowRight, Sparkles, Zap, AlertTriangle, Target, Share2, Download, Loader2, RotateCcw } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import html2canvas from 'html2canvas';
@@ -159,13 +160,10 @@ function calculateType(answers: Record<string, string>): string {
   const bCount = vals.filter(v => v === 'B').length;
   const cCount = vals.filter(v => v === 'C').length;
 
-  // Weighted: whoever has 4+ is clear winner
   if (aCount >= 4) return 'skeptiker';
   if (cCount >= 4) return 'geniesser';
   if (bCount >= 4) return 'pflichterfueller';
 
-  // Mixed: use weighted scoring (A=skeptiker, B=pflichterfueller, C=geniesser)
-  // Q1, Q2 weight 2x (core financial behavior)
   const weights: Record<string, number> = { q1: 2, q2: 2, q3: 1, q4: 1, q5: 1, q6: 1.5 };
   let sScore = 0, gScore = 0, pScore = 0;
   for (const [qid, answer] of Object.entries(answers)) {
@@ -179,8 +177,6 @@ function calculateType(answers: Record<string, string>): string {
   if (gScore >= sScore && gScore >= pScore) return 'geniesser';
   return 'pflichterfueller';
 }
-
-const fmtCHF = (v: number) => `CHF ${Math.round(v).toLocaleString('de-CH')}`;
 
 /* ─── Share Card ─── */
 function FinanzTypShareCard({
@@ -286,12 +282,24 @@ function FinanzTypShareCard({
   );
 }
 
+/* ─── Format date helper ─── */
+function formatDateDE(iso: string): string {
+  const d = new Date(iso);
+  return d.toLocaleDateString('de-CH', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
 /* ─── Main Component ─── */
 export default function ClientPortalFinanzTyp() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { awardPoints } = useGamification();
   const { profile } = useMetaProfile();
+
+  const [loading, setLoading] = useState(true);
+  const [existingResult, setExistingResult] = useState<{ type: FinanzType; completedAt: string } | null>(null);
+  const [quizMode, setQuizMode] = useState(false);
+  const [confirmRetakeOpen, setConfirmRetakeOpen] = useState(false);
+
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [result, setResult] = useState<FinanzType | null>(null);
@@ -302,6 +310,27 @@ export default function ClientPortalFinanzTyp() {
   const currentQ = QUESTIONS[step];
   const progressPercent = result ? 100 : Math.round((step / totalSteps) * 100);
   const monthlyIncome = (profile?.monthly_income as number) ?? 6000;
+
+  // Load existing result on mount
+  useEffect(() => {
+    if (!user) { setLoading(false); return; }
+    (async () => {
+      const { data } = await supabase
+        .from('finanz_type_results')
+        .select('finanz_type, completed, updated_at')
+        .eq('user_id', user.id)
+        .eq('completed', true)
+        .maybeSingle();
+
+      if (data?.finanz_type && FINANZ_TYPES[data.finanz_type]) {
+        setExistingResult({
+          type: FINANZ_TYPES[data.finanz_type],
+          completedAt: data.updated_at,
+        });
+      }
+      setLoading(false);
+    })();
+  }, [user]);
 
   const selectAnswer = useCallback((value: string) => {
     setAnswers(prev => ({ ...prev, [currentQ.id]: value }));
@@ -335,16 +364,42 @@ export default function ClientPortalFinanzTyp() {
     }
 
     setResult(typeInfo);
+    setExistingResult({ type: typeInfo, completedAt: new Date().toISOString() });
+    setQuizMode(false);
     setSaving(false);
   }, [step, totalSteps, answers, currentQ, user, awardPoints]);
 
-  /* ─── Result Screen ─── */
-  if (result) {
+  const handleRetakeConfirm = () => {
+    setConfirmRetakeOpen(false);
+    setQuizMode(true);
+    setStep(0);
+    setAnswers({});
+    setResult(null);
+  };
+
+  // Loading state
+  if (loading) {
     return (
       <ClientPortalLayout>
-        <div className="max-w-lg mx-auto space-y-6 pb-8">
-          <Progress value={100} className="h-1.5" />
+        <ScreenHeader title="Finanz-Typ" backTo="/app/client-portal" />
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      </ClientPortalLayout>
+    );
+  }
 
+  // Determine what to show
+  const displayResult = result || existingResult?.type;
+  const completedAt = existingResult?.completedAt;
+  const showResult = displayResult && !quizMode;
+
+  /* ─── Result Screen ─── */
+  if (showResult && displayResult) {
+    return (
+      <ClientPortalLayout>
+        <ScreenHeader title="Finanz-Typ" backTo="/app/client-portal" />
+        <div className="max-w-lg mx-auto space-y-6 pb-8">
           {/* Type Header */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -352,11 +407,18 @@ export default function ClientPortalFinanzTyp() {
             transition={{ duration: 0.5 }}
             className="text-center space-y-2 pt-4"
           >
-            <span className="text-6xl">{result.emoji}</span>
-            <h1 className="text-2xl font-bold text-foreground">{result.title}</h1>
-            <Badge variant="secondary" className="gap-1">
-              <Zap className="h-3 w-3" /> +100 XP
-            </Badge>
+            <span className="text-6xl">{displayResult.emoji}</span>
+            <h1 className="text-2xl font-bold text-foreground">{displayResult.title}</h1>
+            {completedAt && (
+              <p className="text-xs text-muted-foreground">
+                Ermittelt am {formatDateDE(completedAt)}
+              </p>
+            )}
+            {result && (
+              <Badge variant="secondary" className="gap-1">
+                <Zap className="h-3 w-3" /> +100 XP
+              </Badge>
+            )}
           </motion.div>
 
           {/* Description Card */}
@@ -364,7 +426,7 @@ export default function ClientPortalFinanzTyp() {
             <Card>
               <CardContent className="p-5">
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  {result.description}
+                  {displayResult.description}
                 </p>
               </CardContent>
             </Card>
@@ -381,10 +443,10 @@ export default function ClientPortalFinanzTyp() {
                   </h2>
                 </div>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  {result.blindSpot}
+                  {displayResult.blindSpot}
                 </p>
                 <p className="text-sm font-medium text-destructive">
-                  {result.blindSpotCalc(monthlyIncome)}
+                  {displayResult.blindSpotCalc(monthlyIncome)}
                 </p>
               </CardContent>
             </Card>
@@ -395,7 +457,7 @@ export default function ClientPortalFinanzTyp() {
             <Card className="border-primary/20 bg-primary/5">
               <CardContent className="p-5">
                 <p className="text-sm font-medium text-foreground italic">
-                  «{result.motivation}»
+                  «{displayResult.motivation}»
                 </p>
               </CardContent>
             </Card>
@@ -407,7 +469,7 @@ export default function ClientPortalFinanzTyp() {
               <Target className="h-4 w-4 text-primary" />
               Deine persönlichen Quests
             </h2>
-            {result.quests.map((quest, i) => (
+            {displayResult.quests.map((quest, i) => (
               <Card
                 key={i}
                 className="cursor-pointer active:scale-[0.98] transition-all hover:shadow-md touch-manipulation"
@@ -438,9 +500,44 @@ export default function ClientPortalFinanzTyp() {
               <Share2 className="h-4 w-4" /> Typ teilen
             </Button>
           </div>
+
+          <Separator />
+
+          {/* Retake */}
+          <div className="text-center space-y-2">
+            <p className="text-xs text-muted-foreground">Möchtest du deinen Typ neu bestimmen?</p>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-2 text-muted-foreground"
+              onClick={() => setConfirmRetakeOpen(true)}
+            >
+              <RotateCcw className="h-4 w-4" /> Test wiederholen 🔄
+            </Button>
+          </div>
         </div>
 
-        <FinanzTypShareCard open={shareOpen} onOpenChange={setShareOpen} typeInfo={result} />
+        <FinanzTypShareCard open={shareOpen} onOpenChange={setShareOpen} typeInfo={displayResult} />
+
+        {/* Retake Confirmation Dialog */}
+        <Dialog open={confirmRetakeOpen} onOpenChange={setConfirmRetakeOpen}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle>Test wiederholen?</DialogTitle>
+              <DialogDescription>
+                Dein aktueller Typ wird überschrieben. Möchtest du fortfahren?
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="flex gap-2 sm:gap-0">
+              <Button variant="outline" onClick={() => setConfirmRetakeOpen(false)}>
+                Abbrechen
+              </Button>
+              <Button onClick={handleRetakeConfirm}>
+                Ja, neu bestimmen
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </ClientPortalLayout>
     );
   }
@@ -448,13 +545,22 @@ export default function ClientPortalFinanzTyp() {
   /* ─── Quiz Screen ─── */
   return (
     <ClientPortalLayout>
+      <ScreenHeader title="Finanz-Typ" backTo="/app/client-portal" />
       <div className="max-w-lg mx-auto space-y-6 pb-8">
         <Progress value={progressPercent} className="h-1.5" />
 
         <div className="flex items-center justify-between">
           <Button
             variant="ghost" size="sm"
-            onClick={() => step > 0 ? setStep(s => s - 1) : navigate(-1)}
+            onClick={() => {
+              if (step > 0) {
+                setStep(s => s - 1);
+              } else if (existingResult) {
+                setQuizMode(false);
+              } else {
+                navigate(-1);
+              }
+            }}
             className="gap-1"
           >
             <ArrowLeft className="h-4 w-4" /> Zurück
