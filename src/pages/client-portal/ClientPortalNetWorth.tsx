@@ -670,7 +670,12 @@ export default function ClientPortalNetWorth() {
                       <span className="text-base">{ASSET_ICONS[a.category] || '📦'}</span>
                       <div className="min-w-0">
                         <p className="text-sm font-medium truncate">{a.name}</p>
-                        <p className="text-[11px] text-muted-foreground">{a.category}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-[11px] text-muted-foreground">{a.category}</p>
+                          {a.expected_return != null && Number(a.expected_return) > 0 && (
+                            <p className="text-[11px] text-primary">{Number(a.expected_return)}% p.a.</p>
+                          )}
+                        </div>
                       </div>
                       {a.platform_url && (
                         <button
