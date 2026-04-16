@@ -17,7 +17,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Shield, Download, Trash2, AlertTriangle, Eye, Swords, FileBarChart, Loader2 } from 'lucide-react';
+import { Shield, Download, Trash2, AlertTriangle, Eye, Swords, FileBarChart, Loader2, Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
@@ -59,6 +59,12 @@ const PRIVACY_TOGGLES: {
     label: 'Monatsbericht automatisch erstellen',
     description: 'Am Monatsanfang wird ein Rückblick erstellt',
     icon: FileBarChart,
+  },
+  {
+    key: 'show_truth_moments',
+    label: 'Wahrheits-Momente anzeigen',
+    description: 'Gelegentliche Erkenntnisse basierend auf deinen Daten',
+    icon: Lightbulb,
   },
 ];
 
