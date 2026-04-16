@@ -31,6 +31,7 @@ import { ShadowTwinCard } from '@/components/client-portal/ShadowTwinCard';
 import { LastPlanDashboardCard } from '@/components/client-portal/LastPlanDashboardCard';
 import { ProfessionDashboardTips } from '@/components/client-portal/ProfessionDashboardTips';
 import { JourneyDashboardWidget } from '@/components/client-portal/JourneyDashboardWidget';
+import { JourneyNudgeCard } from '@/components/client-portal/JourneyNudgeCard';
 import { RankWarningBanner } from '@/components/client-portal/RankWarningBanner';
 import { RankChangeOverlay } from '@/components/client-portal/RankChangeOverlay';
 import { useRankSystem } from '@/hooks/useRankSystem';
@@ -298,6 +299,9 @@ export default function ClientPortalHome() {
           </div>
           <NotificationBell />
         </div>
+
+        {/* ── JOURNEY NUDGE ── */}
+        <JourneyNudgeCard />
 
         {/* ── PEAKSCORE HERO ── */}
         <MorningBriefCard />
