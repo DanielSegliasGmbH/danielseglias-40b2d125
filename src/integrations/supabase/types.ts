@@ -430,6 +430,7 @@ export type Database = {
           current_amount: number
           id: string
           is_completed: boolean
+          mission_name: string | null
           target_amount: number | null
           target_date: string | null
           title: string
@@ -442,6 +443,7 @@ export type Database = {
           current_amount?: number
           id?: string
           is_completed?: boolean
+          mission_name?: string | null
           target_amount?: number | null
           target_date?: string | null
           title: string
@@ -454,6 +456,7 @@ export type Database = {
           current_amount?: number
           id?: string
           is_completed?: boolean
+          mission_name?: string | null
           target_amount?: number | null
           target_date?: string | null
           title?: string

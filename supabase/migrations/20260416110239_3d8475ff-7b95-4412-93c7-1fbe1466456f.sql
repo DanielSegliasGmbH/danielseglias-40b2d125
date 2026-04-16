@@ -1,0 +1,1 @@
+ALTER TABLE public.client_goals ADD COLUMN IF NOT EXISTS mission_name TEXT;

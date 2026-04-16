@@ -267,7 +267,7 @@ function GoalForm({ onComplete }: { onComplete: (xp?: number) => void }) {
       if (!user?.id) return [];
       const { data } = await supabase
         .from('client_goals')
-        .select('id, title, current_amount, target_amount')
+        .select('id, title, mission_name, current_amount, target_amount')
         .eq('user_id', user.id)
         .eq('is_completed', false)
         .order('created_at', { ascending: false })
@@ -302,7 +302,7 @@ function GoalForm({ onComplete }: { onComplete: (xp?: number) => void }) {
         <Card key={g.id} className="transition-all">
           <CardContent className="p-3 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-foreground">{g.title}</span>
+              <span className="text-sm font-medium text-foreground">{(g as any).mission_name || g.title}</span>
               <span className="text-xs text-muted-foreground">
                 CHF {g.current_amount?.toLocaleString('de-CH')}
                 {g.target_amount ? ` / ${g.target_amount.toLocaleString('de-CH')}` : ''}

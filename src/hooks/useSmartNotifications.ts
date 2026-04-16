@@ -104,7 +104,7 @@ export function useSmartNotifications() {
       // 4. GOAL MILESTONES — 25%, 50%, 75%
       const { data: goals } = await supabase
         .from('client_goals')
-        .select('id, title, current_amount, target_amount')
+        .select('id, title, mission_name, current_amount, target_amount')
         .eq('user_id', uid)
         .eq('is_completed', false);
 
@@ -112,12 +112,13 @@ export function useSmartNotifications() {
         for (const goal of goals) {
           if (!goal.target_amount || goal.target_amount <= 0) continue;
           const pct = (Number(goal.current_amount) / Number(goal.target_amount)) * 100;
+          const goalLabel = (goal as any).mission_name || goal.title;
           const milestones = [25, 50, 75];
           for (const ms of milestones) {
             if (pct >= ms) {
               await upsertNotification(
                 uid, 'goal_milestone', `goal-${goal.id}-${ms}`,
-                `🎯 ${ms}% erreicht: «${goal.title}»`,
+                `🎯 ${ms}% erreicht: «${goalLabel}»`,
                 `Du hast ${ms}% deines Ziels erreicht – weiter so!`,
                 '/app/client-portal/goals', 'Ziele öffnen'
               );
