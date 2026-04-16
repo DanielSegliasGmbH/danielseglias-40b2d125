@@ -66,6 +66,7 @@ export default function ClientPortalHabits() {
     <ClientPortalLayout>
       <ScreenHeader title="✅ Finanz-Gewohnheiten" backTo="/app/client-portal" />
       <div className="max-w-2xl mx-auto space-y-4">
+        <div className="flex justify-end">
           <Button
             size="sm"
             variant="outline"
