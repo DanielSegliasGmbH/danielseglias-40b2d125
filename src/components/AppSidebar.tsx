@@ -92,6 +92,14 @@ export function AppSidebar() {
     { title: t('trash.title'), url: '/app/trash', icon: Trash2 },
     { title: 'Automationen', url: '/app/automations', icon: Zap },
     { title: 'CTA-Steuerung', url: '/app/cta', icon: TrendingUp },
+    { title: 'Success Stories', url: '/app/success-stories', icon: Newspaper },
+    { title: 'Nudge-Schedule', url: '/app/nudge-schedule', icon: Megaphone },
+    { title: 'Communities', url: '/app/communities', icon: UsersRound },
+    { title: 'Journey-Config', url: '/app/journey-config', icon: Map },
+    { title: 'Wahrheits-Momente', url: '/app/truth-moments', icon: Lightbulb },
+    { title: 'Voice Scripts', url: '/app/voice-scripts', icon: Mic },
+    { title: 'Gruppen-Feed', url: '/app/groups-feed', icon: Newspaper },
+    { title: 'Nutzer-Analytics', url: '/app/user-analytics', icon: PieChart },
     { title: t('clientPortal.preview'), url: '/app/client-portal', icon: Eye },
   ];
 
