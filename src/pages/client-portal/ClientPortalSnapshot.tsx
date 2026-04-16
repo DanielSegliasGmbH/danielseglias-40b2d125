@@ -1904,7 +1904,11 @@ function SummaryStep({ draft, onNotesChange, onEdit }: { draft: SnapshotDraft; o
   const otherTotal = draft.other_assets_skipped ? 0 : sumOtherAssets(draft.other_assets);
   const creditsTotal = draft.credits_skipped ? 0 : sumCredits(draft.credits);
   const debtsTotal = draft.debts_skipped ? 0 : sumDebts(draft.debts);
-  const totalPension = n(draft.pillar_3a.amount) + n(draft.freizuegigkeit.amount) + n(draft.pensionskasse.amount);
+  const p3aTotal = draft.pillar_3a_skipped ? 0 : sumPillar3a(draft.pillar_3a_entries);
+  const fzTotal = draft.freizuegigkeit_skipped ? 0 : sumFreizuegigkeit(draft.freizuegigkeit_entries);
+  const pkTotal = draft.pensionskasse_skipped ? 0 : sumPensionskasse(draft.pensionskasse_entries);
+  // Legacy fallback for old snapshots
+  const totalPension = (p3aTotal || n(draft.pillar_3a.amount)) + (fzTotal || n(draft.freizuegigkeit.amount)) + (pkTotal || n(draft.pensionskasse.amount));
   const legacyDebt = (draft.mortgage ? n(draft.mortgage.amount) : 0) + (draft.consumer_debt ? n(draft.consumer_debt.amount) : 0) + (draft.other_debt ? n(draft.other_debt.amount) : 0);
   const totalDebt = propertyMortgages + creditsTotal + debtsTotal + legacyDebt;
   const totalAssets = bankTotal + cashTotal + valuablesTotal + investTotal + cryptoTotal + propertyTotal + otherTotal + totalPension;
