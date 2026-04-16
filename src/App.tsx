@@ -116,6 +116,13 @@ import { PageViewTracker } from "./components/PageViewTracker";
 import AdminAutomations from "./pages/AdminAutomations";
 import AdminAnalyticsDashboard from "./pages/AdminAnalyticsDashboard";
 import AdminCtaManagement from "./pages/AdminCtaManagement";
+import AdminNudgeSchedule from "./pages/AdminNudgeSchedule";
+import AdminCommunities from "./pages/AdminCommunities";
+import AdminJourneyConfig from "./pages/AdminJourneyConfig";
+import AdminTruthMoments from "./pages/AdminTruthMoments";
+import AdminVoiceScripts from "./pages/AdminVoiceScripts";
+import AdminGroupsFeed from "./pages/AdminGroupsFeed";
+import AdminUserAnalytics from "./pages/AdminUserAnalytics";
 
 // Public Pages (no auth required)
 import MinimalLanding from "./pages/public/MinimalLanding";
@@ -317,6 +324,62 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['admin']}>
                     <AdminCtaManagement />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/nudge-schedule"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminNudgeSchedule />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/communities"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminCommunities />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/journey-config"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminJourneyConfig />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/truth-moments"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminTruthMoments />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/voice-scripts"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminVoiceScripts />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/groups-feed"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminGroupsFeed />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/user-analytics"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminUserAnalytics />
                   </RouteGuard>
                 }
               />
