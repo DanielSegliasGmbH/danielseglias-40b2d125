@@ -4,6 +4,7 @@ import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { useMetaProfile, META_FIELD_MAP, MetaFieldKey } from '@/hooks/useMetaProfile';
 import { useGamification } from '@/hooks/useGamification';
+import { PROFESSION_OPTIONS } from '@/config/professionConfig';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -174,6 +175,24 @@ export default function ClientPortalProfileData() {
                 onChange={e => handleChange('age', e.target.value === '' ? null : Number(e.target.value))}
                 placeholder="Alter eingeben"
               />
+            </div>
+
+            {/* Professional Status */}
+            <div className="space-y-1.5">
+              <Label className="text-sm">Beruflicher Status</Label>
+              <Select
+                value={form.professional_status as string || ''}
+                onValueChange={v => handleChange('professional_status', v)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Status wählen" />
+                </SelectTrigger>
+                <SelectContent>
+                  {PROFESSION_OPTIONS.map(opt => (
+                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Occupation */}
