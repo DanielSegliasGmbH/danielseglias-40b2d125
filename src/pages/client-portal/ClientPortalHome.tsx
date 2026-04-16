@@ -27,6 +27,7 @@ import { MoodCheckinCard } from '@/components/client-portal/MoodCheckinCard';
 import { InflationTickerCard } from '@/components/client-portal/InflationTickerCard';
 import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
 import { SuccessStoryRotator } from '@/components/client-portal/SuccessStoryRotator';
+import { ShadowTwinCard } from '@/components/client-portal/ShadowTwinCard';
 import { RankWarningBanner } from '@/components/client-portal/RankWarningBanner';
 import { RankChangeOverlay } from '@/components/client-portal/RankChangeOverlay';
 import { useRankSystem } from '@/hooks/useRankSystem';
