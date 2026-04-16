@@ -320,6 +320,8 @@ export default function ClientPortalCoach() {
             Du kannst externe Links wie Google Drive, Dropbox oder iCloud verwenden.
           </p>
         </div>
+          </>
+        )}
       </div>
     </ClientPortalLayout>
   );
