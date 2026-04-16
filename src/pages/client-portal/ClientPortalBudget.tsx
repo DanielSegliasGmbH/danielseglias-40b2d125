@@ -142,22 +142,9 @@ export default function ClientPortalBudget() {
 
   const [activeTab, setActiveTab] = useState('budget');
 
-  // ── Fetch fixed expenses ──
-  const { data: fixedExpenses = [] } = useQuery({
-    queryKey: ['fixed-expenses', user?.id],
-    queryFn: async () => {
-      if (!user) return [];
-      const { data, error } = await supabase
-        .from('fixed_expenses')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('is_active', true)
-        .order('created_at', { ascending: true });
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!user,
-  });
+  // ── Unified cashflow data (single source of truth) ──
+  const cashflowData = useCashflowData(selectedMonth);
+  const { jobIncome: monthlyIncome, fixedExpenseItems: fixedExpenses, fixedExpensesTotal: totalFixedMonthly, variableExpensesTotal: totalVariable } = cashflowData;
 
   // ── Fetch budgets for selected month ──
   const { data: budgets = [] } = useQuery({
@@ -175,7 +162,7 @@ export default function ClientPortalBudget() {
     enabled: !!user,
   });
 
-  // ── Fetch variable expenses for selected month ──
+  // ── Fetch variable expenses for display ──
   const { data: expenses = [] } = useQuery({
     queryKey: ['expenses', user?.id, selectedMonth],
     queryFn: async () => {
@@ -196,23 +183,6 @@ export default function ClientPortalBudget() {
     },
     enabled: !!user,
   });
-
-  // ── Fetch meta profile ──
-  const { data: metaProfile } = useQuery({
-    queryKey: ['meta-profile-budget', user?.id],
-    queryFn: async () => {
-      if (!user) return null;
-      const { data } = await supabase
-        .from('meta_profiles')
-        .select('monthly_income, fixed_costs')
-        .eq('user_id', user.id)
-        .maybeSingle();
-      return data;
-    },
-    enabled: !!user,
-  });
-
-  const monthlyIncome = metaProfile?.monthly_income || 0;
 
   // ── Fixed expense mutations ──
   const addFixed = useMutation({
