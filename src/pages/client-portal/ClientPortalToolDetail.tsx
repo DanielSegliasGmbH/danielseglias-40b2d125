@@ -48,6 +48,7 @@ import { SteuerrechnerTool } from '@/components/tools/steuerrechner/Steuerrechne
 import { AhvTrackerTool } from '@/components/tools/ahv-tracker/AhvTrackerTool';
 import { KrankenkassenTrackerTool } from '@/components/tools/krankenkassen-tracker/KrankenkassenTrackerTool';
 import { SozialabgabenUebersichtTool } from '@/components/tools/sozialabgaben-uebersicht/SozialabgabenUebersichtTool';
+import { LebenserwartungTool } from '@/components/tools/lebenserwartung/LebenserwartungTool';
 import { RecommendationCards } from '@/components/client-portal/RecommendationCards';
 import { TOOL_RECOMMENDATIONS } from '@/config/recommendationConfig';
 
@@ -173,6 +174,8 @@ export default function ClientPortalToolDetail() {
         return <KrankenkassenTrackerTool mode="internal" />;
       case 'sozialabgaben-uebersicht':
         return <SozialabgabenUebersichtTool mode="internal" />;
+      case 'lebenserwartung':
+        return <LebenserwartungTool mode="internal" />;
       default:
         return (
           <Card>

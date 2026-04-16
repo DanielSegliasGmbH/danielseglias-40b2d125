@@ -41,6 +41,7 @@ const TOOL_LABELS: Record<string, string> = {
   'ahv-tracker': 'AHV-Tracker',
   'krankenkassen-tracker': 'Krankenkassen-Tracker',
   'sozialabgaben-uebersicht': 'Sozialabgaben-Übersicht',
+  'lebenserwartung': 'Lebenserwartung',
   'lebenzeit-rechner': 'Lebenszeit-Rechner',
   'recovery-analyse': 'Recovery-Analyse',
   'zeitverlust-simulator': 'Zeitverlust-Simulator',
