@@ -2119,6 +2119,39 @@ export type Database = {
           },
         ]
       }
+      journey_nudges: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          day_number: number
+          dismissed_at: string | null
+          id: string
+          nudge_key: string
+          shown_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          day_number: number
+          dismissed_at?: string | null
+          id?: string
+          nudge_key: string
+          shown_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          day_number?: number
+          dismissed_at?: string | null
+          id?: string
+          nudge_key?: string
+          shown_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       last_plan_progress: {
         Row: {
           beguenstigte: Json
