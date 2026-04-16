@@ -11,32 +11,63 @@ import { toast } from 'sonner';
 import { X, LifeBuoy, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+const DISMISS_KEY = 'streak-rescue-dismissed';
+
+function isDismissedToday(): boolean {
+  const stored = sessionStorage.getItem(DISMISS_KEY);
+  if (!stored) return false;
+  return stored === new Date().toISOString().slice(0, 10);
+}
+
+function dismissToday(): void {
+  sessionStorage.setItem(DISMISS_KEY, new Date().toISOString().slice(0, 10));
+}
+
 export function StreakRescueOverlay() {
   const { user } = useAuth();
   const { streakDays } = useGamification();
   const { canSelfRescue, performSelfRescue, requestFriendRescue, enabled } = useStreakRescue();
-  const [dismissed, setDismissed] = useState(false);
+  const [dismissed, setDismissed] = useState(isDismissedToday);
   const [mode, setMode] = useState<'main' | 'friends'>('main');
   const [rescuing, setRescuing] = useState(false);
 
-  // Check if streak was broken yesterday (streakDays === 0 and user logged in today)
+  // Check if streak was broken: user logged in 2 days ago but NOT yesterday, and streakDays is 0
   const { data: streakBrokenYesterday = false } = useQuery({
-    queryKey: ['streak-broken-check', user?.id],
+    queryKey: ['streak-broken-check', user?.id, streakDays],
     queryFn: async () => {
-      if (!user) return false;
-      // Check if user had a streak > 0 two days ago but not yesterday
-      const twoDaysAgo = new Date();
+      if (!user || streakDays > 0) return false;
+
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const twoDaysAgo = new Date(today);
       twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
-      const { data } = await supabase
+
+      // Check login 2 days ago
+      const { data: twoDaysAgoLogins } = await supabase
         .from('gamification_actions')
         .select('id')
         .eq('user_id', user.id)
         .eq('action_type', 'daily_login')
-        .gte('created_at', twoDaysAgo.toISOString().split('T')[0])
-        .lt('created_at', new Date(Date.now() - 86400000).toISOString().split('T')[0]);
-      return (data?.length || 0) > 0 && streakDays === 0;
+        .gte('created_at', twoDaysAgo.toISOString().slice(0, 10))
+        .lt('created_at', yesterday.toISOString().slice(0, 10))
+        .limit(1);
+
+      if (!twoDaysAgoLogins?.length) return false;
+
+      // Check NO login yesterday
+      const { data: yesterdayLogins } = await supabase
+        .from('gamification_actions')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('action_type', 'daily_login')
+        .gte('created_at', yesterday.toISOString().slice(0, 10))
+        .lt('created_at', today.toISOString().slice(0, 10))
+        .limit(1);
+
+      return !yesterdayLogins?.length;
     },
-    enabled: !!user && enabled,
+    enabled: !!user && enabled && !dismissed && streakDays === 0,
   });
 
   // Fetch friends for friend rescue
@@ -64,12 +95,17 @@ export function StreakRescueOverlay() {
 
   if (!enabled || !streakBrokenYesterday || dismissed) return null;
 
+  const handleDismiss = () => {
+    dismissToday();
+    setDismissed(true);
+  };
+
   const handleSelfRescue = async () => {
     setRescuing(true);
     try {
       await performSelfRescue.mutateAsync();
       toast.success('Streak gerettet! 🛟');
-      setDismissed(true);
+      handleDismiss();
     } catch {
       toast.error('Fehler');
     } finally {
@@ -82,7 +118,7 @@ export function StreakRescueOverlay() {
     try {
       await requestFriendRescue.mutateAsync(friendId);
       toast.success('Anfrage gesendet! Dein Freund wird benachrichtigt.');
-      setDismissed(true);
+      handleDismiss();
     } catch {
       toast.error('Fehler');
     } finally {
@@ -99,7 +135,7 @@ export function StreakRescueOverlay() {
         className="fixed inset-0 z-[80] bg-background/95 flex items-center justify-center"
       >
         <button
-          onClick={() => setDismissed(true)}
+          onClick={handleDismiss}
           className="absolute top-4 right-4 p-2 text-muted-foreground hover:text-foreground"
         >
           <X className="w-5 h-5" />
@@ -142,7 +178,7 @@ export function StreakRescueOverlay() {
                 </div>
               )}
 
-              <Button variant="ghost" size="sm" onClick={() => setDismissed(true)} className="text-muted-foreground">
+              <Button variant="ghost" size="sm" onClick={handleDismiss} className="text-muted-foreground">
                 Streak akzeptieren
               </Button>
             </motion.div>
