@@ -2294,6 +2294,33 @@ export type Database = {
         }
         Relationships: []
       }
+      mood_checkins: {
+        Row: {
+          created_at: string
+          id: string
+          mood: string
+          note: string | null
+          user_id: string
+          week_key: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mood: string
+          note?: string | null
+          user_id: string
+          week_key: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mood?: string
+          note?: string | null
+          user_id?: string
+          week_key?: string
+        }
+        Relationships: []
+      }
       net_worth_assets: {
         Row: {
           category: string
@@ -2642,6 +2669,7 @@ export type Database = {
           id: string
           last_name: string
           leaderboard_visible: boolean
+          mood_checkin_enabled: boolean
           payday_date: number
           peak_score_visible: boolean
           phone: string | null
@@ -2669,6 +2697,7 @@ export type Database = {
           id: string
           last_name: string
           leaderboard_visible?: boolean
+          mood_checkin_enabled?: boolean
           payday_date?: number
           peak_score_visible?: boolean
           phone?: string | null
@@ -2696,6 +2725,7 @@ export type Database = {
           id?: string
           last_name?: string
           leaderboard_visible?: boolean
+          mood_checkin_enabled?: boolean
           payday_date?: number
           peak_score_visible?: boolean
           phone?: string | null

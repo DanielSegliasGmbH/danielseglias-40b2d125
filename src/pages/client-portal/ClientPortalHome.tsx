@@ -23,6 +23,7 @@ import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
 import { WeeklyCheckCard } from '@/components/client-portal/WeeklyCheckCard';
 import { MorningBriefCard } from '@/components/client-portal/MorningBriefCard';
 import { SundayReflectionCard } from '@/components/client-portal/SundayReflectionCard';
+import { MoodCheckinCard } from '@/components/client-portal/MoodCheckinCard';
 import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
 import { RankWarningBanner } from '@/components/client-portal/RankWarningBanner';
 import { RankChangeOverlay } from '@/components/client-portal/RankChangeOverlay';
@@ -294,6 +295,7 @@ export default function ClientPortalHome() {
 
         {/* ── PEAKSCORE HERO ── */}
         <MorningBriefCard />
+        <MoodCheckinCard />
         <PeakScoreCard onClick={() => navigate('/app/client-portal/peak-score')} />
         <FreedomCountdown />
         <SundayReflectionCard />
