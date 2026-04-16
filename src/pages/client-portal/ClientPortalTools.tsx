@@ -46,7 +46,7 @@ export default function ClientPortalTools() {
 
   return (
     <ClientPortalLayout>
-      <div className="max-w-2xl mx-auto space-y-5">
+      <div className="max-w-2xl mx-auto space-y-5 overflow-x-hidden w-full">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>

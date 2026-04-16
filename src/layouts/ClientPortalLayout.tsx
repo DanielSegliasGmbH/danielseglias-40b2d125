@@ -143,7 +143,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
     <PrivacyModeProvider>
     <TooltipProvider delayDuration={0}>
       <PrivacyBanner />
-      <div className="min-h-screen bg-background flex">
+      <div className="min-h-screen bg-background flex max-w-[100vw] overflow-x-hidden">
         {/* Admin Preview Banner */}
         {isAdminPreview && (
           <div className="fixed top-0 left-0 right-0 z-[60] bg-warning/90 text-warning-foreground px-4 py-2 flex items-center justify-center gap-2 text-sm font-medium">
@@ -266,7 +266,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
             <LanguageSwitcher />
             <span className="text-sm text-muted-foreground">{firstName}</span>
           </div>
-          <div className="p-4 lg:p-8">
+          <div className="p-4 lg:p-8 overflow-x-hidden max-w-full">
             {children}
           </div>
         </main>
