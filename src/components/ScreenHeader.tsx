@@ -8,6 +8,7 @@ interface ScreenHeaderProps {
   backTo?: string;
   rightAction?: React.ReactNode;
   className?: string;
+  breadcrumb?: string[];
 }
 
 export function ScreenHeader({ title, showBack = false, backTo, rightAction, className }: ScreenHeaderProps) {
