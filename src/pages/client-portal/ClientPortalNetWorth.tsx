@@ -25,7 +25,7 @@ const ASSET_CATEGORIES = [
   'Bargeld', 'Bankkonto', 'Säule 3a', 'Pensionskasse', 'Aktien/ETF', 'Immobilien', 'Sonstiges',
 ] as const;
 
-const LIABILITY_CATEGORIES = ['Hypothek', 'Konsumkredit', 'Sonstiges'] as const;
+const LIABILITY_CATEGORIES = ['Hypothek', 'Autoleasing', 'Privatkredit', 'Kreditkarten', 'Sonstiges'] as const;
 
 const ASSET_ICONS: Record<string, string> = {
   'Bargeld': '💵', 'Bankkonto': '🏦', 'Säule 3a': '🔐', 'Pensionskasse': '🏛️',
