@@ -302,6 +302,7 @@ export default function ClientPortalHome() {
         <SundayReflectionCard />
         <WeeklyCheckCard />
         <RankWarningBanner />
+        <InflationTickerCard />
 
         {/* ── LEBENSFILM CTA ── */}
         {!lifeFilmCompleted ? (
