@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { useToolSnapshots, ToolSnapshot } from '@/hooks/useToolSnapshots';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -60,15 +61,9 @@ export default function ClientPortalToolArchive() {
 
   return (
     <ClientPortalLayout>
+      <ScreenHeader title="📦 Mein Archiv" backTo="/app/client-portal/tools" />
       <div className="max-w-2xl mx-auto space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <Archive className="h-5 w-5 text-primary" />
-              Mein Archiv
-            </h1>
-            <p className="text-sm text-muted-foreground">Alle gespeicherten Tool-Ergebnisse</p>
-          </div>
+        <div className="flex items-center justify-end">
           <Button
             variant={compareMode ? 'default' : 'outline'}
             size="sm"

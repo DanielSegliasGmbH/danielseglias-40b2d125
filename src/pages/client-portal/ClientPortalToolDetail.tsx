@@ -5,10 +5,11 @@ import { useGamification } from '@/hooks/useGamification';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Calculator, PieChart, TrendingUp, FileText, Wrench, Scale, Home, ShieldCheck, LucideIcon } from 'lucide-react';
+import { Calculator, PieChart, TrendingUp, FileText, Wrench, Scale, Home, ShieldCheck, LucideIcon } from 'lucide-react';
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
 import VorsorgecheckTool from '@/components/tools/vorsorgecheck/VorsorgecheckTool';
 import VvgLeistungsvergleichTool from '@/components/tools/vvg-leistungsvergleich/VvgLeistungsvergleichTool';
@@ -182,14 +183,11 @@ export default function ClientPortalToolDetail() {
   if (error || !tool) {
     return (
       <ClientPortalLayout>
+        <ScreenHeader title={t('tools.notFound')} backTo="/app/client-portal/tools" />
         <div className="max-w-4xl mx-auto">
           <Card>
             <CardContent className="py-12 text-center">
               <p className="text-muted-foreground mb-4">{t('tools.notFound')}</p>
-              <Button variant="outline" onClick={() => navigate('/app/client-portal/tools')}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                {t('app.back')}
-              </Button>
             </CardContent>
           </Card>
         </div>
@@ -199,26 +197,8 @@ export default function ClientPortalToolDetail() {
 
   return (
     <ClientPortalLayout>
-      <div className="max-w-4xl mx-auto">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/app/client-portal/tools')}
-          className="mb-6"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          {t('app.back')}
-        </Button>
-
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-            <IconComponent className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">{t(tool.name_key)}</h1>
-            <p className="text-muted-foreground">{t(tool.description_key)}</p>
-          </div>
-        </div>
-
+      <ScreenHeader title={t(tool.name_key)} backTo="/app/client-portal/tools" />
+      <div className="max-w-4xl mx-auto pt-4">
         {renderToolComponent()}
 
         {/* Recommendations */}

@@ -3,6 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -354,6 +355,7 @@ export default function ClientPortalNetWorth() {
 
   return (
     <ClientPortalLayout>
+      <ScreenHeader title="📊 Mein Vermögen" backTo="/app/client-portal" />
       <div className="max-w-2xl mx-auto space-y-5">
         {/* Net worth hero */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>

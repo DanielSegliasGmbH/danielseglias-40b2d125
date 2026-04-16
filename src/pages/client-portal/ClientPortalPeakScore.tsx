@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -202,13 +203,8 @@ export default function ClientPortalPeakScore() {
 
   return (
     <ClientPortalLayout>
+      <ScreenHeader title="PeakScore" backTo="/app/client-portal" />
       <div className="max-w-2xl mx-auto space-y-5">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/app/client-portal')}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="text-lg font-semibold text-foreground">PeakScore</h1>
-        </div>
 
         {/* First-time overlay */}
         <AnimatePresence>

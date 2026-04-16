@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -291,6 +292,7 @@ export default function ClientPortalBudget() {
 
   return (
     <ClientPortalLayout>
+      <ScreenHeader title="💰 Mein Budget" backTo="/app/client-portal" />
       <PageTransition>
       <div className="max-w-2xl mx-auto space-y-5">
         {/* Tab navigation */}

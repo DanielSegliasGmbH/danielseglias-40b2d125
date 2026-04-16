@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useHabitTracker } from '@/hooks/useHabitTracker';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -63,15 +64,9 @@ export default function ClientPortalHabits() {
 
   return (
     <ClientPortalLayout>
+      <ScreenHeader title="✅ Finanz-Gewohnheiten" backTo="/app/client-portal" />
       <div className="max-w-2xl mx-auto space-y-4">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-lg font-bold text-foreground flex items-center gap-2">
-              ✅ Finanz-Gewohnheiten
-            </h1>
-            <p className="text-sm text-muted-foreground mt-0.5">Täglich kleine Schritte, grosse Wirkung</p>
-          </div>
+        <div className="flex justify-end">
           <Button
             size="sm"
             variant="outline"

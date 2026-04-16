@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useGamification } from '@/hooks/useGamification';
@@ -217,15 +218,8 @@ export default function ClientPortalCalendar() {
 
   return (
     <ClientPortalLayout>
+      <ScreenHeader title="📅 Finanz-Kalender" backTo="/app/client-portal" />
       <div className="max-w-2xl mx-auto space-y-4">
-        {/* Header */}
-        <div>
-          <h1 className="text-lg font-bold text-foreground flex items-center gap-2">
-            <CalendarDays className="h-5 w-5 text-primary" />
-            Finanz-Kalender
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Wichtige Termine & Fristen im Überblick</p>
-        </div>
 
         {/* SECTION 1: Next deadline */}
         {nextDeadline && (
