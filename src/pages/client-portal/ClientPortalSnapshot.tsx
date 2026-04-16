@@ -309,7 +309,7 @@ interface FieldConfig {
 interface StepConfig {
   title: string;
   emoji: string;
-  type: 'fields' | 'bank_cash' | 'investments' | 'liabilities';
+  type: 'fields' | 'bank_cash' | 'investments' | 'liabilities' | 'vorsorge';
   fields?: FieldConfig[];
 }
 
@@ -317,47 +317,7 @@ const STEPS: StepConfig[] = [
   {
     title: 'Vorsorge',
     emoji: '🏛️',
-    type: 'fields',
-    fields: [
-      {
-        key: 'pillar_3a',
-        label: 'Säule 3a',
-        emoji: '💎',
-        hint: 'Du findest den Betrag auf deinem 3a-Kontoauszug oder im Online-Portal.',
-        articleId: '3a-steuervorteile',
-        showProvider: true,
-        showLink: true,
-        isCHF: true,
-      },
-      {
-        key: 'freizuegigkeit',
-        label: 'Freizügigkeit',
-        emoji: '🔄',
-        hint: 'Falls du in der Vergangenheit die Stelle gewechselt hast, könnte hier Geld liegen.',
-        articleId: 'vorsorgeluecke',
-        showProvider: true,
-        showLink: true,
-        isCHF: true,
-      },
-      {
-        key: 'pensionskasse',
-        label: 'Pensionskasse (BVG)',
-        emoji: '🏛️',
-        hint: "Diesen Betrag findest du auf deinem Pensionskassenausweis unter 'Austrittsleistung' oder 'Freizügigkeitsleistung'.",
-        articleId: 'drei-saeulen-system',
-        showProvider: true,
-        showLink: true,
-        isCHF: true,
-      },
-      {
-        key: 'ahv_annual',
-        label: 'AHV (geschätzte Jahresrente)',
-        emoji: '🇨🇭',
-        hint: 'Deine AHV-Rente wird basierend auf deinem Einkommen geschätzt. Du kannst den genauen Betrag bei deiner Ausgleichskasse anfragen.',
-        articleId: 'ahv-grundlagen',
-        isCHF: true,
-      },
-    ],
+    type: 'vorsorge',
   },
   {
     title: 'Bankkonten & Bargeld',
