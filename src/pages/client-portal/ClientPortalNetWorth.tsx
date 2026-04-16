@@ -355,6 +355,7 @@ export default function ClientPortalNetWorth() {
 
   return (
     <ClientPortalLayout>
+      <ScreenHeader title="📊 Mein Vermögen" backTo="/app/client-portal" />
       <div className="max-w-2xl mx-auto space-y-5">
         {/* Net worth hero */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>

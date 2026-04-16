@@ -292,6 +292,7 @@ export default function ClientPortalBudget() {
 
   return (
     <ClientPortalLayout>
+      <ScreenHeader title="💰 Mein Budget" backTo="/app/client-portal" />
       <PageTransition>
       <div className="max-w-2xl mx-auto space-y-5">
         {/* Tab navigation */}

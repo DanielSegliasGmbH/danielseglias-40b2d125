@@ -118,12 +118,9 @@ export default function ClientPortalTasks() {
 
   return (
     <ClientPortalLayout>
+      <ScreenHeader title="✅ Meine Aufgaben" backTo="/app/client-portal" />
       <PageTransition>
         <div className="max-w-2xl mx-auto space-y-5 px-4 pt-2 pb-8">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-lg font-bold text-foreground">✅ Meine Aufgaben</h1>
               <p className="text-sm text-muted-foreground mt-0.5">
                 {openTasks.length > 0
                   ? `${openTasks.length} offene Aufgabe${openTasks.length !== 1 ? 'n' : ''}`

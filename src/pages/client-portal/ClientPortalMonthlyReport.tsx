@@ -299,6 +299,7 @@ export default function ClientPortalMonthlyReport() {
 
   return (
     <ClientPortalLayout>
+      <ScreenHeader title="📈 Monatsreport" backTo="/app/client-portal" />
       <div className="max-w-2xl mx-auto space-y-4">
         {/* Month selector */}
         <div className="flex items-center justify-between">

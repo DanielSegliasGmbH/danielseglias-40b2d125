@@ -64,15 +64,8 @@ export default function ClientPortalHabits() {
 
   return (
     <ClientPortalLayout>
+      <ScreenHeader title="✅ Finanz-Gewohnheiten" backTo="/app/client-portal" />
       <div className="max-w-2xl mx-auto space-y-4">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-lg font-bold text-foreground flex items-center gap-2">
-              ✅ Finanz-Gewohnheiten
-            </h1>
-            <p className="text-sm text-muted-foreground mt-0.5">Täglich kleine Schritte, grosse Wirkung</p>
-          </div>
           <Button
             size="sm"
             variant="outline"
