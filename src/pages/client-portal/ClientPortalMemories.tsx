@@ -39,6 +39,7 @@ const TOOL_LABELS: Record<string, string> = {
   'humankapital': 'Humankapital',
   'steuerrechner': 'Steuerrechner Schweiz',
   'ahv-tracker': 'AHV-Tracker',
+  'krankenkassen-tracker': 'Krankenkassen-Tracker',
   'lebenzeit-rechner': 'Lebenszeit-Rechner',
   'recovery-analyse': 'Recovery-Analyse',
   'zeitverlust-simulator': 'Zeitverlust-Simulator',
