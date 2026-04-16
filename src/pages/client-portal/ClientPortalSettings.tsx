@@ -367,7 +367,7 @@ function RitualSettingsSection({ userId }: { userId?: string }) {
       if (!userId) return null;
       const { data } = await supabase
         .from('profiles')
-        .select('payday_date, weekly_ritual_enabled, streak_rescue_enabled, future_self_messages_enabled, voice_brief_enabled, voice_weekly_enabled')
+        .select('payday_date, weekly_ritual_enabled, streak_rescue_enabled, future_self_messages_enabled, voice_brief_enabled, voice_weekly_enabled, mood_checkin_enabled')
         .eq('id', userId)
         .maybeSingle();
       return {
@@ -377,6 +377,7 @@ function RitualSettingsSection({ userId }: { userId?: string }) {
         future_self_messages_enabled: (data as any)?.future_self_messages_enabled ?? true,
         voice_brief_enabled: (data as any)?.voice_brief_enabled ?? true,
         voice_weekly_enabled: (data as any)?.voice_weekly_enabled ?? true,
+        mood_checkin_enabled: (data as any)?.mood_checkin_enabled ?? true,
       };
     },
     enabled: !!userId,
