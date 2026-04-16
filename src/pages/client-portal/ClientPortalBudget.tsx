@@ -26,6 +26,7 @@ import { useGamification } from '@/hooks/useGamification';
 import { usePeakScore } from '@/hooks/usePeakScore';
 import { PeakScoreImpact } from '@/components/client-portal/PeakScoreImpact';
 import { CashflowTab } from '@/components/client-portal/CashflowTab';
+import { useCashflowData } from '@/hooks/useCashflowData';
 
 const CATEGORIES = [
   'Wohnen',
@@ -141,8 +142,14 @@ export default function ClientPortalBudget() {
 
   const [activeTab, setActiveTab] = useState('budget');
 
-  // ── Fetch fixed expenses ──
-  const { data: fixedExpenses = [] } = useQuery({
+  // ── Unified cashflow data (single source of truth for totals & cashflow tab) ──
+  const cashflowData = useCashflowData(selectedMonth);
+  const monthlyIncome = cashflowData.jobIncome;
+  const totalFixedMonthly = cashflowData.fixedExpensesTotal;
+  const totalVariable = cashflowData.variableExpensesTotal;
+
+  // ── Raw fixed expenses for CRUD in budget tab ──
+  const { data: fixedExpensesRaw = [] } = useQuery({
     queryKey: ['fixed-expenses', user?.id],
     queryFn: async () => {
       if (!user) return [];
@@ -174,7 +181,7 @@ export default function ClientPortalBudget() {
     enabled: !!user,
   });
 
-  // ── Fetch variable expenses for selected month ──
+  // ── Fetch variable expenses for display ──
   const { data: expenses = [] } = useQuery({
     queryKey: ['expenses', user?.id, selectedMonth],
     queryFn: async () => {
@@ -195,23 +202,6 @@ export default function ClientPortalBudget() {
     },
     enabled: !!user,
   });
-
-  // ── Fetch meta profile ──
-  const { data: metaProfile } = useQuery({
-    queryKey: ['meta-profile-budget', user?.id],
-    queryFn: async () => {
-      if (!user) return null;
-      const { data } = await supabase
-        .from('meta_profiles')
-        .select('monthly_income, fixed_costs')
-        .eq('user_id', user.id)
-        .maybeSingle();
-      return data;
-    },
-    enabled: !!user,
-  });
-
-  const monthlyIncome = metaProfile?.monthly_income || 0;
 
   // ── Fixed expense mutations ──
   const addFixed = useMutation({
@@ -320,17 +310,7 @@ export default function ClientPortalBudget() {
     setBudgetDialogOpen(true);
   };
 
-  // ── Calculations ──
-  const totalFixedMonthly = useMemo(() =>
-    fixedExpenses.reduce((sum: number, f: any) => sum + toMonthly(Number(f.amount), f.frequency), 0),
-    [fixedExpenses]
-  );
-
-  const totalVariable = useMemo(() =>
-    expenses.reduce((s: number, e: any) => s + Number(e.amount), 0),
-    [expenses]
-  );
-
+  // ── Calculations (use unified data for totals) ──
   const totalMonthlyExpenses = totalFixedMonthly + totalVariable;
   const remaining = monthlyIncome - totalMonthlyExpenses;
   const savingsRate = monthlyIncome > 0 ? Math.round((remaining / monthlyIncome) * 100) : 0;
@@ -366,11 +346,7 @@ export default function ClientPortalBudget() {
           </TabsList>
 
           <TabsContent value="cashflow" className="mt-4">
-            <CashflowTab
-              monthlyIncome={monthlyIncome}
-              fixedCosts={totalFixedMonthly}
-              totalVariableExpenses={totalVariable}
-            />
+            <CashflowTab cashflowData={cashflowData} />
           </TabsContent>
 
           <TabsContent value="budget" className="mt-4 space-y-5">
@@ -451,7 +427,7 @@ export default function ClientPortalBudget() {
                 </PrivateValue>
               </div>
 
-              {fixedExpenses.length === 0 ? (
+              {fixedExpensesRaw.length === 0 ? (
                 <Card>
                   <CardContent className="py-6 text-center">
                     <p className="text-sm text-muted-foreground">Noch keine Fixkosten erfasst.</p>
@@ -459,7 +435,7 @@ export default function ClientPortalBudget() {
                   </CardContent>
                 </Card>
               ) : (
-                fixedExpenses.map((fix: any, i: number) => (
+                fixedExpensesRaw.map((fix: any, i: number) => (
                   <motion.div key={fix.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
                     <Card>
                       <CardContent className="flex items-center justify-between py-2.5 px-4">
@@ -757,7 +733,7 @@ export default function ClientPortalBudget() {
               </CardContent>
             </Card>
 
-            {expenses.length === 0 && fixedExpenses.length === 0 && budgets.length === 0 && (
+            {expenses.length === 0 && fixedExpensesRaw.length === 0 && budgets.length === 0 && (
               <Card>
                 <CardContent className="py-10 text-center">
                   <p className="text-muted-foreground text-sm">

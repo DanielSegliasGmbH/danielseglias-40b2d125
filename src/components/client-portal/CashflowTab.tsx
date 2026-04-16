@@ -1,31 +1,29 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { formatToolImpact } from '@/lib/peakScoreFormat';
 import { useAuth } from '@/hooks/useAuth';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
-import { Plus, Wallet, TrendingDown, TrendingUp, Trash2, Zap, Trophy, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Wallet, TrendingDown, Trash2, Zap, Trophy, ChevronDown, ChevronUp, Pencil, ExternalLink, AlertTriangle } from 'lucide-react';
 import { PrivateValue } from '@/components/client-portal/PrivateValue';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { type CashflowData, type CashflowConflict } from '@/hooks/useCashflowData';
 
 const FREQUENCY_OPTIONS = [
   { value: 'monatlich', label: 'Monatlich', divisor: 1 },
   { value: 'quartalsweise', label: 'Quartalsweise', divisor: 3 },
   { value: 'jaehrlich', label: 'Jährlich', divisor: 12 },
 ];
-
-function toMonthly(amount: number, frequency: string): number {
-  const opt = FREQUENCY_OPTIONS.find(f => f.value === frequency);
-  return opt ? amount / opt.divisor : amount;
-}
 
 function fmtCHF(v: number): string {
   return `CHF ${Math.round(v).toLocaleString('de-CH')}`;
@@ -35,64 +33,93 @@ function frequencyLabel(frequency: string): string {
   return FREQUENCY_OPTIONS.find(f => f.value === frequency)?.label || frequency;
 }
 
-interface CashflowTabProps {
-  monthlyIncome: number;
-  fixedCosts: number;
-  totalVariableExpenses: number;
+/** Small source indicator chip */
+function SourceBadge({ source, onClick }: { source: 'profil' | 'snapshot' | 'fixkosten' | 'manuell'; onClick?: () => void }) {
+  const config = {
+    profil: { label: 'Finanzprofil', icon: Pencil, className: 'text-primary/70' },
+    snapshot: { label: 'Snapshot', icon: ExternalLink, className: 'text-amber-600/70' },
+    fixkosten: { label: 'Fixkosten', icon: null, className: 'text-muted-foreground' },
+    manuell: { label: 'Manuell', icon: null, className: 'text-muted-foreground' },
+  }[source];
+
+  const Icon = config.icon;
+
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        'inline-flex items-center gap-0.5 text-[9px] font-medium',
+        config.className,
+        onClick && 'hover:underline cursor-pointer',
+        !onClick && 'cursor-default'
+      )}
+    >
+      {Icon && <Icon className="h-2.5 w-2.5" />}
+      {config.label}
+    </button>
+  );
 }
 
-export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }: CashflowTabProps) {
+/** Conflict warning banner */
+function ConflictWarning({ conflicts, onResolve }: { conflicts: CashflowConflict[]; onResolve: (field: string, useProfile: boolean) => void }) {
+  if (conflicts.length === 0) return null;
+
+  return (
+    <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
+      {conflicts.map(c => (
+        <Card key={c.field} className="border-warning/40 bg-warning/5 mb-3">
+          <CardContent className="p-3 space-y-2">
+            <div className="flex items-start gap-2">
+              <AlertTriangle className="h-4 w-4 text-warning shrink-0 mt-0.5" />
+              <div className="space-y-1 flex-1 min-w-0">
+                <p className="text-xs font-medium text-foreground">
+                  ⚠️ {c.label}: Finanzprofil ({fmtCHF(c.profilValue)}) und Snapshot ({fmtCHF(c.snapshotValue)}) unterscheiden sich.
+                </p>
+                <p className="text-[11px] text-muted-foreground">Welcher Wert ist aktueller?</p>
+                <div className="flex gap-2 pt-1">
+                  <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => onResolve(c.field, true)}>
+                    Profil behalten ({fmtCHF(c.profilValue)})
+                  </Button>
+                  <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => onResolve(c.field, false)}>
+                    Snapshot übernehmen ({fmtCHF(c.snapshotValue)})
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </motion.div>
+  );
+}
+
+interface CashflowTabProps {
+  cashflowData: CashflowData;
+}
+
+export function CashflowTab({ cashflowData }: CashflowTabProps) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [incomeDialogOpen, setIncomeDialogOpen] = useState(false);
-  const [expenseDialogOpen, setExpenseDialogOpen] = useState(false);
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState('monatlich');
-  const [expName, setExpName] = useState('');
-  const [expAmount, setExpAmount] = useState('');
-  const [expCategory, setExpCategory] = useState('fix');
   const [showDetails, setShowDetails] = useState(false);
 
-  // Fetch passive income sources
-  const { data: incomeSources = [] } = useQuery({
-    queryKey: ['income-sources', user?.id],
-    queryFn: async () => {
-      if (!user) return [];
-      const { data, error } = await supabase
-        .from('income_sources')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: true });
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!user,
-  });
+  const {
+    jobIncome, passiveIncomeItems, passiveIncomeTotal, totalIncome,
+    fixedExpenseItems, fixedExpensesTotal, liabilityItems, liabilityTotal,
+    variableExpensesTotal, totalExpenses, cashflow,
+    freedomPercent, isFinanciallyFree, conflicts,
+  } = cashflowData;
 
-  // Fetch snapshot liabilities for loan payments
-  const { data: snapshotLiabilities = [] } = useQuery({
-    queryKey: ['snapshot-liabilities-cashflow', user?.id],
-    queryFn: async () => {
-      if (!user) return [];
-      const { data, error } = await supabase
-        .from('net_worth_liabilities')
-        .select('name, amount')
-        .eq('user_id', user.id);
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!user,
-  });
-
+  // Add passive income source
   const addSource = useMutation({
     mutationFn: async () => {
       if (!user) throw new Error('Not authenticated');
       const { error } = await supabase.from('income_sources').insert([{
-        user_id: user.id,
-        name,
-        amount: parseFloat(amount),
-        frequency,
+        user_id: user.id, name, amount: parseFloat(amount), frequency,
       }]);
       if (error) throw error;
     },
@@ -116,26 +143,26 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
     },
   });
 
-  // Calculations
-  const passiveMonthly = useMemo(() =>
-    incomeSources.reduce((sum, s) => sum + toMonthly(Number(s.amount), s.frequency), 0),
-    [incomeSources]
-  );
-
-  const totalLiabilities = useMemo(() =>
-    snapshotLiabilities.reduce((sum, l) => sum + Number(l.amount || 0), 0),
-    [snapshotLiabilities]
-  );
-  const estimatedMonthlyLoanPayment = totalLiabilities > 0 ? Math.round(totalLiabilities / 120) : 0;
-
-  const jobIncome = monthlyIncome;
-  const totalIncome = monthlyIncome + passiveMonthly;
-  const totalExpenses = fixedCosts + totalVariableExpenses + estimatedMonthlyLoanPayment;
-  const cashflow = totalIncome - totalExpenses;
-
-  // Rich Dad: Financial Freedom %
-  const freedomPercent = jobIncome > 0 ? Math.min(Math.round((passiveMonthly / jobIncome) * 100), 999) : passiveMonthly > 0 ? 100 : 0;
-  const isFinanciallyFree = passiveMonthly >= jobIncome && jobIncome > 0;
+  // Resolve conflict by updating profile or snapshot
+  const resolveConflict = async (field: string, useProfile: boolean) => {
+    if (!user) return;
+    if (useProfile) {
+      // Keep profile value — user just dismisses the warning
+      // We could update the snapshot, but snapshot is a point-in-time document
+      toast.success('Profil-Wert beibehalten ✓');
+    } else {
+      // Update profile with snapshot value
+      const conflict = conflicts.find(c => c.field === field);
+      if (!conflict) return;
+      const { error } = await supabase
+        .from('meta_profiles')
+        .update({ [field]: conflict.snapshotValue } as any)
+        .eq('user_id', user.id);
+      if (error) { toast.error('Fehler'); return; }
+      queryClient.invalidateQueries({ queryKey: ['meta-profile'] });
+      toast.success('Profil aktualisiert ✓');
+    }
+  };
 
   // PeakScore
   const annualSavings = Math.max(0, cashflow) * 12;
@@ -143,6 +170,9 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
 
   return (
     <div className="space-y-4">
+      {/* Conflict warnings */}
+      <ConflictWarning conflicts={conflicts} onResolve={resolveConflict} />
+
       {/* ═══ TWO COLUMN LAYOUT ═══ */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
@@ -161,7 +191,12 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
               <div className="space-y-1">
                 <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Aus Arbeit</p>
                 <div className="flex items-center justify-between py-1.5 px-2 rounded-lg bg-emerald-500/5">
-                  <span className="text-sm text-foreground">Lohn</span>
+                  <div>
+                    <span className="text-sm text-foreground">Lohn</span>
+                    <div className="mt-0.5">
+                      <SourceBadge source="profil" onClick={() => navigate('/app/client-portal/profil-data')} />
+                    </div>
+                  </div>
                   <PrivateValue className="text-sm font-semibold text-emerald-600">
                     {jobIncome > 0 ? fmtCHF(jobIncome) : '–'}
                   </PrivateValue>
@@ -173,20 +208,23 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
               {/* Aus Assets */}
               <div className="space-y-1">
                 <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Aus Assets (passiv)</p>
-                {incomeSources.length === 0 ? (
+                {passiveIncomeItems.length === 0 ? (
                   <p className="text-xs text-muted-foreground italic px-2 py-1">Noch keine passiven Einnahmen</p>
                 ) : (
-                  incomeSources.map(src => (
-                    <div key={src.id} className="flex items-center justify-between py-1.5 px-2 rounded-lg bg-emerald-500/5">
+                  passiveIncomeItems.map(item => (
+                    <div key={item.id} className="flex items-center justify-between py-1.5 px-2 rounded-lg bg-emerald-500/5">
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm text-foreground truncate">{src.name}</p>
-                        <p className="text-[10px] text-muted-foreground">{frequencyLabel(src.frequency)}</p>
+                        <p className="text-sm text-foreground truncate">{item.label}</p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          {item.frequency && <span className="text-[10px] text-muted-foreground">{frequencyLabel(item.frequency)}</span>}
+                          <SourceBadge source={item.source} />
+                        </div>
                       </div>
                       <div className="flex items-center gap-1.5 shrink-0">
                         <PrivateValue className="text-sm font-medium text-emerald-600">
-                          {fmtCHF(toMonthly(Number(src.amount), src.frequency))}
+                          {fmtCHF(item.monthlyAmount)}
                         </PrivateValue>
-                        <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-destructive" onClick={() => deleteSource.mutate(src.id)}>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-destructive" onClick={() => item.id && deleteSource.mutate(item.id)}>
                           <Trash2 className="h-3 w-3" />
                         </Button>
                       </div>
@@ -234,7 +272,6 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
 
               <Separator className="opacity-50" />
 
-              {/* Total */}
               <div className="flex items-center justify-between pt-1">
                 <span className="text-sm font-bold text-foreground">Einnahmen gesamt</span>
                 <PrivateValue className="text-base font-black text-emerald-600">
@@ -257,18 +294,33 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
               </div>
 
               {/* Fixkosten */}
-              <div className="space-y-1">
-                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Fixkosten</p>
-                <div className="flex items-center justify-between py-1.5 px-2 rounded-lg bg-destructive/5">
-                  <div>
-                    <span className="text-sm text-foreground">Miete, KK, Versicherungen</span>
-                    <p className="text-[10px] text-muted-foreground">Aus Finanzprofil</p>
+              {fixedExpenseItems.length > 0 && (
+                <div className="space-y-1">
+                  <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Fixkosten</p>
+                  {fixedExpenseItems.map(item => (
+                    <div key={item.id} className="flex items-center justify-between py-1 px-2 rounded-lg bg-destructive/5">
+                      <div className="min-w-0 flex-1">
+                        <span className="text-sm text-foreground truncate block">{item.label}</span>
+                        <SourceBadge source={item.source} />
+                      </div>
+                      <PrivateValue className="text-xs font-medium text-destructive shrink-0">
+                        {fmtCHF(item.monthlyAmount)}
+                      </PrivateValue>
+                    </div>
+                  ))}
+                  <div className="flex items-center justify-between py-1 px-2">
+                    <span className="text-[11px] font-semibold text-muted-foreground">Fixkosten total</span>
+                    <PrivateValue className="text-xs font-semibold text-destructive">{fmtCHF(fixedExpensesTotal)}</PrivateValue>
                   </div>
-                  <PrivateValue className="text-sm font-semibold text-destructive">
-                    {fixedCosts > 0 ? fmtCHF(fixedCosts) : '–'}
-                  </PrivateValue>
                 </div>
-              </div>
+              )}
+
+              {fixedExpenseItems.length === 0 && (
+                <div className="space-y-1">
+                  <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Fixkosten</p>
+                  <p className="text-xs text-muted-foreground italic px-2 py-1">Noch keine Fixkosten erfasst</p>
+                </div>
+              )}
 
               <Separator className="opacity-50" />
 
@@ -278,25 +330,30 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
                 <div className="flex items-center justify-between py-1.5 px-2 rounded-lg bg-destructive/5">
                   <div>
                     <span className="text-sm text-foreground">Essen, Freizeit, etc.</span>
-                    <p className="text-[10px] text-muted-foreground">Budget-Tracking diesen Monat</p>
+                    <div className="mt-0.5">
+                      <SourceBadge source="manuell" />
+                    </div>
                   </div>
                   <PrivateValue className="text-sm font-semibold text-destructive">
-                    {fmtCHF(totalVariableExpenses)}
+                    {fmtCHF(variableExpensesTotal)}
                   </PrivateValue>
                 </div>
               </div>
 
               {/* Verbindlichkeiten-Raten */}
-              {estimatedMonthlyLoanPayment > 0 && (
+              {liabilityItems.length > 0 && (
                 <>
                   <Separator className="opacity-50" />
                   <div className="space-y-1">
                     <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Verbindlichkeiten-Raten</p>
-                    {snapshotLiabilities.map((l, i) => (
-                      <div key={i} className="flex items-center justify-between py-1 px-2 rounded-lg bg-destructive/5">
-                        <span className="text-sm text-foreground truncate">{l.name}</span>
+                    {liabilityItems.map(item => (
+                      <div key={item.id} className="flex items-center justify-between py-1 px-2 rounded-lg bg-destructive/5">
+                        <div className="min-w-0 flex-1">
+                          <span className="text-sm text-foreground truncate block">{item.label}</span>
+                          <SourceBadge source="snapshot" onClick={() => navigate('/app/client-portal/snapshot')} />
+                        </div>
                         <PrivateValue className="text-xs text-muted-foreground shrink-0">
-                          ~{fmtCHF(Number(l.amount || 0) / 120)}/Mt.
+                          ~{fmtCHF(item.monthlyAmount)}/Mt.
                         </PrivateValue>
                       </div>
                     ))}
@@ -306,7 +363,6 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
 
               <Separator className="opacity-50" />
 
-              {/* Total */}
               <div className="flex items-center justify-between pt-1">
                 <span className="text-sm font-bold text-foreground">Ausgaben gesamt</span>
                 <PrivateValue className="text-base font-black text-destructive">
@@ -325,7 +381,6 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
           cashflow >= 0 ? 'border-emerald-500/40' : 'border-destructive/40'
         )}>
           <CardContent className="p-0">
-            {/* Main cashflow display */}
             <div className={cn(
               'p-5 text-center',
               cashflow >= 0 ? 'bg-emerald-500/5' : 'bg-destructive/5'
@@ -353,7 +408,6 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
                 <Zap className="h-4 w-4 text-amber-500" />
               </div>
 
-              {/* Job vs Passive Income */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="text-center p-3 rounded-xl bg-muted/50">
                   <p className="text-[10px] text-muted-foreground uppercase font-semibold">Aus Arbeit</p>
@@ -364,7 +418,7 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
                 <div className="text-center p-3 rounded-xl bg-amber-500/5 border border-amber-500/20">
                   <p className="text-[10px] text-amber-600 uppercase font-semibold">Passiv</p>
                   <PrivateValue className="text-base font-bold text-amber-600 block mt-0.5">
-                    {fmtCHF(passiveMonthly)}
+                    {fmtCHF(passiveIncomeTotal)}
                   </PrivateValue>
                 </div>
               </div>
@@ -390,7 +444,6 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
                     animate={{ width: `${Math.min(freedomPercent, 100)}%` }}
                     transition={{ duration: 1.2, ease: 'easeOut', delay: 0.3 }}
                   />
-                  {/* 100% marker */}
                   <div className="absolute right-0 top-0 bottom-0 w-0.5 bg-foreground/20" />
                 </div>
                 <p className="text-[11px] text-center text-muted-foreground">
@@ -398,33 +451,25 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
                 </p>
               </div>
 
-              {/* Freedom Message */}
               {isFinanciallyFree ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-center"
-                >
+                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+                  className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-center">
                   <div className="flex items-center justify-center gap-2">
                     <Trophy className="h-5 w-5 text-amber-500" />
                     <span className="text-sm font-bold text-amber-600">Du bist finanziell frei!</span>
                     <Trophy className="h-5 w-5 text-amber-500" />
                   </div>
-                  <p className="text-xs text-amber-600/80 mt-1">
-                    Deine Assets tragen dich. Du könntest aufhören zu arbeiten. 🎉
-                  </p>
+                  <p className="text-xs text-amber-600/80 mt-1">Deine Assets tragen dich. Du könntest aufhören zu arbeiten. 🎉</p>
                 </motion.div>
-              ) : passiveMonthly > 0 ? (
+              ) : passiveIncomeTotal > 0 ? (
                 <div className="p-3 rounded-xl bg-primary/5 border border-primary/20 text-center">
                   <p className="text-xs text-muted-foreground">
-                    Dir fehlen noch <span className="font-bold text-foreground">{fmtCHF(jobIncome - passiveMonthly)}</span> passives Einkommen bis zur finanziellen Freiheit.
+                    Dir fehlen noch <span className="font-bold text-foreground">{fmtCHF(jobIncome - passiveIncomeTotal)}</span> passives Einkommen bis zur finanziellen Freiheit.
                   </p>
                 </div>
               ) : (
                 <div className="p-3 rounded-xl bg-muted/50 text-center">
-                  <p className="text-xs text-muted-foreground">
-                    Starte mit passivem Einkommen — jeder Franken bringt dich näher an deine Freiheit.
-                  </p>
+                  <p className="text-xs text-muted-foreground">Starte mit passivem Einkommen — jeder Franken bringt dich näher an deine Freiheit.</p>
                 </div>
               )}
             </div>
@@ -454,32 +499,30 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
       </motion.div>
 
       {/* ═══ DETAILS TOGGLE ═══ */}
-      <Button
-        variant="outline"
-        className="w-full gap-2"
-        onClick={() => setShowDetails(v => !v)}
-      >
+      <Button variant="outline" className="w-full gap-2" onClick={() => setShowDetails(v => !v)}>
         {showDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
         {showDetails ? 'Weniger anzeigen' : 'Detailansicht'}
       </Button>
 
       {showDetails && (
         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-3">
-          {/* Detailed income list */}
           <Card>
             <CardContent className="p-4 space-y-2">
               <p className="text-xs font-semibold text-muted-foreground uppercase">Alle Einnahmequellen</p>
               <div className="flex items-center justify-between py-1.5">
-                <span className="text-sm">Lohn (Arbeit)</span>
+                <div>
+                  <span className="text-sm">Lohn (Arbeit)</span>
+                  <SourceBadge source="profil" onClick={() => navigate('/app/client-portal/profil-data')} />
+                </div>
                 <PrivateValue className="text-sm font-medium">{fmtCHF(jobIncome)}/Mt.</PrivateValue>
               </div>
-              {incomeSources.map(src => (
-                <div key={src.id} className="flex items-center justify-between py-1.5">
+              {passiveIncomeItems.map(item => (
+                <div key={item.id} className="flex items-center justify-between py-1.5">
                   <div>
-                    <span className="text-sm">{src.name}</span>
-                    <span className="text-[10px] text-muted-foreground ml-1">({frequencyLabel(src.frequency)})</span>
+                    <span className="text-sm">{item.label}</span>
+                    {item.frequency && <span className="text-[10px] text-muted-foreground ml-1">({frequencyLabel(item.frequency)})</span>}
                   </div>
-                  <PrivateValue className="text-sm font-medium">{fmtCHF(toMonthly(Number(src.amount), src.frequency))}/Mt.</PrivateValue>
+                  <PrivateValue className="text-sm font-medium">{fmtCHF(item.monthlyAmount)}/Mt.</PrivateValue>
                 </div>
               ))}
               <Separator />
@@ -490,24 +533,34 @@ export function CashflowTab({ monthlyIncome, fixedCosts, totalVariableExpenses }
             </CardContent>
           </Card>
 
-          {/* Detailed expenses */}
           <Card>
             <CardContent className="p-4 space-y-2">
               <p className="text-xs font-semibold text-muted-foreground uppercase">Alle Ausgaben</p>
-              <div className="flex items-center justify-between py-1.5">
-                <span className="text-sm">Fixkosten</span>
-                <PrivateValue className="text-sm font-medium">{fmtCHF(fixedCosts)}/Mt.</PrivateValue>
-              </div>
-              <div className="flex items-center justify-between py-1.5">
-                <span className="text-sm">Variable Kosten</span>
-                <PrivateValue className="text-sm font-medium">{fmtCHF(totalVariableExpenses)}/Mt.</PrivateValue>
-              </div>
-              {estimatedMonthlyLoanPayment > 0 && (
-                <div className="flex items-center justify-between py-1.5">
-                  <span className="text-sm">Verbindlichkeiten</span>
-                  <PrivateValue className="text-sm font-medium">~{fmtCHF(estimatedMonthlyLoanPayment)}/Mt.</PrivateValue>
+              {fixedExpenseItems.map(item => (
+                <div key={item.id} className="flex items-center justify-between py-1.5">
+                  <div>
+                    <span className="text-sm">{item.label}</span>
+                    <SourceBadge source={item.source} />
+                  </div>
+                  <PrivateValue className="text-sm font-medium">{fmtCHF(item.monthlyAmount)}/Mt.</PrivateValue>
                 </div>
-              )}
+              ))}
+              <div className="flex items-center justify-between py-1.5">
+                <div>
+                  <span className="text-sm">Variable Kosten</span>
+                  <SourceBadge source="manuell" />
+                </div>
+                <PrivateValue className="text-sm font-medium">{fmtCHF(variableExpensesTotal)}/Mt.</PrivateValue>
+              </div>
+              {liabilityItems.map(item => (
+                <div key={item.id} className="flex items-center justify-between py-1.5">
+                  <div>
+                    <span className="text-sm">{item.label}</span>
+                    <SourceBadge source="snapshot" onClick={() => navigate('/app/client-portal/snapshot')} />
+                  </div>
+                  <PrivateValue className="text-sm font-medium">~{fmtCHF(item.monthlyAmount)}/Mt.</PrivateValue>
+                </div>
+              ))}
               <Separator />
               <div className="flex items-center justify-between font-bold">
                 <span className="text-sm">Total</span>
