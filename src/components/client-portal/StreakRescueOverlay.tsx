@@ -95,6 +95,11 @@ export function StreakRescueOverlay() {
 
   if (!enabled || !streakBrokenYesterday || dismissed) return null;
 
+  const handleDismiss = () => {
+    dismissToday();
+    setDismissed(true);
+  };
+
   const handleSelfRescue = async () => {
     setRescuing(true);
     try {
