@@ -291,17 +291,7 @@ export default function ClientPortalBudget() {
     setBudgetDialogOpen(true);
   };
 
-  // ── Calculations ──
-  const totalFixedMonthly = useMemo(() =>
-    fixedExpenses.reduce((sum: number, f: any) => sum + toMonthly(Number(f.amount), f.frequency), 0),
-    [fixedExpenses]
-  );
-
-  const totalVariable = useMemo(() =>
-    expenses.reduce((s: number, e: any) => s + Number(e.amount), 0),
-    [expenses]
-  );
-
+  // ── Calculations (use unified data for totals) ──
   const totalMonthlyExpenses = totalFixedMonthly + totalVariable;
   const remaining = monthlyIncome - totalMonthlyExpenses;
   const savingsRate = monthlyIncome > 0 ? Math.round((remaining / monthlyIncome) * 100) : 0;
@@ -337,11 +327,7 @@ export default function ClientPortalBudget() {
           </TabsList>
 
           <TabsContent value="cashflow" className="mt-4">
-            <CashflowTab
-              monthlyIncome={monthlyIncome}
-              fixedCosts={totalFixedMonthly}
-              totalVariableExpenses={totalVariable}
-            />
+            <CashflowTab cashflowData={cashflowData} />
           </TabsContent>
 
           <TabsContent value="budget" className="mt-4 space-y-5">
