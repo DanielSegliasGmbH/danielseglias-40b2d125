@@ -73,10 +73,10 @@ export default function ClientPortalSettings() {
   const { data: settings, isLoading } = useQuery({
     queryKey: ['privacy-settings', user?.id],
     queryFn: async (): Promise<PrivacySettings> => {
-      if (!user) return { leaderboard_visible: true, peak_score_visible: true, challenges_allowed: true, auto_monthly_report: true };
+      if (!user) return { leaderboard_visible: true, peak_score_visible: true, challenges_allowed: true, auto_monthly_report: true, show_truth_moments: true };
       const { data } = await supabase
         .from('profiles')
-        .select('leaderboard_visible, peak_score_visible, challenges_allowed, auto_monthly_report')
+        .select('leaderboard_visible, peak_score_visible, challenges_allowed, auto_monthly_report, show_truth_moments')
         .eq('id', user.id)
         .maybeSingle();
       return {
@@ -84,6 +84,7 @@ export default function ClientPortalSettings() {
         peak_score_visible: data?.peak_score_visible ?? true,
         challenges_allowed: data?.challenges_allowed ?? true,
         auto_monthly_report: data?.auto_monthly_report ?? true,
+        show_truth_moments: (data as any)?.show_truth_moments ?? true,
       };
     },
     enabled: !!user,
