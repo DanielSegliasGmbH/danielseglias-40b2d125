@@ -80,6 +80,7 @@ import ClientPortalAvatar from "./pages/client-portal/ClientPortalAvatar";
 import ClientPortalManifest from "./pages/client-portal/ClientPortalManifest";
 import ClientPortalSuccessStories from "./pages/client-portal/ClientPortalSuccessStories";
 import AdminSuccessStories from "./pages/AdminSuccessStories";
+import ClientPortalPartner from "./pages/client-portal/ClientPortalPartner";
 
 // Insurance Consulting Pages
 import InsuranceConsultingStart from "./pages/insurance-consulting/InsuranceConsultingStart";
@@ -610,6 +611,14 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['client', 'admin']}>
                     <ClientPortalSuccessStories />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/partner"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalPartner />
                   </RouteGuard>
                 }
               />

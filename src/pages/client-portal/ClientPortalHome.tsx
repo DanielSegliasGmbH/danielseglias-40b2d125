@@ -14,7 +14,7 @@ import { useGamification, LEVELS } from '@/hooks/useGamification';
 import { useNextBestStep } from '@/hooks/useNextBestStep';
 import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { NotificationBell } from '@/components/client-portal/NotificationBell';
-import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, Crown, Landmark, Wallet, ClipboardList, TrendingUp, FileBarChart, Gift, Film, UserRound, Camera, CalendarDays } from 'lucide-react';
+import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, Crown, Landmark, Wallet, ClipboardList, TrendingUp, FileBarChart, Gift, Film, UserRound, Camera, CalendarDays, Heart } from 'lucide-react';
 import { PrivateValue } from '@/components/client-portal/PrivateValue';
 import { ActiveChallengeCards } from '@/components/client-portal/ActiveChallengeCard';
 import { WeeklyOverviewCard } from '@/components/client-portal/WeeklyOverviewCard';
@@ -621,6 +621,26 @@ export default function ClientPortalHome() {
 
         {/* ── SUCCESS STORY ── */}
         <SuccessStoryRotator />
+
+        {/* ── PARTNER MODE CARD ── */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.33 }}>
+          <Link to="/app/client-portal/partner">
+            <Card className="cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98]">
+              <CardContent className="p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="size-9 rounded-xl bg-primary/10 grid place-content-center">
+                    <Heart className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Partner-Modus</p>
+                    <p className="text-[11px] text-muted-foreground">Finanzen gemeinsam managen</p>
+                  </div>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground" />
+              </CardContent>
+            </Card>
+          </Link>
+        </motion.div>
 
         {/* ── 7. MONATSBERICHT LINK ── */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
