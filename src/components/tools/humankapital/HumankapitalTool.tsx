@@ -433,11 +433,16 @@ export function HumankapitalTool({ mode = 'internal' }: Props) {
               </CardContent>
             </Card>
 
-            {mode === 'internal' && <ToolReflection />}
+            {mode === 'internal' && (
+              <ToolReflection
+                question="Was ist dir dein restliches Berufsleben wert?"
+                context="Dein Humankapital ist endlich. Jede Investition in dich selbst — Weiterbildung, Gesundheit, Netzwerk — steigert seinen Wert."
+              />
+            )}
           </motion.div>
         )}
 
-        <ToolTrustNote mode={mode} />
+        <ToolTrustNote text="Unabhängige Berechnung — keine individuelle Steuer- oder Lohnberatung." />
       </div>
     </PdfExportWrapper>
   );
