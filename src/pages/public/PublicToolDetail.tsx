@@ -37,6 +37,7 @@ import { AboAuditTool } from '@/components/tools/abo-audit/AboAuditTool';
 import { LohnerhoherTool } from '@/components/tools/lohnerhoher/LohnerhoherTool';
 import { MeinFinanzplanTool } from '@/components/tools/mein-finanzplan/MeinFinanzplanTool';
 import { KontenModellTool } from '@/components/tools/konten-modell/KontenModellTool';
+import { HumankapitalTool } from '@/components/tools/humankapital/HumankapitalTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -251,6 +252,10 @@ export default function PublicToolDetail() {
               ) : slug === 'konten-modell' ? (
                 <div className="mb-8">
                   <KontenModellTool mode="public" />
+                </div>
+              ) : slug === 'humankapital' ? (
+                <div className="mb-8">
+                  <HumankapitalTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
