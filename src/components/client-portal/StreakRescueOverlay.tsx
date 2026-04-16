@@ -105,7 +105,7 @@ export function StreakRescueOverlay() {
     try {
       await performSelfRescue.mutateAsync();
       toast.success('Streak gerettet! 🛟');
-      setDismissed(true);
+      handleDismiss();
     } catch {
       toast.error('Fehler');
     } finally {
@@ -118,7 +118,7 @@ export function StreakRescueOverlay() {
     try {
       await requestFriendRescue.mutateAsync(friendId);
       toast.success('Anfrage gesendet! Dein Freund wird benachrichtigt.');
-      setDismissed(true);
+      handleDismiss();
     } catch {
       toast.error('Fehler');
     } finally {
@@ -135,7 +135,7 @@ export function StreakRescueOverlay() {
         className="fixed inset-0 z-[80] bg-background/95 flex items-center justify-center"
       >
         <button
-          onClick={() => setDismissed(true)}
+          onClick={handleDismiss}
           className="absolute top-4 right-4 p-2 text-muted-foreground hover:text-foreground"
         >
           <X className="w-5 h-5" />
@@ -178,7 +178,7 @@ export function StreakRescueOverlay() {
                 </div>
               )}
 
-              <Button variant="ghost" size="sm" onClick={() => setDismissed(true)} className="text-muted-foreground">
+              <Button variant="ghost" size="sm" onClick={handleDismiss} className="text-muted-foreground">
                 Streak akzeptieren
               </Button>
             </motion.div>
