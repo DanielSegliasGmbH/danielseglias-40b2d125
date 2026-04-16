@@ -1659,26 +1659,57 @@ function SummaryStep({ draft, onNotesChange, onEdit }: { draft: SnapshotDraft; o
   const monthlyExpenses = expenses > 0 ? expenses : 1;
   const currentMonths = Math.max(0, Math.round(netWorth / monthlyExpenses));
 
-  // Completeness
+  // Completeness — count fields as "addressed" if value entered OR "Nicht bekannt" checked
   const TOTAL_FIELDS = 15;
-  const simpleSkipped = (['pillar_3a', 'freizuegigkeit', 'pensionskasse', 'ahv_annual', 'cash',
-    'monthly_income', 'monthly_expenses', 'insurance_monthly'] as (keyof SnapshotDraft)[])
-    .filter(k => {
-      const val = draft[k];
-      return val && typeof val === 'object' && 'skipped' in val && (val as SnapshotFieldValue).skipped;
-    }).length;
-  const skippedCount = simpleSkipped +
-    (draft.bank_accounts_skipped ? 1 : 0) + (draft.valuables_skipped ? 1 : 0) +
-    (draft.investment_positions_skipped ? 1 : 0) + (draft.crypto_positions_skipped ? 1 : 0) +
-    (draft.other_assets_skipped ? 1 : 0) + (draft.credits_skipped ? 1 : 0) + (draft.debts_skipped ? 1 : 0);
-  const filledCount = TOTAL_FIELDS - skippedCount;
-  const completenessPercent = Math.round((filledCount / TOTAL_FIELDS) * 100);
+  const simpleFieldKeys = ['pillar_3a', 'freizuegigkeit', 'pensionskasse', 'ahv_annual', 'cash',
+    'monthly_income', 'monthly_expenses', 'insurance_monthly'] as (keyof SnapshotDraft)[];
 
-  const motivationalText = completenessPercent > 80
-    ? 'Sehr vollständig! Top Überblick. 🎯'
-    : completenessPercent >= 50
-      ? 'Guter Start. Ergänze fehlende Felder beim nächsten Snapshot.'
-      : 'Jedes Feld, das du ausfüllst, macht deinen Plan besser.';
+  let filledCount = 0;
+  let unknownCount = 0;
+  let untouchedCount = 0;
+
+  simpleFieldKeys.forEach(k => {
+    const val = draft[k];
+    if (val && typeof val === 'object' && 'skipped' in val) {
+      const fv = val as SnapshotFieldValue;
+      if (fv.skipped) unknownCount++;
+      else if (fv.amount && String(fv.amount).trim() !== '') filledCount++;
+      else untouchedCount++;
+    } else {
+      untouchedCount++;
+    }
+  });
+
+  const listFields: { skippedKey: keyof SnapshotDraft; listKey?: keyof SnapshotDraft }[] = [
+    { skippedKey: 'bank_accounts_skipped', listKey: 'bank_accounts' },
+    { skippedKey: 'valuables_skipped', listKey: 'valuables' },
+    { skippedKey: 'investment_positions_skipped', listKey: 'investment_positions' },
+    { skippedKey: 'crypto_positions_skipped', listKey: 'crypto_positions' },
+    { skippedKey: 'other_assets_skipped', listKey: 'other_assets' },
+    { skippedKey: 'credits_skipped', listKey: 'credits' },
+    { skippedKey: 'debts_skipped', listKey: 'debts' },
+  ];
+
+  listFields.forEach(({ skippedKey, listKey }) => {
+    if (draft[skippedKey]) {
+      unknownCount++;
+    } else if (listKey && Array.isArray(draft[listKey]) && (draft[listKey] as unknown[]).length > 0) {
+      filledCount++;
+    } else {
+      untouchedCount++;
+    }
+  });
+
+  const addressedCount = filledCount + unknownCount;
+  const completenessPercent = Math.round((addressedCount / TOTAL_FIELDS) * 100);
+
+  const motivationalText = completenessPercent === 100
+    ? 'Vollständig! Du hast zu jedem Punkt Stellung bezogen. ✅'
+    : completenessPercent > 80
+      ? 'Sehr vollständig! Top Überblick. 🎯'
+      : completenessPercent >= 50
+        ? 'Guter Start. Ergänze fehlende Felder beim nächsten Snapshot.'
+        : 'Jedes Feld, das du ausfüllst, macht deinen Plan besser.';
 
   const today = format(new Date(), 'dd. MMMM yyyy', { locale: de });
 
@@ -1798,11 +1829,20 @@ function SummaryStep({ draft, onNotesChange, onEdit }: { draft: SnapshotDraft; o
                 {completenessPercent}%
               </span>
             </div>
-            <div className="space-y-1 flex-1">
+            <div className="space-y-1.5 flex-1">
               <p className="text-sm font-medium text-foreground">
-                Du hast {filledCount} von {TOTAL_FIELDS} Felder ausgefüllt
+                {addressedCount} von {TOTAL_FIELDS} Felder bearbeitet
               </p>
-              <p className="text-[11px] text-muted-foreground">{motivationalText}</p>
+              {filledCount > 0 && (
+                <p className="text-[11px] text-muted-foreground">{filledCount} Felder ausgefüllt</p>
+              )}
+              {unknownCount > 0 && (
+                <p className="text-[11px] text-muted-foreground">{unknownCount} als «Nicht bekannt» markiert</p>
+              )}
+              {untouchedCount > 0 && (
+                <p className="text-[11px] text-muted-foreground/60">{untouchedCount} Felder übersprungen</p>
+              )}
+              <p className="text-[11px] text-muted-foreground mt-1">{motivationalText}</p>
             </div>
           </div>
         </CardContent>
@@ -1968,12 +2008,21 @@ function SnapshotHistory({
         const TOTAL_FIELDS = 15;
         const fieldKeys = ['pillar_3a', 'freizuegigkeit', 'pensionskasse', 'ahv_annual', 'cash',
           'monthly_income', 'monthly_expenses', 'insurance_monthly'];
-        const simpleSkipped = fieldKeys.filter(k => data[k]?.skipped).length;
-        const listSkipped = ['bank_accounts_skipped', 'valuables_skipped', 'investment_positions_skipped',
-          'crypto_positions_skipped', 'other_assets_skipped', 'credits_skipped', 'debts_skipped']
-          .filter(k => data[k]).length;
-        const skipped = simpleSkipped + listSkipped;
-        const filled = TOTAL_FIELDS - skipped;
+        const listSkipKeys = ['bank_accounts_skipped', 'valuables_skipped', 'investment_positions_skipped',
+          'crypto_positions_skipped', 'other_assets_skipped', 'credits_skipped', 'debts_skipped'];
+        let addressed = 0;
+        fieldKeys.forEach(k => {
+          const v = data[k];
+          if (v?.skipped || (v?.amount && String(v.amount).trim() !== '')) addressed++;
+        });
+        listSkipKeys.forEach(k => {
+          if (data[k]) addressed++;
+          else {
+            const listKey = k.replace('_skipped', '');
+            if (Array.isArray(data[listKey]) && data[listKey].length > 0) addressed++;
+          }
+        });
+        const filled = addressed;
 
         const isSelected = selected.includes(snap.id);
 
@@ -2013,7 +2062,7 @@ function SnapshotHistory({
                       </span>
                     )}
                     <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
-                      <span>{filled} von {TOTAL_FIELDS} Felder ausgefüllt</span>
+                      <span>{filled} von {TOTAL_FIELDS} Felder bearbeitet</span>
                       {snap.peak_score != null && <span>PeakScore: {snap.peak_score}</span>}
                     </div>
                   </div>
