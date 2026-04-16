@@ -73,11 +73,14 @@ interface CryptoPosition {
 
 interface Property {
   id: string;
+  property_type: 'residential' | 'investment';
   description: string;
   market_value: string;
   equity_invested: string;
   mortgage_amount: string;
   mortgage_rate: string;
+  monthly_rent: string;       // investment only
+  monthly_costs: string;      // investment only
   link: string;
 }
 
@@ -221,13 +224,16 @@ const newCrypto = (): CryptoPosition => ({
   link: '',
 });
 
-const newProperty = (): Property => ({
+const newProperty = (type: 'residential' | 'investment' = 'residential'): Property => ({
   id: crypto.randomUUID(),
+  property_type: type,
   description: '',
   market_value: '',
   equity_invested: '',
   mortgage_amount: '',
   mortgage_rate: '',
+  monthly_rent: '',
+  monthly_costs: '',
   link: '',
 });
 
