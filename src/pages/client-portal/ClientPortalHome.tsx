@@ -30,6 +30,7 @@ import { SuccessStoryRotator } from '@/components/client-portal/SuccessStoryRota
 import { ShadowTwinCard } from '@/components/client-portal/ShadowTwinCard';
 import { LastPlanDashboardCard } from '@/components/client-portal/LastPlanDashboardCard';
 import { ProfessionDashboardTips } from '@/components/client-portal/ProfessionDashboardTips';
+import { JourneyDashboardWidget } from '@/components/client-portal/JourneyDashboardWidget';
 import { RankWarningBanner } from '@/components/client-portal/RankWarningBanner';
 import { RankChangeOverlay } from '@/components/client-portal/RankChangeOverlay';
 import { useRankSystem } from '@/hooks/useRankSystem';
@@ -621,6 +622,9 @@ export default function ClientPortalHome() {
             </Card>
           </motion.div>
         )}
+
+        {/* ── JOURNEY WIDGET ── */}
+        <JourneyDashboardWidget />
 
         {/* ── SUCCESS STORY ── */}
         <SuccessStoryRotator />
