@@ -102,6 +102,9 @@ export default function ClientPortalNetWorth() {
   const [liabName, setLiabName] = useState('');
   const [liabCategory, setLiabCategory] = useState<string>(LIABILITY_CATEGORIES[0]);
   const [liabAmount, setLiabAmount] = useState('');
+  const [liabMonthlyPayment, setLiabMonthlyPayment] = useState('');
+  const [liabInterestRate, setLiabInterestRate] = useState('');
+  const [liabEndDate, setLiabEndDate] = useState('');
   const [liabUrl, setLiabUrl] = useState('');
 
   const { data: assets = [] } = useQuery({
