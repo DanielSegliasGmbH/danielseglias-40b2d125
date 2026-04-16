@@ -40,6 +40,7 @@ const TOOL_LABELS: Record<string, string> = {
   'steuerrechner': 'Steuerrechner Schweiz',
   'ahv-tracker': 'AHV-Tracker',
   'krankenkassen-tracker': 'Krankenkassen-Tracker',
+  'sozialabgaben-uebersicht': 'Sozialabgaben-Übersicht',
   'lebenzeit-rechner': 'Lebenszeit-Rechner',
   'recovery-analyse': 'Recovery-Analyse',
   'zeitverlust-simulator': 'Zeitverlust-Simulator',

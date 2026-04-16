@@ -41,6 +41,7 @@ import { HumankapitalTool } from '@/components/tools/humankapital/HumankapitalTo
 import { SteuerrechnerTool } from '@/components/tools/steuerrechner/SteuerrechnerTool';
 import { AhvTrackerTool } from '@/components/tools/ahv-tracker/AhvTrackerTool';
 import { KrankenkassenTrackerTool } from '@/components/tools/krankenkassen-tracker/KrankenkassenTrackerTool';
+import { SozialabgabenUebersichtTool } from '@/components/tools/sozialabgaben-uebersicht/SozialabgabenUebersichtTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
@@ -271,6 +272,10 @@ export default function PublicToolDetail() {
               ) : slug === 'krankenkassen-tracker' ? (
                 <div className="mb-8">
                   <KrankenkassenTrackerTool mode="public" />
+                </div>
+              ) : slug === 'sozialabgaben-uebersicht' ? (
+                <div className="mb-8">
+                  <SozialabgabenUebersichtTool mode="public" />
                 </div>
               ) : publicPage.content ? (
                 <Card className="mb-8">
