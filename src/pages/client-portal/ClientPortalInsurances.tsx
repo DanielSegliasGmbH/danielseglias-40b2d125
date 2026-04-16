@@ -370,6 +370,7 @@ export default function ClientPortalInsurances() {
     <ClientPortalLayout>
       <ScreenHeader title="🛡️ Meine Produkte" backTo="/app/client-portal" />
       <div className="max-w-4xl mx-auto space-y-6">
+        <div className="flex justify-end">
           {customerId && (
             <Button onClick={openAdd} className="gap-2">
               <Plus className="h-4 w-4" /> Produkt hinzufügen
