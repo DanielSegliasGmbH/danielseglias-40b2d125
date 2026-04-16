@@ -41,6 +41,60 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_nudge_overrides: {
+        Row: {
+          content: string
+          created_at: string
+          cta_label: string
+          cta_path: string
+          day_number: number
+          emoji: string
+          id: string
+          if_finanz_typ: string | null
+          is_active: boolean
+          nudge_key: string
+          nudge_type: string
+          skip_if: string | null
+          title: string
+          updated_at: string
+          xp_reward: number | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          cta_label?: string
+          cta_path?: string
+          day_number: number
+          emoji?: string
+          id?: string
+          if_finanz_typ?: string | null
+          is_active?: boolean
+          nudge_key: string
+          nudge_type?: string
+          skip_if?: string | null
+          title: string
+          updated_at?: string
+          xp_reward?: number | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          cta_label?: string
+          cta_path?: string
+          day_number?: number
+          emoji?: string
+          id?: string
+          if_finanz_typ?: string | null
+          is_active?: boolean
+          nudge_key?: string
+          nudge_type?: string
+          skip_if?: string | null
+          title?: string
+          updated_at?: string
+          xp_reward?: number | null
+        }
+        Relationships: []
+      }
       article_reads: {
         Row: {
           article_id: string
@@ -1913,6 +1967,62 @@ export type Database = {
         }
         Relationships: []
       }
+      group_feed_posts: {
+        Row: {
+          content: string
+          created_at: string
+          created_by: string | null
+          engagement_reactions: number
+          engagement_replies: number
+          engagement_views: number
+          group_id: string | null
+          id: string
+          is_published: boolean
+          published_at: string | null
+          scheduled_at: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          created_by?: string | null
+          engagement_reactions?: number
+          engagement_replies?: number
+          engagement_views?: number
+          group_id?: string | null
+          id?: string
+          is_published?: boolean
+          published_at?: string | null
+          scheduled_at?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          engagement_reactions?: number
+          engagement_replies?: number
+          engagement_views?: number
+          group_id?: string | null
+          id?: string
+          is_published?: boolean
+          published_at?: string | null
+          scheduled_at?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_feed_posts_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "community_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       habit_tracking: {
         Row: {
           created_at: string
@@ -2148,6 +2258,33 @@ export type Database = {
           id?: string
           nudge_key?: string
           shown_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      journey_phase_overrides: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          override_phase: number
+          reason: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          override_phase: number
+          reason?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          override_phase?: number
+          reason?: string | null
           user_id?: string
         }
         Relationships: []
@@ -4082,6 +4219,48 @@ export type Database = {
         }
         Relationships: []
       }
+      truth_moments: {
+        Row: {
+          content: string
+          created_at: string
+          display_location: string
+          emoji: string
+          id: string
+          is_active: boolean
+          sort_order: number
+          title: string
+          trigger_condition: string
+          trigger_config: Json | null
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          display_location?: string
+          emoji?: string
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+          title: string
+          trigger_condition?: string
+          trigger_config?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          display_location?: string
+          emoji?: string
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+          title?: string
+          trigger_condition?: string
+          trigger_config?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       truth_moments_shown: {
         Row: {
           id: string
@@ -4289,6 +4468,45 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      voice_scripts: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          script_type: string
+          sort_order: number
+          template: string
+          title: string
+          trigger_condition: string | null
+          updated_at: string
+          variables: string[] | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          script_type: string
+          sort_order?: number
+          template: string
+          title: string
+          trigger_condition?: string | null
+          updated_at?: string
+          variables?: string[] | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          script_type?: string
+          sort_order?: number
+          template?: string
+          title?: string
+          trigger_condition?: string | null
+          updated_at?: string
+          variables?: string[] | null
         }
         Relationships: []
       }
