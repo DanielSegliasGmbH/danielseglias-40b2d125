@@ -17,7 +17,8 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Shield, Download, Trash2, AlertTriangle, Eye, Swords, FileBarChart, Loader2, Lightbulb } from 'lucide-react';
+import { Shield, Download, Trash2, AlertTriangle, Eye, Swords, FileBarChart, Loader2, Lightbulb, CalendarDays, Flame, MessageCircle } from 'lucide-react';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
