@@ -187,6 +187,9 @@ export function useGamification() {
     if (!user) { setLoading(false); return; }
 
     const init = async () => {
+      // Pre-fetch future self name
+      futureNameRef.current = await getFutureSelfName(user.id);
+
       const { data, error } = await supabase
         .from('user_gamification')
         .select('*')
