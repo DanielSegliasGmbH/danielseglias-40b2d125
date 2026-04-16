@@ -1712,6 +1712,30 @@ export type Database = {
         }
         Relationships: []
       }
+      feature_unlocks: {
+        Row: {
+          feature_key: string
+          id: string
+          phase: number
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          feature_key: string
+          id?: string
+          phase?: number
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          feature_key?: string
+          id?: string
+          phase?: number
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       financial_snapshots: {
         Row: {
           created_at: string
@@ -4140,6 +4164,36 @@ export type Database = {
           created_at?: string
           id?: string
           source?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_journey: {
+        Row: {
+          created_at: string
+          current_phase: number
+          id: string
+          last_checked_at: string
+          milestones_completed: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_phase?: number
+          id?: string
+          last_checked_at?: string
+          milestones_completed?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_phase?: number
+          id?: string
+          last_checked_at?: string
+          milestones_completed?: Json
           updated_at?: string
           user_id?: string
         }
