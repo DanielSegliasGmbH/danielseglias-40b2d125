@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, TrendingUp, User, Users, HelpCircle, Globe, Crown, Wallet, PiggyBank, Landmark, Gift, Settings, FileBarChart, Camera, Archive, CalendarDays, CheckSquare, Scroll, FileText, Plane } from 'lucide-react';
+import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, TrendingUp, User, Users, HelpCircle, Globe, Crown, Wallet, PiggyBank, Landmark, Gift, Settings, FileBarChart, Camera, Archive, CalendarDays, CheckSquare, Scroll, FileText, Plane, Map } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -99,6 +99,7 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
           <MoreLink to="/app/client-portal/manifest" icon={Scroll} label="Mein Manifest" />
           <MoreLink to="/app/client-portal/last-plan" icon={FileText} label="Mein letzter Plan" />
           <MoreLink to="/app/client-portal/expat" icon={Plane} label="Ins Ausland?" />
+          <MoreLink to="/app/client-portal/journey" icon={Map} label="Mein Finanz-Pfad" />
         </div>
 
         <Separator className="my-3" />
