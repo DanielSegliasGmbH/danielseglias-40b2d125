@@ -130,15 +130,17 @@ export default function ClientPortalGoals() {
 
   return (
     <ClientPortalLayout>
-       <PageTransition>
-        <ScreenHeader
-          title="🎯 Meine Ziele"
-          backTo="/app/client-portal"
-          rightAction={
-            <Button size="sm" className="gap-1.5 h-8 rounded-xl" onClick={() => setDialogOpen(true)}>
-              <Plus className="h-3.5 w-3.5" /> Ziel hinzufügen
-            </Button>
-          </div>
+      <ScreenHeader
+        title="🎯 Meine Ziele"
+        backTo="/app/client-portal"
+        rightAction={
+          <Button size="sm" className="gap-1.5 h-8 rounded-xl" onClick={() => setDialogOpen(true)}>
+            <Plus className="h-3.5 w-3.5" /> Ziel hinzufügen
+          </Button>
+        }
+      />
+      <PageTransition>
+        <div className="max-w-2xl mx-auto space-y-5 px-4 pt-2 pb-8">
 
           {isError && <ErrorState onRetry={() => refetch()} />}
 
