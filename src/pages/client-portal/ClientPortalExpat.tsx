@@ -418,9 +418,9 @@ export default function ClientPortalExpat() {
         )}
 
         {/* Expert Hint */}
-        <Card className="border-amber-500/20 bg-amber-500/5">
+        <Card className="border-destructive/20 bg-destructive/5">
           <CardContent className="p-4 flex items-start gap-3">
-            <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+            <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
             <div className="space-y-2">
               <p className="text-xs font-semibold text-foreground">Auswanderung ist komplex</p>
               <p className="text-[11px] text-muted-foreground leading-relaxed">
