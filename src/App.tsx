@@ -256,6 +256,14 @@ function App() {
                   </RouteGuard>
                 }
               />
+              <Route
+                path="/app/success-stories"
+                element={
+                  <RouteGuard allowedRoles={['admin']}>
+                    <AdminSuccessStories />
+                  </RouteGuard>
+                }
+              />
 
               {/* Legacy: Redirect old client routes to customers - preserve ID */}
               <Route
@@ -594,6 +602,14 @@ function App() {
                 element={
                   <RouteGuard allowedRoles={['client', 'admin']}>
                     <ClientPortalSettings />
+                  </RouteGuard>
+                }
+              />
+              <Route
+                path="/app/client-portal/success-stories"
+                element={
+                  <RouteGuard allowedRoles={['client', 'admin']}>
+                    <ClientPortalSuccessStories />
                   </RouteGuard>
                 }
               />
