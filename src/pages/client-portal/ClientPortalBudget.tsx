@@ -142,9 +142,28 @@ export default function ClientPortalBudget() {
 
   const [activeTab, setActiveTab] = useState('budget');
 
-  // ── Unified cashflow data (single source of truth) ──
+  // ── Unified cashflow data (single source of truth for totals & cashflow tab) ──
   const cashflowData = useCashflowData(selectedMonth);
-  const { jobIncome: monthlyIncome, fixedExpenseItems: fixedExpenses, fixedExpensesTotal: totalFixedMonthly, variableExpensesTotal: totalVariable } = cashflowData;
+  const monthlyIncome = cashflowData.jobIncome;
+  const totalFixedMonthly = cashflowData.fixedExpensesTotal;
+  const totalVariable = cashflowData.variableExpensesTotal;
+
+  // ── Raw fixed expenses for CRUD in budget tab ──
+  const { data: fixedExpensesRaw = [] } = useQuery({
+    queryKey: ['fixed-expenses', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data, error } = await supabase
+        .from('fixed_expenses')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .order('created_at', { ascending: true });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user,
+  });
 
   // ── Fetch budgets for selected month ──
   const { data: budgets = [] } = useQuery({
