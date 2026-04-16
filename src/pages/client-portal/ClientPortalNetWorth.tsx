@@ -124,7 +124,9 @@ export default function ClientPortalNetWorth() {
   const [assetName, setAssetName] = useState('');
   const [assetCategory, setAssetCategory] = useState<string>(ASSET_CATEGORIES[0]);
   const [assetValue, setAssetValue] = useState('');
+  const [assetExpectedReturn, setAssetExpectedReturn] = useState<string>(String(DEFAULT_RETURNS[ASSET_CATEGORIES[0]]));
   const [assetUrl, setAssetUrl] = useState('');
+  const [showReturnsRef, setShowReturnsRef] = useState(false);
 
   // Liability form
   const [liabName, setLiabName] = useState('');
