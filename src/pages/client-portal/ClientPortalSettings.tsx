@@ -29,6 +29,7 @@ interface PrivacySettings {
   challenges_allowed: boolean;
   auto_monthly_report: boolean;
   show_truth_moments: boolean;
+  shadow_twin_visible: boolean;
 }
 
 const PRIVACY_TOGGLES: {
@@ -67,6 +68,12 @@ const PRIVACY_TOGGLES: {
     description: 'Gelegentliche Erkenntnisse basierend auf deinen Daten',
     icon: Lightbulb,
   },
+  {
+    key: 'shadow_twin_visible',
+    label: 'Schatten-Zwilling anzeigen',
+    description: 'Vergleich mit anonymem Peer, der ähnlich ist wie du',
+    icon: Eye,
+  },
 ];
 
 export default function ClientPortalSettings() {
@@ -80,10 +87,10 @@ export default function ClientPortalSettings() {
   const { data: settings, isLoading } = useQuery({
     queryKey: ['privacy-settings', user?.id],
     queryFn: async (): Promise<PrivacySettings> => {
-      if (!user) return { leaderboard_visible: true, peak_score_visible: true, challenges_allowed: true, auto_monthly_report: true, show_truth_moments: true };
+      if (!user) return { leaderboard_visible: true, peak_score_visible: true, challenges_allowed: true, auto_monthly_report: true, show_truth_moments: true, shadow_twin_visible: true };
       const { data } = await supabase
         .from('profiles')
-        .select('leaderboard_visible, peak_score_visible, challenges_allowed, auto_monthly_report, show_truth_moments')
+        .select('leaderboard_visible, peak_score_visible, challenges_allowed, auto_monthly_report, show_truth_moments, shadow_twin_visible')
         .eq('id', user.id)
         .maybeSingle();
       return {
@@ -92,6 +99,7 @@ export default function ClientPortalSettings() {
         challenges_allowed: data?.challenges_allowed ?? true,
         auto_monthly_report: data?.auto_monthly_report ?? true,
         show_truth_moments: (data as any)?.show_truth_moments ?? true,
+        shadow_twin_visible: (data as any)?.shadow_twin_visible ?? true,
       };
     },
     enabled: !!user,

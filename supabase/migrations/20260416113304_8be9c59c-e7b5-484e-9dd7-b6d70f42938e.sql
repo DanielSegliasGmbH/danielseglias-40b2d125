@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS shadow_twin_visible BOOLEAN NOT NULL DEFAULT true;

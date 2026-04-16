@@ -3032,6 +3032,7 @@ export type Database = {
           phone: string | null
           plan: string
           referral_code: string | null
+          shadow_twin_visible: boolean
           show_truth_moments: boolean
           streak_rescue_enabled: boolean
           theme_preference: string
@@ -3060,6 +3061,7 @@ export type Database = {
           phone?: string | null
           plan?: string
           referral_code?: string | null
+          shadow_twin_visible?: boolean
           show_truth_moments?: boolean
           streak_rescue_enabled?: boolean
           theme_preference?: string
@@ -3088,6 +3090,7 @@ export type Database = {
           phone?: string | null
           plan?: string
           referral_code?: string | null
+          shadow_twin_visible?: boolean
           show_truth_moments?: boolean
           streak_rescue_enabled?: boolean
           theme_preference?: string
@@ -3198,6 +3201,39 @@ export type Database = {
           referrer_id?: string
           status?: string
           xp_awarded?: boolean
+        }
+        Relationships: []
+      }
+      shadow_twin_snapshots: {
+        Row: {
+          aggregated_data: Json
+          created_at: string
+          demographic_key: string
+          id: string
+          sample_size: number
+          twin_actions: Json
+          updated_at: string
+          week_key: string
+        }
+        Insert: {
+          aggregated_data?: Json
+          created_at?: string
+          demographic_key: string
+          id?: string
+          sample_size?: number
+          twin_actions?: Json
+          updated_at?: string
+          week_key: string
+        }
+        Update: {
+          aggregated_data?: Json
+          created_at?: string
+          demographic_key?: string
+          id?: string
+          sample_size?: number
+          twin_actions?: Json
+          updated_at?: string
+          week_key?: string
         }
         Relationships: []
       }
