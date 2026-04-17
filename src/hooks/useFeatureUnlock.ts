@@ -150,13 +150,17 @@ export function useFeatureUnlock(): FeatureUnlockState {
     enabled: !!user,
   });
 
-  // Calculate days since signup
+  // Calculate days since journey start.
+  // Anchor to user_journey.created_at when present (handles users who signed up
+  // before the journey system existed, and supports admin resets).
+  // Falls back to user.created_at otherwise.
   const daysSinceSignup = useMemo(() => {
-    if (!user?.created_at) return 0;
-    const signupDate = new Date(user.created_at);
+    const anchorIso = journey?.created_at || user?.created_at;
+    if (!anchorIso) return 0;
+    const anchor = new Date(anchorIso);
     const now = new Date();
-    return Math.floor((now.getTime() - signupDate.getTime()) / (1000 * 60 * 60 * 24));
-  }, [user?.created_at]);
+    return Math.max(0, Math.floor((now.getTime() - anchor.getTime()) / (1000 * 60 * 60 * 24)));
+  }, [journey?.created_at, user?.created_at]);
 
   // Determine current max phase
   const currentPhase = useMemo(() => {
