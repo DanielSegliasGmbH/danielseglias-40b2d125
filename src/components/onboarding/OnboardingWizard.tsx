@@ -283,7 +283,7 @@ export function OnboardingWizard() {
                 In den nächsten 5 Minuten richten wir alles für dich ein.
               </p>
               <p className="text-base sm:text-lg text-muted-foreground mb-10 max-w-md mx-auto">
-                Danach kennst du deinen <strong className="text-foreground">PeakScore</strong>, deinen <strong className="text-foreground">Finanz-Typ</strong> und dein <strong className="text-foreground">Zukunfts-Ich</strong>.
+                Danach kennst du deinen <strong className="text-foreground">PeakScore</strong> und deinen <strong className="text-foreground">Finanz-Typ</strong>.
               </p>
               <Button size="lg" className="text-base px-8 py-6 rounded-xl" onClick={() => goToStep(2)}>
                 Los geht's <ArrowRight className="ml-2 h-5 w-5" />
@@ -382,36 +382,16 @@ export function OnboardingWizard() {
             </motion.div>
           )}
 
-          {/* ─── STEP 4: Avatar / Zukunfts-Ich ─── */}
+          {/* ─── STEP 4: Hamster-Platzhalter (ARCHIVED Zukunfts-Ich) ─── */}
           {step === 4 && (
-            <motion.div key="s4" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}>
-              <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Dein Zukunfts-Ich</h2>
-              <p className="text-muted-foreground mb-6">Wer wirst du in einigen Jahren sein? Gib deinem stärkeren Ich einen Namen.</p>
-
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="aname">Name deines Zukunfts-Ich</Label>
-                  <Input id="aname" value={avatar.name} onChange={e => setAvatar({ ...avatar, name: e.target.value })}
-                    placeholder="z.B. Alexander, Der Souverän, Free Spirit..." className="text-base" />
-                  <p className="text-xs text-muted-foreground mt-1">Ein Zweitname, ein Vorbild oder ein erfundener Held.</p>
-                </div>
-                <div>
-                  <Label htmlFor="aage">Alter deines Zukunfts-Ich</Label>
-                  <Input id="aage" type="number" min={Number(basics.age || 30) + 5} max={100} value={avatar.age}
-                    onChange={e => setAvatar({ ...avatar, age: Number(e.target.value) })} className="text-base" />
-                </div>
-                <div>
-                  <Label htmlFor="adef">Was hat dieses Ich erreicht?</Label>
-                  <Input id="adef" value={avatar.definingMoment} onChange={e => setAvatar({ ...avatar, definingMoment: e.target.value })}
-                    placeholder="z.B. Finanzielle Freiheit, eigenes Haus..." className="text-base" />
-                </div>
-              </div>
-
-              <div className="mt-5 inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
-                <Sparkles className="h-3.5 w-3.5" /> +100 XP nach Speichern
-              </div>
-
-              <NavRow onBack={() => goToStep(3)} onNext={async () => { if (await saveAvatar()) goToStep(5); }} disabled={avatarSaving} />
+            <motion.div key="s4" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
+              className="text-center py-10">
+              <div className="text-6xl mb-6">🐹</div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">Hier kommt dein Hamster</h2>
+              <p className="text-muted-foreground max-w-md mx-auto mb-8">
+                Platzhalter — Inhalt folgt im nächsten Schritt.
+              </p>
+              <NavRow onBack={() => goToStep(3)} onNext={() => goToStep(5)} />
             </motion.div>
           )}
 

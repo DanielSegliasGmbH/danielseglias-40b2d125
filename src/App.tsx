@@ -76,7 +76,8 @@ import ClientPortalCalendar from "./pages/client-portal/ClientPortalCalendar";
 import ClientPortalXray from "./pages/client-portal/ClientPortalXray";
 import ClientPortalCommunities from "./pages/client-portal/ClientPortalCommunities";
 import ClientPortalHabits from "./pages/client-portal/ClientPortalHabits";
-import ClientPortalAvatar from "./pages/client-portal/ClientPortalAvatar";
+// ARCHIVED: future-self avatar replaced by Hamster mascot
+// import ClientPortalAvatar from "./pages/client-portal/ClientPortalAvatar";
 import ClientPortalManifest from "./pages/client-portal/ClientPortalManifest";
 import ClientPortalSuccessStories from "./pages/client-portal/ClientPortalSuccessStories";
 import AdminSuccessStories from "./pages/AdminSuccessStories";
@@ -541,6 +542,7 @@ function App() {
                   </RouteGuard>
                 }
               />
+              {/* ARCHIVED: /app/client-portal/avatar route — future-self replaced by Hamster
               <Route
                 path="/app/client-portal/avatar"
                 element={
@@ -549,6 +551,7 @@ function App() {
                   </RouteGuard>
                 }
               />
+              */}
               <Route
                 path="/app/client-portal/manifest"
                 element={

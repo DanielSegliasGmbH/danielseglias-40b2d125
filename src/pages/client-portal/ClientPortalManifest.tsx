@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useUserAvatar } from '@/hooks/useUserAvatar';
+// ARCHIVED: future-self avatar replaced by Hamster mascot
+// import { useUserAvatar } from '@/hooks/useUserAvatar';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -39,7 +40,7 @@ const SECTIONS = [
 export default function ClientPortalManifest() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { futureSelfName } = useUserAvatar();
+  const futureSelfName: string | null = null; // ARCHIVED
   const [visibleSection, setVisibleSection] = useState(-1);
   const [showButton, setShowButton] = useState(false);
   const [awarding, setAwarding] = useState(false);
@@ -79,18 +80,14 @@ export default function ClientPortalManifest() {
         // Mark as seen
         localStorage.setItem('manifest_seen', 'true');
       }
-      toast.success(
-        futureSelfName
-          ? `${futureSelfName} ist stolz auf dich. +250 XP 🎉`
-          : 'Manifest abgeschlossen! +250 XP 🎉'
-      );
+      toast.success('Manifest abgeschlossen! +250 XP 🎉');
       navigate('/app/client-portal', { replace: true });
     } catch {
       navigate('/app/client-portal', { replace: true });
     }
   }, [user, futureSelfName, navigate, awarding]);
 
-  const futureName = futureSelfName || 'Dein Zukunfts-Ich';
+  const futureName = 'Dein stärkeres Ich';
 
   return (
     <div className="fixed inset-0 z-[100] bg-background flex items-center justify-center overflow-y-auto">
@@ -111,7 +108,7 @@ export default function ClientPortalManifest() {
                 {section.lines.map((line, lIdx) => {
                   const displayLine =
                     line === '__FUTURE_1__'
-                      ? `${futureName} wartet am Ende des Spielfelds.`
+                      ? 'Etwas Grösseres wartet am Ende des Spielfelds.'
                       : line;
 
                   return (
