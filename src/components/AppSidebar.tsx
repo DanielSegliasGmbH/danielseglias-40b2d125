@@ -79,29 +79,42 @@ export function AppSidebar() {
     { title: t('task.list'), url: '/app/tasks', icon: ClipboardList },
   ];
 
-  const adminNavItems = [
-    { title: 'Nutzer-Analytik', url: '/app/analytics', icon: BarChart3 },
-    { title: t('userManagement.title'), url: '/app/users', icon: Settings },
-    { title: 'Portalfreigaben', url: '/app/portal-settings', icon: Eye },
-    { title: 'Nachrichten', url: '/app/chat', icon: MessageCircle },
-    { title: 'Videokurs', url: '/app/courses', icon: GraduationCap },
-    { title: t('systemMap.title'), url: '/app/system-map', icon: Network },
-    { title: t('nav.tools'), url: '/app/tools', icon: Wrench },
-    { title: t('adminLeads.title', 'Leads'), url: '/app/leads', icon: UserPlus },
-    { title: t('adminPages.title', 'Öffentliche Seiten'), url: '/app/public-pages', icon: Globe },
-    { title: t('trash.title'), url: '/app/trash', icon: Trash2 },
-    { title: 'Automationen', url: '/app/automations', icon: Zap },
-    { title: 'CTA-Steuerung', url: '/app/cta', icon: TrendingUp },
+  // Active admin items — visible by default
+  const adminActiveItems = [
+    { title: 'Dashboard', url: '/app/analytics', icon: LayoutDashboard },
+    { title: t('userManagement.title'), url: '/app/users', icon: Users },
+    { title: 'Chat', url: '/app/chat', icon: MessageCircle },
     { title: 'Success Stories', url: '/app/success-stories', icon: Newspaper },
+    { title: 'Journey Konfiguration', url: '/app/journey-config', icon: Map },
+    { title: 'Community Verwaltung', url: '/app/communities', icon: UsersRound },
+    { title: 'Werkzeuge-Verwaltung', url: '/app/tools', icon: Wrench },
+    { title: 'Einstellungen', url: '/app/portal-settings', icon: Settings },
+  ];
+
+  // Archived admin items — collapsed by default, kept for re-activation
+  const adminArchiveItems = [
+    { title: 'Kundenverwaltung', url: '/app/customers', icon: Users },
+    { title: 'Projekte', url: '/app/cases', icon: Briefcase },
+    { title: 'Aufgaben', url: '/app/tasks', icon: ClipboardList },
+    { title: 'Systemmap', url: '/app/system-map', icon: Network },
+    { title: 'Leads', url: '/app/leads', icon: UserPlus },
+    { title: 'Öffentliche Seiten', url: '/app/public-pages', icon: Globe },
+    { title: 'Versicherungsberatung-Prozess', url: '/app/insurance-consulting', icon: Shield },
+    { title: 'Anlageberatung-Prozess', url: '/app/investment-consulting', icon: TrendingUp },
+    { title: 'CTA-Steuerung', url: '/app/cta', icon: TrendingUp },
+    { title: 'Videokurs', url: '/app/courses', icon: GraduationCap },
+    { title: 'Automationen', url: '/app/automations', icon: Zap },
     { title: 'Nudge-Schedule', url: '/app/nudge-schedule', icon: Megaphone },
-    { title: 'Communities', url: '/app/communities', icon: UsersRound },
-    { title: 'Journey-Config', url: '/app/journey-config', icon: Map },
     { title: 'Wahrheits-Momente', url: '/app/truth-moments', icon: Lightbulb },
     { title: 'Voice Scripts', url: '/app/voice-scripts', icon: Mic },
     { title: 'Gruppen-Feed', url: '/app/groups-feed', icon: Newspaper },
-    { title: 'Nutzer-Analytics', url: '/app/user-analytics', icon: PieChart },
+    { title: t('trash.title'), url: '/app/trash', icon: Trash2 },
     { title: t('clientPortal.preview'), url: '/app/client-portal', icon: Eye },
   ];
+
+  // Auto-expand archive if currently inside an archived route
+  const isInArchive = adminArchiveItems.some((i) => location.pathname.startsWith(i.url));
+  const [isArchiveOpen, setIsArchiveOpen] = useState(isInArchive);
 
   const roleLabel = role === 'admin' ? t('roles.admin') : t('roles.staff');
   const roleVariant = role === 'admin' ? 'default' : 'secondary';
