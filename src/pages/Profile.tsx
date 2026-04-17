@@ -29,6 +29,8 @@ import { PasswordStrengthChecker } from '@/components/PasswordStrengthChecker';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
+import { HamsterAvatar } from '@/components/client-portal/HamsterAvatar';
+import { useHamster } from '@/hooks/useHamster';
 
 // ─── Achievement definitions ───
 interface AchievementDef {
@@ -115,6 +117,36 @@ function ProfileRankBadge() {
     <Badge variant="outline" className="text-xs gap-1">
       {rank.emoji} {rank.name}
     </Badge>
+  );
+}
+
+function HamsterProfileHeader({ displayName, initials }: { displayName: string; initials: string }) {
+  const { rankName, rankDescription, goldNuts, coins } = useHamster();
+  return (
+    <>
+      <HamsterAvatar size="lg" className="mx-auto mb-2" />
+      {displayName ? (
+        <p className="text-lg font-bold text-foreground">{displayName}</p>
+      ) : (
+        <p className="text-lg font-bold text-foreground">{initials}</p>
+      )}
+      <p className="text-sm font-semibold text-foreground/80 mt-1">{rankName}</p>
+      <p className="text-xs text-muted-foreground italic max-w-[280px] mx-auto mt-0.5">
+        {rankDescription}
+      </p>
+      <div className="flex items-center justify-center gap-4 mt-3 text-xs">
+        <span className="inline-flex items-center gap-1 text-foreground">
+          <span aria-hidden>🌰</span>
+          <span className="font-semibold">{goldNuts}</span>
+          <span className="text-muted-foreground">Goldnüsse</span>
+        </span>
+        <span className="inline-flex items-center gap-1 text-foreground">
+          <span aria-hidden>🪙</span>
+          <span className="font-semibold">{coins}</span>
+          <span className="text-muted-foreground">Münzen</span>
+        </span>
+      </div>
+    </>
   );
 }
 
@@ -235,11 +267,8 @@ export default function Profile() {
           {/* ─── Profile Header ─── */}
           <Card className="overflow-hidden">
             <CardContent className="p-6 text-center">
-              <div className="w-20 h-20 rounded-full bg-primary/15 flex items-center justify-center mx-auto mb-3 ring-2 ring-primary/30 ring-offset-2 ring-offset-background">
-                <span className="text-2xl font-bold text-primary">{initials}</span>
-              </div>
-              {displayName && <p className="text-lg font-bold text-foreground">{displayName}</p>}
-              <div className="flex items-center justify-center gap-2 mt-1 flex-wrap">
+              <HamsterProfileHeader displayName={displayName} initials={initials} />
+              <div className="flex items-center justify-center gap-2 mt-3 flex-wrap">
                 <Badge variant="secondary" className="text-xs gap-1">
                   <Award className="h-3 w-3" /> {levelLabel}
                 </Badge>
