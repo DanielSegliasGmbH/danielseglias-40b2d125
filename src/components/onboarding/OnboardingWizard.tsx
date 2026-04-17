@@ -222,14 +222,30 @@ export function OnboardingWizard() {
   };
 
   /* ── Step 6 save & complete ── */
+  const [finishing, setFinishing] = useState(false);
   const finishOnboarding = async () => {
-    if (!user) return;
-    if (peakScore !== null) {
-      await supabase.from('peak_scores').insert({ user_id: user.id, score: peakScore, is_snapshot: true });
+    if (!user || finishing) return;
+    setFinishing(true);
+    try {
+      if (peakScore !== null) {
+        const { error: psErr } = await supabase
+          .from('peak_scores')
+          .insert({ user_id: user.id, score: peakScore, is_snapshot: true });
+        if (psErr) console.warn('[onboarding] peak_scores insert failed (non-fatal)', psErr);
+      }
+      try {
+        await markComplete();
+      } catch (err) {
+        console.error('[onboarding] markComplete failed', err);
+        toast.error('Abschluss fehlgeschlagen. Bitte erneut versuchen.');
+        setFinishing(false);
+        return;
+      }
+      toast.success('Willkommen an Bord! 🎉');
+      navigate('/app/client-portal', { replace: true });
+    } finally {
+      setFinishing(false);
     }
-    await markComplete();
-    toast.success('Willkommen an Bord! 🎉');
-    navigate('/app/client-portal', { replace: true });
   };
 
   /* ───────── Render ───────── */
@@ -448,8 +464,8 @@ export function OnboardingWizard() {
                 </p>
               )}
 
-              <Button size="lg" className="text-base px-8 py-6 rounded-xl" onClick={finishOnboarding}>
-                Dashboard öffnen <ArrowRight className="ml-2 h-5 w-5" />
+              <Button size="lg" className="text-base px-8 py-6 rounded-xl" onClick={finishOnboarding} disabled={finishing}>
+                {finishing ? 'Wird abgeschlossen…' : 'Dashboard öffnen'} <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </motion.div>
           )}
