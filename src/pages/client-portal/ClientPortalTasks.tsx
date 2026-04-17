@@ -136,9 +136,9 @@ export default function ClientPortalTasks() {
               <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mb-4">
                 <span className="text-2xl">⚔️</span>
               </div>
-              <h3 className="text-base font-semibold text-foreground mb-1">Keine offenen Aufgaben</h3>
+              <h3 className="text-base font-semibold text-foreground mb-1">Keine offenen Quests. Du bist auf Kurs. ✓</h3>
               <p className="text-sm text-muted-foreground max-w-xs mb-4">
-                Erstelle deine erste Quest! +50 XP pro erledigter Aufgabe.
+                Lust, eine neue Quest zu starten? +50 XP pro erledigter Aufgabe.
               </p>
               <Button size="sm" className="gap-1.5" onClick={() => setDialogOpen(true)}>
                 <Plus className="h-3.5 w-3.5" /> Neue Aufgabe

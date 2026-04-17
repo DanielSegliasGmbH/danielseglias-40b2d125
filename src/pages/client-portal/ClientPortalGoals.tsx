@@ -177,9 +177,9 @@ export default function ClientPortalGoals() {
               <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mb-4">
                 <span className="text-2xl">🎯</span>
               </div>
-              <h3 className="text-base font-semibold text-foreground mb-1">Noch keine Ziele?</h3>
+              <h3 className="text-base font-semibold text-foreground mb-1">Wofür lohnt es sich, heute auf etwas zu verzichten?</h3>
               <p className="text-sm text-muted-foreground max-w-xs mb-4">
-                Setze dein erstes Ziel und starte deine Reise!
+                Dein erstes Ziel macht den Unterschied sichtbar.
               </p>
               <Button size="sm" className="gap-1.5" onClick={() => setDialogOpen(true)}>
                 <Plus className="h-3.5 w-3.5" /> Erstes Ziel setzen

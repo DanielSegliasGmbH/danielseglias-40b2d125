@@ -867,7 +867,28 @@ ANTWORTSTRUKTUR (verwende exakt diese Markdown-Überschriften):
 
 // ─── Prompt selector ────────────────────────────────────────────
 
-function getPrompts(moduleKey: string, type: string) {
+// Socratic addendum — appended to EVERY module's system prompt.
+// Makes the coach feel like Socrates, not a spreadsheet.
+const ANALYSIS_SOCRATIC_ADDENDUM = `
+
+─── SOKRATISCHER STIL (verbindlich) ───
+Bevor du irgendeine Analyse oder Empfehlung gibst, stelle ZUERST EINE einzige, kraftvolle, reflektierende Frage, die direkt aus dem anknüpft, was der Nutzer geschrieben hat.
+Die Frage soll ihn zum Nachdenken bringen — nicht nur bestätigen, was er schon weiss.
+Beispiel: Wenn er sagt „ich habe nicht genug Geld", frage: „Was würde sich an deinem Verhalten ändern, wenn du genug hättest?"
+Erst die Frage. Dann (durch eine Leerzeile getrennt) deine vollständige Analyse im vorgegebenen Format.`;
+
+const REFLECTION_SOCRATIC_ADDENDUM = `
+
+─── ABSCHLUSSFRAGE (verbindlich) ───
+Beende jede Reflexion mit EINER vorwärtsgerichteten Frage, die seinen finanziellen Fortschritt mit seiner Identität verbindet.
+Beispiel: „Wer wirst du, wenn du das umsetzt?"
+Diese Frage steht ganz am Ende, in einer eigenen Zeile, kursiv formatiert.`;
+
+function withSocratic(system: string, type: string): string {
+  return system + (type === 'reflection' ? REFLECTION_SOCRATIC_ADDENDUM : ANALYSIS_SOCRATIC_ADDENDUM);
+}
+
+function getPromptsRaw(moduleKey: string, type: string) {
   if (moduleKey === 'review') {
     return {
       system: type === 'reflection' ? REVIEW_REFLECTION_SYSTEM : REVIEW_ANALYSIS_SYSTEM,
@@ -947,6 +968,12 @@ function getPrompts(moduleKey: string, type: string) {
       ? 'Der Nutzer beschreibt, was er umgesetzt hat und was sich verändert hat:\n\n'
       : 'Der Nutzer hat folgende Fragen zum Thema Mindset und Geld beantwortet:\n\n',
   };
+}
+
+// Public API: wraps every module's system prompt with the Socratic addendum.
+function getPrompts(moduleKey: string, type: string) {
+  const raw = getPromptsRaw(moduleKey, type);
+  return { system: withSocratic(raw.system, type), userPrefix: raw.userPrefix };
 }
 
 // ─── Task extraction ────────────────────────────────────────────
