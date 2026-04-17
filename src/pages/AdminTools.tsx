@@ -53,6 +53,34 @@ export default function AdminTools() {
     );
   };
 
+  const handleVisibilityChange = (toolId: string, value: string) => {
+    // Format: "public" | "phase_locked:N" | "hidden" | "admin_only"
+    const [vis, phase] = value.split(':');
+    updateTool.mutate(
+      {
+        id: toolId,
+        updates: {
+          visibility: vis as ToolVisibility,
+          unlock_phase: vis === 'phase_locked' ? Number(phase || 2) : null,
+        },
+      },
+      {
+        onSuccess: () => toast.success('Sichtbarkeit aktualisiert'),
+        onError: () => toast.error(t('adminTools.updateError')),
+      }
+    );
+  };
+
+  const visibilityValue = (vis: ToolVisibility, phase: number | null) =>
+    vis === 'phase_locked' ? `phase_locked:${phase ?? 2}` : vis;
+
+  const visibilityBadge = (vis: ToolVisibility, phase: number | null) => {
+    if (vis === 'public') return <Badge variant="default" className="text-xs gap-1"><Globe className="h-3 w-3" />Öffentlich</Badge>;
+    if (vis === 'phase_locked') return <Badge variant="secondary" className="text-xs gap-1"><Lock className="h-3 w-3" />Phase {phase ?? '?'}</Badge>;
+    if (vis === 'admin_only') return <Badge variant="outline" className="text-xs gap-1"><Shield className="h-3 w-3" />Admin</Badge>;
+    return <Badge variant="destructive" className="text-xs gap-1"><EyeOff className="h-3 w-3" />Versteckt</Badge>;
+  };
+
   const clusteredTools = tools ? groupToolsByCluster(tools) : [];
 
   return (
