@@ -19,11 +19,27 @@ export function useJourneyNudge(): UseJourneyNudgeReturn {
   const { typeKey } = useFinanzType();
   const [dismissed, setDismissed] = useState(false);
 
+  // Anchor to user_journey.created_at when present (single source of truth across hooks)
+  const { data: journeyAnchor } = useQuery({
+    queryKey: ['user-journey-anchor', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase
+        .from('user_journey')
+        .select('created_at')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      return data?.created_at ?? null;
+    },
+    enabled: !!user,
+  });
+
   const daysSinceSignup = useMemo(() => {
-    if (!user?.created_at) return 0;
-    const signup = new Date(user.created_at);
-    return Math.floor((Date.now() - signup.getTime()) / (1000 * 60 * 60 * 24));
-  }, [user?.created_at]);
+    const anchorIso = journeyAnchor || user?.created_at;
+    if (!anchorIso) return 0;
+    const anchor = new Date(anchorIso);
+    return Math.max(0, Math.floor((Date.now() - anchor.getTime()) / (1000 * 60 * 60 * 24)));
+  }, [journeyAnchor, user?.created_at]);
 
   // Fetch delivered nudges
   const { data: deliveredNudges = [], isLoading } = useQuery({
