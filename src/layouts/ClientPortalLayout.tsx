@@ -154,6 +154,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
 
   return (
     <PrivacyModeProvider>
+    <HamsterSheetsProvider>
     <TooltipProvider delayDuration={0}>
       <PrivacyBanner />
       <div className="min-h-screen bg-background flex max-w-[100vw] overflow-x-hidden">
@@ -312,8 +313,11 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
         <StreakRescueOverlay />
         <UnlockCelebration newlyUnlocked={newlyUnlocked} onDismiss={clearNewlyUnlocked} />
         <GoldNutCelebrationOverlay />
+        <HamsterInventorySheet />
+        <AchievementsSheet />
       </div>
     </TooltipProvider>
+    </HamsterSheetsProvider>
     </PrivacyModeProvider>
   );
 }
