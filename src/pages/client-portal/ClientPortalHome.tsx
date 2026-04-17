@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -8,7 +8,6 @@ import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { OnboardingScreen } from '@/components/OnboardingScreen';
 import { StrategyPasswordGate } from '@/components/client-portal/StrategyPasswordGate';
 import { useGamification, LEVELS } from '@/hooks/useGamification';
 import { useNextBestStep } from '@/hooks/useNextBestStep';
@@ -59,7 +58,6 @@ export default function ClientPortalHome() {
   const navigate = useNavigate();
   const { data: settings } = useCustomerPortalSettings();
 
-  const [showOnboarding, setShowOnboarding] = useState(false);
   const [strategyUnlocked, setStrategyUnlocked] = useState(false);
   const [passwordGateOpen, setPasswordGateOpen] = useState(false);
 
@@ -110,11 +108,6 @@ export default function ClientPortalHome() {
       Math.max(0, optimizedSavings) * 12 * ((Math.pow(1.05, years) - 1) / 0.05);
     return Math.max(0, Math.round(optimizedWealth - currentWealth));
   }, [lifeFilmData]);
-
-  useEffect(() => {
-    const done = localStorage.getItem('client_onboarding_complete');
-    if (!done) setShowOnboarding(true);
-  }, []);
 
   // ── Data queries for cockpit cards ──
   const { data: assets = [] } = useQuery({
@@ -231,17 +224,6 @@ export default function ClientPortalHome() {
     if (hours < 24) return `vor ${hours}h`;
     const days = Math.floor(hours / 24);
     return `vor ${days}d`;
-  }
-
-  if (showOnboarding) {
-    return (
-      <OnboardingScreen
-        onComplete={() => {
-          localStorage.setItem('client_onboarding_complete', 'true');
-          setShowOnboarding(false);
-        }}
-      />
-    );
   }
 
   const cockpitCards = [
