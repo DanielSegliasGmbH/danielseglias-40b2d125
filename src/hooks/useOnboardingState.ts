@@ -23,12 +23,13 @@ const DEFAULT_ONBOARDING_STATE: OnboardingState = {
 export function useOnboardingState() {
   const { user, role } = useAuth();
   const qc = useQueryClient();
+  const queryKey = ['onboarding-state', user?.id] as const;
 
   // Admins/Staff are exempt from the mandatory client onboarding.
   const isExempt = role === 'admin' || role === 'staff';
 
   const query = useQuery({
-    queryKey: ['onboarding-state', user?.id],
+    queryKey,
     enabled: !!user && !isExempt,
     queryFn: async (): Promise<OnboardingState> => {
       if (!user) return DEFAULT_ONBOARDING_STATE;
@@ -65,23 +66,39 @@ export function useOnboardingState() {
       if (error) throw error;
       return safe;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['onboarding-state', user?.id] }),
+    onSuccess: (safe) => {
+      qc.setQueryData<OnboardingState>(queryKey, (current) => ({
+        ...(current ?? DEFAULT_ONBOARDING_STATE),
+        currentStep: safe,
+      }));
+      qc.invalidateQueries({ queryKey });
+    },
   });
 
   const markComplete = useMutation({
     mutationFn: async () => {
       if (!user) throw new Error('not authenticated');
+      const completedAt = new Date().toISOString();
       const { error } = await supabase
         .from('profiles')
         .update({
           onboarding_completed: true,
-          onboarding_completed_at: new Date().toISOString(),
+          onboarding_completed_at: completedAt,
           onboarding_current_step: ONBOARDING_TOTAL_STEPS,
         })
         .eq('id', user.id);
       if (error) throw error;
+      return completedAt;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['onboarding-state', user?.id] }),
+    onSuccess: (completedAt) => {
+      qc.setQueryData<OnboardingState>(queryKey, (current) => ({
+        ...(current ?? DEFAULT_ONBOARDING_STATE),
+        completed: true,
+        completedAt,
+        currentStep: ONBOARDING_TOTAL_STEPS,
+      }));
+      qc.invalidateQueries({ queryKey });
+    },
   });
 
   const state = !user || isExempt ? null : (query.data ?? DEFAULT_ONBOARDING_STATE);
