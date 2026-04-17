@@ -10,6 +10,12 @@ export interface OnboardingState {
 
 export const ONBOARDING_TOTAL_STEPS = 6;
 
+const DEFAULT_ONBOARDING_STATE: OnboardingState = {
+  completed: false,
+  completedAt: null,
+  currentStep: 1,
+};
+
 /**
  * Reads + writes onboarding progress from the user's profile.
  * Source of truth: profiles.onboarding_completed / onboarding_current_step.
@@ -18,21 +24,28 @@ export function useOnboardingState() {
   const { user, role } = useAuth();
   const qc = useQueryClient();
 
+  // Admins/Staff are exempt from the mandatory client onboarding.
+  const isExempt = role === 'admin' || role === 'staff';
+
   const query = useQuery({
     queryKey: ['onboarding-state', user?.id],
-    enabled: !!user,
-    queryFn: async (): Promise<OnboardingState | null> => {
-      if (!user) return null;
+    enabled: !!user && !isExempt,
+    queryFn: async (): Promise<OnboardingState> => {
+      if (!user) return DEFAULT_ONBOARDING_STATE;
+
       const { data, error } = await supabase
         .from('profiles')
         .select('onboarding_completed, onboarding_completed_at, onboarding_current_step')
         .eq('id', user.id)
         .maybeSingle();
+
       if (error) {
         console.error('[useOnboardingState] fetch error', error);
-        return null;
+        return DEFAULT_ONBOARDING_STATE;
       }
-      if (!data) return null;
+
+      if (!data) return DEFAULT_ONBOARDING_STATE;
+
       return {
         completed: !!data.onboarding_completed,
         completedAt: data.onboarding_completed_at,
@@ -71,14 +84,13 @@ export function useOnboardingState() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['onboarding-state', user?.id] }),
   });
 
-  // Admins/Staff are exempt from the mandatory client onboarding.
-  const isExempt = role === 'admin' || role === 'staff';
+  const state = !user || isExempt ? null : (query.data ?? DEFAULT_ONBOARDING_STATE);
 
   return {
-    state: query.data ?? null,
-    loading: query.isLoading,
+    state,
+    loading: !!user && !isExempt && query.isLoading,
     isExempt,
-    needsOnboarding: !!user && !isExempt && query.data ? !query.data.completed : false,
+    needsOnboarding: !!user && !isExempt && !state?.completed,
     setStep: (n: number) => setStep.mutateAsync(n),
     markComplete: () => markComplete.mutateAsync(),
     refetch: query.refetch,
