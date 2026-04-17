@@ -63,7 +63,7 @@ interface MoreToDiscoverProps {
   progressPercent: number;
   pointsToNext: number;
   streakDays: number;
-  lastAwardedPoints: { id: string; amount: number } | null;
+  lastAwardedPoints: { id: string | number; amount: number } | null;
   LevelIcon: React.ComponentType<{ className?: string }>;
   nextStepResult: NextStepResult | undefined;
   navigate: (path: string) => void;
