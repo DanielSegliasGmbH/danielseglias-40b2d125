@@ -11,17 +11,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, X, DollarSign, CheckCircle2, Target, Lightbulb, Loader2 } from 'lucide-react';
+import { Plus, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { useHamsterSheets } from '@/hooks/useHamsterSheets';
 
 const BUDGET_CATEGORIES = [
   'Wohnen', 'Essen', 'Transport', 'Versicherungen', 'Gesundheit',
   'Freizeit', 'Kleidung', 'Bildung', 'Abos', 'Sonstiges',
 ];
 
-type ActiveAction = null | 'expense' | 'task' | 'goal' | 'insight';
+type ActiveAction = null | 'expense';
 
 function getMonthKey(): string {
   const d = new Date();
@@ -32,6 +34,8 @@ export function QuickActionFAB() {
   const [open, setOpen] = useState(false);
   const [activeAction, setActiveAction] = useState<ActiveAction>(null);
   const [xpAnim, setXpAnim] = useState<number | null>(null);
+  const navigate = useNavigate();
+  const { openInventory, openAchievements } = useHamsterSheets();
 
   const showXp = (amount: number) => {
     setXpAnim(amount);
@@ -71,7 +75,7 @@ export function QuickActionFAB() {
       <button
         onClick={() => setOpen(true)}
         className={cn(
-          'fixed z-50 bottom-[calc(env(safe-area-inset-bottom,0px)+76px)] left-5',
+          'fixed z-50 bottom-[calc(env(safe-area-inset-bottom,0px)+76px)] left-1/2 -translate-x-1/2',
           'w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg',
           'flex items-center justify-center',
           'hover:bg-primary/90 active:scale-95 transition-all duration-150',
@@ -90,10 +94,32 @@ export function QuickActionFAB() {
 
           {!activeAction ? (
             <div className="grid grid-cols-2 gap-3 py-3">
-              <ActionTile emoji="💸" label="Ausgabe erfassen" onClick={() => setActiveAction('expense')} />
-              <ActionTile emoji="✅" label="Aufgabe erledigt" onClick={() => setActiveAction('task')} />
-              <ActionTile emoji="🎯" label="Ziel aktualisieren" onClick={() => setActiveAction('goal')} />
-              <ActionTile emoji="💡" label="Erkenntnis notieren" onClick={() => setActiveAction('insight')} />
+              <ActionTile
+                emoji="🗺️"
+                label="Life Map"
+                onClick={() => {
+                  handleClose();
+                  navigate('/app/client-portal');
+                  setTimeout(() => {
+                    document.getElementById('life-map')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }, 200);
+                }}
+              />
+              <ActionTile
+                emoji="🎒"
+                label="Inventar"
+                onClick={() => { handleClose(); openInventory(); }}
+              />
+              <ActionTile
+                emoji="🏆"
+                label="Errungenschaften"
+                onClick={() => { handleClose(); openAchievements(); }}
+              />
+              <ActionTile
+                emoji="💸"
+                label="Ausgabe erfassen"
+                onClick={() => setActiveAction('expense')}
+              />
             </div>
           ) : (
             <div className="py-2">
@@ -104,9 +130,6 @@ export function QuickActionFAB() {
                 ← Zurück
               </button>
               {activeAction === 'expense' && <ExpenseForm onComplete={handleActionComplete} />}
-              {activeAction === 'task' && <TaskForm onComplete={handleActionComplete} />}
-              {activeAction === 'goal' && <GoalForm onComplete={handleActionComplete} />}
-              {activeAction === 'insight' && <InsightForm onComplete={handleActionComplete} />}
             </div>
           )}
         </SheetContent>
@@ -204,8 +227,9 @@ function ExpenseForm({ onComplete }: { onComplete: (xp?: number) => void }) {
   );
 }
 
-// ─── Task Form ───
-function TaskForm({ onComplete }: { onComplete: (xp?: number) => void }) {
+// ─── Removed: TaskForm / GoalForm / InsightForm now handled elsewhere ───
+// Original implementations preserved in git history.
+function _UnusedTaskForm({ onComplete }: { onComplete: (xp?: number) => void }) {
   const { user } = useAuth();
   const { awardPoints } = useGamification();
   const queryClient = useQueryClient();
