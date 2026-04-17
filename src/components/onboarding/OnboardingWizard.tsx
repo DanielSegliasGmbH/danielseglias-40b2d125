@@ -241,6 +241,9 @@ export function OnboardingWizard() {
         setFinishing(false);
         return;
       }
+      // Ensure OnboardingGate re-reads the completed state immediately.
+      await qc.invalidateQueries({ queryKey: ['onboarding-state', user.id] });
+      await qc.refetchQueries({ queryKey: ['onboarding-state', user.id] });
       toast.success('Willkommen an Bord! 🎉');
       navigate('/app/client-portal', { replace: true });
     } finally {
