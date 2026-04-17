@@ -36,6 +36,32 @@ const POINTS_MAP: Record<ActionType, number> = {
   snapshot_completed: 100,
 };
 
+// Münzen-Vergabe parallel zur XP-Vergabe.
+// Schlüssel sind eine Obermenge von ActionType und decken zusätzliche
+// Aktionen ab, die ausserhalb von useGamification ausgelöst werden können
+// (z. B. article_read, weekly_challenge_completed, habit_streak_*).
+export const COINS_MAP: Record<string, number> = {
+  daily_login: 5,
+  task_completed: 15,
+  goal_added: 10,
+  coach_module_completed: 30,
+  profile_completed: 50,
+  insurance_added: 12,
+  tool_used: 5,
+  expense_added: 3,
+  asset_added: 8,
+  article_read: 8,
+  snapshot_completed: 25,
+  weekly_challenge_completed: 20,
+  habit_streak_7: 30,
+  habit_streak_30: 100,
+  referral_completed: 150,
+};
+
+export function getCoinsForAction(actionType: string): number {
+  return COINS_MAP[actionType] ?? 0;
+}
+
 export const LEVELS = [
   { level: 1, min: 0, max: 200, label: 'Finanz-Einsteiger' },
   { level: 2, min: 201, max: 500, label: 'Finanz-Lehrling' },
@@ -367,6 +393,23 @@ export function useGamification() {
         .from('user_gamification')
         .update(updateData)
         .eq('user_id', user.id);
+
+      // Münzen parallel zu XP gutschreiben (auf hamster_profiles).
+      const coinsToAdd = getCoinsForAction(actionType);
+      if (coinsToAdd > 0) {
+        const { data: profile } = await supabase
+          .from('hamster_profiles')
+          .select('coins')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        const currentCoins = profile?.coins ?? 0;
+        await supabase
+          .from('hamster_profiles')
+          .upsert(
+            { user_id: user.id, coins: currentCoins + coinsToAdd },
+            { onConflict: 'user_id' }
+          );
+      }
 
       const oldLevel = getLevel(currentPoints).level;
       const newLevelInfo = getLevel(newPoints);
