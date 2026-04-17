@@ -36,6 +36,7 @@ import { RankChangeOverlay } from '@/components/client-portal/RankChangeOverlay'
 import { useRankSystem } from '@/hooks/useRankSystem';
 import { usePeakScore } from '@/hooks/usePeakScore';
 import { FreedomCountdown } from '@/components/client-portal/FreedomCountdown';
+import { LifeMapCard } from '@/components/client-portal/LifeMapCard';
 import { useUserAvatar } from '@/hooks/useUserAvatar';
 
 const LEVEL_ICONS = [null, Zap, Star, Trophy, Award, Crown];
@@ -297,6 +298,10 @@ export default function ClientPortalHome() {
         {!isFirstWeek && <MorningBriefCard />}
         <MoodCheckinCard />
         <PeakScoreCard onClick={() => navigate('/app/client-portal/peak-score')} />
+
+        {/* ── LIFE MAP (Finanz-Welt) ── */}
+        <LifeMapCard />
+
         <FreedomCountdown />
         {!isFirstWeek && <SundayReflectionCard />}
         <WeeklyCheckCard />
