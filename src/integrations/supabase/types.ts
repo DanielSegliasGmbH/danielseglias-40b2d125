@@ -2091,6 +2091,42 @@ export type Database = {
         }
         Relationships: []
       }
+      hamster_profiles: {
+        Row: {
+          coins: number
+          created_at: string
+          gold_nuts: number
+          hat: string | null
+          id: string
+          item: string | null
+          skin: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          coins?: number
+          created_at?: string
+          gold_nuts?: number
+          hat?: string | null
+          id?: string
+          item?: string | null
+          skin?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          coins?: number
+          created_at?: string
+          gold_nuts?: number
+          hat?: string | null
+          id?: string
+          item?: string | null
+          skin?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       income_sources: {
         Row: {
           amount: number
