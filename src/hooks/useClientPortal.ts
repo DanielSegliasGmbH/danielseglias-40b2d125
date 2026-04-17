@@ -303,21 +303,75 @@ export function useUpdateCustomerToolAccess() {
   });
 }
 
-// For client portal: get tools filtered by customer-level access
+// For client portal: get tools filtered by visibility, journey phase, and per-customer overrides.
+// Hidden / admin_only tools are never returned. Phase-locked tools are returned only when the
+// user has reached the required journey phase.
 export function useClientToolsFiltered() {
   const { user } = useAuth();
 
   return useQuery({
     queryKey: ['client-tools-filtered', user?.id],
     queryFn: async () => {
-      // Get customer_id
+      // 1. Determine the user's current journey phase (mirrors useFeatureUnlock logic).
+      const [
+        { data: journey },
+        { data: profile },
+        { data: peakRow },
+        { count: tasksCompleted },
+        { count: coachModules },
+      ] = await Promise.all([
+        supabase.from('user_journey').select('created_at').eq('user_id', user!.id).maybeSingle(),
+        supabase.from('profiles').select('plan').eq('id', user!.id).maybeSingle(),
+        supabase.from('financial_snapshots').select('peak_score').eq('user_id', user!.id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('client_tasks').select('id', { count: 'exact', head: true }).eq('user_id', user!.id).eq('is_completed', true),
+        supabase.from('coach_progress').select('id', { count: 'exact', head: true }).eq('user_id', user!.id).eq('status', 'completed'),
+      ]);
+
+      const isPremium = profile?.plan === 'premium';
+      const anchorIso = journey?.created_at || user?.created_at;
+      const days = anchorIso
+        ? Math.max(0, Math.floor((Date.now() - new Date(anchorIso).getTime()) / 86400000))
+        : 0;
+      const peakScore = peakRow?.peak_score ?? null;
+      const tDone = tasksCompleted ?? 0;
+      const cDone = coachModules ?? 0;
+
+      const { JOURNEY_PHASES } = await import('@/config/journeyPhases');
+      let currentPhase = 0;
+      if (isPremium) {
+        currentPhase = 6;
+      } else {
+        for (const p of JOURNEY_PHASES) {
+          const g = p.gate;
+          const empty = !g.daysSinceSignup && !g.minPeakScore && !g.minTasksCompleted && !g.minCoachModulesCompleted;
+          const met =
+            empty ||
+            (g.daysSinceSignup && days >= g.daysSinceSignup) ||
+            (g.minPeakScore && peakScore !== null && peakScore >= g.minPeakScore) ||
+            (g.minTasksCompleted && tDone >= g.minTasksCompleted) ||
+            (g.minCoachModulesCompleted && cDone >= g.minCoachModulesCompleted);
+          if (met) currentPhase = p.phase;
+          else break;
+        }
+      }
+
+      // 2. Per-customer overrides (admin can force-enable a hidden/locked tool).
       const { data: cu } = await supabase
         .from('customer_users')
         .select('customer_id')
         .eq('user_id', user!.id)
         .maybeSingle();
 
-      // Fetch enabled client tools
+      let overrides = new Map<string, boolean>();
+      if (cu) {
+        const { data: access } = await supabase
+          .from('customer_tool_access')
+          .select('tool_id, is_enabled')
+          .eq('customer_id', cu.customer_id);
+        if (access) overrides = new Map(access.map(a => [a.tool_id, a.is_enabled]));
+      }
+
+      // 3. Fetch active tools and apply visibility rules.
       const { data: tools, error } = await supabase
         .from('tools')
         .select('*')
@@ -326,22 +380,21 @@ export function useClientToolsFiltered() {
         .order('sort_order', { ascending: true });
       if (error) throw error;
 
-      if (!cu) return tools || [];
-
-      // Fetch customer-specific overrides
-      const { data: access } = await supabase
-        .from('customer_tool_access')
-        .select('tool_id, is_enabled')
-        .eq('customer_id', cu.customer_id);
-
-      if (!access || access.length === 0) return tools || [];
-
-      const overrides = new Map(access.map(a => [a.tool_id, a.is_enabled]));
-
       return (tools || []).filter(tool => {
-        const override = overrides.get(tool.id);
-        // If explicitly disabled, hide. Otherwise show.
-        return override !== false;
+        const explicit = overrides.get(tool.id);
+        if (explicit === true) return true;
+        if (explicit === false) return false;
+
+        switch ((tool as any).visibility) {
+          case 'public':
+            return true;
+          case 'phase_locked':
+            return ((tool as any).unlock_phase ?? 99) <= currentPhase;
+          case 'hidden':
+          case 'admin_only':
+          default:
+            return false;
+        }
       });
     },
     enabled: !!user,
