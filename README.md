@@ -1,73 +1,136 @@
-# Welcome to your Lovable project
+# FinLife — Schweizer Finanz-App mit Gamification
 
-## Project info
+FinLife ist eine umfassende Finanz-App für die Schweiz: Vermögens- und Budget-Tracking, Säule-3a-Rechner, Steueroptimierung, gamifizierte Lernreise (PeakScore, XP, Badges, Streaks), KI-gestützter Finanz-Coach und ein vollständiges CRM für Beraterinnen und Berater.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+Gebaut mit **React + Vite + TypeScript + Tailwind + shadcn/ui** und **Supabase** (Auth, Datenbank, Storage, Edge Functions).
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## Quickstart (lokal)
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Voraussetzungen: **Node.js 20+** und **npm** (oder bun/pnpm).
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# 1. Repo klonen
+git clone <REPO_URL>
+cd <PROJECT_DIR>
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# 2. Dependencies installieren
+npm install
 
-# Step 3: Install the necessary dependencies.
-npm i
+# 3. Environment-Datei einrichten
+cp .env.example .env
+# danach .env mit echten Werten füllen (siehe unten)
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# 4. Dev-Server starten
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Die App läuft anschliessend unter `http://localhost:8080`.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## Environment Variables
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Alle Frontend-Variablen müssen mit `VITE_` beginnen, damit Vite sie ins Bundle exposed.
 
-## What technologies are used for this project?
+| Variable                        | Pflicht | Beschreibung                                                  |
+| ------------------------------- | :-----: | ------------------------------------------------------------- |
+| `VITE_SUPABASE_URL`             |    ✓    | Projekt-URL (z. B. `https://xxxx.supabase.co`)                |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` |    ✓    | Anon/Publishable Key des Supabase-Projekts                    |
+| `VITE_SUPABASE_PROJECT_ID`      |    ✓    | Projekt-Ref (Subdomain-Teil der Supabase-URL)                 |
+| `SUPABASE_URL`                  |    –    | Spiegel von `VITE_SUPABASE_URL` für lokale Skripte (optional) |
+| `SUPABASE_PUBLISHABLE_KEY`      |    –    | Spiegel des Anon-Keys für lokale Skripte (optional)           |
 
-This project is built with:
+Eine fertige Vorlage liegt in **`.env.example`**.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+> Wichtig: In Lovable wird `.env` automatisch generiert. Die Datei darf nicht committed werden.
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+## Edge Functions & benötigte Secrets
 
-## Can I connect a custom domain to my Lovable project?
+Alle Edge Functions liegen in `supabase/functions/`. Sie laufen auf Deno und werden bei jedem Deploy automatisch publiziert. Die folgenden Secrets müssen im Supabase-Projekt unter **Settings → Edge Functions → Secrets** gesetzt sein:
 
-Yes, you can!
+### Immer benötigt
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### KI-Funktionen (Lovable AI Gateway)
+- `LOVABLE_API_KEY` — verwendet von:
+  - `coach-analyze` — analysiert Coach-Antworten und erzeugt Empfehlungen
+  - `generate-xray` — erstellt den monatlichen Finanz-Röntgenblick
+  - `analyze-3a` — analysiert hochgeladene 3a-Dokumente
+  - `extract-document` — KI-Extraktion aus Belegen / Verträgen
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### Stripe (Premium-Abo)
+- `STRIPE_SECRET_KEY` — verwendet von:
+  - `create-checkout` — startet die Stripe-Checkout-Session
+  - `customer-portal` — öffnet das Stripe-Billing-Portal
+  - `check-subscription` — synchronisiert den Abo-Status
+
+### Übersicht aller Edge Functions
+
+| Function                   | Zweck                                            | Secret                |
+| -------------------------- | ------------------------------------------------ | --------------------- |
+| `admin-create-user`        | Admin legt neuen Benutzer an                     | Service-Key           |
+| `admin-list-users`         | Admin listet Benutzer mit Auth-Daten             | Service-Key           |
+| `admin-manage-user`        | Admin aktualisiert / löscht Benutzer             | Service-Key           |
+| `admin-resend-invite`      | Einladungs-E-Mail erneut versenden               | Service-Key           |
+| `analyze-3a`               | KI-Analyse von 3a-Dokumenten                     | LOVABLE_API_KEY       |
+| `check-subscription`       | Abo-Status mit Stripe abgleichen                 | STRIPE_SECRET_KEY     |
+| `cleanup-trash`            | Soft-deleted Datensätze nach 30 Tagen entfernen  | Service-Key           |
+| `coach-analyze`            | KI-gestützte Coach-Analyse                       | LOVABLE_API_KEY       |
+| `create-checkout`          | Stripe-Checkout-Session erstellen                | STRIPE_SECRET_KEY     |
+| `customer-portal`          | Stripe-Billing-Portal öffnen                     | STRIPE_SECRET_KEY     |
+| `extract-document`         | KI-Datenextraktion aus Belegen                   | LOVABLE_API_KEY       |
+| `generate-xray`            | Monatlicher Finanz-Röntgenblick                  | LOVABLE_API_KEY       |
+| `submit-lead`              | Öffentlicher Lead-Eingang (mit Rate-Limit)       | Service-Key           |
+| `verify-strategy-password` | Server-side Passwortprüfung für Strategie-Seiten | Service-Key           |
+
+---
+
+## Datenbank & Migrationen
+
+Das Schema ist in `supabase/migrations/` versioniert (122 Migrationsdateien). Für ein lokales Setup mit der Supabase CLI:
+
+```sh
+supabase start
+supabase db reset  # spielt alle Migrationen ein
+```
+
+Ohne CLI kann gegen das gehostete Supabase-Projekt gearbeitet werden — dann reichen die `VITE_SUPABASE_*` Variablen.
+
+---
+
+## Verfügbare Skripte
+
+```sh
+npm run dev        # Dev-Server (Port 8080)
+npm run build      # Produktions-Build nach dist/
+npm run preview    # Build lokal preview
+npm run lint       # ESLint
+```
+
+---
+
+## Tech-Stack
+
+- **Frontend**: React 18, Vite 5, TypeScript 5, Tailwind v3, shadcn/ui, Framer Motion, Recharts, React Router, TanStack Query
+- **Backend**: Supabase (PostgreSQL, Auth, Storage, Edge Functions auf Deno)
+- **KI**: Lovable AI Gateway (Gemini 2.5 / GPT-5)
+- **Payments**: Stripe (Subscription)
+- **PDF/Export**: html2canvas, jspdf
+
+---
+
+## Deployment
+
+Die App wird via **Lovable** deployed: jeder Push auf `develop` wird automatisch publiziert. Der Production-Build ist eine reine statische SPA, die auf jedem Static-Host (Vercel, Netlify, Cloudflare Pages, Nginx) läuft — Vite gibt das fertige Bundle in `dist/` aus.
+
+---
+
+## Lizenz
+
+Proprietär — © Daniel Seglias.
