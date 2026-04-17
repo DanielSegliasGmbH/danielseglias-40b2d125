@@ -143,115 +143,18 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-sidebar-muted-foreground">{!isCollapsed && t('nav.main')}</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {mainNavItems.map((item) => (
-                <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton asChild tooltip={isCollapsed ? item.title : undefined}>
-                    <NavLink
-                      to={item.url}
-                      end={item.url === '/app'}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sidebar-foreground hover:bg-sidebar-accent"
-                      activeClassName="bg-primary text-primary-foreground font-medium"
-                    >
-                      <item.icon className="h-5 w-5 shrink-0" />
-                      {!isCollapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Insurance Consulting Section with Collapsible Sub-Navigation */}
-        <SidebarGroup>
-          <Collapsible open={isInsuranceOpen} onOpenChange={setIsInsuranceOpen}>
-            <CollapsibleTrigger asChild>
-              <SidebarMenuButton
-                tooltip={isCollapsed ? t('insuranceConsulting.title', 'Versicherungsberatung') : undefined}
-                className="flex items-center justify-between w-full px-3 py-2.5 rounded-lg transition-colors text-sidebar-foreground hover:bg-sidebar-accent"
-              >
-                <div className="flex items-center gap-3">
-                  <Shield className="h-5 w-5 shrink-0" />
-                  {!isCollapsed && <span>{t('insuranceConsulting.title', 'Versicherungsberatung')}</span>}
-                </div>
-                {!isCollapsed && (
-                  <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${isInsuranceOpen ? 'rotate-180' : ''}`} />
-                )}
-              </SidebarMenuButton>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <SidebarMenu className={!isCollapsed ? 'pl-4 mt-1' : ''}>
-                {insuranceConsultingSections.map((section) => (
-                  <SidebarMenuItem key={section.key}>
-                    <SidebarMenuButton asChild tooltip={isCollapsed ? t(section.titleKey, section.key) : undefined}>
-                      <NavLink
-                        to={section.path}
-                        className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sidebar-foreground hover:bg-sidebar-accent text-sm"
-                        activeClassName="bg-primary text-primary-foreground font-medium"
-                      >
-                        <section.icon className="h-4 w-4 shrink-0" />
-                        {!isCollapsed && <span>{t(section.titleKey, section.key)}</span>}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </CollapsibleContent>
-          </Collapsible>
-        </SidebarGroup>
-
-        {/* Investment Consulting Section with Collapsible Sub-Navigation */}
-        <SidebarGroup>
-          <Collapsible open={isInvestmentOpen} onOpenChange={setIsInvestmentOpen}>
-            <CollapsibleTrigger asChild>
-              <SidebarMenuButton
-                tooltip={isCollapsed ? t('investmentConsulting.title', 'Anlageberatung') : undefined}
-                className="flex items-center justify-between w-full px-3 py-2.5 rounded-lg transition-colors text-sidebar-foreground hover:bg-sidebar-accent"
-              >
-                <div className="flex items-center gap-3">
-                  <TrendingUp className="h-5 w-5 shrink-0" />
-                  {!isCollapsed && <span>{t('investmentConsulting.title', 'Anlageberatung')}</span>}
-                </div>
-                {!isCollapsed && (
-                  <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${isInvestmentOpen ? 'rotate-180' : ''}`} />
-                )}
-              </SidebarMenuButton>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <SidebarMenu className={!isCollapsed ? 'pl-4 mt-1' : ''}>
-                {investmentConsultingSections.map((section) => (
-                  <SidebarMenuItem key={section.key}>
-                    <SidebarMenuButton asChild tooltip={isCollapsed ? t(section.titleKey, section.key) : undefined}>
-                      <NavLink
-                        to={section.path}
-                        className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sidebar-foreground hover:bg-sidebar-accent text-sm"
-                        activeClassName="bg-primary text-primary-foreground font-medium"
-                      >
-                        <section.icon className="h-4 w-4 shrink-0" />
-                        {!isCollapsed && <span>{t(section.titleKey, section.key)}</span>}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </CollapsibleContent>
-          </Collapsible>
-        </SidebarGroup>
-
-        {role === 'admin' && (
+        {/* Main nav (Kunden/Projekte/Aufgaben) — only for non-admin staff. Admins find these in Archiv. */}
+        {role !== 'admin' && (
           <SidebarGroup>
-            <SidebarGroupLabel className="text-sidebar-muted-foreground">{!isCollapsed && t('nav.admin')}</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-sidebar-muted-foreground">{!isCollapsed && t('nav.main')}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {adminNavItems.map((item) => (
+                {mainNavItems.map((item) => (
                   <SidebarMenuItem key={item.url}>
                     <SidebarMenuButton asChild tooltip={isCollapsed ? item.title : undefined}>
                       <NavLink
                         to={item.url}
+                        end={item.url === '/app'}
                         className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sidebar-foreground hover:bg-sidebar-accent"
                         activeClassName="bg-primary text-primary-foreground font-medium"
                       >
@@ -264,6 +167,151 @@ export function AppSidebar() {
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
+        )}
+
+        {/* Insurance / Investment Consulting — only for non-admin staff. Admins find these in Archiv. */}
+        {role !== 'admin' && (
+          <>
+            <SidebarGroup>
+              <Collapsible open={isInsuranceOpen} onOpenChange={setIsInsuranceOpen}>
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton
+                    tooltip={isCollapsed ? t('insuranceConsulting.title', 'Versicherungsberatung') : undefined}
+                    className="flex items-center justify-between w-full px-3 py-2.5 rounded-lg transition-colors text-sidebar-foreground hover:bg-sidebar-accent"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Shield className="h-5 w-5 shrink-0" />
+                      {!isCollapsed && <span>{t('insuranceConsulting.title', 'Versicherungsberatung')}</span>}
+                    </div>
+                    {!isCollapsed && (
+                      <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${isInsuranceOpen ? 'rotate-180' : ''}`} />
+                    )}
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <SidebarMenu className={!isCollapsed ? 'pl-4 mt-1' : ''}>
+                    {insuranceConsultingSections.map((section) => (
+                      <SidebarMenuItem key={section.key}>
+                        <SidebarMenuButton asChild tooltip={isCollapsed ? t(section.titleKey, section.key) : undefined}>
+                          <NavLink
+                            to={section.path}
+                            className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sidebar-foreground hover:bg-sidebar-accent text-sm"
+                            activeClassName="bg-primary text-primary-foreground font-medium"
+                          >
+                            <section.icon className="h-4 w-4 shrink-0" />
+                            {!isCollapsed && <span>{t(section.titleKey, section.key)}</span>}
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </CollapsibleContent>
+              </Collapsible>
+            </SidebarGroup>
+
+            <SidebarGroup>
+              <Collapsible open={isInvestmentOpen} onOpenChange={setIsInvestmentOpen}>
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton
+                    tooltip={isCollapsed ? t('investmentConsulting.title', 'Anlageberatung') : undefined}
+                    className="flex items-center justify-between w-full px-3 py-2.5 rounded-lg transition-colors text-sidebar-foreground hover:bg-sidebar-accent"
+                  >
+                    <div className="flex items-center gap-3">
+                      <TrendingUp className="h-5 w-5 shrink-0" />
+                      {!isCollapsed && <span>{t('investmentConsulting.title', 'Anlageberatung')}</span>}
+                    </div>
+                    {!isCollapsed && (
+                      <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${isInvestmentOpen ? 'rotate-180' : ''}`} />
+                    )}
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <SidebarMenu className={!isCollapsed ? 'pl-4 mt-1' : ''}>
+                    {investmentConsultingSections.map((section) => (
+                      <SidebarMenuItem key={section.key}>
+                        <SidebarMenuButton asChild tooltip={isCollapsed ? t(section.titleKey, section.key) : undefined}>
+                          <NavLink
+                            to={section.path}
+                            className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sidebar-foreground hover:bg-sidebar-accent text-sm"
+                            activeClassName="bg-primary text-primary-foreground font-medium"
+                          >
+                            <section.icon className="h-4 w-4 shrink-0" />
+                            {!isCollapsed && <span>{t(section.titleKey, section.key)}</span>}
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </CollapsibleContent>
+              </Collapsible>
+            </SidebarGroup>
+          </>
+        )}
+
+        {role === 'admin' && (
+          <>
+            {/* ── Aktiv ── */}
+            <SidebarGroup>
+              <SidebarGroupLabel className="text-sidebar-muted-foreground">{!isCollapsed && 'Aktiv'}</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {adminActiveItems.map((item) => (
+                    <SidebarMenuItem key={item.url}>
+                      <SidebarMenuButton asChild tooltip={isCollapsed ? item.title : undefined}>
+                        <NavLink
+                          to={item.url}
+                          end={item.url === '/app/analytics'}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sidebar-foreground hover:bg-sidebar-accent"
+                          activeClassName="bg-primary text-primary-foreground font-medium"
+                        >
+                          <item.icon className="h-5 w-5 shrink-0" />
+                          {!isCollapsed && <span>{item.title}</span>}
+                        </NavLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+
+            {/* ── Archiv ── */}
+            <SidebarGroup>
+              <Collapsible open={isArchiveOpen} onOpenChange={setIsArchiveOpen}>
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton
+                    tooltip={isCollapsed ? 'Archiv' : undefined}
+                    className="flex items-center justify-between w-full px-3 py-2.5 rounded-lg transition-colors text-sidebar-muted-foreground hover:bg-sidebar-accent"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Trash2 className="h-5 w-5 shrink-0 opacity-70" />
+                      {!isCollapsed && <span className="text-sm">Archiv</span>}
+                    </div>
+                    {!isCollapsed && (
+                      <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${isArchiveOpen ? 'rotate-180' : ''}`} />
+                    )}
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <SidebarMenu className={!isCollapsed ? 'pl-4 mt-1' : ''}>
+                    {adminArchiveItems.map((item) => (
+                      <SidebarMenuItem key={item.url}>
+                        <SidebarMenuButton asChild tooltip={isCollapsed ? item.title : undefined}>
+                          <NavLink
+                            to={item.url}
+                            className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sidebar-muted-foreground hover:bg-sidebar-accent text-sm"
+                            activeClassName="bg-primary text-primary-foreground font-medium"
+                          >
+                            <item.icon className="h-4 w-4 shrink-0 opacity-80" />
+                            {!isCollapsed && <span>{item.title}</span>}
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </CollapsibleContent>
+              </Collapsible>
+            </SidebarGroup>
+          </>
         )}
       </SidebarContent>
 
