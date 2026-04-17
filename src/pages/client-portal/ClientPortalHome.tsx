@@ -22,6 +22,7 @@ import { usePeakScore } from '@/hooks/usePeakScore';
 import { LifeMapCard } from '@/components/client-portal/LifeMapCard';
 import { DailyFocusCard } from '@/components/client-portal/DailyFocusCard';
 import { MoreToDiscover } from '@/components/client-portal/MoreToDiscover';
+import { HamsterHeaderBadge } from '@/components/client-portal/HamsterHeaderBadge';
 // ARCHIVED: future-self avatar system replaced by Hamster mascot
 // import { useUserAvatar } from '@/hooks/useUserAvatar';
 
@@ -258,21 +259,19 @@ export default function ClientPortalHome() {
       <div className="max-w-2xl mx-auto space-y-5 overflow-x-hidden w-full">
 
         {/* ── 1. HEADER ── */}
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
             <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
               {getGreeting(firstName)}
             </p>
-            <h1 className="text-xl font-semibold tracking-tight text-foreground mt-0.5">
+            <h1 className="text-xl font-semibold tracking-tight text-foreground mt-0.5 truncate">
               {firstName}
-              {score !== null && (
-                <span className="ml-2 text-sm font-normal text-muted-foreground">
-                  {peakRank.emoji}
-                </span>
-              )}
             </h1>
           </div>
-          <NotificationBell />
+          <div className="flex items-center gap-2 shrink-0">
+            <HamsterHeaderBadge />
+            <NotificationBell />
+          </div>
         </div>
 
         {/* ═══════════════════════════════════════════════════════════
@@ -290,7 +289,9 @@ export default function ClientPortalHome() {
         <DailyFocusCard />
 
         {/* Life Map */}
-        <LifeMapCard />
+        <div id="life-map">
+          <LifeMapCard />
+        </div>
 
         {/* Quick Access — 4 Icons, keine Labels nötig (mehr Ruhe) */}
         <div className="grid grid-cols-4 gap-2">

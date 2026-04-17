@@ -5,6 +5,10 @@ import { PaydayRitualOverlay } from '@/components/client-portal/PaydayRitualOver
 import { StreakRescueOverlay } from '@/components/client-portal/StreakRescueOverlay';
 import { UnlockCelebration } from '@/components/client-portal/UnlockCelebration';
 import { GoldNutCelebrationOverlay } from '@/components/client-portal/GoldNutCelebrationOverlay';
+import { GoldNutCelebrationOverlay } from '@/components/client-portal/GoldNutCelebrationOverlay';
+import { HamsterSheetsProvider } from '@/hooks/useHamsterSheets';
+import { HamsterInventorySheet } from '@/components/client-portal/HamsterInventorySheet';
+import { AchievementsSheet } from '@/components/client-portal/AchievementsSheet';
 import { useSmartNotifications } from '@/hooks/useSmartNotifications';
 import { useFeatureUnlock } from '@/hooks/useFeatureUnlock';
 import { useTranslation } from 'react-i18next';
@@ -150,6 +154,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
 
   return (
     <PrivacyModeProvider>
+    <HamsterSheetsProvider>
     <TooltipProvider delayDuration={0}>
       <PrivacyBanner />
       <div className="min-h-screen bg-background flex max-w-[100vw] overflow-x-hidden">
@@ -308,8 +313,11 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
         <StreakRescueOverlay />
         <UnlockCelebration newlyUnlocked={newlyUnlocked} onDismiss={clearNewlyUnlocked} />
         <GoldNutCelebrationOverlay />
+        <HamsterInventorySheet />
+        <AchievementsSheet />
       </div>
     </TooltipProvider>
+    </HamsterSheetsProvider>
     </PrivacyModeProvider>
   );
 }

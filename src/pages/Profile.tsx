@@ -31,6 +31,8 @@ import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { HamsterAvatar } from '@/components/client-portal/HamsterAvatar';
 import { useHamster } from '@/hooks/useHamster';
+import { useGoldNuts } from '@/hooks/useGoldNuts';
+import { useHamsterSheets } from '@/hooks/useHamsterSheets';
 
 // ─── Achievement definitions ───
 interface AchievementDef {
@@ -147,6 +149,66 @@ function HamsterProfileHeader({ displayName, initials }: { displayName: string; 
         </span>
       </div>
     </>
+  );
+}
+
+function HamsterProfileSection() {
+  const { rankName, rankDescription, coins } = useHamster();
+  const { collectedCount, totalPossible } = useGoldNuts();
+  const { points, level, levelLabel } = useGamification();
+  const { openInventory, openAchievements } = useHamsterSheets();
+
+  return (
+    <Card>
+      <CardContent className="p-5 space-y-4">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-bold text-foreground">Mein Hamster</p>
+          <button
+            onClick={openInventory}
+            className="text-xs text-primary hover:underline"
+          >
+            Inventar →
+          </button>
+        </div>
+
+        <div className="flex flex-col items-center text-center">
+          <HamsterAvatar size="lg" />
+          <p className="text-base font-bold text-foreground mt-2">{rankName}</p>
+          <p className="text-xs text-muted-foreground italic max-w-[280px] mt-0.5">
+            {rankDescription}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-4 gap-2 text-center">
+          <div className="rounded-xl bg-muted/40 p-2.5">
+            <p className="text-base font-bold text-foreground">{level}</p>
+            <p className="text-[10px] text-muted-foreground">Level</p>
+          </div>
+          <div className="rounded-xl bg-muted/40 p-2.5">
+            <p className="text-base font-bold text-foreground">{points}</p>
+            <p className="text-[10px] text-muted-foreground">XP</p>
+          </div>
+          <div className="rounded-xl bg-muted/40 p-2.5">
+            <p className="text-base font-bold text-foreground">🪙 {coins}</p>
+            <p className="text-[10px] text-muted-foreground">Münzen</p>
+          </div>
+          <div className="rounded-xl bg-warning/15 p-2.5">
+            <p className="text-base font-bold text-foreground">🥜 {collectedCount}</p>
+            <p className="text-[10px] text-muted-foreground">/ {totalPossible}</p>
+          </div>
+        </div>
+
+        <button
+          onClick={openAchievements}
+          className="w-full rounded-xl border border-border py-2.5 text-sm font-semibold text-foreground hover:border-primary/40 hover:bg-accent/40 transition-all flex items-center justify-center gap-1"
+        >
+          Alle Errungenschaften
+          <ChevronRight className="h-4 w-4" />
+        </button>
+
+        <p className="text-[10px] text-muted-foreground text-center">{levelLabel}</p>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -286,6 +348,9 @@ export default function Profile() {
               </div>
             </CardContent>
           </Card>
+
+          {/* ─── Mein Hamster ─── */}
+          {isClient && <HamsterProfileSection />}
 
           {/* ─── XP Progress ─── */}
           {isClient && (
