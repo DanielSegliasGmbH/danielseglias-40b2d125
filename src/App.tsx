@@ -126,6 +126,7 @@ import AdminUserAnalytics from "./pages/AdminUserAnalytics";
 
 // Public Pages (no auth required)
 import MinimalLanding from "./pages/public/MinimalLanding";
+import MinimalLandingGate from "./pages/public/MinimalLandingGate";
 import PublicLanding from "./pages/public/PublicLanding";
 import PublicContact from "./pages/public/PublicContact";
 import PublicBlog from "./pages/public/PublicBlog";
@@ -157,7 +158,7 @@ function App() {
             <PageViewTracker />
             <Routes>
               {/* Public routes (no auth) */}
-              <Route path="/" element={<MinimalLanding />} />
+              <Route path="/" element={<MinimalLandingGate />} />
               <Route path="/hauptseite" element={<PublicLanding />} />
               <Route path="/contact" element={<PublicContact />} />
               <Route path="/blog" element={<PublicBlog />} />
