@@ -4,6 +4,7 @@ import { TruthMomentOverlay } from '@/components/client-portal/TruthMomentOverla
 import { PaydayRitualOverlay } from '@/components/client-portal/PaydayRitualOverlay';
 import { StreakRescueOverlay } from '@/components/client-portal/StreakRescueOverlay';
 import { UnlockCelebration } from '@/components/client-portal/UnlockCelebration';
+import { GoldNutCelebrationOverlay } from '@/components/client-portal/GoldNutCelebrationOverlay';
 import { useSmartNotifications } from '@/hooks/useSmartNotifications';
 import { useFeatureUnlock } from '@/hooks/useFeatureUnlock';
 import { useTranslation } from 'react-i18next';
@@ -306,6 +307,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
         <PaydayRitualOverlay />
         <StreakRescueOverlay />
         <UnlockCelebration newlyUnlocked={newlyUnlocked} onDismiss={clearNewlyUnlocked} />
+        <GoldNutCelebrationOverlay />
       </div>
     </TooltipProvider>
     </PrivacyModeProvider>

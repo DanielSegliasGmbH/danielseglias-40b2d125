@@ -1967,6 +1967,27 @@ export type Database = {
         }
         Relationships: []
       }
+      gold_nut_collections: {
+        Row: {
+          earned_at: string
+          id: string
+          nut_key: string
+          user_id: string
+        }
+        Insert: {
+          earned_at?: string
+          id?: string
+          nut_key: string
+          user_id: string
+        }
+        Update: {
+          earned_at?: string
+          id?: string
+          nut_key?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       group_feed_posts: {
         Row: {
           content: string
