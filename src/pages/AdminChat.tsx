@@ -247,7 +247,7 @@ function AdminChatDetail({
                 )}>
                   <p className="whitespace-pre-wrap break-words">{msg.message}</p>
                   <p className={cn('text-[10px] mt-1', msg.sender_id === userId ? 'text-primary-foreground/60' : 'text-muted-foreground')}>
-                    {format(new Date(msg.created_at), 'HH:mm', { locale: de })}
+                    {format(new Date(msg.created_at), "d. MMM yyyy, HH:mm", { locale: de })}
                   </p>
                 </div>
               </div>
