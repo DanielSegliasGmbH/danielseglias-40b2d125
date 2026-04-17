@@ -155,9 +155,7 @@ export default function AdminTools() {
                                     {t('adminTools.planned')}
                                   </Badge>
                                 )}
-                                {tool.enabled_for_public && (
-                                  <Badge variant="outline" className="text-xs">Öffentlich</Badge>
-                                )}
+                                {visibilityBadge(tool.visibility, tool.unlock_phase)}
                               </div>
                               <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{resolveToolText(t, tool.description_key, 'description')}</p>
                             </div>
