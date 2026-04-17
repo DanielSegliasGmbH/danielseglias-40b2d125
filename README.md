@@ -48,6 +48,15 @@ Eine fertige Vorlage liegt in **`.env.example`**.
 
 ---
 
+## Security-Hinweise
+
+- **Leaked Password Protection (HIBP):** Bitte im Supabase-Dashboard unter **Authentication → Providers → Email** den Schalter „Password HIBP Check" aktivieren. Damit werden Passwörter beim Sign-up/Reset gegen die HaveIBeenPwned-Datenbank geprüft.
+  Doku: <https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection>
+- **`leadmagnet_3a_checks`** ist absichtlich öffentlich beschreibbar (Public Lead-Form). Schutz erfolgt via Rate-Limit in der zugehörigen Edge Function.
+- **`case-study-media`** ist ein bewusst öffentlicher Storage-Bucket für Marketing-Assets.
+
+---
+
 ## Edge Functions & benötigte Secrets
 
 Alle Edge Functions liegen in `supabase/functions/`. Sie laufen auf Deno und werden bei jedem Deploy automatisch publiziert. Die folgenden Secrets müssen im Supabase-Projekt unter **Settings → Edge Functions → Secrets** gesetzt sein:
