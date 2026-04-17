@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
+export type ToolVisibility = 'public' | 'phase_locked' | 'hidden' | 'admin_only';
+
 export interface Tool {
   id: string;
   key: string;
@@ -10,6 +12,8 @@ export interface Tool {
   status: 'active' | 'planned' | 'deprecated';
   enabled_for_clients: boolean;
   enabled_for_public: boolean;
+  visibility: ToolVisibility;
+  unlock_phase: number | null;
   sort_order: number;
   slug: string | null;
   cta_mode: 'contact' | 'download' | 'booking' | null;
