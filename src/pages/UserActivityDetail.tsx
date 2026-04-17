@@ -1014,3 +1014,97 @@ function ScoringCard({ scoring, userId, onUpdate }: {
     </Card>
   );
 }
+
+// ── Journey Actions Card (Admin) ─────────────────────────
+function JourneyActionsCard({ userId }: { userId: string }) {
+  const [resetting, setResetting] = useState(false);
+
+  const { data: journey, refetch } = useQuery({
+    queryKey: ['admin-user-journey', userId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('user_journey')
+        .select('current_phase, created_at, last_checked_at')
+        .eq('user_id', userId)
+        .maybeSingle();
+      return data;
+    },
+  });
+
+  const daysSinceAnchor = journey?.created_at
+    ? Math.max(0, Math.floor((Date.now() - new Date(journey.created_at).getTime()) / 86400000))
+    : null;
+
+  const handleReset = async () => {
+    setResetting(true);
+    try {
+      const nowIso = new Date().toISOString();
+      // Upsert journey row with fresh anchor and reset phase
+      const { error: jErr } = await supabase
+        .from('user_journey')
+        .upsert(
+          { user_id: userId, current_phase: 0, milestones_completed: {}, created_at: nowIso, last_checked_at: nowIso },
+          { onConflict: 'user_id' },
+        );
+      if (jErr) throw jErr;
+      // Clear feature unlocks and nudge history so the user starts fresh
+      await supabase.from('feature_unlocks').delete().eq('user_id', userId);
+      await supabase.from('journey_nudges').delete().eq('user_id', userId);
+      toast.success('Journey auf Tag 1 zurückgesetzt');
+      await refetch();
+    } catch (e: any) {
+      toast.error(e.message || 'Reset fehlgeschlagen');
+    } finally {
+      setResetting(false);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base flex items-center gap-2">
+          <RotateCw className="h-4 w-4" /> Finanz-Reise
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="grid grid-cols-3 gap-3 text-sm">
+          <div>
+            <p className="text-xs text-muted-foreground">Aktueller Tag</p>
+            <p className="font-semibold text-foreground">{daysSinceAnchor ?? '–'}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Phase</p>
+            <p className="font-semibold text-foreground">{journey?.current_phase ?? 0}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Anker-Datum</p>
+            <p className="font-medium text-foreground text-xs">
+              {journey?.created_at ? formatDate(journey.created_at) : '–'}
+            </p>
+          </div>
+        </div>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="outline" size="sm" disabled={resetting}>
+              <RotateCw className="h-3.5 w-3.5 mr-1.5" />
+              {resetting ? 'Setze zurück…' : 'Journey auf Tag 1 zurücksetzen'}
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Journey zurücksetzen?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Setzt den Journey-Anker auf <strong>heute</strong>, leert Phase, Feature-Unlocks und gesendete Nudges.
+                Nützlich für Tests. Diese Aktion kann nicht rückgängig gemacht werden.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+              <AlertDialogAction onClick={handleReset}>Zurücksetzen</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </CardContent>
+    </Card>
+  );
+}
