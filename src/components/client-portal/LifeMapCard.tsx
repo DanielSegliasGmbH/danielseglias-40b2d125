@@ -1,0 +1,210 @@
+import { useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { Card, CardContent } from '@/components/ui/card';
+import { useLifeMapData, LifeMapTerritory } from '@/hooks/useLifeMapData';
+import { cn } from '@/lib/utils';
+
+/**
+ * Visual "fog-of-war" map of the user's financial life.
+ * Six hexagonal territories light up as the user makes progress.
+ */
+export function LifeMapCard() {
+  const navigate = useNavigate();
+  const { territories, exploredPercent, unlockedCount } = useLifeMapData();
+
+  // Track newly unlocked territories — fire toast on transition 0 -> >0.
+  const prevUnlockedRef = useRef<Set<string> | null>(null);
+  useEffect(() => {
+    const currentUnlocked = new Set(
+      territories.filter((t) => t.progress > 0).map((t) => t.key),
+    );
+    if (prevUnlockedRef.current) {
+      for (const t of territories) {
+        if (t.progress > 0 && !prevUnlockedRef.current.has(t.key)) {
+          toast.success(`+1 Gebiet entdeckt: ${t.label}!`, {
+            description: 'Deine Finanz-Welt wächst. Mach weiter so!',
+            duration: 4000,
+          });
+        }
+      }
+    }
+    prevUnlockedRef.current = currentUnlocked;
+  }, [territories]);
+
+  return (
+    <Card className="overflow-hidden border-border/50">
+      <CardContent className="p-5 sm:p-6">
+        <div className="mb-4">
+          <h3 className="text-lg font-bold tracking-tight">Deine Finanz-Welt</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Entdecke und erschliesse deine Bereiche.
+          </p>
+        </div>
+
+        {/* Hex grid: 3 cols x 2 rows on mobile, scales up nicely */}
+        <div className="grid grid-cols-3 gap-3 sm:gap-4 max-w-md mx-auto">
+          {territories.map((t, i) => (
+            <motion.button
+              key={t.key}
+              type="button"
+              initial={{ opacity: 0, scale: 0.85, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ delay: i * 0.07, duration: 0.35, ease: 'easeOut' }}
+              onClick={() => navigate(t.path)}
+              className="group relative aspect-square focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-2xl"
+              aria-label={`${t.label} – ${Math.round(t.progress * 100)}% erschlossen`}
+            >
+              <Hexagon territory={t} />
+            </motion.button>
+          ))}
+        </div>
+
+        {/* Footer: explored % */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-5 pt-4 border-t border-border/50"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs text-muted-foreground">
+              Du hast{' '}
+              <span className="font-bold text-foreground">{exploredPercent}%</span>{' '}
+              deiner Finanz-Welt erschlossen.
+            </p>
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-muted text-muted-foreground shrink-0">
+              {unlockedCount}/6 Gebiete
+            </span>
+          </div>
+          <div className="mt-2 h-1.5 w-full bg-muted rounded-full overflow-hidden">
+            <motion.div
+              className="h-full bg-foreground rounded-full"
+              initial={{ width: 0 }}
+              animate={{ width: `${exploredPercent}%` }}
+              transition={{ delay: 0.6, duration: 0.8, ease: 'easeOut' }}
+            />
+          </div>
+        </motion.div>
+      </CardContent>
+    </Card>
+  );
+}
+
+interface HexagonProps {
+  territory: LifeMapTerritory;
+}
+
+function Hexagon({ territory }: HexagonProps) {
+  const { progress, emoji, label, colorVar, glow } = territory;
+  const pct = Math.round(progress * 100);
+
+  // State buckets per spec
+  const isFog = progress === 0;
+  const isFull = progress >= 1;
+  const isBright = progress >= 0.67;
+  const isMedium = progress >= 0.34;
+
+  // Dim/bright color computation: alpha increases with progress
+  const fillAlpha = isFog ? 0 : 0.15 + progress * 0.55;
+  const fillColor = isFog ? 'hsl(var(--muted))' : `hsl(${colorVar} / ${fillAlpha})`;
+  const strokeColor = isFog ? 'hsl(var(--border))' : `hsl(${colorVar})`;
+  const strokeWidth = isBright ? 2.5 : 1.5;
+
+  // Hex points (pointy-top), centered in 100x100 viewBox
+  const hexPath =
+    'M50 4 L91 27 L91 73 L50 96 L9 73 L9 27 Z';
+
+  return (
+    <motion.div
+      className="relative w-full h-full"
+      whileHover={{ scale: 1.04 }}
+      whileTap={{ scale: 0.96 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+    >
+      {/* Glow layer for bright/full states */}
+      {isBright && (
+        <motion.div
+          className="absolute inset-0 rounded-2xl"
+          style={{ boxShadow: `0 0 20px 2px ${glow}` }}
+          animate={isFull ? { opacity: [0.6, 1, 0.6] } : { opacity: 0.7 }}
+          transition={isFull ? { duration: 2.4, repeat: Infinity, ease: 'easeInOut' } : undefined}
+        />
+      )}
+
+      <svg viewBox="0 0 100 100" className="w-full h-full relative">
+        <defs>
+          {isFog && (
+            <pattern id={`fog-${territory.key}`} width="6" height="6" patternUnits="userSpaceOnUse">
+              <rect width="6" height="6" fill="hsl(var(--muted))" />
+              <circle cx="3" cy="3" r="1" fill="hsl(var(--muted-foreground) / 0.18)" />
+            </pattern>
+          )}
+        </defs>
+        <path
+          d={hexPath}
+          fill={isFog ? `url(#fog-${territory.key})` : fillColor}
+          stroke={strokeColor}
+          strokeWidth={strokeWidth}
+          strokeLinejoin="round"
+          className={cn('transition-all', isFog && 'opacity-80')}
+        />
+      </svg>
+
+      {/* Content overlay */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-1 pointer-events-none">
+        {isFog ? (
+          <span className="text-2xl font-bold text-muted-foreground/60">?</span>
+        ) : (
+          <>
+            <span
+              className={cn(
+                'text-xl sm:text-2xl leading-none',
+                !isMedium && 'opacity-60',
+              )}
+            >
+              {emoji}
+            </span>
+            {isMedium && (
+              <span
+                className="mt-1 text-[9px] sm:text-[10px] font-semibold leading-tight text-foreground/90"
+                style={{ textShadow: '0 1px 2px hsl(var(--background) / 0.8)' }}
+              >
+                {label}
+              </span>
+            )}
+            {isMedium && !isFull && (
+              <span className="text-[9px] font-bold text-foreground/70">{pct}%</span>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* Completion badge + star sparkle */}
+      <AnimatePresence>
+        {isFull && (
+          <motion.div
+            key="check"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 18 }}
+            className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-foreground text-background text-[10px] font-bold flex items-center justify-center shadow-lg"
+          >
+            ✓
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {isFull && (
+        <motion.span
+          className="absolute top-1 left-1 text-[10px]"
+          animate={{ opacity: [0, 1, 0], scale: [0.6, 1.2, 0.6], rotate: [0, 20, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          ✨
+        </motion.span>
+      )}
+    </motion.div>
+  );
+}
