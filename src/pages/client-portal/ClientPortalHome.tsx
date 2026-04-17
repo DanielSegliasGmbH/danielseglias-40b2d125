@@ -22,7 +22,8 @@ import { usePeakScore } from '@/hooks/usePeakScore';
 import { LifeMapCard } from '@/components/client-portal/LifeMapCard';
 import { DailyFocusCard } from '@/components/client-portal/DailyFocusCard';
 import { MoreToDiscover } from '@/components/client-portal/MoreToDiscover';
-import { useUserAvatar } from '@/hooks/useUserAvatar';
+// ARCHIVED: future-self avatar system replaced by Hamster mascot
+// import { useUserAvatar } from '@/hooks/useUserAvatar';
 
 const LEVEL_ICONS = [null, Zap, Star, Trophy, Award, Crown];
 
@@ -58,7 +59,7 @@ export default function ClientPortalHome() {
   const { score, rank: peakRank } = usePeakScore();
   const { completed: finanzTypCompleted, info: finanzTypInfo } = useFinanzType();
   const firstName = user?.user_metadata?.first_name || 'Kunde';
-  const { futureSelfName, completed: avatarCompleted } = useUserAvatar();
+  // ARCHIVED: const { futureSelfName, completed: avatarCompleted } = useUserAvatar();
 
   // First-visit gating: hide overload-cards for first 7 days
   const isFirstWeek = useMemo(() => {
@@ -260,9 +261,7 @@ export default function ClientPortalHome() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
-              {avatarCompleted && futureSelfName
-                ? `${futureSelfName} freut sich, dich zu sehen.`
-                : getGreeting(firstName)}
+              {getGreeting(firstName)}
             </p>
             <h1 className="text-xl font-semibold tracking-tight text-foreground mt-0.5">
               {firstName}

@@ -1,3 +1,4 @@
+// ARCHIVED: Replaced by Hamster mascot system. Logic kept intact for data access.
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
