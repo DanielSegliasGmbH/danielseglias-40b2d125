@@ -14,6 +14,7 @@ import { ArrowLeft, ArrowRight, Sparkles, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { getRankForScore } from '@/hooks/usePeakScore';
 import { cn } from '@/lib/utils';
+import { HamsterAvatar } from '@/components/client-portal/HamsterAvatar';
 
 /* ───────── Finanz-Typ Quick-Quiz (6 fragen, identische Logik wie ClientPortalFinanzTyp) ───────── */
 const FT_QUESTIONS = [
@@ -382,35 +383,90 @@ export function OnboardingWizard() {
             </motion.div>
           )}
 
-          {/* ─── STEP 4: Hamster-Platzhalter (ARCHIVED Zukunfts-Ich) ─── */}
+          {/* ─── STEP 4: Hamster-Einführung ─── */}
           {step === 4 && (
             <motion.div key="s4" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
-              className="text-center py-10">
-              <div className="text-6xl mb-6">🐹</div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">Hier kommt dein Hamster</h2>
+              className="text-center py-6">
+              <motion.div
+                className="text-8xl mb-6 inline-block"
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                🐹
+              </motion.div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">Dein Hamster erwacht</h2>
+              <p className="text-muted-foreground max-w-md mx-auto mb-1">Er war lange im Rad. Jetzt ist es Zeit.</p>
               <p className="text-muted-foreground max-w-md mx-auto mb-8">
-                Platzhalter — Inhalt folgt im nächsten Schritt.
+                Mit FinLife bringst du ihn Schritt für Schritt raus.
               </p>
+
+              <div className="flex justify-center mb-4">
+                <HamsterAvatar size="lg" showRank />
+              </div>
+              <p className="text-base font-semibold text-foreground mb-6">Rang 1: Im Hamsterrad 🐹</p>
+
+              <p className="text-xs text-muted-foreground max-w-sm mx-auto mb-6">
+                Dein Hamster wächst mit dir. Je höher dein PeakScore, desto freier wird er.
+              </p>
+
+              <div className="flex items-center justify-center gap-2 sm:gap-3 mb-6 text-2xl sm:text-3xl">
+                {[
+                  { e: '🐹', n: 'Rad' },
+                  { e: '👁️', n: 'Erwacht' },
+                  { e: '🚪', n: 'Ausweg' },
+                  { e: '🏗️', n: 'Aufbau' },
+                  { e: '📈', n: 'Wachstum' },
+                  { e: '🌟', n: 'Frei' },
+                ].map((r, i, arr) => (
+                  <div key={r.n} className="flex items-center gap-1 sm:gap-2">
+                    <div className="flex flex-col items-center">
+                      <span>{r.e}</span>
+                      <span className="text-[10px] text-muted-foreground mt-0.5">{r.n}</span>
+                    </div>
+                    {i < arr.length - 1 && <span className="text-muted-foreground/50 text-sm">→</span>}
+                  </div>
+                ))}
+              </div>
+
+              <div className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
+                <Sparkles className="h-3.5 w-3.5" /> +100 XP
+              </div>
+
               <NavRow onBack={() => goToStep(3)} onNext={() => goToStep(5)} />
             </motion.div>
           )}
 
-          {/* ─── STEP 5: Manifest ─── */}
+          {/* ─── STEP 5: Hamsterrad-Manifest ─── */}
           {step === 5 && (
-            <motion.div key="s5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="text-center min-h-[60vh] flex flex-col items-center justify-center">
-              <p className="text-base sm:text-lg text-muted-foreground mb-4">Geld ist nicht das Ziel.</p>
-              <p className="text-base sm:text-lg text-muted-foreground mb-8">Geld ist das Werkzeug.</p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 max-w-md">
-                Bist du der Spielball deines Geldes?
-              </h2>
-              <h2 className="text-3xl sm:text-4xl font-bold text-primary mb-8 max-w-md">
-                Oder bist du der Spieler?
-              </h2>
-              <p className="text-base text-muted-foreground mb-8">Ab heute bist du der Spieler.</p>
-              <div className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary mb-6">
-                <Sparkles className="h-3.5 w-3.5" /> +250 XP
+            <motion.div key="s5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <div className="rounded-2xl bg-foreground text-background p-6 sm:p-10 min-h-[60vh] flex flex-col items-center justify-center text-center space-y-6">
+                {[
+                  { text: 'Aufstehen. Arbeiten. Rechnungen. Schlafen.', delay: 0.2, className: 'text-base sm:text-lg text-background/70' },
+                  { text: 'Das Hamsterrad.', delay: 1.6, className: 'text-3xl sm:text-4xl font-bold' },
+                  { text: 'FinLife ist dein Ausweg.', delay: 3.0, className: 'text-xl sm:text-2xl font-semibold text-primary' },
+                  { text: 'Dein Hamster schläft noch. Weck ihn auf.', delay: 4.2, className: 'text-base sm:text-lg text-background/80' },
+                ].map((line) => (
+                  <motion.p
+                    key={line.text}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, delay: line.delay, ease: 'easeOut' }}
+                    className={line.className}
+                  >
+                    {line.text}
+                  </motion.p>
+                ))}
+
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 5.2 }}
+                  className="inline-flex items-center gap-1 rounded-full bg-primary/20 px-3 py-1 text-sm font-semibold text-primary"
+                >
+                  <Sparkles className="h-3.5 w-3.5" /> +250 XP
+                </motion.div>
               </div>
+
               <NavRow
                 onBack={() => goToStep(4)}
                 onNext={async () => { await saveManifest(); goToStep(6); }}
@@ -418,6 +474,7 @@ export function OnboardingWizard() {
               />
             </motion.div>
           )}
+
 
           {/* ─── STEP 6: PeakScore + complete ─── */}
           {step === 6 && (
