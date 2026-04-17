@@ -56,22 +56,27 @@ export default function ClientPortalStrategies() {
     );
   }
 
-  // Access denied
+  // Access denied → clear next action: open chat with advisor
   if (!hasStrategyAccess) {
     return (
       <ClientPortalLayout>
         <div className="max-w-md mx-auto mt-20">
           <Card>
-            <CardContent className="py-12 text-center space-y-4">
+            <CardContent className="py-10 text-center space-y-4">
               <Lock className="h-10 w-10 text-muted-foreground mx-auto" />
-              <h2 className="text-xl font-bold text-foreground">Kein Zugriff</h2>
+              <h2 className="text-xl font-bold text-foreground">Noch nicht freigeschaltet</h2>
               <p className="text-muted-foreground text-sm">
-                Anlagestrategien sind nur für berechtigte Kunden verfügbar.
-                Bitte kontaktiere deinen Berater, um Zugang zu erhalten.
+                Dein Berater schaltet die Anlagestrategien für dich frei.
+                Schreib ihm direkt — meistens geht das innerhalb eines Werktags.
               </p>
-              <Button variant="outline" onClick={() => window.history.back()}>
-                Zurück
-              </Button>
+              <div className="flex flex-col gap-2 pt-2">
+                <Button onClick={() => (window.location.href = '/app/client-portal/chat')}>
+                  Berater kontaktieren
+                </Button>
+                <Button variant="ghost" onClick={() => window.history.back()}>
+                  Zurück
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>
