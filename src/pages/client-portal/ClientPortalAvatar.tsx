@@ -3,10 +3,8 @@ export default function ClientPortalAvatar() {
   return null;
 }
 
-// --- Original implementation preserved below for reference ---
-// @ts-nocheck
-/* eslint-disable */
-import { useState as _useState, useMemo as _useMemo } from 'react';
+/* --- Original implementation preserved below for reference (archived) ---
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserAvatar } from '@/hooks/useUserAvatar';
@@ -347,3 +345,5 @@ export default function ClientPortalAvatar() {
     </ClientPortalLayout>
   );
 }
+
+*/
