@@ -32,6 +32,7 @@ import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { InfoHint } from '@/components/client-portal/InfoHint';
 import { formatSnapshotTrend } from '@/lib/peakScoreFormat';
+import { syncSnapshotToNetWorth } from '@/lib/snapshotSync';
 
 // ── Types ──────────────────────────────────────────
 
@@ -624,6 +625,7 @@ export default function ClientPortalSnapshot() {
     const netWorth = computeNetWorth(draft);
     setSaving(true);
     try {
+      // 1. Persist the raw snapshot (audit / history record).
       const { error } = await supabase.from('financial_snapshots').insert({
         user_id: user.id,
         snapshot_data: draft as any,
@@ -635,15 +637,39 @@ export default function ClientPortalSnapshot() {
       await supabase.from('snapshot_drafts').delete().eq('user_id', user.id);
       queryClient.invalidateQueries({ queryKey: ['snapshot-draft'] });
 
+      // 2. Sync into Vermögen (single source of truth) + recompute PeakScore.
+      const sync = await syncSnapshotToNetWorth(user.id, draft);
+
       await awardPoints('snapshot_completed', 'snapshot_' + Date.now());
+
+      // 3. Refresh every consumer that reads from net_worth or PeakScore.
       queryClient.invalidateQueries({ queryKey: ['financial-snapshots'] });
-      toast({ title: 'Snapshot gespeichert! 📸', description: '+100 XP verdient' });
+      queryClient.invalidateQueries({ queryKey: ['net-worth-assets'] });
+      queryClient.invalidateQueries({ queryKey: ['net-worth-liabilities'] });
+      queryClient.invalidateQueries({ queryKey: ['journey-peakscore'] });
+      queryClient.invalidateQueries({ queryKey: ['meta-profile'] });
+      queryClient.invalidateQueries({ queryKey: ['meta-profile-snapshot'] });
+
+      // 4. Build the comparison toast: "alt → neu (+X Monate)".
+      const oldPS = sync.oldPeakScore;
+      const newPS = sync.newPeakScore;
+      const diff = oldPS !== null ? Math.round((newPS - oldPS) * 10) / 10 : null;
+      const diffLabel = diff === null
+        ? `PeakScore: ${newPS} Monate`
+        : `${oldPS} → ${newPS} Monate (${diff >= 0 ? '+' : ''}${diff})`;
+
+      toast({
+        title: '✅ Snapshot gespeichert',
+        description: `📊 Vermögen und PeakScore aktualisiert · ${diffLabel}`,
+      });
+
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 3000);
       setDraft(EMPTY_DRAFT);
       setStep(0);
       setTab('history');
-    } catch {
+    } catch (e) {
+      console.error('Snapshot save failed', e);
       toast({ title: 'Fehler', description: 'Snapshot konnte nicht gespeichert werden.', variant: 'destructive' });
     } finally {
       setSaving(false);
