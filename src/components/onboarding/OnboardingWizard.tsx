@@ -14,6 +14,7 @@ import { ArrowLeft, ArrowRight, Sparkles, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { getRankForScore } from '@/hooks/usePeakScore';
 import { cn } from '@/lib/utils';
+import { HamsterAvatar } from '@/components/client-portal/HamsterAvatar';
 
 /* ───────── Finanz-Typ Quick-Quiz (6 fragen, identische Logik wie ClientPortalFinanzTyp) ───────── */
 const FT_QUESTIONS = [
