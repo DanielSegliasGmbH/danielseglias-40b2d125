@@ -5,38 +5,23 @@ import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
-import { Card, CardContent } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { StrategyPasswordGate } from '@/components/client-portal/StrategyPasswordGate';
 import { useGamification, LEVELS } from '@/hooks/useGamification';
 import { useNextBestStep } from '@/hooks/useNextBestStep';
 import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { NotificationBell } from '@/components/client-portal/NotificationBell';
-import { Sparkles, Wrench, Target, ArrowRight, Flame, Zap, Star, Trophy, Award, Crown, Landmark, Wallet, ClipboardList, TrendingUp, FileBarChart, Gift, Film, UserRound, Camera, CalendarDays, Heart } from 'lucide-react';
-import { PrivateValue } from '@/components/client-portal/PrivateValue';
-import { ActiveChallengeCards } from '@/components/client-portal/ActiveChallengeCard';
-import { WeeklyOverviewCard } from '@/components/client-portal/WeeklyOverviewCard';
+import { Sparkles, Wrench, Zap, Star, Trophy, Award, Crown, Wallet, Camera, CalendarDays } from 'lucide-react';
 import { useFinanzType } from '@/hooks/useFinanzType';
 import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
-import { WeeklyCheckCard } from '@/components/client-portal/WeeklyCheckCard';
-import { MorningBriefCard } from '@/components/client-portal/MorningBriefCard';
-import { SundayReflectionCard } from '@/components/client-portal/SundayReflectionCard';
-import { MoodCheckinCard } from '@/components/client-portal/MoodCheckinCard';
-import { InflationTickerCard } from '@/components/client-portal/InflationTickerCard';
 import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
-import { SuccessStoryRotator } from '@/components/client-portal/SuccessStoryRotator';
-import { ShadowTwinCard } from '@/components/client-portal/ShadowTwinCard';
-import { LastPlanDashboardCard } from '@/components/client-portal/LastPlanDashboardCard';
-import { ProfessionDashboardTips } from '@/components/client-portal/ProfessionDashboardTips';
-import { JourneyDashboardWidget } from '@/components/client-portal/JourneyDashboardWidget';
 import { JourneyNudgeCard } from '@/components/client-portal/JourneyNudgeCard';
-import { RankWarningBanner } from '@/components/client-portal/RankWarningBanner';
 import { RankChangeOverlay } from '@/components/client-portal/RankChangeOverlay';
 import { useRankSystem } from '@/hooks/useRankSystem';
 import { usePeakScore } from '@/hooks/usePeakScore';
-import { FreedomCountdown } from '@/components/client-portal/FreedomCountdown';
 import { LifeMapCard } from '@/components/client-portal/LifeMapCard';
+import { DailyFocusCard } from '@/components/client-portal/DailyFocusCard';
+import { MoreToDiscover } from '@/components/client-portal/MoreToDiscover';
 import { useUserAvatar } from '@/hooks/useUserAvatar';
 
 const LEVEL_ICONS = [null, Zap, Star, Trophy, Award, Crown];
@@ -291,411 +276,70 @@ export default function ClientPortalHome() {
           <NotificationBell />
         </div>
 
-        {/* ── JOURNEY NUDGE ── */}
+        {/* ═══════════════════════════════════════════════════════════
+            SECTION A — "Jetzt"  (immer sichtbar, max. 4-5 Elemente)
+            One thing per moment. Auf einem iPhone ohne Scroll sichtbar.
+            ═══════════════════════════════════════════════════════════ */}
+
+        {/* Journey-Nudge (nur wenn aktiv) */}
         <JourneyNudgeCard />
 
-        {/* ── PEAKSCORE HERO ── */}
-        {!isFirstWeek && <MorningBriefCard />}
-        <MoodCheckinCard />
+        {/* PeakScore (immer) */}
         <PeakScoreCard onClick={() => navigate('/app/client-portal/peak-score')} />
 
-        {/* ── LIFE MAP (Finanz-Welt) ── */}
+        {/* DAILY FOCUS — die EINE Aktion für heute */}
+        <DailyFocusCard />
+
+        {/* Life Map */}
         <LifeMapCard />
 
-        <FreedomCountdown />
-        {!isFirstWeek && <SundayReflectionCard />}
-        <WeeklyCheckCard />
-        <RankWarningBanner />
-        {!isFirstWeek && <InflationTickerCard />}
-
-        {/* ── LEBENSFILM CTA ── */}
-        {!lifeFilmCompleted ? (
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
-            <Card
-              className="overflow-hidden cursor-pointer active:scale-[0.99] transition-transform border-0"
-              onClick={() => navigate('/app/client-portal/life-film')}
-            >
-              <CardContent className="p-0">
-                <div className="bg-gradient-to-r from-foreground to-primary/80 p-5 flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-background/15 flex items-center justify-center shrink-0">
-                    <span className="text-2xl">🎬</span>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <h3 className="font-bold text-sm text-background">Dein Lebensfilm</h3>
-                      <span className="text-[10px] font-bold bg-background/20 text-background px-1.5 py-0.5 rounded-full">+150 XP</span>
-                    </div>
-                    <p className="text-xs text-background/70 line-clamp-2">
-                      Erfahre, wie deine finanzielle Zukunft aussehen könnte – in 2 Minuten.
-                    </p>
-                  </div>
-                  <ArrowRight className="h-5 w-5 text-background/60 shrink-0" />
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ) : (
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
-            <Card
-              className="cursor-pointer active:scale-[0.99] transition-transform border-border/50"
-              onClick={() => navigate('/app/client-portal/life-film-result')}
-            >
-              <CardContent className="p-3 flex items-center gap-3">
-                <span className="text-base">🎬</span>
-                <p className="text-xs text-muted-foreground flex-1">
-                  Dein Lebensfilm: <PrivateValue className="font-bold text-foreground">CHF {lifeFilmDifference.toLocaleString('de-CH')}</PrivateValue> Potenzial entdeckt.
-                </p>
-                <span className="text-xs text-primary font-medium whitespace-nowrap">Nochmal ansehen →</span>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
-        {/* ── FINANZ-TYP CTA ── */}
-        {!finanzTypCompleted ? (
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}>
-            <Card
-              className="cursor-pointer active:scale-[0.99] transition-transform border-primary/20 bg-primary/5"
-              onClick={() => navigate('/app/client-portal/finanz-typ')}
-            >
-              <CardContent className="p-4 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
-                  <UserRound className="h-5 w-5 text-primary" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <h3 className="font-bold text-sm text-foreground">Welcher Finanz-Typ bist du?</h3>
-                    <span className="text-[10px] font-bold bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">+100 XP</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">Finde es heraus in 60 Sekunden</p>
-                </div>
-                <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
-              </CardContent>
-            </Card>
-          </motion.div>
-        ) : finanzTypInfo ? (
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}>
-            <Card
-              className="cursor-pointer active:scale-[0.99] transition-transform border-border/50"
-              onClick={() => navigate('/app/client-portal/finanz-typ')}
-            >
-              <CardContent className="p-3 flex items-center gap-3">
-                <span className="text-base">{finanzTypInfo.emoji}</span>
-                <p className="text-xs text-muted-foreground flex-1">
-                  Dein Finanz-Typ: <span className="font-bold text-foreground">{finanzTypInfo.shortTitle}</span>
-                </p>
-                <span className="text-xs text-primary font-medium whitespace-nowrap">Details →</span>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ) : null}
-
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-        >
-          <Card
-            className="bg-foreground text-background overflow-hidden cursor-pointer active:scale-[0.99] transition-transform"
-            onClick={() => navigate('/app/client-portal/premium')}
-          >
-            <CardContent className="p-5 relative">
-              {/* XP popup */}
-              <AnimatePresence>
-                {lastAwardedPoints !== null && (
-                  <motion.div
-                    key={lastAwardedPoints.id}
-                    initial={{ opacity: 1, y: 0 }}
-                    animate={{ opacity: 0, y: -24 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 1.2, ease: 'easeOut' }}
-                    className="absolute top-2 left-1/2 -translate-x-1/2 z-10 pointer-events-none"
-                  >
-                    <span className="text-sm font-bold text-primary-foreground">
-                      +{lastAwardedPoints.amount} XP
-                    </span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <div className="flex justify-between text-sm mb-2">
-                <span className="flex items-center gap-1.5">
-                  <Icon className="h-4 w-4" />
-                  Level {level} · {levelLabel}
-                </span>
-                <span className="font-mono text-xs opacity-80">
-                  {points} / {maxLevel ? points : nextLevelMin}
-                </span>
-              </div>
-              <div className="w-full h-2 bg-background/15 rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full bg-primary rounded-full"
-                  initial={false}
-                  animate={{ width: `${maxLevel ? 100 : progressPercent}%` }}
-                  transition={{ duration: 0.7, ease: 'easeOut' }}
-                />
-              </div>
-              <div className="flex justify-between text-xs mt-2 opacity-70">
-                <span className="flex items-center gap-1">
-                  <Flame className="h-3.5 w-3.5" />
-                  {streakDays} {streakDays === 1 ? 'Tag' : 'Tage'}
-                </span>
-                {!maxLevel && <span>{pointsToNext} XP bis nächstes Level</span>}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* ── 3. FINANZ-COCKPIT ── */}
-        <div>
-          <div className="grid grid-cols-2 gap-2">
-            {cockpitCards.map((card, i) => (
-              <motion.div
-                key={card.label}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + i * 0.04 }}
-              >
-                <Link to={card.path}>
-                  <div className={cn(
-                    "p-3 rounded-2xl transition-shadow hover:shadow-md min-h-[80px] flex flex-col justify-center",
-                    card.highlight
-                      ? "bg-foreground text-background"
-                      : "bg-card border border-border"
-                  )}>
-                    <span className={cn(
-                      "text-[11px] leading-tight",
-                      card.highlight ? "opacity-70" : "text-muted-foreground"
-                    )}>
-                      {card.label}
-                    </span>
-                    {card.label === 'Offene Aufgaben' ? (
-                      <span className="text-lg font-bold block mt-1 tracking-tight">
-                        {card.value || '–'}
-                      </span>
-                    ) : (
-                      <PrivateValue className="text-lg font-bold block mt-1 tracking-tight">
-                        {card.value || '–'}
-                      </PrivateValue>
-                    )}
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* ── 3.5 ACTIVE CHALLENGES ── */}
-        {!isFirstWeek && <ActiveChallengeCards />}
-
-        {/* ── DEINE WOCHE (Quests + Habits) ── */}
-        {!isFirstWeek && <WeeklyOverviewCard />}
-
-        {/* ── 3.6 MONTHLY REPORT TEASER (1st of month) ── */}
-        {new Date().getDate() <= 7 && (() => {
-          const now = new Date();
-          const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-          const mk = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, '0')}`;
-          const label = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'][prevMonth.getMonth()];
-          return (
-            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}>
-              <Link to={`/app/client-portal/monthly-report?month=${mk}`}>
-                <Card className="bg-foreground text-background cursor-pointer active:scale-[0.98] transition-transform hover:shadow-lg">
-                  <CardContent className="p-5 flex items-center gap-4">
-                    <div className="w-11 h-11 rounded-2xl bg-background/10 flex items-center justify-center text-xl">
-                      📊
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-base font-bold">Dein {label}-Rückblick ist da!</p>
-                      <p className="text-xs opacity-60">Schau dir an, wie dein Monat war</p>
-                    </div>
-                    <ArrowRight className="h-5 w-5 opacity-50 shrink-0" />
-                  </CardContent>
-                </Card>
-              </Link>
-            </motion.div>
-          );
-        })()}
-
-        {/* ── FINANZ-RÖNTGENBILD (1st of month) ── */}
-        {new Date().getDate() <= 7 && (
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.19 }}>
-            <Link to="/app/client-portal/xray">
-              <Card className="border-primary/20 bg-primary/5 cursor-pointer active:scale-[0.98] transition-transform hover:shadow-lg">
-                <CardContent className="p-4 flex items-center gap-4">
-                  <div className="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center text-xl">
-                    📡
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-bold text-foreground">Dein Finanz-Röntgenbild ist bereit</p>
-                      <span className="text-[10px] font-bold bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">+100 XP</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">Ehrliche KI-Analyse deiner Finanzen</p>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
-                </CardContent>
-              </Card>
-            </Link>
-          </motion.div>
-        )}
-
-        {/* ── 4. NÄCHSTE QUEST ── */}
-        {nextStepResult?.primary && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <Card
-              className="bg-primary text-primary-foreground cursor-pointer active:scale-[0.98] transition-transform hover:shadow-lg"
-              onClick={() => navigate(nextStepResult.primary!.path)}
-            >
-              <CardContent className="p-5 flex justify-between items-center">
-                <div>
-                  <p className="text-[10px] uppercase tracking-wider opacity-80 mb-1">
-                    Nächste Quest
-                  </p>
-                  <h3 className="text-base font-bold">
-                    {nextStepResult.primary.title}
-                  </h3>
-                  <p className="text-sm opacity-80 mt-0.5 line-clamp-1">
-                    {nextStepResult.primary.reason}
-                  </p>
-                </div>
-                <div className="size-10 bg-primary-foreground/20 rounded-full grid place-content-center shrink-0 ml-3">
-                  <ArrowRight className="h-5 w-5" />
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
-        {/* ── 5. SCHNELLZUGRIFF ── */}
-        <div className="grid grid-cols-5 gap-2">
-          {quickAccess.map((item, i) => (
+        {/* Quick Access — 4 Icons, keine Labels nötig (mehr Ruhe) */}
+        <div className="grid grid-cols-4 gap-2">
+          {quickAccess.slice(0, 4).map((item, i) => (
             <motion.div
               key={item.label}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.25 + i * 0.04 }}
+              transition={{ delay: 0.15 + i * 0.04 }}
             >
-              <Link to={item.path}>
-                <div className="bg-card border border-border rounded-xl p-3 flex flex-col items-center gap-1 cursor-pointer hover:shadow-md transition-shadow active:scale-[0.96]">
-                  <span className="text-xl">{item.emoji}</span>
-                  <span className="text-[10px] font-semibold text-muted-foreground">{item.label}</span>
+              <Link to={item.path} aria-label={item.label}>
+                <div className="bg-card border border-border rounded-2xl p-4 flex items-center justify-center cursor-pointer hover:shadow-md transition-shadow active:scale-[0.96] aspect-square">
+                  <span className="text-2xl">{item.emoji}</span>
                 </div>
               </Link>
             </motion.div>
           ))}
         </div>
 
-        {/* ── 6. LETZTE AKTIVITÄT ── */}
-        {recentActions.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <Card className="bg-muted/30">
-              <CardContent className="p-4">
-                <h4 className="text-sm font-semibold mb-3 text-foreground">Letzte Aktivität</h4>
-                <div className="flex flex-col gap-2.5">
-                  {recentActions.map((a: any) => (
-                    <div key={a.id} className="flex justify-between items-center">
-                      <div>
-                        <p className="text-sm font-medium text-foreground">
-                          {ACTION_LABELS[a.action_type] || a.action_type}
-                        </p>
-                        <p className="text-[11px] text-muted-foreground">
-                          +{a.points_awarded} XP
-                        </p>
-                      </div>
-                      <span className="text-[11px] text-muted-foreground shrink-0">
-                        {timeAgo(a.created_at)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+        {/* ═══════════════════════════════════════════════════════════
+            SECTION B — "Meine Welt"  (collapsed, NUR für returning users)
+            ═══════════════════════════════════════════════════════════ */}
+        {!isFirstWeek && (
+          <MoreToDiscover
+            isSundayReflection={new Date().getDay() === 0}
+            firstOfMonth={new Date().getDate() <= 7}
+            lifeFilmCompleted={lifeFilmCompleted}
+            lifeFilmDifference={lifeFilmDifference}
+            finanzTypCompleted={finanzTypCompleted}
+            finanzTypInfo={finanzTypInfo}
+            cockpitCards={cockpitCards}
+            recentActions={recentActions}
+            actionLabels={ACTION_LABELS}
+            timeAgo={timeAgo}
+            level={level}
+            levelLabel={levelLabel}
+            points={points}
+            nextLevelMin={nextLevelMin}
+            maxLevel={maxLevel}
+            progressPercent={progressPercent}
+            pointsToNext={pointsToNext}
+            streakDays={streakDays}
+            lastAwardedPoints={lastAwardedPoints}
+            LevelIcon={Icon}
+            nextStepResult={nextStepResult}
+            navigate={navigate}
+          />
         )}
-
-        {/* ── JOURNEY WIDGET ── */}
-        <JourneyDashboardWidget />
-
-        {/* ── SUCCESS STORY ── */}
-        {!isFirstWeek && <SuccessStoryRotator />}
-
-        {/* ── SCHATTEN-ZWILLING ── */}
-        {!isFirstWeek && <ShadowTwinCard />}
-
-        {/* ── LETZTER PLAN ── */}
-        <LastPlanDashboardCard />
-
-        {/* ── PROFESSION TIPS ── */}
-        <ProfessionDashboardTips />
-
-        {/* ── PARTNER MODE CARD ── */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.33 }}>
-          <Link to="/app/client-portal/partner">
-            <Card className="cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98]">
-              <CardContent className="p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="size-9 rounded-xl bg-primary/10 grid place-content-center">
-                    <Heart className="h-4 w-4 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">Partner-Modus</p>
-                    <p className="text-[11px] text-muted-foreground">Finanzen gemeinsam managen</p>
-                  </div>
-                </div>
-                <ArrowRight className="h-4 w-4 text-muted-foreground" />
-              </CardContent>
-            </Card>
-          </Link>
-        </motion.div>
-
-        {/* ── 7. MONATSBERICHT LINK ── */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
-          <Link to="/app/client-portal/monthly-report">
-            <Card className="cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98]">
-              <CardContent className="p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="size-9 rounded-xl bg-primary/10 grid place-content-center">
-                    <FileBarChart className="h-4 w-4 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">Mein Monatsbericht</p>
-                    <p className="text-[11px] text-muted-foreground">Deine persönliche Monatsübersicht</p>
-                  </div>
-                </div>
-                <ArrowRight className="h-4 w-4 text-muted-foreground" />
-              </CardContent>
-            </Card>
-          </Link>
-        </motion.div>
-
-        {/* ── 8. REFERRAL TEASER ── */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-          <Link to="/app/client-portal/invite">
-            <Card className="cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98] border-primary/20 bg-primary/5">
-              <CardContent className="p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="size-9 rounded-xl bg-primary/10 grid place-content-center">
-                    <Gift className="h-4 w-4 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">Freunde einladen = +500 XP pro Freund 🎁</p>
-                    <p className="text-[11px] text-muted-foreground">Teile deinen Code und sammle Bonus-XP</p>
-                  </div>
-                </div>
-                <ArrowRight className="h-4 w-4 text-muted-foreground" />
-              </CardContent>
-            </Card>
-          </Link>
-        </motion.div>
       </div>
 
       <StrategyPasswordGate
