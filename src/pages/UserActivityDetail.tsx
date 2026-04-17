@@ -540,6 +540,9 @@ export default function UserActivityDetail() {
             </CardContent>
           </Card>
 
+          {/* ── 1d-bis. Journey-Aktionen ───────────── */}
+          <JourneyActionsCard userId={user.id} />
+
           {/* ── 1e. Audit Log ──────────────────────── */}
           {auditLogs && auditLogs.length > 0 && (
             <Card>
