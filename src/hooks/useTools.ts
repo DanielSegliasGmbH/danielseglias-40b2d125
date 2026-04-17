@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
+export type ToolVisibility = 'public' | 'phase_locked' | 'hidden' | 'admin_only';
+
 export interface Tool {
   id: string;
   key: string;
@@ -10,6 +12,8 @@ export interface Tool {
   status: 'active' | 'planned' | 'deprecated';
   enabled_for_clients: boolean;
   enabled_for_public: boolean;
+  visibility: ToolVisibility;
+  unlock_phase: number | null;
   sort_order: number;
   slug: string | null;
   cta_mode: 'contact' | 'download' | 'booking' | null;
@@ -51,7 +55,7 @@ export function useClientTools() {
   });
 }
 
-// Hook for Public: fetch public-enabled tools (no auth required)
+// Hook for Public: fetch only tools explicitly marked as public visibility
 export function usePublicTools() {
   return useQuery({
     queryKey: ['tools', 'public'],
@@ -60,6 +64,7 @@ export function usePublicTools() {
         .from('tools')
         .select('*')
         .eq('enabled_for_public', true)
+        .eq('visibility', 'public')
         .order('sort_order', { ascending: true });
 
       if (error) throw error;
@@ -68,7 +73,7 @@ export function usePublicTools() {
   });
 }
 
-// Hook for Admin: update tool settings
+// Hook for Admin: update tool settings (incl. visibility + unlock_phase)
 export function useUpdateTool() {
   const queryClient = useQueryClient();
 
@@ -78,7 +83,7 @@ export function useUpdateTool() {
       updates,
     }: {
       id: string;
-      updates: Partial<Pick<Tool, 'enabled_for_clients' | 'enabled_for_public' | 'status' | 'sort_order'>>;
+      updates: Partial<Pick<Tool, 'enabled_for_clients' | 'enabled_for_public' | 'status' | 'sort_order' | 'visibility' | 'unlock_phase'>>;
     }) => {
       const { data, error } = await supabase
         .from('tools')
@@ -92,6 +97,7 @@ export function useUpdateTool() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tools'] });
+      queryClient.invalidateQueries({ queryKey: ['client-tools-filtered'] });
     },
   });
 }

@@ -6,8 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Wrench, Calculator, PieChart, TrendingUp, FileText, Clock, ClipboardCheck, ChevronRight, Briefcase, Receipt, Landmark, Heart, Shield, Hourglass, LucideIcon } from 'lucide-react';
-import { useAllTools, useUpdateTool } from '@/hooks/useTools';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Wrench, Calculator, PieChart, TrendingUp, FileText, Clock, ClipboardCheck, ChevronRight, Briefcase, Receipt, Landmark, Heart, Shield, Hourglass, Lock, EyeOff, Globe, LucideIcon } from 'lucide-react';
+import { useAllTools, useUpdateTool, type ToolVisibility } from '@/hooks/useTools';
 import { groupToolsByCluster } from '@/config/toolClusters';
 import { toast } from 'sonner';
 import { resolveToolText } from '@/lib/toolTranslations';
@@ -50,6 +51,34 @@ export default function AdminTools() {
         onError: () => toast.error(t('adminTools.updateError')),
       }
     );
+  };
+
+  const handleVisibilityChange = (toolId: string, value: string) => {
+    // Format: "public" | "phase_locked:N" | "hidden" | "admin_only"
+    const [vis, phase] = value.split(':');
+    updateTool.mutate(
+      {
+        id: toolId,
+        updates: {
+          visibility: vis as ToolVisibility,
+          unlock_phase: vis === 'phase_locked' ? Number(phase || 2) : null,
+        },
+      },
+      {
+        onSuccess: () => toast.success('Sichtbarkeit aktualisiert'),
+        onError: () => toast.error(t('adminTools.updateError')),
+      }
+    );
+  };
+
+  const visibilityValue = (vis: ToolVisibility, phase: number | null) =>
+    vis === 'phase_locked' ? `phase_locked:${phase ?? 2}` : vis;
+
+  const visibilityBadge = (vis: ToolVisibility, phase: number | null) => {
+    if (vis === 'public') return <Badge variant="default" className="text-xs gap-1"><Globe className="h-3 w-3" />Öffentlich</Badge>;
+    if (vis === 'phase_locked') return <Badge variant="secondary" className="text-xs gap-1"><Lock className="h-3 w-3" />Phase {phase ?? '?'}</Badge>;
+    if (vis === 'admin_only') return <Badge variant="outline" className="text-xs gap-1"><Shield className="h-3 w-3" />Admin</Badge>;
+    return <Badge variant="destructive" className="text-xs gap-1"><EyeOff className="h-3 w-3" />Versteckt</Badge>;
   };
 
   const clusteredTools = tools ? groupToolsByCluster(tools) : [];
@@ -126,14 +155,34 @@ export default function AdminTools() {
                                     {t('adminTools.planned')}
                                   </Badge>
                                 )}
-                                {tool.enabled_for_public && (
-                                  <Badge variant="outline" className="text-xs">Öffentlich</Badge>
-                                )}
+                                {visibilityBadge(tool.visibility, tool.unlock_phase)}
                               </div>
                               <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{resolveToolText(t, tool.description_key, 'description')}</p>
                             </div>
                           </div>
                           <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+                            <div className="hidden md:flex flex-col items-start gap-1" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                              <Label className="text-xs text-muted-foreground">Sichtbarkeit</Label>
+                              <Select
+                                value={visibilityValue(tool.visibility, tool.unlock_phase)}
+                                onValueChange={(v) => handleVisibilityChange(tool.id, v)}
+                                disabled={updateTool.isPending}
+                              >
+                                <SelectTrigger className="h-8 w-[170px] text-xs">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="public">🌍 Öffentlich</SelectItem>
+                                  <SelectItem value="phase_locked:2">🔒 Phase 2</SelectItem>
+                                  <SelectItem value="phase_locked:3">🔒 Phase 3</SelectItem>
+                                  <SelectItem value="phase_locked:4">🔒 Phase 4</SelectItem>
+                                  <SelectItem value="phase_locked:5">🔒 Phase 5</SelectItem>
+                                  <SelectItem value="phase_locked:6">🔒 Phase 6</SelectItem>
+                                  <SelectItem value="hidden">🚫 Versteckt</SelectItem>
+                                  <SelectItem value="admin_only">🛡️ Admin only</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
                             <div className="hidden sm:flex flex-col items-center gap-1" onClick={(e) => e.preventDefault()}>
                               <Label htmlFor={`tool-client-${tool.id}`} className="text-xs text-muted-foreground">
                                 {t('adminTools.clients')}
@@ -144,18 +193,6 @@ export default function AdminTools() {
                                 onCheckedChange={() => handleToggleClient(tool.id, tool.enabled_for_clients)}
                                 disabled={isPlanned || updateTool.isPending}
                                 aria-label={t('adminTools.enableForClients')}
-                              />
-                            </div>
-                            <div className="hidden sm:flex flex-col items-center gap-1" onClick={(e) => e.preventDefault()}>
-                              <Label htmlFor={`tool-public-${tool.id}`} className="text-xs text-muted-foreground">
-                                {t('adminTools.public')}
-                              </Label>
-                              <Switch
-                                id={`tool-public-${tool.id}`}
-                                checked={tool.enabled_for_public}
-                                onCheckedChange={() => handleTogglePublic(tool.id, tool.enabled_for_public)}
-                                disabled={isPlanned || updateTool.isPending}
-                                aria-label={t('adminTools.enableForPublic')}
                               />
                             </div>
                             <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />

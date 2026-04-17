@@ -4116,7 +4116,9 @@ export type Database = {
           slug: string | null
           sort_order: number
           status: string
+          unlock_phase: number | null
           updated_at: string
+          visibility: Database["public"]["Enums"]["tool_visibility"]
         }
         Insert: {
           created_at?: string
@@ -4131,7 +4133,9 @@ export type Database = {
           slug?: string | null
           sort_order?: number
           status?: string
+          unlock_phase?: number | null
           updated_at?: string
+          visibility?: Database["public"]["Enums"]["tool_visibility"]
         }
         Update: {
           created_at?: string
@@ -4146,7 +4150,9 @@ export type Database = {
           slug?: string | null
           sort_order?: number
           status?: string
+          unlock_phase?: number | null
           updated_at?: string
+          visibility?: Database["public"]["Enums"]["tool_visibility"]
         }
         Relationships: []
       }
@@ -4768,6 +4774,7 @@ export type Database = {
       service_effort: "low" | "medium" | "high"
       task_priority: "niedrig" | "mittel" | "hoch" | "dringend"
       task_status: "offen" | "in_arbeit" | "erledigt" | "blockiert"
+      tool_visibility: "public" | "phase_locked" | "hidden" | "admin_only"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -4941,6 +4948,7 @@ export const Constants = {
       service_effort: ["low", "medium", "high"],
       task_priority: ["niedrig", "mittel", "hoch", "dringend"],
       task_status: ["offen", "in_arbeit", "erledigt", "blockiert"],
+      tool_visibility: ["public", "phase_locked", "hidden", "admin_only"],
     },
   },
 } as const
