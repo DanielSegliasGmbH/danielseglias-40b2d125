@@ -161,6 +161,28 @@ export default function AdminTools() {
                             </div>
                           </div>
                           <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+                            <div className="hidden md:flex flex-col items-start gap-1" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                              <Label className="text-xs text-muted-foreground">Sichtbarkeit</Label>
+                              <Select
+                                value={visibilityValue(tool.visibility, tool.unlock_phase)}
+                                onValueChange={(v) => handleVisibilityChange(tool.id, v)}
+                                disabled={updateTool.isPending}
+                              >
+                                <SelectTrigger className="h-8 w-[170px] text-xs">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="public">🌍 Öffentlich</SelectItem>
+                                  <SelectItem value="phase_locked:2">🔒 Phase 2</SelectItem>
+                                  <SelectItem value="phase_locked:3">🔒 Phase 3</SelectItem>
+                                  <SelectItem value="phase_locked:4">🔒 Phase 4</SelectItem>
+                                  <SelectItem value="phase_locked:5">🔒 Phase 5</SelectItem>
+                                  <SelectItem value="phase_locked:6">🔒 Phase 6</SelectItem>
+                                  <SelectItem value="hidden">🚫 Versteckt</SelectItem>
+                                  <SelectItem value="admin_only">🛡️ Admin only</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
                             <div className="hidden sm:flex flex-col items-center gap-1" onClick={(e) => e.preventDefault()}>
                               <Label htmlFor={`tool-client-${tool.id}`} className="text-xs text-muted-foreground">
                                 {t('adminTools.clients')}
@@ -171,18 +193,6 @@ export default function AdminTools() {
                                 onCheckedChange={() => handleToggleClient(tool.id, tool.enabled_for_clients)}
                                 disabled={isPlanned || updateTool.isPending}
                                 aria-label={t('adminTools.enableForClients')}
-                              />
-                            </div>
-                            <div className="hidden sm:flex flex-col items-center gap-1" onClick={(e) => e.preventDefault()}>
-                              <Label htmlFor={`tool-public-${tool.id}`} className="text-xs text-muted-foreground">
-                                {t('adminTools.public')}
-                              </Label>
-                              <Switch
-                                id={`tool-public-${tool.id}`}
-                                checked={tool.enabled_for_public}
-                                onCheckedChange={() => handleTogglePublic(tool.id, tool.enabled_for_public)}
-                                disabled={isPlanned || updateTool.isPending}
-                                aria-label={t('adminTools.enableForPublic')}
                               />
                             </div>
                             <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
