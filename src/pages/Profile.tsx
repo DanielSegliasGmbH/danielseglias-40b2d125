@@ -29,6 +29,8 @@ import { PasswordStrengthChecker } from '@/components/PasswordStrengthChecker';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
+import { HamsterAvatar } from '@/components/client-portal/HamsterAvatar';
+import { useHamster } from '@/hooks/useHamster';
 
 // ─── Achievement definitions ───
 interface AchievementDef {
@@ -235,11 +237,8 @@ export default function Profile() {
           {/* ─── Profile Header ─── */}
           <Card className="overflow-hidden">
             <CardContent className="p-6 text-center">
-              <div className="w-20 h-20 rounded-full bg-primary/15 flex items-center justify-center mx-auto mb-3 ring-2 ring-primary/30 ring-offset-2 ring-offset-background">
-                <span className="text-2xl font-bold text-primary">{initials}</span>
-              </div>
-              {displayName && <p className="text-lg font-bold text-foreground">{displayName}</p>}
-              <div className="flex items-center justify-center gap-2 mt-1 flex-wrap">
+              <HamsterProfileHeader displayName={displayName} initials={initials} />
+              <div className="flex items-center justify-center gap-2 mt-3 flex-wrap">
                 <Badge variant="secondary" className="text-xs gap-1">
                   <Award className="h-3 w-3" /> {levelLabel}
                 </Badge>

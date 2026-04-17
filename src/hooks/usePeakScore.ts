@@ -2,22 +2,65 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 
-// ── Rank definitions ──
+// ── Rank definitions (Hamster journey) ──
 export interface RankDef {
   rank: number;
   name: string;
   emoji: string;
+  description: string;
   minScore: number;
   maxScore: number;
 }
 
 export const RANKS: RankDef[] = [
-  { rank: 1, name: 'Wanderer',  emoji: '🥾', minScore: 0,   maxScore: 3 },
-  { rank: 2, name: 'Knappe',    emoji: '🛡️', minScore: 3,   maxScore: 6 },
-  { rank: 3, name: 'Ritter',    emoji: '⚔️', minScore: 6,   maxScore: 12 },
-  { rank: 4, name: 'Edelmann',  emoji: '🏰', minScore: 12,  maxScore: 36 },
-  { rank: 5, name: 'Fürst',     emoji: '👑', minScore: 36,  maxScore: 120 },
-  { rank: 6, name: 'Souverän',  emoji: '🌟', minScore: 120, maxScore: Infinity },
+  {
+    rank: 1,
+    name: 'Im Hamsterrad',
+    emoji: '🐹',
+    description: 'Du rennst. Aber noch nicht für dich.',
+    minScore: 0,
+    maxScore: 3,
+  },
+  {
+    rank: 2,
+    name: 'Aufwachend',
+    emoji: '👁️',
+    description: 'Du merkst es. Das ist der erste Schritt.',
+    minScore: 3,
+    maxScore: 6,
+  },
+  {
+    rank: 3,
+    name: 'Aussteiger',
+    emoji: '🚪',
+    description: 'Du verlässt das Rad. Bewusst.',
+    minScore: 6,
+    maxScore: 12,
+  },
+  {
+    rank: 4,
+    name: 'Gestalter',
+    emoji: '🏗️',
+    description: 'Du baust etwas. Für dich.',
+    minScore: 12,
+    maxScore: 36,
+  },
+  {
+    rank: 5,
+    name: 'Investor',
+    emoji: '📈',
+    description: 'Dein Geld arbeitet. Du entscheidest.',
+    minScore: 36,
+    maxScore: 120,
+  },
+  {
+    rank: 6,
+    name: 'Souverän',
+    emoji: '🌟',
+    description: 'Du bist raus. Das Hamsterrad dreht ohne dich.',
+    minScore: 120,
+    maxScore: Infinity,
+  },
 ];
 
 export function getRankForScore(score: number): RankDef {
