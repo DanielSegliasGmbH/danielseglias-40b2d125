@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useGamification } from '@/hooks/useGamification';
@@ -7,9 +6,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent } from '@/components/ui/card';
 import { Plus, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -17,6 +14,11 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useHamsterSheets } from '@/hooks/useHamsterSheets';
+
+const BUDGET_CATEGORIES = [
+  'Wohnen', 'Essen', 'Transport', 'Versicherungen', 'Gesundheit',
+  'Freizeit', 'Kleidung', 'Bildung', 'Abos', 'Sonstiges',
+];
 
 const BUDGET_CATEGORIES = [
   'Wohnen', 'Essen', 'Transport', 'Versicherungen', 'Gesundheit',
@@ -227,9 +229,10 @@ function ExpenseForm({ onComplete }: { onComplete: (xp?: number) => void }) {
   );
 }
 
-// ─── Removed: TaskForm / GoalForm / InsightForm now handled elsewhere ───
-// Original implementations preserved in git history.
-function _UnusedTaskForm({ onComplete }: { onComplete: (xp?: number) => void }) {
+// Other quick actions (Aufgabe / Ziel / Erkenntnis) sind in dieser Iteration
+// entfernt — Inventar / Errungenschaften / Life Map ersetzen sie. Bei Bedarf
+// können die alten Form-Komponenten aus der Git-Historie wiederhergestellt werden.
+
   const { user } = useAuth();
   const { awardPoints } = useGamification();
   const queryClient = useQueryClient();
