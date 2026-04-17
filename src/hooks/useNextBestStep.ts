@@ -87,8 +87,8 @@ export function computeNextBestStep(params: {
       type: 'profile',
       ref: 'profile',
       path: '/app/client-portal/profile-data',
-      title: 'Vervollständige dein Profil',
-      reason: 'Damit können wir deine Analysen personalisieren.',
+      title: 'Wie viel hast du in 10 Jahren, wenn du so weitermachst?',
+      reason: 'Vervollständige dein Profil — wir personalisieren deine Analysen.',
       priority: 2,
     });
   }
@@ -176,7 +176,7 @@ export function computeNextBestStep(params: {
       type: 'library',
       ref: 'library',
       path: '/app/client-portal/library',
-      title: 'Entdecke die Wissensbibliothek',
+      title: 'Was weisst du über Inflation — wirklich?',
       reason: 'Kurze Artikel für schnellen Wiedereinstieg.',
       priority: 15,
     });
