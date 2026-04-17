@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { ConsentGate } from '@/components/ConsentGate';
+import { OnboardingGate } from '@/components/OnboardingGate';
 
 interface RouteGuardProps {
   children: ReactNode;
@@ -58,12 +59,16 @@ export function RouteGuard({ children, allowedRoles }: RouteGuardProps) {
     return <Navigate to="/app" replace />;
   }
 
-  // Admins skip consent gate
+  // Admins skip consent + onboarding gate
   if (role === 'admin') {
     return <>{children}</>;
   }
 
-  return <ConsentGate>{children}</ConsentGate>;
+  return (
+    <OnboardingGate>
+      <ConsentGate>{children}</ConsentGate>
+    </OnboardingGate>
+  );
 }
 
 // Role-based redirect after login
