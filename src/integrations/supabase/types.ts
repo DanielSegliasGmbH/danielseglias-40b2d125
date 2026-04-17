@@ -3299,6 +3299,9 @@ export type Database = {
           last_name: string
           leaderboard_visible: boolean
           mood_checkin_enabled: boolean
+          onboarding_completed: boolean
+          onboarding_completed_at: string | null
+          onboarding_current_step: number
           payday_date: number
           peak_score_visible: boolean
           phone: string | null
@@ -3328,6 +3331,9 @@ export type Database = {
           last_name: string
           leaderboard_visible?: boolean
           mood_checkin_enabled?: boolean
+          onboarding_completed?: boolean
+          onboarding_completed_at?: string | null
+          onboarding_current_step?: number
           payday_date?: number
           peak_score_visible?: boolean
           phone?: string | null
@@ -3357,6 +3363,9 @@ export type Database = {
           last_name?: string
           leaderboard_visible?: boolean
           mood_checkin_enabled?: boolean
+          onboarding_completed?: boolean
+          onboarding_completed_at?: string | null
+          onboarding_current_step?: number
           payday_date?: number
           peak_score_visible?: boolean
           phone?: string | null
@@ -4407,6 +4416,27 @@ export type Database = {
           last_checked_at?: string
           milestones_completed?: Json
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_manifest_acceptance: {
+        Row: {
+          accepted_at: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string
+          created_at?: string
+          id?: string
           user_id?: string
         }
         Relationships: []
