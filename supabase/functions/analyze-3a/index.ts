@@ -413,6 +413,25 @@ serve(async (req) => {
   let analysisId: string | null = null;
 
   try {
+    // ── Auth check (required) ─────────────────────────────────
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return errorResponse("Unauthorized", 401);
+    }
+
+    const supabaseAuth = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabaseAuth.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims?.sub) {
+      return errorResponse("Unauthorized", 401);
+    }
+    const callerUserId = claimsData.claims.sub as string;
+
     const body = await req.json();
     analysisId = body.analysisId;
     if (!analysisId) return errorResponse("analysisId is required", 400);
@@ -424,6 +443,21 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
+
+    // ── Authorization: caller must own this analysis ──────────
+    const { data: analysisRow, error: analysisErr } = await supabaseAdmin
+      .from("three_a_analyses")
+      .select("user_id")
+      .eq("id", analysisId)
+      .maybeSingle();
+
+    if (analysisErr || !analysisRow) {
+      return errorResponse("analysis_not_found", 404);
+    }
+    if (analysisRow.user_id !== callerUserId) {
+      return errorResponse("Forbidden", 403);
+    }
+
 
     // ── Fetch documents ──
     const { data: docs, error: docsError } = await supabaseAdmin
