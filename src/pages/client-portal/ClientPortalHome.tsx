@@ -1,4 +1,6 @@
 import { useState, useMemo } from 'react';
+import { ChevronDown } from 'lucide-react';
+import { DailyFocusCard } from '@/components/client-portal/DailyFocusCard';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
