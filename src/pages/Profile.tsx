@@ -120,6 +120,36 @@ function ProfileRankBadge() {
   );
 }
 
+function HamsterProfileHeader({ displayName, initials }: { displayName: string; initials: string }) {
+  const { rankName, rankDescription, goldNuts, coins } = useHamster();
+  return (
+    <>
+      <HamsterAvatar size="lg" className="mx-auto mb-2" />
+      {displayName ? (
+        <p className="text-lg font-bold text-foreground">{displayName}</p>
+      ) : (
+        <p className="text-lg font-bold text-foreground">{initials}</p>
+      )}
+      <p className="text-sm font-semibold text-foreground/80 mt-1">{rankName}</p>
+      <p className="text-xs text-muted-foreground italic max-w-[280px] mx-auto mt-0.5">
+        {rankDescription}
+      </p>
+      <div className="flex items-center justify-center gap-4 mt-3 text-xs">
+        <span className="inline-flex items-center gap-1 text-foreground">
+          <span aria-hidden>🌰</span>
+          <span className="font-semibold">{goldNuts}</span>
+          <span className="text-muted-foreground">Goldnüsse</span>
+        </span>
+        <span className="inline-flex items-center gap-1 text-foreground">
+          <span aria-hidden>🪙</span>
+          <span className="font-semibold">{coins}</span>
+          <span className="text-muted-foreground">Münzen</span>
+        </span>
+      </div>
+    </>
+  );
+}
+
 function ProfileFinanzTypBadge() {
   const navigate = useNavigate();
   const { completed, info } = useFinanzType();
