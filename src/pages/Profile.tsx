@@ -31,6 +31,8 @@ import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { HamsterAvatar } from '@/components/client-portal/HamsterAvatar';
 import { useHamster } from '@/hooks/useHamster';
+import { useGoldNuts } from '@/hooks/useGoldNuts';
+import { useHamsterSheets } from '@/hooks/useHamsterSheets';
 
 // ─── Achievement definitions ───
 interface AchievementDef {
@@ -286,6 +288,9 @@ export default function Profile() {
               </div>
             </CardContent>
           </Card>
+
+          {/* ─── Mein Hamster ─── */}
+          {isClient && <HamsterProfileSection />}
 
           {/* ─── XP Progress ─── */}
           {isClient && (
