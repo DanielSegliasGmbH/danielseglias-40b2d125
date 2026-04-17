@@ -736,11 +736,11 @@ export default function ClientPortalBudget() {
             {expenses.length === 0 && fixedExpensesRaw.length === 0 && budgets.length === 0 && (
               <Card>
                 <CardContent className="py-10 text-center">
-                  <p className="text-muted-foreground text-sm">
-                    Noch keine Daten für {formatMonthLabel(selectedMonth)}.
+                  <p className="text-foreground text-sm font-medium">
+                    Du siehst nicht, wohin dein Geld fliesst. Das ändern wir.
                   </p>
                   <p className="text-muted-foreground text-xs mt-1">
-                    Erfasse Fixkosten und tägliche Ausgaben.
+                    Erfasse Fixkosten und tägliche Ausgaben für {formatMonthLabel(selectedMonth)}.
                   </p>
                 </CardContent>
               </Card>

@@ -800,8 +800,8 @@ export default function ClientPortalNetWorth() {
           <Card>
             <CardContent className="py-10 text-center">
               <Landmark className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-muted-foreground text-sm">Noch keine Einträge vorhanden.</p>
-              <p className="text-muted-foreground text-xs mt-1">Füge deinen ersten Vermögenswert hinzu.</p>
+              <p className="text-foreground text-sm font-medium">Was arbeitest du für — und was arbeitet für dich?</p>
+              <p className="text-muted-foreground text-xs mt-1">Erfasse, was Geld für dich verdient.</p>
             </CardContent>
           </Card>
         )}

@@ -88,8 +88,8 @@ function useDailyFocus(): FocusAction | null {
   // 2. No snapshot
   if (!snapshot) {
     return {
-      title: 'Erstelle deinen ersten Snapshot',
-      description: 'In 3 Minuten zur Übersicht über deine ganze Finanzlage.',
+      title: 'Wo steht dein Geld wirklich? →',
+      description: 'In 3 Minuten siehst du, wie du wirklich dastehst.',
       cta: 'Snapshot starten',
       path: '/app/client-portal/snapshot',
       emoji: '📸',
