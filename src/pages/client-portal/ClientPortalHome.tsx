@@ -74,6 +74,14 @@ export default function ClientPortalHome() {
   const firstName = user?.user_metadata?.first_name || 'Kunde';
   const { futureSelfName, completed: avatarCompleted } = useUserAvatar();
 
+  // First-visit gating: hide overload-cards for first 7 days
+  const isFirstWeek = useMemo(() => {
+    const createdAt = (user as any)?.created_at;
+    if (!createdAt) return false;
+    const days = (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24);
+    return days < 7;
+  }, [user]);
+
   const { data: lifeFilmData } = useQuery({
     queryKey: ['life-film-status', user?.id],
     queryFn: async () => {
@@ -286,14 +294,14 @@ export default function ClientPortalHome() {
         <JourneyNudgeCard />
 
         {/* ── PEAKSCORE HERO ── */}
-        <MorningBriefCard />
+        {!isFirstWeek && <MorningBriefCard />}
         <MoodCheckinCard />
         <PeakScoreCard onClick={() => navigate('/app/client-portal/peak-score')} />
         <FreedomCountdown />
-        <SundayReflectionCard />
+        {!isFirstWeek && <SundayReflectionCard />}
         <WeeklyCheckCard />
         <RankWarningBanner />
-        <InflationTickerCard />
+        {!isFirstWeek && <InflationTickerCard />}
 
         {/* ── LEBENSFILM CTA ── */}
         {!lifeFilmCompleted ? (
@@ -473,10 +481,10 @@ export default function ClientPortalHome() {
         </div>
 
         {/* ── 3.5 ACTIVE CHALLENGES ── */}
-        <ActiveChallengeCards />
+        {!isFirstWeek && <ActiveChallengeCards />}
 
         {/* ── DEINE WOCHE (Quests + Habits) ── */}
-        <WeeklyOverviewCard />
+        {!isFirstWeek && <WeeklyOverviewCard />}
 
         {/* ── 3.6 MONTHLY REPORT TEASER (1st of month) ── */}
         {new Date().getDate() <= 7 && (() => {
@@ -613,10 +621,10 @@ export default function ClientPortalHome() {
         <JourneyDashboardWidget />
 
         {/* ── SUCCESS STORY ── */}
-        <SuccessStoryRotator />
+        {!isFirstWeek && <SuccessStoryRotator />}
 
         {/* ── SCHATTEN-ZWILLING ── */}
-        <ShadowTwinCard />
+        {!isFirstWeek && <ShadowTwinCard />}
 
         {/* ── LETZTER PLAN ── */}
         <LastPlanDashboardCard />

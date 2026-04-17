@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence, PanInfo } from 'framer-motion';
+import { Sparkles, ArrowRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getPhaseForFeature } from '@/config/journeyPhases';
 
@@ -53,13 +53,27 @@ export function UnlockCelebration({ newlyUnlocked, onDismiss }: UnlockCelebratio
     }
   }, [newlyUnlocked]);
 
+  const handleDismiss = () => {
+    setVisible(false);
+    onDismiss();
+  };
+
+  // Auto-dismiss after 5 seconds without interaction
+  useEffect(() => {
+    if (!visible) return;
+    const timer = setTimeout(() => {
+      setVisible(false);
+      onDismiss();
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [visible, onDismiss]);
+
   if (!visible || newlyUnlocked.length === 0) return null;
 
   const phase = getPhaseForFeature(newlyUnlocked[0]);
 
-  const handleDismiss = () => {
-    setVisible(false);
-    onDismiss();
+  const handleDragEnd = (_: unknown, info: PanInfo) => {
+    if (info.offset.y > 80) handleDismiss();
   };
 
   return (
@@ -77,9 +91,23 @@ export function UnlockCelebration({ newlyUnlocked, onDismiss }: UnlockCelebratio
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-            className="bg-card border border-border rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl space-y-4"
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={{ top: 0, bottom: 0.5 }}
+            onDragEnd={handleDragEnd}
+            className="relative bg-card border border-border rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Close button (44x44 hit-area) */}
+            <button
+              type="button"
+              onClick={handleDismiss}
+              aria-label="Schließen"
+              className="absolute top-1 right-1 w-11 h-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
             <motion.div
               animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.2, 1] }}
               transition={{ duration: 0.6 }}
