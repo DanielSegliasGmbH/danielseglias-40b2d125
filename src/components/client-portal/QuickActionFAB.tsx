@@ -20,11 +20,6 @@ const BUDGET_CATEGORIES = [
   'Freizeit', 'Kleidung', 'Bildung', 'Abos', 'Sonstiges',
 ];
 
-const BUDGET_CATEGORIES = [
-  'Wohnen', 'Essen', 'Transport', 'Versicherungen', 'Gesundheit',
-  'Freizeit', 'Kleidung', 'Bildung', 'Abos', 'Sonstiges',
-];
-
 type ActiveAction = null | 'expense';
 
 function getMonthKey(): string {
