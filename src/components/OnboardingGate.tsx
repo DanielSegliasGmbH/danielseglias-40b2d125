@@ -14,14 +14,14 @@ import { useOnboardingState } from '@/hooks/useOnboardingState';
  */
 export function OnboardingGate({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth();
-  const { state, loading, isExempt, needsOnboarding } = useOnboardingState();
+  const { loading, isExempt, needsOnboarding } = useOnboardingState();
   const location = useLocation();
 
   // No user → let auth guards (e.g. RouteGuard) handle the redirect.
   if (!user) return <>{children}</>;
 
   // Still loading → don't flash content.
-  if (authLoading || loading || (user && !state && !isExempt)) {
+  if (authLoading || (!isExempt && loading)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
