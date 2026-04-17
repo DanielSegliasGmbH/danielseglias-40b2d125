@@ -378,11 +378,7 @@ function App() {
               />
               <Route
                 path="/app/user-analytics"
-                element={
-                  <RouteGuard allowedRoles={['admin']}>
-                    <AdminUserAnalytics />
-                  </RouteGuard>
-                }
+                element={<Navigate to="/app/analytics" replace />}
               />
               {/* Protected: Customer Detail (new structure) */}
               <Route
