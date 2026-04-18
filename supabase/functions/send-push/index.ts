@@ -15,7 +15,21 @@ const corsHeaders = {
 const VAPID_PUBLIC_KEY =
   'BO8_FVycA7kj4PHZyI3x6dICoZWNCItfyjxxXNa0mN6M78Yg42IQUeCa-98U4jhucGUptebSjFDLqSfr4AFryQc';
 const VAPID_PRIVATE_KEY = Deno.env.get('VAPID_PRIVATE_KEY') ?? '';
-const VAPID_SUBJECT = Deno.env.get('VAPID_SUBJECT') ?? 'mailto:admin@example.com';
+
+// VAPID subject must be a valid mailto: or https:// URL.
+// Sanitize the configured value and fall back to a safe default if invalid.
+function sanitizeSubject(raw: string | undefined): string {
+  const fallback = 'mailto:notifications@finlife.app';
+  if (!raw) return fallback;
+  const trimmed = raw.trim();
+  if (/^mailto:.+@.+\..+/i.test(trimmed)) return trimmed;
+  if (/^https?:\/\/.+/i.test(trimmed)) return trimmed;
+  // Plain email -> wrap with mailto:
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return `mailto:${trimmed}`;
+  console.warn('Invalid VAPID_SUBJECT, falling back to default');
+  return fallback;
+}
+const VAPID_SUBJECT = sanitizeSubject(Deno.env.get('VAPID_SUBJECT'));
 
 webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
 
