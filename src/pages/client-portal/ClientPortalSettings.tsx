@@ -232,7 +232,7 @@ export default function ClientPortalSettings() {
 
   return (
     <ClientPortalLayout>
-      <div className="max-w-2xl mx-auto space-y-6">
+      <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
         <ScreenHeader title="Einstellungen" backTo="/app/client-portal" />
 
         {/* Darstellung */}

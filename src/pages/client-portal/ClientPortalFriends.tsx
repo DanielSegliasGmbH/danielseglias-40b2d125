@@ -268,9 +268,10 @@ export default function ClientPortalFriends() {
 
   return (
     <ClientPortalLayout>
-      <ScreenHeader title="Deine Finanz-Crew" backTo="/app/client-portal" />
+      <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
+        <ScreenHeader title="Deine Finanz-Crew" backTo="/app/client-portal" />
 
-      <div className="px-4 pb-32 space-y-6 max-w-lg mx-auto">
+        <div className="pb-32 space-y-6">
         {/* Communities Link */}
         <Link to="/app/client-portal/communities">
           <Card className="border-primary/20 bg-primary/5 cursor-pointer active:scale-[0.99] transition-transform">
@@ -541,6 +542,7 @@ export default function ClientPortalFriends() {
           );
         }}
       />
+      </div>
     </ClientPortalLayout>
   );
 }

@@ -697,7 +697,8 @@ export default function ClientPortalSnapshot() {
 
   return (
     <ClientPortalLayout>
-      <ScreenHeader title="📸 Mein Snapshot" backTo="/app/client-portal" />
+      <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
+        <ScreenHeader title="📸 Mein Snapshot" backTo="/app/client-portal" />
       {/* Confetti celebration */}
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
@@ -722,7 +723,7 @@ export default function ClientPortalSnapshot() {
           ))}
         </div>
       )}
-      <div className="max-w-2xl mx-auto space-y-4">
+      <div className="space-y-4">
         {/* Header */}
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="p-1.5 rounded-lg hover:bg-muted transition-colors">
@@ -858,6 +859,7 @@ export default function ClientPortalSnapshot() {
             />
           </TabsContent>
         </Tabs>
+      </div>
       </div>
     </ClientPortalLayout>
   );

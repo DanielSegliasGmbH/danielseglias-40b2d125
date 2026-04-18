@@ -218,8 +218,8 @@ export default function ClientPortalCalendar() {
 
   return (
     <ClientPortalLayout>
-      <ScreenHeader title="📅 Finanz-Kalender" backTo="/app/client-portal" />
-      <div className="max-w-2xl mx-auto space-y-4">
+      <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
+        <ScreenHeader title="📅 Finanz-Kalender" backTo="/app/client-portal" />
 
         {/* SECTION 1: Next deadline */}
         {nextDeadline && (

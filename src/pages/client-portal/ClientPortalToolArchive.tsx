@@ -61,8 +61,8 @@ export default function ClientPortalToolArchive() {
 
   return (
     <ClientPortalLayout>
-      <ScreenHeader title="📦 Mein Archiv" backTo="/app/client-portal/tools" />
-      <div className="max-w-2xl mx-auto space-y-4">
+      <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
+        <ScreenHeader title="📦 Mein Archiv" backTo="/app/client-portal/tools" />
         <div className="flex items-center justify-end">
           <Button
             variant={compareMode ? 'default' : 'outline'}
