@@ -47,8 +47,7 @@ export function useLifeMapData(): LifeMapData {
       const { count } = await supabase
         .from('customer_products')
         .select('id', { count: 'exact', head: true })
-        .eq('user_id', uid!)
-        .eq('category', 'insurance');
+        .eq('user_id', uid!);
       return count || 0;
     },
     enabled: !!uid,
@@ -182,6 +181,8 @@ export function useLifeMapData(): LifeMapData {
   if (goals.total > 0 && territories[5].progress === 0) territories[5].progress = 0.1;
   // Same for cashflow: if 5+ expenses logged but savings rate unknown, show min 0.1
   if (expenseCount >= 5 && territories[3].progress === 0) territories[3].progress = 0.1;
+  // Absicherung: ab 1. erfasstem Produkt min 0.1 Progress (Territorium freigeschaltet)
+  if (insurances > 0 && territories[1].progress < 0.1) territories[1].progress = 0.1;
 
   const exploredPercent = Math.round(
     (territories.reduce((s, t) => s + t.progress, 0) / territories.length) * 100,
