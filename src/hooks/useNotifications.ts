@@ -67,22 +67,43 @@ export function useClientNotifications() {
         return true;
       });
 
-      // Get read status
+      // Get read + starred status
       const { data: reads } = await supabase
         .from('notification_reads')
-        .select('notification_id')
+        .select('notification_id, is_starred')
         .eq('user_id', user!.id);
-      const readIds = new Set(reads?.map(r => r.notification_id) || []);
+      const readMap = new Map((reads || []).map(r => [r.notification_id, r]));
 
       return visible.map(n => ({
         ...n,
         category: (n as any).category || 'general',
         description: (n as any).description || null,
         expires_at: (n as any).expires_at || null,
-        is_read: readIds.has(n.id),
+        is_read: readMap.has(n.id),
+        is_starred: readMap.get(n.id)?.is_starred ?? false,
       }));
     },
     enabled: !!user,
+  });
+}
+
+export function useToggleNotificationStar() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ notificationId, isStarred }: { notificationId: string; isStarred: boolean }) => {
+      const { error } = await supabase
+        .from('notification_reads')
+        .upsert(
+          { notification_id: notificationId, user_id: user!.id, is_starred: isStarred },
+          { onConflict: 'notification_id,user_id' }
+        );
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['client-notifications'] });
+    },
   });
 }
 
