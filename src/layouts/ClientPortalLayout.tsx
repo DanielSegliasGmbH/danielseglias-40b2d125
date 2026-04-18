@@ -87,13 +87,13 @@ function usePreviewCustomerName(customerId: string | null) {
   });
 }
 
-export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
+function ClientPortalLayoutInner({ children }: ClientPortalLayoutProps) {
   const { t } = useTranslation();
   const { user, role, signOut } = useAuth();
   const location = useLocation();
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [chatOpen, setChatOpen] = useState(false); // desktop only
+  const { open: chatOpen, setOpen: setChatOpen, openChat } = useChatDrawer();
   const { data: settings } = useCustomerPortalSettings();
   const { data: unreadCount = 0 } = useUnreadCount();
   useSmartNotifications();
