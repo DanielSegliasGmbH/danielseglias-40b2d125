@@ -300,3 +300,17 @@ export function useMarkAllSmartNotificationsRead() {
     },
   };
 }
+
+export function useToggleSmartNotificationStar() {
+  const queryClient = useQueryClient();
+
+  return {
+    mutate: async ({ id, isStarred }: { id: string; isStarred: boolean }) => {
+      await supabase
+        .from('smart_notifications')
+        .update({ is_starred: isStarred })
+        .eq('id', id);
+      queryClient.invalidateQueries({ queryKey: ['smart-notifications'] });
+    },
+  };
+}

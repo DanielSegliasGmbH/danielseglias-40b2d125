@@ -13,7 +13,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useTracking } from '@/hooks/useTracking';
 import { useChatDrawer } from '@/hooks/useChatDrawer';
-import { format } from 'date-fns';
+import { format, isToday } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { toast } from 'sonner';
 
@@ -207,7 +207,10 @@ function MessageBubble({ message, isOwn }: { message: ChatMessage; isOwn: boolea
             isOwn ? 'text-primary-foreground/60' : 'text-muted-foreground'
           )}
         >
-          {format(new Date(message.created_at), 'HH:mm', { locale: de })}
+          {(() => {
+            const d = new Date(message.created_at);
+            return format(d, isToday(d) ? 'HH:mm' : 'd. MMM, HH:mm', { locale: de });
+          })()}
         </p>
       </div>
     </div>

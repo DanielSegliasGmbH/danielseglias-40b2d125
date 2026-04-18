@@ -3108,18 +3108,21 @@ export type Database = {
       notification_reads: {
         Row: {
           id: string
+          is_starred: boolean
           notification_id: string
           read_at: string
           user_id: string
         }
         Insert: {
           id?: string
+          is_starred?: boolean
           notification_id: string
           read_at?: string
           user_id: string
         }
         Update: {
           id?: string
+          is_starred?: boolean
           notification_id?: string
           read_at?: string
           user_id?: string
@@ -3590,6 +3593,7 @@ export type Database = {
           created_at: string
           id: string
           is_read: boolean
+          is_starred: boolean
           link_label: string | null
           link_url: string | null
           notification_type: string
@@ -3602,6 +3606,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_read?: boolean
+          is_starred?: boolean
           link_label?: string | null
           link_url?: string | null
           notification_type: string
@@ -3614,6 +3619,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_read?: boolean
+          is_starred?: boolean
           link_label?: string | null
           link_url?: string | null
           notification_type?: string
