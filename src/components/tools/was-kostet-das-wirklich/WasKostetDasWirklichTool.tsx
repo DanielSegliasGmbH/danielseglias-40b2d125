@@ -333,6 +333,17 @@ export function WasKostetDasWirklichTool({ mode = 'internal' }: Props) {
               }}
             />
             <ToolTrustNote text="Unabhängige Berechnung – keine Produktempfehlung." />
+            <ToolSnapshotButton
+              toolSlug="was-kostet-das-wirklich"
+              toolName="Was kostet das wirklich?"
+              snapshotData={{
+                itemName,
+                price,
+                grossHourlyRate,
+                years,
+                returnRate,
+              }}
+            />
           </>
         )}
       </div>
