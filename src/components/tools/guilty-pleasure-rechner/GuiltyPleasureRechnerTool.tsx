@@ -303,10 +303,11 @@ export function GuiltyPleasureRechnerTool({ mode = 'internal' }: Props) {
                     toolName="Guilty-Pleasure-Rechner"
                     snapshotData={{
                       habit: activeHabit,
-                      monthlyCost: result?.monthlyCost,
-                      yearlyCost: result?.yearlyCost,
-                      hoursOfWork: result?.hoursOfWork,
-                      futureValue: result?.futureValue,
+                      annualCost: result?.annualCost,
+                      workHoursPerYear: result?.workHoursPerYear,
+                      invested10y: result?.invested10y,
+                      invested30y: result?.invested30y,
+                      freedomYearsGained: result?.freedomYearsGained,
                     }}
                   />
                 </>
