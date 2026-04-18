@@ -39,7 +39,7 @@ export function StreakRescueOverlay() {
   const { user } = useAuth();
   const { streakDays } = useGamification();
   const { canSelfRescue, performSelfRescue, requestFriendRescue, enabled } = useStreakRescue();
-  const [dismissed, setDismissed] = useState(isDismissedToday);
+  const [dismissed, setDismissed] = useState(isDismissed);
   const [mode, setMode] = useState<'main' | 'friends'>('main');
   const [rescuing, setRescuing] = useState(false);
 
@@ -108,7 +108,7 @@ export function StreakRescueOverlay() {
   if (!enabled || !streakBrokenYesterday || dismissed) return null;
 
   const handleDismiss = () => {
-    dismissToday();
+    dismissForDays(DISMISS_DAYS);
     setDismissed(true);
   };
 
