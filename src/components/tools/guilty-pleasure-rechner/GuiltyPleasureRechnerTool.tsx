@@ -298,6 +298,17 @@ export function GuiltyPleasureRechnerTool({ mode = 'internal' }: Props) {
                     context="Kleine Änderungen heute können zu grossen Ergebnissen führen."
                   />
                   <ToolTrustNote text="Unabhängige Berechnung – keine Produktempfehlung." />
+                  <ToolSnapshotButton
+                    toolSlug="guilty-pleasure-rechner"
+                    toolName="Guilty-Pleasure-Rechner"
+                    snapshotData={{
+                      habit: activeHabit,
+                      monthlyCost: result?.monthlyCost,
+                      yearlyCost: result?.yearlyCost,
+                      hoursOfWork: result?.hoursOfWork,
+                      futureValue: result?.futureValue,
+                    }}
+                  />
                 </>
               )}
             </motion.div>
