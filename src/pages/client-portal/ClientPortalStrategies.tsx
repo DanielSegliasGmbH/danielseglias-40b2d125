@@ -21,6 +21,7 @@ export default function ClientPortalStrategies() {
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const { role } = useAuth();
   const { data: profile, isLoading: profileLoading } = useCurrentUserProfile();
+  const { openChat } = useChatDrawer();
 
   const { data: settings } = useCustomerPortalSettings();
   const privacyMode = settings?.show_strategy_privacy ?? false;
