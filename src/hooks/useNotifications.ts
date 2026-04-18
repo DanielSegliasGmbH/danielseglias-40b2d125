@@ -1,3 +1,8 @@
+// ── DEPRECATION NOTICE ──────────────────────────────
+// For UI consumption use useUnifiedNotifications() instead.
+// This module is kept for: (a) admin CRUD on broadcasts,
+// and (b) internal dispatch from useUnifiedNotifications.
+// ────────────────────────────────────────────────────
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
