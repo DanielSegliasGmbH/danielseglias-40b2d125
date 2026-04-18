@@ -20,7 +20,10 @@ export default function ClientPortalCoachNewcomer() {
   const completedCount = NEWCOMER_MODULES.filter(m =>
     getModuleStatus(progressMap.get(`${NEWCOMER_DB_PREFIX}${m.key}`)) === 'completed'
   ).length;
-  const progressPercent = Math.round((completedCount / NEWCOMER_MODULES.length) * 100);
+  const inProgressCount = NEWCOMER_MODULES.filter(m =>
+    getModuleStatus(progressMap.get(`${NEWCOMER_DB_PREFIX}${m.key}`)) === 'in_progress'
+  ).length;
+  const progressPercent = Math.round(((completedCount + inProgressCount * 0.5) / NEWCOMER_MODULES.length) * 100);
   const allDone = completedCount === NEWCOMER_MODULES.length;
 
   const resumeModule = NEWCOMER_MODULES.find(m =>
@@ -76,7 +79,7 @@ export default function ClientPortalCoachNewcomer() {
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold text-foreground">Dein Fortschritt</h2>
               <span className="text-xs font-medium text-muted-foreground">
-                {completedCount}/{NEWCOMER_MODULES.length} Module · {progressPercent}%
+                {completedCount} abgeschlossen{inProgressCount > 0 ? `, ${inProgressCount} in Bearbeitung` : ''} · {progressPercent}%
               </span>
             </div>
             <Progress value={progressPercent} className="h-2" />
