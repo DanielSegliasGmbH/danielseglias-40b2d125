@@ -76,11 +76,12 @@ export function OnboardingWizard() {
     enabled: !!user,
     queryFn: async () => {
       if (!user) return null;
-      const [{ data: p }, { data: m }] = await Promise.all([
-        supabase.from('profiles').select('first_name').eq('id', user.id).maybeSingle(),
-        supabase.from('meta_profiles').select('age, professional_status, monthly_income, fixed_costs, wealth').eq('user_id', user.id).maybeSingle(),
-      ]);
-      return { firstName: p?.first_name ?? '', meta: m };
+      const { data: p } = await supabase
+        .from('profiles')
+        .select('first_name, age, professional_status, monthly_income, fixed_costs, wealth')
+        .eq('id', user.id)
+        .maybeSingle();
+      return { firstName: p?.first_name ?? '', meta: p };
     },
   });
 
@@ -164,19 +165,16 @@ export function OnboardingWizard() {
     const ageNum = Number(basics.age);
     if (!Number.isFinite(ageNum) || ageNum < 14 || ageNum > 110) { toast.error('Bitte gültiges Alter eingeben.'); return false; }
 
-    // 1. Profile first_name
-    await supabase.from('profiles').update({ first_name: basics.firstName.trim() }).eq('id', user.id);
-
-    // 2. meta_profile upsert
-    const { error } = await supabase.from('meta_profiles').upsert({
-      user_id: user.id,
+    // Single consolidated profile update (meta_profiles is deprecated).
+    const { error } = await supabase.from('profiles').update({
+      first_name: basics.firstName.trim(),
       age: ageNum,
       professional_status: basics.professionalStatus,
       monthly_income: Number(basics.monthlyIncome),
       fixed_costs: Number(basics.monthlyExpenses),
       wealth: Number(basics.wealth),
       last_confirmed_at: new Date().toISOString(),
-    }, { onConflict: 'user_id' });
+    } as any).eq('id', user.id);
 
     if (error) { toast.error('Speichern fehlgeschlagen.'); return false; }
     qc.invalidateQueries({ queryKey: ['onb-profile', user.id] });

@@ -3356,18 +3356,28 @@ export type Database = {
       profiles: {
         Row: {
           account_status: string
+          age: number | null
           auto_monthly_report: boolean
           challenges_allowed: boolean
           created_at: string
           current_rank: number
+          debts: number | null
           deletion_requested_at: string | null
+          financial_goal: string | null
           first_name: string
+          fixed_costs: number | null
+          freedom_life_expectancy: number | null
+          freedom_target_age: number | null
           future_self_messages_enabled: boolean
           has_strategy_access: boolean
           id: string
+          last_confirmed_at: string | null
           last_name: string
           leaderboard_visible: boolean
+          meta_migrated: boolean | null
+          monthly_income: number | null
           mood_checkin_enabled: boolean
+          occupation: string | null
           onboarding_completed: boolean
           onboarding_completed_at: string | null
           onboarding_current_step: number
@@ -3375,31 +3385,46 @@ export type Database = {
           peak_score_visible: boolean
           phone: string | null
           plan: string
+          professional_status: string | null
           referral_code: string | null
+          risk_tolerance: number | null
+          savings_rate: number | null
           shadow_twin_visible: boolean
           show_truth_moments: boolean
           streak_rescue_enabled: boolean
+          tax_burden: number | null
           theme_preference: string
           updated_at: string
           user_type: string
           voice_brief_enabled: boolean
           voice_weekly_enabled: boolean
+          wealth: number | null
           weekly_ritual_enabled: boolean
         }
         Insert: {
           account_status?: string
+          age?: number | null
           auto_monthly_report?: boolean
           challenges_allowed?: boolean
           created_at?: string
           current_rank?: number
+          debts?: number | null
           deletion_requested_at?: string | null
+          financial_goal?: string | null
           first_name: string
+          fixed_costs?: number | null
+          freedom_life_expectancy?: number | null
+          freedom_target_age?: number | null
           future_self_messages_enabled?: boolean
           has_strategy_access?: boolean
           id: string
+          last_confirmed_at?: string | null
           last_name: string
           leaderboard_visible?: boolean
+          meta_migrated?: boolean | null
+          monthly_income?: number | null
           mood_checkin_enabled?: boolean
+          occupation?: string | null
           onboarding_completed?: boolean
           onboarding_completed_at?: string | null
           onboarding_current_step?: number
@@ -3407,31 +3432,46 @@ export type Database = {
           peak_score_visible?: boolean
           phone?: string | null
           plan?: string
+          professional_status?: string | null
           referral_code?: string | null
+          risk_tolerance?: number | null
+          savings_rate?: number | null
           shadow_twin_visible?: boolean
           show_truth_moments?: boolean
           streak_rescue_enabled?: boolean
+          tax_burden?: number | null
           theme_preference?: string
           updated_at?: string
           user_type?: string
           voice_brief_enabled?: boolean
           voice_weekly_enabled?: boolean
+          wealth?: number | null
           weekly_ritual_enabled?: boolean
         }
         Update: {
           account_status?: string
+          age?: number | null
           auto_monthly_report?: boolean
           challenges_allowed?: boolean
           created_at?: string
           current_rank?: number
+          debts?: number | null
           deletion_requested_at?: string | null
+          financial_goal?: string | null
           first_name?: string
+          fixed_costs?: number | null
+          freedom_life_expectancy?: number | null
+          freedom_target_age?: number | null
           future_self_messages_enabled?: boolean
           has_strategy_access?: boolean
           id?: string
+          last_confirmed_at?: string | null
           last_name?: string
           leaderboard_visible?: boolean
+          meta_migrated?: boolean | null
+          monthly_income?: number | null
           mood_checkin_enabled?: boolean
+          occupation?: string | null
           onboarding_completed?: boolean
           onboarding_completed_at?: string | null
           onboarding_current_step?: number
@@ -3439,15 +3479,20 @@ export type Database = {
           peak_score_visible?: boolean
           phone?: string | null
           plan?: string
+          professional_status?: string | null
           referral_code?: string | null
+          risk_tolerance?: number | null
+          savings_rate?: number | null
           shadow_twin_visible?: boolean
           show_truth_moments?: boolean
           streak_rescue_enabled?: boolean
+          tax_burden?: number | null
           theme_preference?: string
           updated_at?: string
           user_type?: string
           voice_brief_enabled?: boolean
           voice_weekly_enabled?: boolean
+          wealth?: number | null
           weekly_ritual_enabled?: boolean
         }
         Relationships: []
@@ -4829,6 +4874,7 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_client: { Args: { _user_id: string }; Returns: boolean }
       is_staff_or_admin: { Args: { _user_id: string }; Returns: boolean }
+      migrate_meta_to_profiles: { Args: never; Returns: undefined }
       staff_has_case_access: {
         Args: { _case_id: string; _user_id: string }
         Returns: boolean

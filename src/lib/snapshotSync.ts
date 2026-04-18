@@ -254,16 +254,17 @@ export async function syncSnapshotToNetWorth(
   if (monthlyExpenses !== null && monthlyExpenses > 0) metaUpdate.fixed_costs = monthlyExpenses;
 
   await supabase
-    .from('meta_profiles')
-    .upsert({ user_id: userId, ...metaUpdate, last_confirmed_at: new Date().toISOString() }, { onConflict: 'user_id' });
+    .from('profiles')
+    .update({ ...metaUpdate, last_confirmed_at: new Date().toISOString(), updated_at: new Date().toISOString() } as any)
+    .eq('id', userId);
 
-  // 5. PeakScore = months of runway. Use snapshot expenses → fallback to meta.
+  // 5. PeakScore = months of runway. Use snapshot expenses → fallback to profile.
   let denom = monthlyExpenses ?? 0;
   if (denom <= 0) {
     const { data: meta } = await supabase
-      .from('meta_profiles')
+      .from('profiles')
       .select('fixed_costs')
-      .eq('user_id', userId)
+      .eq('id', userId)
       .maybeSingle();
     denom = num(meta?.fixed_costs);
   }

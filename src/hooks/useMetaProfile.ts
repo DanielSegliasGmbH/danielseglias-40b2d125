@@ -1,3 +1,9 @@
+// ── DATA SOURCE ──────────────────────────────────────
+// Source of truth: profiles table (as of migration 2026-04-18)
+// meta_profiles table is DEPRECATED — kept for backwards
+// compatibility only. Do NOT write to meta_profiles directly.
+// All reads/writes go through profiles via this hook.
+// Full removal of meta_profiles: planned for Claude Code phase.
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
@@ -40,6 +46,32 @@ export const META_FIELD_MAP: Record<string, { label: string; unit?: string; grou
 
 export type MetaFieldKey = keyof Omit<MetaProfile, 'id' | 'user_id' | 'last_confirmed_at' | 'created_at' | 'updated_at'>;
 
+const PROFILE_FIELDS =
+  'id, age, monthly_income, fixed_costs, savings_rate, wealth, debts, occupation, professional_status, financial_goal, tax_burden, risk_tolerance, last_confirmed_at, created_at, updated_at';
+
+// Map a profiles row to the legacy MetaProfile shape so all consumers keep working.
+function rowToMeta(row: any, userId: string): MetaProfile | null {
+  if (!row) return null;
+  return {
+    id: row.id,
+    user_id: userId,
+    monthly_income: row.monthly_income ?? null,
+    fixed_costs: row.fixed_costs ?? null,
+    savings_rate: row.savings_rate ?? null,
+    wealth: row.wealth ?? null,
+    debts: row.debts ?? null,
+    age: row.age ?? null,
+    occupation: row.occupation ?? null,
+    professional_status: row.professional_status ?? null,
+    financial_goal: row.financial_goal ?? null,
+    tax_burden: row.tax_burden ?? null,
+    risk_tolerance: row.risk_tolerance ?? null,
+    last_confirmed_at: row.last_confirmed_at ?? null,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
+}
+
 export function useMetaProfile() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -50,29 +82,31 @@ export function useMetaProfile() {
     queryFn: async () => {
       if (!user?.id) return null;
       const { data, error } = await supabase
-        .from('meta_profiles')
-        .select('*')
-        .eq('user_id', user.id)
+        .from('profiles')
+        .select(PROFILE_FIELDS)
+        .eq('id', user.id)
         .maybeSingle();
       if (error) throw error;
-      return data as MetaProfile | null;
+      return rowToMeta(data, user.id);
     },
     enabled: !!user?.id,
   });
 
-  // Create profile if it doesn't exist
+  // Profiles row is auto-created by the handle_new_user trigger; just return it.
   const ensureProfile = async (): Promise<MetaProfile> => {
     if (query.data) return query.data;
     if (!user?.id) throw new Error('Not authenticated');
 
     const { data, error } = await supabase
-      .from('meta_profiles')
-      .insert([{ user_id: user.id }])
-      .select()
-      .single();
+      .from('profiles')
+      .select(PROFILE_FIELDS)
+      .eq('id', user.id)
+      .maybeSingle();
     if (error) throw error;
-    queryClient.setQueryData(['meta-profile', user.id], data);
-    return data as MetaProfile;
+    const meta = rowToMeta(data, user.id);
+    if (!meta) throw new Error('Profile not found');
+    queryClient.setQueryData(['meta-profile', user.id], meta);
+    return meta;
   };
 
   // Update a single field with history tracking
@@ -87,9 +121,9 @@ export function useMetaProfile() {
 
     // Update the profile
     const { error } = await supabase
-      .from('meta_profiles')
+      .from('profiles')
       .update({ [field]: newValue } as any)
-      .eq('user_id', user.id);
+      .eq('id', user.id);
     if (error) throw error;
 
     // Write history entry
@@ -124,9 +158,9 @@ export function useMetaProfile() {
     const profile = await ensureProfile();
 
     const { error } = await supabase
-      .from('meta_profiles')
+      .from('profiles')
       .update(updates as any)
-      .eq('user_id', user.id);
+      .eq('id', user.id);
     if (error) throw error;
 
     // Write history for each changed field
@@ -155,9 +189,9 @@ export function useMetaProfile() {
     if (!user?.id) return;
     await ensureProfile();
     const { error } = await supabase
-      .from('meta_profiles')
+      .from('profiles')
       .update({ last_confirmed_at: new Date().toISOString() } as any)
-      .eq('user_id', user.id);
+      .eq('id', user.id);
     if (error) throw error;
     queryClient.invalidateQueries({ queryKey: ['meta-profile'] });
     toast.success('Profildaten bestätigt');
