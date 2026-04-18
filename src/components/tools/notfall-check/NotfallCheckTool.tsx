@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { PdfExportWrapper } from '@/components/tools/PdfExportWrapper';
+import { ToolSnapshotButton } from '@/components/tools/ToolSnapshotButton';
 import { ToolReflection, ToolTrustNote } from '@/components/tools/ToolConversionElements';
 import { useMetaProfile } from '@/hooks/useMetaProfile';
 import { usePeakScore } from '@/hooks/usePeakScore';
