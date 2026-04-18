@@ -1,3 +1,9 @@
+// ── DEPRECATION NOTICE ──────────────────────────────
+// For UI consumption use useUnifiedNotifications() instead.
+// This module is kept for: (a) the engine that generates
+// smart notifications (useSmartNotifications), and
+// (b) internal dispatch from useUnifiedNotifications.
+// ────────────────────────────────────────────────────
 import { useEffect, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';

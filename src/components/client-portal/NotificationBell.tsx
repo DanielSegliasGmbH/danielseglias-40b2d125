@@ -7,36 +7,11 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from '@/components/ui/sheet';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import {
-  useClientNotifications,
-  useMarkNotificationRead,
-  useMarkAllNotificationsRead,
-  useToggleNotificationStar,
-} from '@/hooks/useNotifications';
-import {
-  useSmartNotificationsList,
-  useMarkSmartNotificationRead,
-  useMarkAllSmartNotificationsRead,
-  useToggleSmartNotificationStar,
-} from '@/hooks/useSmartNotifications';
+import { useUnifiedNotifications, type UnifiedNotification } from '@/hooks/useUnifiedNotifications';
 import { cn } from '@/lib/utils';
 import { format, isToday, isThisWeek } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { motion } from 'framer-motion';
-
-interface UnifiedNotification {
-  id: string;
-  title: string;
-  body: string;
-  description?: string | null;
-  link_url?: string | null;
-  link_label?: string | null;
-  category?: string;
-  is_read: boolean;
-  is_starred: boolean;
-  date: string;
-  source: 'broadcast' | 'smart';
-}
 
 type ColorDot = 'blue' | 'green' | 'orange' | 'red';
 type FilterTab = 'unread' | 'read' | 'starred' | 'all';
@@ -79,7 +54,7 @@ function groupNotifications(items: UnifiedNotification[]): GroupedNotifications[
   const older: UnifiedNotification[] = [];
 
   items.forEach(n => {
-    const d = new Date(n.date);
+    const d = new Date(n.created_at);
     if (isToday(d)) today.push(n);
     else if (isThisWeek(d, { weekStartsOn: 1 })) thisWeek.push(n);
     else older.push(n);
@@ -95,88 +70,42 @@ function groupNotifications(items: UnifiedNotification[]): GroupedNotifications[
 export function NotificationBell() {
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<FilterTab>('unread');
-  const { data: broadcastNotifs } = useClientNotifications();
-  const { data: smartNotifs } = useSmartNotificationsList();
-  const markBroadcastRead = useMarkNotificationRead();
-  const markAllBroadcastRead = useMarkAllNotificationsRead();
-  const markSmartRead = useMarkSmartNotificationRead();
-  const markAllSmartRead = useMarkAllSmartNotificationsRead();
-  const toggleBroadcastStar = useToggleNotificationStar();
-  const toggleSmartStar = useToggleSmartNotificationStar();
-
-  const notifications = useMemo<UnifiedNotification[]>(() => {
-    const items: UnifiedNotification[] = [];
-
-    (broadcastNotifs || []).forEach(n => {
-      items.push({
-        id: n.id,
-        title: n.title,
-        body: n.body,
-        description: n.description,
-        link_url: n.link_url,
-        link_label: n.link_label,
-        category: n.category,
-        is_read: n.is_read,
-        is_starred: (n as any).is_starred ?? false,
-        date: n.published_at || n.created_at,
-        source: 'broadcast',
-      });
-    });
-
-    (smartNotifs || []).forEach(n => {
-      items.push({
-        id: n.id,
-        title: n.title,
-        body: n.body,
-        link_url: n.link_url,
-        link_label: n.link_label,
-        category: n.notification_type,
-        is_read: n.is_read,
-        is_starred: (n as any).is_starred ?? false,
-        date: n.created_at,
-        source: 'smart',
-      });
-    });
-
-    items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    return items;
-  }, [broadcastNotifs, smartNotifs]);
-
-  const unreadCount = notifications.filter(n => !n.is_read).length;
-  const starredCount = notifications.filter(n => n.is_starred).length;
+  const {
+    all,
+    unread,
+    read,
+    starred,
+    unreadCount,
+    starredCount,
+    markRead,
+    markAllRead,
+    toggleStar,
+  } = useUnifiedNotifications();
 
   const filtered = useMemo(() => {
     switch (activeTab) {
-      case 'unread': return notifications.filter(n => !n.is_read);
-      case 'read': return notifications.filter(n => n.is_read);
-      case 'starred': return notifications.filter(n => n.is_starred);
+      case 'unread': return unread;
+      case 'read': return read;
+      case 'starred': return starred;
       case 'all':
-      default: return notifications;
+      default: return all;
     }
-  }, [notifications, activeTab]);
+  }, [all, unread, read, starred, activeTab]);
 
   const grouped = groupNotifications(filtered);
 
   const handleClick = (n: UnifiedNotification) => {
-    if (!n.is_read) {
-      if (n.source === 'broadcast') markBroadcastRead.mutate(n.id);
-      else markSmartRead.mutate(n.id);
-    }
+    if (!n.is_read) markRead(n.id, n.source);
   };
 
   const handleToggleStar = (e: React.MouseEvent, n: UnifiedNotification) => {
     e.preventDefault();
     e.stopPropagation();
-    if (n.source === 'broadcast') {
-      toggleBroadcastStar.mutate({ notificationId: n.id, isStarred: !n.is_starred });
-    } else {
-      toggleSmartStar.mutate({ id: n.id, isStarred: !n.is_starred });
-    }
+    toggleStar(n.id, n.source, !n.is_starred);
   };
 
   const handleMarkAllRead = () => {
-    markAllBroadcastRead.mutate();
-    markAllSmartRead.mutate();
+    markAllRead();
   };
 
   const emptyMessage = (() => {
@@ -334,7 +263,7 @@ function NotificationRow({
           </span>
         )}
         <p className="text-[11px] text-muted-foreground/60 mt-1">
-          {format(new Date(n.date), 'dd. MMM, HH:mm', { locale: de })}
+          {format(new Date(n.created_at), 'dd. MMM, HH:mm', { locale: de })}
         </p>
       </div>
       <div className="flex flex-col items-center gap-1.5 shrink-0">
