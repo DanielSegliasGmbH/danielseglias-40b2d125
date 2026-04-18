@@ -133,6 +133,7 @@ export default function ClientPortalInsurances() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<Product | null>(null);
   const [form, setForm] = useState<ProductFormData>(EMPTY_FORM);
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
   // ─── Fetch customer_id ──────────────────────────────────────
   const { data: customerId } = useQuery({
@@ -264,7 +265,7 @@ export default function ClientPortalInsurances() {
     return (
       <ClientPortalLayout>
         <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
-          <PageHeader title="🛡️ Meine Versicherungen" subtitle="Übersicht deiner Policen und Produkte" />
+          <PageHeader title="📦 Meine Produkte" subtitle="Übersicht deiner Versicherungen, Vorsorge und Finanzprodukte" />
           <Button variant="ghost" onClick={() => setSelectedProduct(null)} className="gap-2 -ml-2">
             <ArrowLeft className="h-4 w-4" /> Zurück
           </Button>
@@ -371,8 +372,22 @@ export default function ClientPortalInsurances() {
   return (
     <ClientPortalLayout>
       <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
-        <PageHeader title="🛡️ Meine Versicherungen" subtitle="Übersicht deiner Policen und Produkte" />
-        <div className="flex justify-end">
+        <PageHeader title="📦 Meine Produkte" subtitle="Übersicht deiner Versicherungen, Vorsorge und Finanzprodukte" />
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Label htmlFor="category-filter" className="text-xs text-muted-foreground shrink-0">Filter:</Label>
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger id="category-filter" className="h-9 w-[180px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Alle Produkte</SelectItem>
+                {CATEGORIES.map(c => (
+                  <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           {customerId && (
             <Button onClick={openAdd} className="gap-2">
               <Plus className="h-4 w-4" /> Produkt hinzufügen
@@ -388,26 +403,37 @@ export default function ClientPortalInsurances() {
               </Card>
             ))}
           </div>
-        ) : products.length === 0 ? (
-          <div className="space-y-4">
-            <EmptyState
-              icon={Shield}
-              title="Noch keine Produkte"
-              description="Füge dein erstes Finanzprodukt hinzu – z. B. eine Versicherung, Vorsorge oder Anlage."
-            />
-            {customerId && (
-              <div className="flex justify-center">
-                <Button onClick={openAdd} className="gap-2">
-                  <Plus className="h-4 w-4" /> Produkt hinzufügen
-                </Button>
+        ) : (() => {
+          const filteredProducts = categoryFilter === 'all'
+            ? products
+            : products.filter(p => p.category === categoryFilter);
+
+          if (filteredProducts.length === 0) {
+            return (
+              <div className="space-y-4">
+                <EmptyState
+                  icon={Shield}
+                  title={categoryFilter === 'all' ? 'Noch keine Produkte' : 'Keine Produkte in dieser Kategorie'}
+                  description={categoryFilter === 'all'
+                    ? 'Füge dein erstes Finanzprodukt hinzu – z. B. eine Versicherung, Vorsorge oder Anlage.'
+                    : 'In dieser Kategorie hast du noch keine Produkte erfasst.'}
+                />
+                {customerId && (
+                  <div className="flex justify-center">
+                    <Button onClick={openAdd} className="gap-2">
+                      <Plus className="h-4 w-4" /> Produkt hinzufügen
+                    </Button>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {products.map(p => {
-              const Icon = CATEGORY_ICONS[p.category] || Briefcase;
-              return (
+            );
+          }
+
+          return (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredProducts.map(p => {
+                const Icon = CATEGORY_ICONS[p.category] || Briefcase;
+                return (
                 <Card
                   key={p.id}
                   className="cursor-pointer hover:shadow-md hover:border-primary/20 transition-all group"
@@ -459,10 +485,11 @@ export default function ClientPortalInsurances() {
                     </div>
                   </CardContent>
                 </Card>
-              );
-            })}
-          </div>
-        )}
+                );
+              })}
+            </div>
+          );
+        })()}
       </div>
 
       {/* Add / Edit Dialog */}

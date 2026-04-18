@@ -18,8 +18,8 @@ const UNLOCK_INFO: Record<LifeMapTerritory['key'], { description: string; howTo:
   },
   absicherung: {
     description: 'Dein Schutz gegen Lebensrisiken — Versicherungen, Notgroschen, Vorsorgevollmachten.',
-    howTo: 'Hinterlege deine erste Versicherung in «Meine Versicherungen», um dieses Gebiet zu erschliessen.',
-    ctaLabel: 'Zu Versicherungen',
+    howTo: 'Hinterlege dein erstes Produkt in «Meine Produkte», um dieses Gebiet zu erschliessen.',
+    ctaLabel: 'Zu Meine Produkte',
     ctaPath: '/app/client-portal/insurances',
   },
   vorsorge: {
