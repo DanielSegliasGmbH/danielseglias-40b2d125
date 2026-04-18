@@ -349,6 +349,16 @@ export function KontenModellTool({ mode = 'internal' }: Props) {
                   context="Das Konten-Modell ist der erste Schritt zu finanzieller Ordnung – und Freiheit."
                 />
                 <ToolTrustNote text="Empfohlene Grundstruktur – individuell anpassbar." />
+                <ToolSnapshotButton
+                  toolSlug="konten-modell"
+                  toolName="Konten-Modell"
+                  snapshotData={{
+                    accounts: accounts.map(a => ({ key: a.key, name: a.name, pct: a.pct })),
+                    jahresPct,
+                    showJahres,
+                    totalPct,
+                  }}
+                />
               </>
             )}
           </div>
