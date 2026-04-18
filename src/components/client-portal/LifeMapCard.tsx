@@ -1,10 +1,52 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Card, CardContent } from '@/components/ui/card';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import { ArrowRight, Lock } from 'lucide-react';
 import { useLifeMapData, LifeMapTerritory } from '@/hooks/useLifeMapData';
 import { cn } from '@/lib/utils';
+
+const UNLOCK_INFO: Record<LifeMapTerritory['key'], { description: string; howTo: string; ctaLabel: string; ctaPath: string }> = {
+  vermoegen: {
+    description: 'Hier siehst du dein Vermögen wachsen — Konten, Investments, 3a, Immobilien.',
+    howTo: 'Füge deinen ersten Vermögenswert hinzu, um dieses Gebiet zu erschliessen.',
+    ctaLabel: 'Zu Mein Vermögen',
+    ctaPath: '/app/client-portal/net-worth',
+  },
+  absicherung: {
+    description: 'Dein Schutz gegen Lebensrisiken — Versicherungen, Notgroschen, Vorsorgevollmachten.',
+    howTo: 'Hinterlege deine erste Versicherung in «Meine Versicherungen», um dieses Gebiet zu erschliessen.',
+    ctaLabel: 'Zu Versicherungen',
+    ctaPath: '/app/client-portal/insurances',
+  },
+  vorsorge: {
+    description: 'Dein Plan für später — Säule 3a, Pensionskasse, AHV.',
+    howTo: 'Erfasse deine Säule 3a im Snapshot, um dieses Gebiet zu erschliessen.',
+    ctaLabel: 'Zum Snapshot',
+    ctaPath: '/app/client-portal/snapshot',
+  },
+  cashflow: {
+    description: 'Dein Geldfluss — Einnahmen, Ausgaben, Sparrate.',
+    howTo: 'Erfasse mindestens 5 Ausgaben in deinem Budget, um dieses Gebiet zu erschliessen.',
+    ctaLabel: 'Zu Mein Budget',
+    ctaPath: '/app/client-portal/budget',
+  },
+  wissen: {
+    description: 'Dein Finanzwissen wächst mit jedem Artikel, jedem Kurs.',
+    howTo: 'Lies deinen ersten Artikel in der Bibliothek, um dieses Gebiet zu erschliessen.',
+    ctaLabel: 'Zur Bibliothek',
+    ctaPath: '/app/client-portal/library',
+  },
+  ziele: {
+    description: 'Wo du hin willst — finanzielle Ziele und Meilensteine.',
+    howTo: 'Setze dein erstes Ziel, um dieses Gebiet zu erschliessen.',
+    ctaLabel: 'Zu Meine Ziele',
+    ctaPath: '/app/client-portal/goals',
+  },
+};
 
 /**
  * Visual "fog-of-war" map of the user's financial life.
@@ -13,6 +55,7 @@ import { cn } from '@/lib/utils';
 export function LifeMapCard() {
   const navigate = useNavigate();
   const { territories, exploredPercent, unlockedCount } = useLifeMapData();
+  const [lockedInfo, setLockedInfo] = useState<LifeMapTerritory | null>(null);
 
   // Track newly unlocked territories — fire toast on transition 0 -> >0.
   const prevUnlockedRef = useRef<Set<string> | null>(null);
@@ -33,6 +76,8 @@ export function LifeMapCard() {
     prevUnlockedRef.current = currentUnlocked;
   }, [territories]);
 
+  const lockedDetails = lockedInfo ? UNLOCK_INFO[lockedInfo.key] : null;
+
   return (
     <Card className="overflow-hidden border-border/50">
       <CardContent className="p-5 sm:p-6">
@@ -43,7 +88,6 @@ export function LifeMapCard() {
           </p>
         </div>
 
-        {/* Hex grid: 3 cols x 2 rows on mobile, scales up nicely */}
         <div className="grid grid-cols-3 gap-3 sm:gap-4 max-w-md mx-auto">
           {territories.map((t, i) => (
             <motion.button
@@ -52,7 +96,13 @@ export function LifeMapCard() {
               initial={{ opacity: 0, scale: 0.85, y: 8 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ delay: i * 0.07, duration: 0.35, ease: 'easeOut' }}
-              onClick={() => navigate(t.path)}
+              onClick={() => {
+                if (t.progress === 0) {
+                  setLockedInfo(t);
+                } else {
+                  navigate(t.path);
+                }
+              }}
               className="group relative aspect-square focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-2xl"
               aria-label={`${t.label} – ${Math.round(t.progress * 100)}% erschlossen`}
             >
@@ -61,7 +111,6 @@ export function LifeMapCard() {
           ))}
         </div>
 
-        {/* Footer: explored % */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -88,6 +137,37 @@ export function LifeMapCard() {
           </div>
         </motion.div>
       </CardContent>
+
+      <Sheet open={!!lockedInfo} onOpenChange={(open) => !open && setLockedInfo(null)}>
+        <SheetContent side="bottom" className="rounded-t-2xl">
+          {lockedInfo && lockedDetails && (
+            <>
+              <SheetHeader className="text-left">
+                <SheetTitle className="flex items-center gap-2 text-lg">
+                  <span className="text-2xl">{lockedInfo.emoji}</span>
+                  {lockedInfo.label}
+                  <Lock className="h-4 w-4 text-muted-foreground ml-auto" />
+                </SheetTitle>
+                <SheetDescription className="text-sm leading-relaxed pt-2">
+                  {lockedDetails.description}
+                </SheetDescription>
+              </SheetHeader>
+              <div className="mt-4 p-3 rounded-xl bg-muted/60 text-sm text-foreground leading-relaxed">
+                {lockedDetails.howTo}
+              </div>
+              <Button
+                className="mt-5 w-full gap-2"
+                onClick={() => {
+                  navigate(lockedDetails.ctaPath);
+                  setLockedInfo(null);
+                }}
+              >
+                Jetzt starten <ArrowRight className="h-4 w-4" />
+              </Button>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
     </Card>
   );
 }
