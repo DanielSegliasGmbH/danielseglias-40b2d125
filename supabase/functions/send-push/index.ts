@@ -14,24 +14,35 @@ const corsHeaders = {
 
 const VAPID_PUBLIC_KEY =
   'BO8_FVycA7kj4PHZyI3x6dICoZWNCItfyjxxXNa0mN6M78Yg42IQUeCa-98U4jhucGUptebSjFDLqSfr4AFryQc';
-const VAPID_PRIVATE_KEY = Deno.env.get('VAPID_PRIVATE_KEY') ?? '';
 
-// VAPID subject must be a valid mailto: or https:// URL.
-// Sanitize the configured value and fall back to a safe default if invalid.
-function sanitizeSubject(raw: string | undefined): string {
+function clean(v: string | undefined): string {
+  if (!v) return '';
+  return v.trim().replace(/^["']|["']$/g, '');
+}
+
+function sanitizeSubject(raw: string): string {
   const fallback = 'mailto:notifications@finlife.app';
   if (!raw) return fallback;
-  const trimmed = raw.trim();
-  if (/^mailto:.+@.+\..+/i.test(trimmed)) return trimmed;
-  if (/^https?:\/\/.+/i.test(trimmed)) return trimmed;
-  // Plain email -> wrap with mailto:
-  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return `mailto:${trimmed}`;
-  console.warn('Invalid VAPID_SUBJECT, falling back to default');
+  if (/^mailto:.+@.+\..+/i.test(raw)) return raw;
+  if (/^https?:\/\/.+/i.test(raw)) return raw;
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw)) return `mailto:${raw}`;
   return fallback;
 }
-const VAPID_SUBJECT = sanitizeSubject(Deno.env.get('VAPID_SUBJECT'));
 
-webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+let vapidReady = false;
+function initVapid(): { ok: boolean; err?: string } {
+  if (vapidReady) return { ok: true };
+  const priv = clean(Deno.env.get('VAPID_PRIVATE_KEY'));
+  const subj = sanitizeSubject(clean(Deno.env.get('VAPID_SUBJECT')));
+  console.log('VAPID init', { subj, privLen: priv.length, pubLen: VAPID_PUBLIC_KEY.length });
+  try {
+    webpush.setVapidDetails(subj, VAPID_PUBLIC_KEY, priv);
+    vapidReady = true;
+    return { ok: true };
+  } catch (e: any) {
+    return { ok: false, err: e?.message ?? String(e) };
+  }
+}
 
 const admin = createClient(
   Deno.env.get('SUPABASE_URL')!,
