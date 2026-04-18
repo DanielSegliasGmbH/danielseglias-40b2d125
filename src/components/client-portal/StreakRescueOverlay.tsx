@@ -14,13 +14,21 @@ import { cn } from '@/lib/utils';
 const DISMISS_KEY = 'streak-rescue-dismissed';
 
 function isDismissedToday(): boolean {
-  const stored = sessionStorage.getItem(DISMISS_KEY);
-  if (!stored) return false;
-  return stored === new Date().toISOString().slice(0, 10);
+  try {
+    const stored = localStorage.getItem(DISMISS_KEY);
+    if (!stored) return false;
+    return stored === new Date().toISOString().slice(0, 10);
+  } catch {
+    return false;
+  }
 }
 
 function dismissToday(): void {
-  sessionStorage.setItem(DISMISS_KEY, new Date().toISOString().slice(0, 10));
+  try {
+    localStorage.setItem(DISMISS_KEY, new Date().toISOString().slice(0, 10));
+  } catch {
+    // ignore
+  }
 }
 
 export function StreakRescueOverlay() {
