@@ -226,7 +226,8 @@ export default function ClientPortalCoach() {
             const status = getModuleStatus(progress);
             const statusInfo = statusConfig[status];
             const Icon = mod.icon;
-            const isLocked = !isPremium && !subLoading && idx >= FREE_MODULE_COUNT;
+            // All coach modules are accessible to every logged-in client (premium gate removed)
+            const isLocked = false;
             const isNext = mod.key === nextModuleKey && !isLocked;
             const hasBadge = badges.some(b => b.module_key === mod.key);
             const isTypeRecommended = finanzTypCompleted && recommendedModules.includes(mod.key) && status !== 'completed';

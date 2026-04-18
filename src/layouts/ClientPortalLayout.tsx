@@ -297,6 +297,7 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
           buildPath={buildPath}
           onLogout={handleLogout}
           visibleSections={visibleSections}
+          onChatOpen={() => setChatOpen(true)}
         />
 
         {/* Chat Drawer (desktop) */}
