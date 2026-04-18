@@ -82,18 +82,20 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
                 }}
                 className={cn(
                   "flex items-center justify-between w-full px-4 py-3.5 rounded-xl text-left",
-                  "bg-muted/50 transition-colors touch-manipulation",
-                  "active:bg-muted more-sheet-item"
+                  "bg-primary/10 ring-1 ring-primary/20 transition-colors touch-manipulation",
+                  "active:bg-primary/15 hover:bg-primary/15 more-sheet-item"
                 )}
                 style={{ WebkitTapHighlightColor: 'transparent' }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-lg bg-primary/20 flex items-center justify-center">
                     <MessageCircle className="h-4 w-4 text-primary" />
                   </div>
-                  <span className="font-medium text-sm text-foreground">Chat mit Berater</span>
+                  <span className="font-semibold text-sm text-foreground">Chat mit Berater</span>
                 </div>
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                <span className="text-[10px] font-semibold text-primary bg-primary/15 px-2 py-0.5 rounded-full">
+                  Direkt schreiben
+                </span>
               </button>
             )}
             {visibleContentItems.map((item) => (

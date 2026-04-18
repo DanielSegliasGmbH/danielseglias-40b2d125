@@ -108,7 +108,7 @@ export default function ClientPortalJourney() {
         {/* ── HEADER ── */}
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate(-1)} className="p-1.5 rounded-lg hover:bg-muted">
+            <button onClick={() => navigate('/app/client-portal')} className="p-1.5 rounded-lg hover:bg-muted">
               <ArrowLeft className="h-5 w-5 text-foreground" />
             </button>
             <div>

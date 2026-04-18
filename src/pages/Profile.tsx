@@ -236,7 +236,10 @@ export default function Profile() {
   } = useGamification();
   const [loading, setLoading] = useState(false);
   const { profile: metaProfile } = useMetaProfile();
-  const professionInfo = getProfessionInfo(metaProfile?.professional_status);
+  // Null-safe: getProfessionInfo already returns null for missing/unknown values
+  const professionInfo = metaProfile?.professional_status
+    ? getProfessionInfo(metaProfile.professional_status)
+    : null;
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPasswordSection, setShowPasswordSection] = useState(false);
@@ -285,7 +288,14 @@ export default function Profile() {
     enabled: !!user?.id,
   });
 
-  const profileStats = stats || { tasksCompleted: 0, goalsReached: 0, articlesRead: 0, longestStreak: streakDays, totalXp: points, toolsUsed: [] };
+  const profileStats: ProfileStats = stats ?? {
+    tasksCompleted: 0,
+    goalsReached: 0,
+    articlesRead: 0,
+    longestStreak: streakDays ?? 0,
+    totalXp: points ?? 0,
+    toolsUsed: [],
+  };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -362,10 +372,12 @@ export default function Profile() {
                     {maxLevel ? 'Max Level!' : `Noch ${pointsToNext} XP bis Level ${level + 1}`}
                   </span>
                 </div>
-                <Progress value={progressPercent} className="h-2.5" />
+                <Progress value={progressPercent ?? 0} className="h-2.5" />
                 <div className="flex justify-between mt-1.5 text-[11px] text-muted-foreground">
                   <span>{levelLabel}</span>
-                  {!maxLevel && <span>{LEVELS.find(l => l.level === level + 1)?.label}</span>}
+                  {!maxLevel && (
+                    <span>{LEVELS?.find(l => l.level === (level ?? 0) + 1)?.label ?? ''}</span>
+                  )}
                 </div>
               </CardContent>
             </Card>
