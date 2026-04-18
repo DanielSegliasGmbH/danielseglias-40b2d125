@@ -523,10 +523,13 @@ export type Database = {
         Row: {
           completed_at: string | null
           created_at: string
+          created_by: string | null
           due_date: string | null
           id: string
           is_completed: boolean
           notes: string | null
+          priority: string
+          source: string
           title: string
           updated_at: string
           user_id: string
@@ -534,10 +537,13 @@ export type Database = {
         Insert: {
           completed_at?: string | null
           created_at?: string
+          created_by?: string | null
           due_date?: string | null
           id?: string
           is_completed?: boolean
           notes?: string | null
+          priority?: string
+          source?: string
           title: string
           updated_at?: string
           user_id: string
@@ -545,10 +551,13 @@ export type Database = {
         Update: {
           completed_at?: string | null
           created_at?: string
+          created_by?: string | null
           due_date?: string | null
           id?: string
           is_completed?: boolean
           notes?: string | null
+          priority?: string
+          source?: string
           title?: string
           updated_at?: string
           user_id?: string

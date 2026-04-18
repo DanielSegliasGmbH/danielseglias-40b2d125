@@ -14,6 +14,7 @@ interface TaskRow {
   is_completed: boolean;
   completed_at: string | null;
   created_at: string;
+  source?: string | null;
 }
 
 function getDaysRemaining(dueDateStr: string): number {
@@ -116,12 +117,22 @@ export function TaskCard({
 
             {/* Content */}
             <div className="flex-1 min-w-0">
-              <p className={cn(
-                'text-[15px] font-bold text-foreground leading-tight transition-all',
-                task.is_completed && 'line-through text-muted-foreground font-medium'
-              )}>
-                {task.title}
-              </p>
+              <div className="flex items-start gap-2 flex-wrap">
+                <p className={cn(
+                  'text-[15px] font-bold text-foreground leading-tight transition-all',
+                  task.is_completed && 'line-through text-muted-foreground font-medium'
+                )}>
+                  {task.title}
+                </p>
+                {task.source === 'advisor' && (
+                  <Badge
+                    variant="secondary"
+                    className="text-[10px] px-1.5 py-0 h-4 font-semibold border-0 bg-[hsl(60_15%_35%/0.15)] text-[hsl(60_15%_30%)] dark:text-[hsl(60_20%_70%)]"
+                  >
+                    Von Berater
+                  </Badge>
+                )}
+              </div>
 
               {task.notes && !task.is_completed && (
                 <p className="text-[13px] text-muted-foreground mt-0.5 line-clamp-1">{task.notes}</p>

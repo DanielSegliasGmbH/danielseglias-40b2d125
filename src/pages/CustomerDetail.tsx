@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, User, Phone, Briefcase, Settings, Trash2, LayoutDashboard, Eye } from 'lucide-react';
+import { ArrowLeft, User, Phone, Briefcase, Settings, Trash2, LayoutDashboard, Eye, ClipboardList } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   AlertDialog,
@@ -36,6 +36,7 @@ import { CustomerEconomicsTab } from '@/components/customers/CustomerEconomicsTa
 import { CustomerControlTab } from '@/components/customers/CustomerControlTab';
 import { CustomerDashboardTab } from '@/components/customers/CustomerDashboardTab';
 import { CustomerPortalSettingsCard } from '@/components/admin/CustomerPortalSettingsCard';
+import { CustomerTasksTab } from '@/components/customers/CustomerTasksTab';
 
 export default function CustomerDetail() {
   const { id } = useParams<{ id: string }>();
@@ -275,7 +276,7 @@ export default function CustomerDetail() {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-7 lg:w-auto lg:inline-grid">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <LayoutDashboard className="h-4 w-4" />
               <span className="hidden sm:inline">{t('customer.tabs.dashboard', 'Dashboard')}</span>
@@ -295,6 +296,10 @@ export default function CustomerDetail() {
             <TabsTrigger value="control" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
               <span className="hidden sm:inline">{t('customer.tabs.control', 'Steuerung')}</span>
+            </TabsTrigger>
+            <TabsTrigger value="tasks" className="flex items-center gap-2">
+              <ClipboardList className="h-4 w-4" />
+              <span className="hidden sm:inline">Aufgaben</span>
             </TabsTrigger>
             <TabsTrigger value="portal" className="flex items-center gap-2">
               <Eye className="h-4 w-4" />
@@ -343,6 +348,13 @@ export default function CustomerDetail() {
               onChange={handleControlChange}
               onSave={handleSaveControl}
               saving={savingControl}
+            />
+          </TabsContent>
+
+          <TabsContent value="tasks" className="mt-6">
+            <CustomerTasksTab
+              customerId={id!}
+              customerName={`${customer.first_name} ${customer.last_name}`}
             />
           </TabsContent>
 
