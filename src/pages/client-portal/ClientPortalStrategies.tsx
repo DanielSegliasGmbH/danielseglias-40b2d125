@@ -72,7 +72,7 @@ export default function ClientPortalStrategies() {
                 Schreib ihm direkt — meistens geht das innerhalb eines Werktags.
               </p>
               <div className="flex flex-col gap-2 pt-2">
-                <Button onClick={() => (window.location.href = '/app/client-portal/chat')}>
+                <Button onClick={() => openChat('Hallo Daniel, ich würde gerne die Anlagestrategien freigeschaltet bekommen.')}>
                   Berater kontaktieren
                 </Button>
                 <Button variant="ghost" onClick={() => window.history.back()}>
