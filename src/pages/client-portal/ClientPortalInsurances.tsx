@@ -263,7 +263,11 @@ export default function ClientPortalInsurances() {
     const Icon = CATEGORY_ICONS[p.category] || Briefcase;
     return (
       <ClientPortalLayout>
-        <div className="max-w-2xl mx-auto space-y-6">
+        <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
+          <ScreenHeader title="🛡️ Meine Produkte" backTo="/app/client-portal" />
+          <Button variant="ghost" onClick={() => setSelectedProduct(null)} className="gap-2 -ml-2">
+            <ArrowLeft className="h-4 w-4" /> Zurück
+          </Button>
           <Button variant="ghost" onClick={() => setSelectedProduct(null)} className="gap-2">
             <ArrowLeft className="h-4 w-4" /> Zurück
           </Button>

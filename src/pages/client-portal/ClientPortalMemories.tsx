@@ -290,7 +290,7 @@ export default function ClientPortalMemories() {
           )}
         </DialogContent>
       </Dialog>
-      </PageTransition>
+      </div>
     </ClientPortalLayout>
   );
 }
