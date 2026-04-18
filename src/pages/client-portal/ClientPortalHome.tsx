@@ -340,6 +340,8 @@ export default function ClientPortalHome() {
             navigate={navigate}
           />
         )}
+        {/* Spacer so the FAB doesn't overlap the last interactive element */}
+        <div className="mb-24" />
       </div>
 
       <StrategyPasswordGate

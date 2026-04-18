@@ -82,7 +82,6 @@ export default function ClientPortalManifest() {
   const [visibleSection, setVisibleSection] = useState(-1);
   const [showButton, setShowButton] = useState(false);
   const [awarding, setAwarding] = useState(false);
-  const [showArchive, setShowArchive] = useState(false);
 
   // Auto-advance sections
   useEffect(() => {
@@ -201,65 +200,10 @@ export default function ClientPortalManifest() {
                 <Sparkles className="mr-2 w-5 h-5" />
                 {awarding ? 'Wird geladen...' : 'Hamster aufwecken →'}
               </Button>
-
-              <button
-                onClick={() => setShowArchive(true)}
-                className="text-xs text-current/60 hover:text-current/90 underline underline-offset-4"
-              >
-                Das alte Manifest anzeigen
-              </button>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-
-      {/* Archive overlay — original manifest preserved */}
-      <AnimatePresence>
-        {showArchive && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[110] bg-background text-foreground overflow-y-auto"
-          >
-            <div className="max-w-xl mx-auto px-6 py-16 space-y-10">
-              <button
-                onClick={() => setShowArchive(false)}
-                className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-4"
-              >
-                ← Zurück zum neuen Manifest
-              </button>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground text-center">
-                Archiv — ursprüngliches Manifest
-              </p>
-              {[
-                ['Geld ist nicht das Ziel.'],
-                ['Geld ist das Werkzeug.'],
-                ['Arbeiten musst du sowieso.', 'Rechnungen bezahlen musst du sowieso.', 'Entscheidungen treffen musst du sowieso.'],
-                ['Die Frage ist nur:', 'Bist du der Spielball deines Geldes?', 'Oder bist du der Spieler?'],
-                ['Ab heute bist du der Spieler.'],
-                ['Etwas Grösseres wartet am Ende des Spielfelds.', 'Jede Runde bringt dich näher.'],
-                ['Lass uns spielen.'],
-              ].map((block, i) => (
-                <div key={i} className="text-center space-y-2">
-                  {block.map((line, j) => (
-                    <p
-                      key={j}
-                      className={
-                        i === 4
-                          ? 'text-2xl md:text-3xl font-bold text-foreground leading-tight'
-                          : 'text-lg md:text-xl text-foreground/85 leading-relaxed'
-                      }
-                    >
-                      {line}
-                    </p>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
