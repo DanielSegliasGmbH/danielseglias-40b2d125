@@ -59,17 +59,19 @@ export function useShadowTwin() {
       let demographicKey = 'unknown|unknown|unknown';
 
       if (customerUser?.customer_id) {
+        // ARCHIVED: customer_profiles - use profiles instead.
+        // Canton now lives directly on the profiles table for the logged-in user.
         const [customerRes, economicsRes, profileRes] = await Promise.all([
           supabase.from('customers').select('date_of_birth').eq('id', customerUser.customer_id).maybeSingle(),
           supabase.from('customer_economics').select('income_range').eq('customer_id', customerUser.customer_id).maybeSingle(),
-          supabase.from('customer_profiles').select('canton').eq('customer_id', customerUser.customer_id).maybeSingle(),
+          supabase.from('profiles').select('canton').eq('id', user.id).maybeSingle(),
         ]);
 
         const age = customerRes.data?.date_of_birth
           ? Math.floor((Date.now() - new Date(customerRes.data.date_of_birth).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
           : null;
 
-        demographicKey = buildDemographicKey(age, profileRes.data?.canton || null, economicsRes.data?.income_range || null);
+        demographicKey = buildDemographicKey(age, (profileRes.data as any)?.canton || null, economicsRes.data?.income_range || null);
       }
 
       const { data, error } = await supabase

@@ -154,14 +154,15 @@ export function useResolvedCta(context: string = 'dashboard') {
     queryFn: async (): Promise<ResolvedCta | null> => {
       if (!user) return null;
 
-      // Fetch CTA definitions + user context in parallel
-      const [ctaRes, scoringRes, sessionsRes, eventsRes, impressionsRes] = await Promise.all([
+      // ARCHIVED: user_scoring belongs to old advisor CRM
+      // Returns null/default — admin scoring is decoupled from client app
+      const [ctaRes, sessionsRes, eventsRes, impressionsRes] = await Promise.all([
         supabase.from('cta_definitions').select('*').eq('is_active', true).order('priority'),
-        supabase.from('user_scoring').select('score, status, labels').eq('user_id', user.id).maybeSingle(),
         supabase.from('tracking_sessions').select('id').eq('user_id', user.id),
         supabase.from('tracking_events').select('event_type, tool_key').eq('user_id', user.id),
         supabase.from('cta_impressions').select('cta_ref, clicked').eq('user_id', user.id),
       ]);
+      const scoringRes = { data: null as { score?: number; status?: string; labels?: string[] } | null };
 
       const ctas = (ctaRes.data || []) as CtaDefinition[];
       const scoring = scoringRes.data as any;
