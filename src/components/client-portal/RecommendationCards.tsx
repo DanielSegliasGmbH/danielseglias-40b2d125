@@ -153,8 +153,14 @@ export function RecommendationCards({
             <Button variant="outline" onClick={() => setLockedRec(null)} disabled={requesting}>
               Abbrechen
             </Button>
-            <Button onClick={handleRequestUnlock} disabled={requesting}>
-              {requesting ? 'Wird gesendet…' : 'Anfrage senden'}
+            <Button
+              onClick={() => {
+                if (!lockedRec) return;
+                openChat(`Hallo Daniel, ich würde gerne das Tool «${lockedRec.title}» freigeschaltet bekommen.`);
+                setLockedRec(null);
+              }}
+            >
+              Anfrage senden
             </Button>
           </DialogFooter>
         </DialogContent>
