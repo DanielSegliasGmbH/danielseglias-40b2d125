@@ -228,7 +228,7 @@ export default function ClientPortalTasks() {
           </DialogContent>
         </Dialog>
           </div>
-      </PageTransition>
+        </PageTransition>
       </div>
     </ClientPortalLayout>
   );
