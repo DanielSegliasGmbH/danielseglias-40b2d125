@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PdfExportWrapper } from '@/components/tools/PdfExportWrapper';
+import { ToolSnapshotButton } from '@/components/tools/ToolSnapshotButton';
 import { ToolNextStep } from '@/components/tools/ToolNextStep';
 import { ToolReflection, ToolTrustNote } from '@/components/tools/ToolConversionElements';
 import { useMetaProfile } from '@/hooks/useMetaProfile';
