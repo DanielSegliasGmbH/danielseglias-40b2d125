@@ -311,7 +311,8 @@ function ClientPortalLayoutInner({ children }: ClientPortalLayoutProps) {
         <LevelUpCelebration />
         <TruthMomentOverlay />
         <PaydayRitualOverlay />
-        <StreakRescueOverlay />
+        {/* StreakRescueOverlay archiviert/stummgeschaltet auf Wunsch */}
+        {/* <StreakRescueOverlay /> */}
         <UnlockCelebration newlyUnlocked={newlyUnlocked} onDismiss={clearNewlyUnlocked} />
         <GoldNutCelebrationOverlay />
         <HamsterInventorySheet />
