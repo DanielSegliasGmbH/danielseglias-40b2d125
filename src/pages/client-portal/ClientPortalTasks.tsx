@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { PageHeader } from '@/components/client-portal/PageHeader';
 import { PageTransition } from '@/components/PageTransition';
 import { ErrorState } from '@/components/ErrorState';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -120,7 +120,7 @@ export default function ClientPortalTasks() {
   return (
     <ClientPortalLayout>
       <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
-        <ScreenHeader title="✅ Meine Aufgaben" backTo="/app/client-portal" />
+        <PageHeader title="✅ Meine Aufgaben" subtitle="Deine offenen To-dos und Erledigtes" />
         <PageTransition>
           <div className="space-y-5">
 

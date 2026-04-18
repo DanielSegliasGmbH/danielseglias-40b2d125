@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { PageTransition } from '@/components/PageTransition';
 import { useNavigate } from 'react-router-dom';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { PageHeader } from '@/components/client-portal/PageHeader';
 import { useMemories, Memory } from '@/hooks/useMemories';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -98,7 +98,7 @@ export default function ClientPortalMemories() {
   return (
     <ClientPortalLayout>
       <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
-      <ScreenHeader title={t('clientPortal.activityTitle', 'Mein Verlauf')} backTo="/app/client-portal" />
+      <PageHeader title={`📜 ${t('clientPortal.activityTitle', 'Mein Verlauf')}`} subtitle="Deine letzten Aktivitäten und Meilensteine" />
       <p className="text-sm text-muted-foreground mb-6">{t('clientPortal.activityDesc', 'Deine letzten Aktivitäten in der App.')}</p>
 
       {/* Filters */}
