@@ -30,6 +30,7 @@ interface TaskRow {
   is_completed: boolean;
   completed_at: string | null;
   created_at: string;
+  source: string | null;
 }
 
 export default function ClientPortalTasks() {
@@ -47,7 +48,7 @@ export default function ClientPortalTasks() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('client_tasks')
-        .select('*')
+        .select('id, title, notes, due_date, is_completed, completed_at, created_at, source')
         .eq('user_id', user!.id)
         .order('is_completed', { ascending: true })
         .order('due_date', { ascending: true, nullsFirst: false })
