@@ -7,36 +7,11 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from '@/components/ui/sheet';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import {
-  useClientNotifications,
-  useMarkNotificationRead,
-  useMarkAllNotificationsRead,
-  useToggleNotificationStar,
-} from '@/hooks/useNotifications';
-import {
-  useSmartNotificationsList,
-  useMarkSmartNotificationRead,
-  useMarkAllSmartNotificationsRead,
-  useToggleSmartNotificationStar,
-} from '@/hooks/useSmartNotifications';
+import { useUnifiedNotifications, type UnifiedNotification } from '@/hooks/useUnifiedNotifications';
 import { cn } from '@/lib/utils';
 import { format, isToday, isThisWeek } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { motion } from 'framer-motion';
-
-interface UnifiedNotification {
-  id: string;
-  title: string;
-  body: string;
-  description?: string | null;
-  link_url?: string | null;
-  link_label?: string | null;
-  category?: string;
-  is_read: boolean;
-  is_starred: boolean;
-  date: string;
-  source: 'broadcast' | 'smart';
-}
 
 type ColorDot = 'blue' | 'green' | 'orange' | 'red';
 type FilterTab = 'unread' | 'read' | 'starred' | 'all';
