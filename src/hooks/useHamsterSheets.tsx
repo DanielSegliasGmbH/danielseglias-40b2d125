@@ -26,6 +26,14 @@ export function HamsterSheetsProvider({ children }: { children: ReactNode }) {
 
 export function useHamsterSheets() {
   const v = useContext(Ctx);
-  if (!v) throw new Error('useHamsterSheets must be used within HamsterSheetsProvider');
+  if (!v) {
+    // Safe fallback when used outside provider — sheets are simply unavailable.
+    return {
+      open: null,
+      openInventory: () => {},
+      openAchievements: () => {},
+      close: () => {},
+    } as HamsterSheetsContextValue;
+  }
   return v;
 }
