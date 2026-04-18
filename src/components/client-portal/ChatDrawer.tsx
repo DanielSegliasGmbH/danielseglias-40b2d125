@@ -46,10 +46,14 @@ export function ChatDrawer({ open, onOpenChange }: ChatDrawerProps) {
     });
   }, []);
 
+  const { consumePrefill } = useChatDrawer();
+
   useEffect(() => {
     if (open && participantId) {
       trackEvent({ eventType: 'chat_opened' });
       markAsRead.mutate(participantId);
+      const prefill = consumePrefill();
+      if (prefill) setText(prefill);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, participantId]);
