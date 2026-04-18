@@ -22,6 +22,7 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { EnableNotifications } from '@/components/notifications/EnableNotifications';
 
 interface PrivacySettings {
   leaderboard_visible: boolean;
@@ -251,7 +252,13 @@ export default function ClientPortalSettings() {
 
         <Separator />
 
-        {/* Privatsphäre */}
+        {/* Push-Benachrichtigungen */}
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-muted-foreground px-1">Benachrichtigungen</p>
+          <EnableNotifications />
+        </div>
+
+        <Separator />
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground px-1">Privatsphäre</p>
           <div className="space-y-2">
