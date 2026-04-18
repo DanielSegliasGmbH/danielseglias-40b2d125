@@ -22,8 +22,9 @@ export default function ClientPortalPremium() {
 
   return (
     <ClientPortalLayout>
-      <ScreenHeader title="Premium" backTo="/app/client-portal" />
-      <div className="max-w-2xl mx-auto space-y-8">
+      <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
+        <ScreenHeader title="Premium" backTo="/app/client-portal" />
+        <div className="space-y-8">
         {/* Header */}
         <div className="text-center space-y-3">
           <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">

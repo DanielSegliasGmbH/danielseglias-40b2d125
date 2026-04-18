@@ -104,7 +104,7 @@ export default function ClientPortalJourney() {
 
   return (
     <ClientPortalLayout>
-      <div className="max-w-lg mx-auto space-y-5 pb-32">
+      <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1 pb-32">
         {/* ── HEADER ── */}
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
           <div className="flex items-center gap-3">

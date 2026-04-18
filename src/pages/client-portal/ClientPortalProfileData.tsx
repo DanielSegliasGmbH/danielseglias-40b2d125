@@ -92,7 +92,7 @@ export default function ClientPortalProfileData() {
   if (isLoading) {
     return (
       <ClientPortalLayout>
-        <div className="space-y-4">
+        <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
           {[1, 2, 3].map(i => <div key={i} className="h-24 bg-muted animate-pulse rounded-xl" />)}
         </div>
       </ClientPortalLayout>
@@ -101,7 +101,8 @@ export default function ClientPortalProfileData() {
 
   return (
     <ClientPortalLayout>
-      <ScreenHeader title="Mein Finanzprofil" backTo="/app/client-portal/settings" />
+      <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
+        <ScreenHeader title="Mein Finanzprofil" backTo="/app/client-portal/settings" />
 
       {/* Checkup Banner */}
       {needsCheckup && (

@@ -94,12 +94,12 @@ export default function ClientPortalLibrary() {
     const cat = getCategoryById(currentArticle.categoryId);
     return (
       <ClientPortalLayout>
-        <ScreenHeader
-          title={currentArticle.title}
-          breadcrumb={['Bibliothek', cat?.title || '', currentArticle.title]}
-          backTo="/app/client-portal/library"
-        />
-        <div className="w-full max-w-2xl lg:max-w-3xl mx-auto">
+        <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
+          <ScreenHeader
+            title={currentArticle.title}
+            breadcrumb={['Bibliothek', cat?.title || '', currentArticle.title]}
+            backTo="/app/client-portal/library"
+          />
           <ArticleDetail
             article={currentArticle}
             isRead={readSet.has(currentArticle.id)}
@@ -126,12 +126,12 @@ export default function ClientPortalLibrary() {
     const readCount = catArticles.filter(a => readSet.has(a.id)).length;
     return (
       <ClientPortalLayout>
-        <ScreenHeader
-          title={currentCategory.title}
-          breadcrumb={['Bibliothek', currentCategory.title]}
-          backTo="/app/client-portal/library"
-        />
-        <div className="w-full max-w-2xl lg:max-w-4xl mx-auto">
+        <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
+          <ScreenHeader
+            title={currentCategory.title}
+            breadcrumb={['Bibliothek', currentCategory.title]}
+            backTo="/app/client-portal/library"
+          />
           <CategoryHeader category={currentCategory} />
           <div className="mt-4 mb-6">
             <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
@@ -158,8 +158,8 @@ export default function ClientPortalLibrary() {
   // Main Library View
   return (
     <ClientPortalLayout>
-      <ScreenHeader title="📚 Wissensbibliothek" backTo="/app/client-portal" />
-      <div className="w-full max-w-2xl lg:max-w-5xl mx-auto">
+      <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
+        <ScreenHeader title="📚 Wissensbibliothek" backTo="/app/client-portal" />
 
         {/* Search */}
         <div className="relative mb-6">

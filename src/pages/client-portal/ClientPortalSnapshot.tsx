@@ -860,6 +860,7 @@ export default function ClientPortalSnapshot() {
           </TabsContent>
         </Tabs>
       </div>
+      </div>
     </ClientPortalLayout>
   );
 }

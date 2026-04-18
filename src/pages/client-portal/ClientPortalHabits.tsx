@@ -53,7 +53,7 @@ export default function ClientPortalHabits() {
   if (isLoading) {
     return (
       <ClientPortalLayout>
-        <div className="max-w-2xl mx-auto space-y-4">
+        <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
           <Skeleton className="h-6 w-48" />
           <Skeleton className="h-40 w-full" />
           <Skeleton className="h-40 w-full" />
@@ -64,8 +64,8 @@ export default function ClientPortalHabits() {
 
   return (
     <ClientPortalLayout>
-      <ScreenHeader title="✅ Finanz-Gewohnheiten" backTo="/app/client-portal" />
-      <div className="max-w-2xl mx-auto space-y-4">
+      <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
+        <ScreenHeader title="✅ Finanz-Gewohnheiten" backTo="/app/client-portal" />
         <div className="flex justify-end">
           <Button
             size="sm"

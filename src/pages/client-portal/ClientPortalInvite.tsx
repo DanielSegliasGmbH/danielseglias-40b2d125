@@ -85,10 +85,10 @@ export default function ClientPortalInvite() {
 
   return (
     <ClientPortalLayout>
-      <div className="min-h-screen bg-background">
+      <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
         <ScreenHeader title="Freunde einladen" backTo="/app/client-portal/friends" />
 
-        <div className="px-4 py-6 max-w-lg mx-auto space-y-5 pb-24">
+        <div className="py-2 space-y-5 pb-24">
           {/* Hero */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
             <Card className="overflow-hidden">

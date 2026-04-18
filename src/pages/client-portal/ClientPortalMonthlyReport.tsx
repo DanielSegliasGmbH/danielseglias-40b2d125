@@ -299,8 +299,8 @@ export default function ClientPortalMonthlyReport() {
 
   return (
     <ClientPortalLayout>
-      <ScreenHeader title="📈 Monatsreport" backTo="/app/client-portal" />
-      <div className="max-w-2xl mx-auto space-y-4">
+      <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
+        <ScreenHeader title="📈 Monatsreport" backTo="/app/client-portal" />
         {/* Month selector */}
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="icon" onClick={() => goMonth(-1)}>
