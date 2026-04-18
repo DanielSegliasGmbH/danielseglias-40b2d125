@@ -268,9 +268,7 @@ export default function ClientPortalInsurances() {
           <Button variant="ghost" onClick={() => setSelectedProduct(null)} className="gap-2 -ml-2">
             <ArrowLeft className="h-4 w-4" /> Zurück
           </Button>
-          <Button variant="ghost" onClick={() => setSelectedProduct(null)} className="gap-2">
-            <ArrowLeft className="h-4 w-4" /> Zurück
-          </Button>
+
 
           <Card>
             <CardContent className="p-6 space-y-5">
@@ -372,8 +370,8 @@ export default function ClientPortalInsurances() {
   // ─── Grid view ───────────────────────────────────────────────
   return (
     <ClientPortalLayout>
-      <ScreenHeader title="🛡️ Meine Produkte" backTo="/app/client-portal" />
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
+        <ScreenHeader title="🛡️ Meine Produkte" backTo="/app/client-portal" />
         <div className="flex justify-end">
           {customerId && (
             <Button onClick={openAdd} className="gap-2">

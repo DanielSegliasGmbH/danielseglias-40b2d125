@@ -119,9 +119,10 @@ export default function ClientPortalTasks() {
 
   return (
     <ClientPortalLayout>
-      <ScreenHeader title="✅ Meine Aufgaben" backTo="/app/client-portal" />
-      <PageTransition>
-        <div className="max-w-2xl mx-auto space-y-5 px-4 pt-2 pb-8">
+      <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
+        <ScreenHeader title="✅ Meine Aufgaben" backTo="/app/client-portal" />
+        <PageTransition>
+          <div className="space-y-5">
 
           {isError && <ErrorState onRetry={() => refetch()} />}
 
