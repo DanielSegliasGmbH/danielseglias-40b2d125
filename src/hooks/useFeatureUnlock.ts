@@ -94,13 +94,13 @@ export function useFeatureUnlock(): FeatureUnlockState {
     queryFn: async () => {
       if (!user) return null;
       const { data } = await supabase
-        .from('financial_snapshots')
-        .select('peak_score')
+        .from('peak_scores')
+        .select('score')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
-      return data?.peak_score ?? null;
+      return data?.score ?? null;
     },
     enabled: !!user,
   });

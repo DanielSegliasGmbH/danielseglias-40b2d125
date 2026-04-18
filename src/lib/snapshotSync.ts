@@ -9,6 +9,13 @@
  * The snapshot itself remains the detailed input record (history, audit) –
  * net_worth tables are the calculated, normalized result.
  */
+// ── PEAKSCORE DATA FLOW ─────────────────────────────
+// peak_scores table: AUTHORITATIVE. Current + history.
+//   Always read from here for current score.
+// financial_snapshots.peak_score: POINT-IN-TIME.
+//   The score at the moment a snapshot was taken.
+//   Do NOT use for current score display.
+// ────────────────────────────────────────────────────
 import { supabase } from '@/integrations/supabase/client';
 
 const num = (v: unknown): number => {
@@ -270,7 +277,12 @@ export async function syncSnapshotToNetWorth(
   }
   const newPeakScore = denom > 0 ? Math.round((netWorth / denom) * 10) / 10 : 0;
 
-  // 6. Write peak_score + net_worth onto the latest snapshot row.
+  // 6a. Write authoritative current score into peak_scores (history entry).
+  await supabase
+    .from('peak_scores')
+    .insert({ user_id: userId, score: newPeakScore, is_snapshot: true } as any);
+
+  // 6b. Write peak_score + net_worth onto the latest snapshot row (point-in-time).
   const { data: latest } = await supabase
     .from('financial_snapshots')
     .select('id')
