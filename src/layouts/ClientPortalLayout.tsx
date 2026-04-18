@@ -27,6 +27,7 @@ import { Badge } from '@/components/ui/badge';
 import { BottomNavigation } from '@/components/client-portal/BottomNavigation';
 import { MoreSheet } from '@/components/client-portal/MoreSheet';
 import { ChatDrawer } from '@/components/client-portal/ChatDrawer';
+import { ChatDrawerProvider, useChatDrawer } from '@/hooks/useChatDrawer';
 import { FloatingChatBubble } from '@/components/client-portal/FloatingChatBubble';
 import { NotificationBell } from '@/components/client-portal/NotificationBell';
 import { PeakScoreNavBadge } from '@/components/client-portal/PeakScoreNavBadge';
