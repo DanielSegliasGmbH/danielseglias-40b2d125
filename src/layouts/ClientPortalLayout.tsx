@@ -322,3 +322,11 @@ function ClientPortalLayoutInner({ children }: ClientPortalLayoutProps) {
     </PrivacyModeProvider>
   );
 }
+
+export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
+  return (
+    <ChatDrawerProvider>
+      <ClientPortalLayoutInner>{children}</ClientPortalLayoutInner>
+    </ChatDrawerProvider>
+  );
+}
