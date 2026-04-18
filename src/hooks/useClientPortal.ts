@@ -322,7 +322,7 @@ export function useClientToolsFiltered() {
       ] = await Promise.all([
         supabase.from('user_journey').select('created_at').eq('user_id', user!.id).maybeSingle(),
         supabase.from('profiles').select('plan').eq('id', user!.id).maybeSingle(),
-        supabase.from('financial_snapshots').select('peak_score').eq('user_id', user!.id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('peak_scores').select('score').eq('user_id', user!.id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
         supabase.from('client_tasks').select('id', { count: 'exact', head: true }).eq('user_id', user!.id).eq('is_completed', true),
         supabase.from('coach_progress').select('id', { count: 'exact', head: true }).eq('user_id', user!.id).eq('status', 'completed'),
       ]);
