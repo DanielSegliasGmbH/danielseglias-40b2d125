@@ -76,11 +76,12 @@ export function OnboardingWizard() {
     enabled: !!user,
     queryFn: async () => {
       if (!user) return null;
-      const [{ data: p }, { data: m }] = await Promise.all([
-        supabase.from('profiles').select('first_name').eq('id', user.id).maybeSingle(),
-        supabase.from('meta_profiles').select('age, professional_status, monthly_income, fixed_costs, wealth').eq('user_id', user.id).maybeSingle(),
-      ]);
-      return { firstName: p?.first_name ?? '', meta: m };
+      const { data: p } = await supabase
+        .from('profiles')
+        .select('first_name, age, professional_status, monthly_income, fixed_costs, wealth')
+        .eq('id', user.id)
+        .maybeSingle();
+      return { firstName: p?.first_name ?? '', meta: p };
     },
   });
 
