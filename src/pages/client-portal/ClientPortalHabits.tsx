@@ -163,7 +163,7 @@ export default function ClientPortalHabits() {
         <Card>
           <CardContent className="p-4 space-y-1">
             {/* Day headers */}
-            <div className="grid items-center gap-1" style={{ gridTemplateColumns: '1fr repeat(7, 36px) 32px' }}>
+            <div className="grid items-center gap-0.5" style={{ gridTemplateColumns: 'minmax(110px, 1.4fr) repeat(7, 30px) 28px' }}>
               <div />
               {DAYS_SHORT.map((d, i) => {
                 const dateStr = weekDates[i];
@@ -188,13 +188,13 @@ export default function ClientPortalHabits() {
               return (
                 <div
                   key={habit.id}
-                  className="grid items-center gap-1 py-1.5 border-t border-border/30"
-                  style={{ gridTemplateColumns: '1fr repeat(7, 36px) 32px' }}
+                  className="grid items-center gap-0.5 py-1.5 border-t border-border/30"
+                  style={{ gridTemplateColumns: 'minmax(110px, 1.4fr) repeat(7, 30px) 28px' }}
                 >
                   {/* Label */}
-                  <div className="min-w-0 pr-2">
-                    <p className="text-xs font-medium text-foreground truncate">
-                      {habit.emoji} {habit.name}
+                  <div className="min-w-0 pr-1.5">
+                    <p className="text-xs font-medium text-foreground leading-tight break-words" title={`${habit.emoji} ${habit.name}`}>
+                      <span className="mr-1">{habit.emoji}</span>{habit.name}
                     </p>
                     {streak > 0 && (
                       <p className="text-[10px] text-muted-foreground flex items-center gap-0.5 mt-0.5">
@@ -219,7 +219,7 @@ export default function ClientPortalHabits() {
                         disabled={disabled || isFuture || toggleHabit.isPending}
                         onClick={() => toggleHabit.mutate({ habitId: habit.id, date })}
                         className={cn(
-                          "w-9 h-9 rounded-lg flex items-center justify-center transition-all",
+                          "w-[30px] h-9 rounded-md flex items-center justify-center transition-all",
                           disabled ? "bg-transparent" :
                           checked ? "bg-emerald-500/20" :
                           isFuture ? "bg-muted/20" :
