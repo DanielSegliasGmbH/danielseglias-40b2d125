@@ -29,6 +29,7 @@ export function RecommendationCards({
 }: RecommendationCardsProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { openChat } = useChatDrawer();
   const [lockedRec, setLockedRec] = useState<Recommendation | null>(null);
   const [requesting, setRequesting] = useState(false);
 
