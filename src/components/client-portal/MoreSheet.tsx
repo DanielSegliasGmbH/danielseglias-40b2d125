@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, TrendingUp, User, Users, HelpCircle, Globe, Crown, Wallet, PiggyBank, Landmark, Gift, Settings, FileBarChart, Camera, Archive, CalendarDays, CheckSquare, Scroll, FileText, Plane, Map } from 'lucide-react';
+import { Shield, Target, ClipboardList, LogOut, ChevronRight, GraduationCap, TrendingUp, User, Users, HelpCircle, Globe, Crown, Wallet, PiggyBank, Landmark, Gift, Settings, FileBarChart, Camera, Archive, CalendarDays, CheckSquare, Scroll, FileText, Plane, Map, MessageCircle } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -17,9 +17,10 @@ interface MoreSheetProps {
   buildPath: (path: string) => string;
   onLogout: () => void;
   visibleSections: readonly { key: string }[];
+  onChatOpen?: () => void;
 }
 
-export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSections }: MoreSheetProps) {
+export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSections, onChatOpen }: MoreSheetProps) {
   const { t } = useTranslation();
 
   // Secondary content sections (only if visible via permissions)
@@ -67,11 +68,34 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
         </SheetHeader>
         
         {/* Secondary content areas */}
-        {visibleContentItems.length > 0 && (
+        {(visibleContentItems.length > 0 || onChatOpen) && (
           <div className="space-y-1.5 mb-4">
             <p className="text-xs font-medium text-muted-foreground px-1 mb-2">
               {t('clientPortal.moreContent', 'Weitere Bereiche')}
             </p>
+            {onChatOpen && (
+              <button
+                type="button"
+                onClick={() => {
+                  onOpenChange(false);
+                  onChatOpen();
+                }}
+                className={cn(
+                  "flex items-center justify-between w-full px-4 py-3.5 rounded-xl text-left",
+                  "bg-muted/50 transition-colors touch-manipulation",
+                  "active:bg-muted more-sheet-item"
+                )}
+                style={{ WebkitTapHighlightColor: 'transparent' }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <MessageCircle className="h-4 w-4 text-primary" />
+                  </div>
+                  <span className="font-medium text-sm text-foreground">Chat mit Berater</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              </button>
+            )}
             {visibleContentItems.map((item) => (
               <MoreLink key={item.key} to={buildPath(item.path)} icon={item.icon} label={item.label} />
             ))}
