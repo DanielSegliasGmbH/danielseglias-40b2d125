@@ -316,8 +316,7 @@ export default function ClientPortalGoals() {
             </div>
           </DialogContent>
         </Dialog>
-          </div>
-      </PageTransition>
+        </PageTransition>
       </div>
     </ClientPortalLayout>
   );

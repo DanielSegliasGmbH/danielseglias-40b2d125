@@ -254,6 +254,7 @@ export default function ClientPortalProfileData() {
           )}
         </div>
       </div>
+      </div>
     </ClientPortalLayout>
   );
 }

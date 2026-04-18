@@ -122,6 +122,7 @@ export default function ClientPortalPremium() {
         <p className="text-center text-xs text-muted-foreground">
           Sichere Zahlung über Stripe. Du kannst jederzeit kündigen.
         </p>
+        </div>
       </div>
     </ClientPortalLayout>
   );

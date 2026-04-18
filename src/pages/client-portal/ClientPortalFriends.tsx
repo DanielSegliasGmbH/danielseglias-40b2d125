@@ -542,6 +542,7 @@ export default function ClientPortalFriends() {
           );
         }}
       />
+      </div>
     </ClientPortalLayout>
   );
 }
