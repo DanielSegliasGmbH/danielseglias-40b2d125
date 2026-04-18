@@ -1,5 +1,5 @@
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { PageHeader } from '@/components/client-portal/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,7 +23,7 @@ export default function ClientPortalPremium() {
   return (
     <ClientPortalLayout>
       <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
-        <ScreenHeader title="Premium" backTo="/app/client-portal" />
+        <PageHeader title="👑 Premium" subtitle="Alle Funktionen ohne Limit freischalten" />
         <div className="space-y-8">
         {/* Header */}
         <div className="text-center space-y-3">

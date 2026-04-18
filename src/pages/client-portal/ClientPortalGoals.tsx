@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { PageTransition } from '@/components/PageTransition';
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { PageHeader } from '@/components/client-portal/PageHeader';
 import { ErrorState } from '@/components/ErrorState';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
@@ -152,12 +152,12 @@ export default function ClientPortalGoals() {
   return (
     <ClientPortalLayout>
       <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
-        <ScreenHeader
+        <PageHeader
           title="🎯 Meine Ziele"
-          backTo="/app/client-portal"
+          subtitle="Wofür du sparst und was du erreichen willst"
           rightAction={
             <Button size="sm" className="gap-1.5 h-8 rounded-xl" onClick={() => setDialogOpen(true)}>
-              <Plus className="h-3.5 w-3.5" /> Ziel hinzufügen
+              <Plus className="h-3.5 w-3.5" /> Ziel
             </Button>
           }
         />

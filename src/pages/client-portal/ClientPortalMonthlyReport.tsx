@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Json } from '@/integrations/supabase/types';
 import { supabase } from '@/integrations/supabase/client';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { PageHeader } from '@/components/client-portal/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -300,7 +300,7 @@ export default function ClientPortalMonthlyReport() {
   return (
     <ClientPortalLayout>
       <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
-        <ScreenHeader title="📈 Monatsreport" backTo="/app/client-portal" />
+        <PageHeader title="📈 Mein Monatsbericht" subtitle="Deine finanzielle Entwicklung im Überblick" />
         {/* Month selector */}
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="icon" onClick={() => goMonth(-1)}>

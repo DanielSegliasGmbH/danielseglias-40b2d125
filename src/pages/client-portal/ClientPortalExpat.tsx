@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { PageHeader } from '@/components/client-portal/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -331,7 +331,7 @@ export default function ClientPortalExpat() {
   return (
     <ClientPortalLayout>
       <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
-        <ScreenHeader title="Ins Ausland?" backTo="/app/client-portal" />
+        <PageHeader title="🌍 Ins Ausland" subtitle="Szenarien und Checks für deinen Wegzug" />
 
         {/* Intro */}
         <Card className="border-primary/20 bg-primary/5">

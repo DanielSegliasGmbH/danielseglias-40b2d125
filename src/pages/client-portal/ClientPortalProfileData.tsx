@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { PageHeader } from '@/components/client-portal/PageHeader';
 import { useMetaProfile, META_FIELD_MAP, MetaFieldKey } from '@/hooks/useMetaProfile';
 import { useGamification } from '@/hooks/useGamification';
 import { PROFESSION_OPTIONS } from '@/config/professionConfig';
@@ -102,7 +102,7 @@ export default function ClientPortalProfileData() {
   return (
     <ClientPortalLayout>
       <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
-        <ScreenHeader title="Mein Finanzprofil" backTo="/app/client-portal/settings" />
+        <PageHeader title="🪪 Mein Finanzprofil" subtitle="Deine persönlichen Finanzdaten" />
 
       {/* Checkup Banner */}
       {needsCheckup && (

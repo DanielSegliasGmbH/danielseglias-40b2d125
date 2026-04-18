@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { PageHeader } from '@/components/client-portal/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -264,7 +264,7 @@ export default function ClientPortalInsurances() {
     return (
       <ClientPortalLayout>
         <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
-          <ScreenHeader title="🛡️ Meine Produkte" backTo="/app/client-portal" />
+          <PageHeader title="🛡️ Meine Versicherungen" subtitle="Übersicht deiner Policen und Produkte" />
           <Button variant="ghost" onClick={() => setSelectedProduct(null)} className="gap-2 -ml-2">
             <ArrowLeft className="h-4 w-4" /> Zurück
           </Button>
@@ -371,7 +371,7 @@ export default function ClientPortalInsurances() {
   return (
     <ClientPortalLayout>
       <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
-        <ScreenHeader title="🛡️ Meine Produkte" backTo="/app/client-portal" />
+        <PageHeader title="🛡️ Meine Versicherungen" subtitle="Übersicht deiner Policen und Produkte" />
         <div className="flex justify-end">
           {customerId && (
             <Button onClick={openAdd} className="gap-2">

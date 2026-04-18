@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
+import { PageHeader } from '@/components/client-portal/PageHeader';
 
 const FEATURE_LABELS: Record<string, string> = {
   onboarding: 'Onboarding', 'finanz-typ': 'Finanz-Typ Quiz', avatar: 'Avatar',
@@ -107,17 +108,10 @@ export default function ClientPortalJourney() {
       <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1 pb-32">
         {/* ── HEADER ── */}
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-          <div className="flex items-center gap-3">
-            <button onClick={() => navigate('/app/client-portal')} className="p-1.5 rounded-lg hover:bg-muted">
-              <ArrowLeft className="h-5 w-5 text-foreground" />
-            </button>
-            <div>
-              <h1 className="text-lg font-bold text-foreground">Deine Finanz-Reise</h1>
-              <p className="text-xs text-muted-foreground">
-                Tag {daysSinceSignup} von 365 · Phase {currentPhase}: {currentPhaseInfo.emoji} {currentPhaseInfo.name}
-              </p>
-            </div>
-          </div>
+          <PageHeader
+            title="🗺️ Mein Finanzpfad"
+            subtitle={`Tag ${daysSinceSignup} von 365 · Phase ${currentPhase}: ${currentPhaseInfo.emoji} ${currentPhaseInfo.name}`}
+          />
 
           {/* Progress to next phase */}
           <div className="bg-card border border-border rounded-2xl p-4 space-y-2">
