@@ -78,7 +78,7 @@ export function MoreToDiscover(props: MoreToDiscoverProps) {
   const isSunday = new Date().getDay() === 0;
 
   return (
-    <div className="pt-1">
+    <div className="pt-1 w-full max-w-full min-w-0">
       <Button
         variant="ghost"
         onClick={() => setOpen((v) => !v)}
@@ -99,9 +99,10 @@ export function MoreToDiscover(props: MoreToDiscoverProps) {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="w-full max-w-full overflow-hidden"
+            style={{ width: '100%' }}
+            className="w-full max-w-full min-w-0 overflow-hidden"
           >
-            <div className="space-y-5 pt-4 w-full max-w-full">
+            <div className="space-y-5 pt-4 w-full max-w-full min-w-0">
               {/* Daily routines */}
               {isSunday && <SundayReflectionCard />}
               <MorningBriefCard />
