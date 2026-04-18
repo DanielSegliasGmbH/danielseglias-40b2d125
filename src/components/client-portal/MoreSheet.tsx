@@ -121,6 +121,7 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
           <MoreLink to="/app/client-portal/premium" icon={Crown} label="Premium" />
           <MoreLink to={buildPath('/app/client-portal/profile-data')} icon={Wallet} label="Mein Finanzprofil" />
           <MoreLink to="/app/profile" icon={User} label={t('userManagement.profile')} />
+          <MoreLink to={buildPath('/app/client-portal/profile-data')} icon={User} label="Mein Profil" />
           <MoreLink to="/app/client-portal/settings" icon={Settings} label="Einstellungen" />
           <MoreLink to="/app/client-portal/manifest" icon={Scroll} label="Mein Manifest" />
           <MoreLink to="/app/client-portal/last-plan" icon={FileText} label="Mein letzter Plan" />
