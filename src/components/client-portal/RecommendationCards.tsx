@@ -15,6 +15,7 @@ import { ArrowRight, Wrench, BookOpen, Compass, Lock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { useChatDrawer } from '@/hooks/useChatDrawer';
 import type { Recommendation } from '@/config/recommendationConfig';
 
 interface RecommendationCardsProps {
