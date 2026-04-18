@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { ScreenHeader } from '@/components/ScreenHeader';
+import { PageHeader } from '@/components/client-portal/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -159,7 +160,7 @@ export default function ClientPortalLibrary() {
   return (
     <ClientPortalLayout>
       <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
-        <ScreenHeader title="📚 Wissensbibliothek" backTo="/app/client-portal" />
+        <PageHeader title="📚 Wissensbibliothek" subtitle="Artikel und Wissen rund um deine Finanzen" />
 
         {/* Search */}
         <div className="relative mb-6">
