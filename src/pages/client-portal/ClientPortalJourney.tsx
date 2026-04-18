@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
+import { PageHeader } from '@/components/client-portal/PageHeader';
 
 const FEATURE_LABELS: Record<string, string> = {
   onboarding: 'Onboarding', 'finanz-typ': 'Finanz-Typ Quiz', avatar: 'Avatar',
