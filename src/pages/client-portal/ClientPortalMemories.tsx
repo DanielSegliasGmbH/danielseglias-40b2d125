@@ -98,8 +98,8 @@ export default function ClientPortalMemories() {
   return (
     <ClientPortalLayout>
       <PageTransition>
-      <ScreenHeader title={t('clientPortal.memories', 'Erinnerungen')} showBack={false} />
-      <p className="text-sm text-muted-foreground mb-6">{t('clientPortal.memoriesDesc', 'Dein persönliches Aktivitäts-Logbuch')}</p>
+      <ScreenHeader title={t('clientPortal.activityTitle', 'Mein Verlauf')} showBack={false} />
+      <p className="text-sm text-muted-foreground mb-6">{t('clientPortal.activityDesc', 'Deine letzten Aktivitäten in der App.')}</p>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">

@@ -97,6 +97,7 @@ export default function ClientPortalLibrary() {
         <ScreenHeader
           title={currentArticle.title}
           breadcrumb={['Bibliothek', cat?.title || '', currentArticle.title]}
+          backTo="/app/client-portal/library"
         />
         <div className="w-full max-w-2xl lg:max-w-3xl mx-auto">
           <ArticleDetail
