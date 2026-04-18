@@ -11,6 +11,7 @@ import { StrategyPasswordGate } from '@/components/client-portal/StrategyPasswor
 import { useAuth } from '@/hooks/useAuth';
 import { useCurrentUserProfile } from '@/hooks/useUserManagement';
 import { Card, CardContent } from '@/components/ui/card';
+import { useChatDrawer } from '@/hooks/useChatDrawer';
 
 export default function ClientPortalStrategies() {
   const [selectedPlatform, setSelectedPlatform] = useState('finpension');
