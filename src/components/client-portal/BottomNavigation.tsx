@@ -22,7 +22,7 @@ export function BottomNavigation({ onMoreClick, buildPath }: BottomNavigationPro
     { key: 'home', path: '/app/client-portal', icon: Home, label: t('clientPortal.home'), settingsKey: null },
     { key: 'coach', path: '/app/client-portal/coach', icon: Sparkles, label: t('clientPortal.coach'), settingsKey: null },
     { key: 'tools', path: '/app/client-portal/tools', icon: Wrench, label: t('clientPortal.tools'), settingsKey: 'show_tools' as keyof PortalVisibility },
-    { key: 'memories', path: '/app/client-portal/memories', icon: Clock, label: t('clientPortal.memories', 'Erinnerungen'), settingsKey: null },
+    { key: 'memories', path: '/app/client-portal/memories', icon: Clock, label: t('clientPortal.activity', 'Verlauf'), settingsKey: null },
   ];
 
   const navItems = allNavItems.filter(item => {
