@@ -64,7 +64,7 @@ export default function ClientPortalProfileData() {
   const { user } = useAuth();
   const { rank, rankName, rankEmoji, rankDescription, coins } = useHamster();
   const { collectedCount, totalPossible } = useGoldNuts();
-  const { openSheet } = useHamsterSheets();
+  const { openInventory } = useHamsterSheets();
   const { score, totalAssets, totalLiabilities } = usePeakScore();
   const { awardPoints } = useGamification();
 
@@ -234,7 +234,7 @@ export default function ClientPortalProfileData() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => openSheet('inventory')}
+                onClick={() => openInventory()}
                 className="gap-1.5 mt-2"
               >
                 <Package className="h-4 w-4" />
