@@ -27,10 +27,11 @@ export default function ClientPortalStrategies() {
   const privacyMode = settings?.show_strategy_privacy ?? false;
   const needsPassword = (settings?.has_strategy_password ?? false) && role === 'client';
 
-  // Strategy access check: user_type = customer AND has_strategy_access = true
-  const hasStrategyAccess = role === 'admin' || role === 'staff' || (
-    profile?.user_type === 'customer' && profile?.has_strategy_access === true
-  );
+  // Strategy access: alle Kunden (user_type=customer), Admins und Staff haben immer Zugriff
+  const hasStrategyAccess =
+    role === 'admin' ||
+    role === 'staff' ||
+    profile?.user_type === 'customer';
 
   useEffect(() => {
     if (needsPassword) {
