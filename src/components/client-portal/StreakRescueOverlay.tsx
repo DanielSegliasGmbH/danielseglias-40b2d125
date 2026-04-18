@@ -11,21 +11,25 @@ import { toast } from 'sonner';
 import { X, LifeBuoy, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const DISMISS_KEY = 'streak-rescue-dismissed';
+const DISMISS_KEY = 'streak-rescue-dismissed-until';
+const DISMISS_DAYS = 7;
 
-function isDismissedToday(): boolean {
+function isDismissed(): boolean {
   try {
     const stored = localStorage.getItem(DISMISS_KEY);
     if (!stored) return false;
-    return stored === new Date().toISOString().slice(0, 10);
+    const until = parseInt(stored, 10);
+    if (isNaN(until)) return false;
+    return Date.now() < until;
   } catch {
     return false;
   }
 }
 
-function dismissToday(): void {
+function dismissForDays(days: number): void {
   try {
-    localStorage.setItem(DISMISS_KEY, new Date().toISOString().slice(0, 10));
+    const until = Date.now() + days * 24 * 60 * 60 * 1000;
+    localStorage.setItem(DISMISS_KEY, String(until));
   } catch {
     // ignore
   }
@@ -35,7 +39,7 @@ export function StreakRescueOverlay() {
   const { user } = useAuth();
   const { streakDays } = useGamification();
   const { canSelfRescue, performSelfRescue, requestFriendRescue, enabled } = useStreakRescue();
-  const [dismissed, setDismissed] = useState(isDismissedToday);
+  const [dismissed, setDismissed] = useState(isDismissed);
   const [mode, setMode] = useState<'main' | 'friends'>('main');
   const [rescuing, setRescuing] = useState(false);
 
@@ -104,7 +108,7 @@ export function StreakRescueOverlay() {
   if (!enabled || !streakBrokenYesterday || dismissed) return null;
 
   const handleDismiss = () => {
-    dismissToday();
+    dismissForDays(DISMISS_DAYS);
     setDismissed(true);
   };
 
