@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PdfExportWrapper } from '../PdfExportWrapper';
 import { ToolTrustNote } from '../ToolConversionElements';
+import { ToolSnapshotButton } from '../ToolSnapshotButton';
 import { ToolNextStep } from '../ToolNextStep';
 import {
   CheckCircle,
