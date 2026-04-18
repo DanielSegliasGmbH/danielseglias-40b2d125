@@ -109,6 +109,17 @@ export function GlaubenssatzTransformerTool({ mode = 'internal' }: Props) {
               buttonLabel: '3a-Kurzcheck starten',
             }}
           />
+          {mode === 'internal' && (
+            <ToolSnapshotButton
+              toolSlug="glaubenssatz-transformer"
+              toolName="Glaubenssatz-Transformer"
+              snapshotData={{
+                beliefId: selected.id,
+                beliefTitle: selected.title,
+                beliefEmoji: selected.emoji,
+              }}
+            />
+          )}
         </div>
       </PdfExportWrapper>
     );
