@@ -341,6 +341,16 @@ export function AboAuditTool({ mode = 'internal' }: Props) {
                   context="Jeder Franken, der nicht für ungenutztes abfliesst, ist ein Franken mehr für deine Freiheit."
                 />
                 <ToolTrustNote text="Unabhängige Einschätzung – keine Produktempfehlung." />
+                <ToolSnapshotButton
+                  toolSlug="abo-audit"
+                  toolName="Abo-Audit"
+                  snapshotData={{
+                    abos,
+                    totalMonthly,
+                    activeCount: abos.filter(a => a.active).length,
+                    inactiveCount: abos.filter(a => !a.active).length,
+                  }}
+                />
               </>
             )}
           </div>
