@@ -68,11 +68,11 @@ export function QuickActionFAB() {
         )}
       </AnimatePresence>
 
-      {/* FAB Button */}
+      {/* FAB Button — sits above bottom nav (~64px) + "Mehr entdecken" button (~56px) */}
       <button
         onClick={() => setOpen(true)}
         className={cn(
-          'fixed z-50 bottom-[calc(env(safe-area-inset-bottom,0px)+76px)] left-1/2 -translate-x-1/2',
+          'fixed z-50 bottom-[calc(env(safe-area-inset-bottom,0px)+140px)] left-1/2 -translate-x-1/2',
           'w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg',
           'flex items-center justify-center',
           'hover:bg-primary/90 active:scale-95 transition-all duration-150',
