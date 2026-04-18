@@ -133,6 +133,7 @@ export default function ClientPortalInsurances() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<Product | null>(null);
   const [form, setForm] = useState<ProductFormData>(EMPTY_FORM);
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
   // ─── Fetch customer_id ──────────────────────────────────────
   const { data: customerId } = useQuery({
@@ -264,7 +265,7 @@ export default function ClientPortalInsurances() {
     return (
       <ClientPortalLayout>
         <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
-          <PageHeader title="🛡️ Meine Versicherungen" subtitle="Übersicht deiner Policen und Produkte" />
+          <PageHeader title="📦 Meine Produkte" subtitle="Übersicht deiner Versicherungen, Vorsorge und Finanzprodukte" />
           <Button variant="ghost" onClick={() => setSelectedProduct(null)} className="gap-2 -ml-2">
             <ArrowLeft className="h-4 w-4" /> Zurück
           </Button>
@@ -371,8 +372,22 @@ export default function ClientPortalInsurances() {
   return (
     <ClientPortalLayout>
       <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
-        <PageHeader title="🛡️ Meine Versicherungen" subtitle="Übersicht deiner Policen und Produkte" />
-        <div className="flex justify-end">
+        <PageHeader title="📦 Meine Produkte" subtitle="Übersicht deiner Versicherungen, Vorsorge und Finanzprodukte" />
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Label htmlFor="category-filter" className="text-xs text-muted-foreground shrink-0">Filter:</Label>
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger id="category-filter" className="h-9 w-[180px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Alle Produkte</SelectItem>
+                {CATEGORIES.map(c => (
+                  <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           {customerId && (
             <Button onClick={openAdd} className="gap-2">
               <Plus className="h-4 w-4" /> Produkt hinzufügen
