@@ -454,77 +454,12 @@
     "deletedSuccess": "Moved to trash"
   },
   "clientPortal": {
-    "title": "Client Portal",
-    "home": "Overview",
-    "more": "More",
-    "preview": "Client Portal (Preview)",
-    "welcome": "Welcome, {{name}}!",
-    "welcomeSubtitle": "Here you can find all important information about your finances and insurances.",
-    "noSections": "No sections available.",
-    "insurances": "My Insurances",
-    "insurancesDesc": "Overview of your existing insurance policies",
-    "goals": "My Goals",
-    "goalsDesc": "Your financial goals and progress",
-    "tasks": "My Tasks",
-    "tasksDesc": "Open tasks and to-dos for you",
-    "strategies": "Investment Strategies",
-    "strategiesDesc": "Your personal investment strategies",
-    "library": "Knowledge Library",
-    "libraryDesc": "Helpful articles and documents",
     "tools": "Tools",
     "toolsDesc": "Practical calculators and tools",
+    "startTool": "Start",
     "comingSoon": "Coming Soon",
-    "inDevelopment": "This section is currently under development and will be available soon.",
+    "inDevelopment": "This area is currently being developed and will be available soon.",
     "plannedFeatures": "What you will find here later:",
-    "settingsTitle": "Client Portal Settings",
-    "settingsDesc": "Choose which sections should be visible for this client.",
-    "settingsUpdated": "Settings saved",
-    "portalAccess": "Portal Access",
-    "portalAccessDescription": "Link a user to this client for access to the client portal.",
-    "noUserLinked": "No user linked",
-    "linkUser": "Link User",
-    "unlinkUser": "Unlink User",
-    "previewPortal": "Portal Preview",
-    "adminPreview": "Admin Preview",
-    "backToDashboard": "Back to Dashboard",
-    "userLinked": "User successfully linked",
-    "userUnlinked": "User unlinked",
-    "userAlreadyLinked": "This user is already linked to another client",
-    "clientAlreadyLinked": "This client is already linked to a user",
-    "linkError": "Error linking user",
-    "unlinkError": "Error unlinking user",
-    "unlinkConfirm": "Are you sure? The user will lose access to the client portal.",
-    "userIdHint": "Find the User ID in User Management or copy it from the auth system.",
-    "insuranceFeatures": {
-      "feature1": "Overview of all insurance policies",
-      "feature2": "Coverage details and limits",
-      "feature3": "Contract documents for download",
-      "feature4": "Claims reporting and status"
-    },
-    "goalsFeatures": {
-      "feature1": "Define financial goals",
-      "feature2": "Progress display",
-      "feature3": "Set milestones",
-      "feature4": "Track goal achievement"
-    },
-    "tasksFeatures": {
-      "feature1": "View open tasks",
-      "feature2": "Upload documents",
-      "feature3": "Fill out forms",
-      "feature4": "Status tracking"
-    },
-    "strategiesFeatures": {
-      "feature1": "Current investment strategy",
-      "feature2": "Portfolio overview",
-      "feature3": "Risk analysis",
-      "feature4": "Performance reports"
-    },
-    "libraryFeatures": {
-      "feature1": "Financial knowledge articles",
-      "feature2": "Explanation videos",
-      "feature3": "FAQ and help",
-      "feature4": "Personal documents"
-    },
     "toolsFeatures": {
       "feature1": "Compound interest calculator",
       "feature2": "Budget planner",
@@ -612,20 +547,158 @@
     "documentGenerator": {
       "name": "Document Generator",
       "description": "Automatic creation of templates and documents."
-    }
-  },
-  "clientPortal": {
-    "tools": "Tools",
-    "toolsDesc": "Practical calculators and tools",
-    "startTool": "Start",
-    "comingSoon": "Coming Soon",
-    "inDevelopment": "This area is currently being developed and will be available soon.",
-    "plannedFeatures": "What you will find here later:",
-    "toolsFeatures": {
-      "feature1": "Compound interest calculator",
-      "feature2": "Budget planner",
-      "feature3": "Tax calculator",
-      "feature4": "Retirement check"
+    },
+    "aboAudit": {
+      "name": "Subscription Audit",
+      "description": "Find all subscriptions and save by canceling smart."
+    },
+    "ahv-tracker": {
+      "name": "AHV Tracker",
+      "description": "Track your AHV contribution years."
+    },
+    "beratungsreise": {
+      "name": "Advisory Journey",
+      "description": "Your personal advisory journey at a glance."
+    },
+    "caseStudyGenerator": {
+      "name": "Case Study Generator",
+      "description": "Generate anonymized case studies."
+    },
+    "finanzEntscheidung": {
+      "name": "Financial Decision",
+      "description": "Make better financial decisions with structure."
+    },
+    "finanzcheck": {
+      "name": "Financial Check",
+      "description": "Quick check of your financial situation."
+    },
+    "glaubenssatzTransformer": {
+      "name": "Belief Transformer",
+      "description": "Transform limiting money beliefs."
+    },
+    "guiltyPleasureRechner": {
+      "name": "Guilty Pleasure Calculator",
+      "description": "See what your small indulgences cost over the years."
+    },
+    "humankapital": {
+      "name": "Human Capital Calculator",
+      "description": "Calculate the value of your future earnings."
+    },
+    "inflationsrechner": {
+      "name": "Inflation Calculator",
+      "description": "See how inflation erodes your money."
+    },
+    "kontenModell": {
+      "name": "Account Model",
+      "description": "Structure your money with the multi-account system."
+    },
+    "kostenImpactSimulator": {
+      "name": "Cost Impact Simulator",
+      "description": "Simulate the long-term impact of costs."
+    },
+    "kostenaufschluesselung": {
+      "name": "Cost Breakdown",
+      "description": "Break down your costs in detail."
+    },
+    "krankenkassen-tracker": {
+      "name": "Health Insurance Tracker",
+      "description": "Track premiums and benefits of your health insurance."
+    },
+    "lebenserwartung": {
+      "name": "Life Expectancy",
+      "description": "Estimate your life expectancy for retirement planning."
+    },
+    "lebenzeitRechner": {
+      "name": "Lifetime Calculator",
+      "description": "Calculate how you spend your lifetime."
+    },
+    "lohnerhoher": {
+      "name": "Salary Increase",
+      "description": "Calculate the real impact of a raise."
+    },
+    "meinFinanzplan": {
+      "name": "My Financial Plan",
+      "description": "Create your personal financial plan."
+    },
+    "mini3aKurzcheck": {
+      "name": "Mini 3a Quick Check",
+      "description": "Quick check of your pillar 3a."
+    },
+    "notfallCheck": {
+      "name": "Emergency Check",
+      "description": "Check if you're prepared for financial emergencies."
+    },
+    "recoveryAnalyse": {
+      "name": "Recovery Analysis",
+      "description": "Analyze recovery times after losses."
+    },
+    "renditeRisikoSimulation": {
+      "name": "Return-Risk Simulation",
+      "description": "Simulate returns and risk."
+    },
+    "rolexRechner": {
+      "name": "Rolex Calculator",
+      "description": "What luxury purchases really cost over time."
+    },
+    "sicherheitsvergleich": {
+      "name": "Security Comparison",
+      "description": "Compare safety of different strategies."
+    },
+    "sozialabgaben-uebersicht": {
+      "name": "Social Contributions Overview",
+      "description": "Understand your social contributions in detail."
+    },
+    "steuerCheck": {
+      "name": "Tax Check",
+      "description": "Find tax optimizations: 3a potential, PK buy-ins and forgotten deductions."
+    },
+    "steuerrechner": {
+      "name": "Tax Calculator",
+      "description": "Calculate your taxes quickly and easily."
+    },
+    "threeAAnalyzer": {
+      "name": "3a Analyzer",
+      "description": "Analyze your pillar 3a in depth."
+    },
+    "tragbarkeitsrechner": {
+      "name": "Affordability Calculator",
+      "description": "Calculate mortgage affordability."
+    },
+    "transparenzCheck": {
+      "name": "Transparency Check",
+      "description": "Check transparency of financial products."
+    },
+    "vergleichsrechner3a": {
+      "name": "3a Comparison",
+      "description": "Compare 3a providers."
+    },
+    "verlustrechner3a": {
+      "name": "3a Loss Calculator",
+      "description": "Calculate the cost of skipping 3a."
+    },
+    "versicherungsCheck": {
+      "name": "Insurance Check",
+      "description": "Check your insurance coverage."
+    },
+    "vvgLeistungsvergleich": {
+      "name": "VVG Benefits Comparison",
+      "description": "Compare VVG insurance benefits."
+    },
+    "wahrscheinlichkeitsrechner": {
+      "name": "Probability Calculator",
+      "description": "Calculate probabilities of financial events."
+    },
+    "wasKostetDasWirklich": {
+      "name": "What does it really cost?",
+      "description": "See how many work hours an expense actually costs you."
+    },
+    "zeitverlustSimulator": {
+      "name": "Time Loss Simulator",
+      "description": "Simulate time lost to financial decisions."
+    },
+    "zufallsRealitaetsCheck": {
+      "name": "Reality Check",
+      "description": "Random reality check on your finances."
     }
   },
   "public": {

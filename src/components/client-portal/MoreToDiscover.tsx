@@ -99,9 +99,9 @@ export function MoreToDiscover(props: MoreToDiscoverProps) {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="overflow-hidden"
+            className="w-full max-w-full overflow-hidden"
           >
-            <div className="space-y-5 pt-4">
+            <div className="space-y-5 pt-4 w-full max-w-full">
               {/* Daily routines */}
               {isSunday && <SundayReflectionCard />}
               <MorningBriefCard />
