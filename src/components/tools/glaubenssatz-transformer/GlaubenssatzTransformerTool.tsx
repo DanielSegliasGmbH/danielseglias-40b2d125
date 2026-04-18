@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PdfExportWrapper } from '../PdfExportWrapper';
+import { ToolSnapshotButton } from '../ToolSnapshotButton';
 import { ToolNextStep } from '../ToolNextStep';
 import { ToolTrustNote } from '../ToolConversionElements';
 import { BELIEFS, Belief } from './beliefData';
