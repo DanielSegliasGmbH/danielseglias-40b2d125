@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { PdfExportWrapper } from '@/components/tools/PdfExportWrapper';
+import { ToolSnapshotButton } from '@/components/tools/ToolSnapshotButton';
 import { ToolReflection, ToolTrustNote } from '@/components/tools/ToolConversionElements';
 import { useMetaProfile } from '@/hooks/useMetaProfile';
 import { useAuth } from '@/hooks/useAuth';
@@ -340,6 +341,16 @@ export function AboAuditTool({ mode = 'internal' }: Props) {
                   context="Jeder Franken, der nicht für ungenutztes abfliesst, ist ein Franken mehr für deine Freiheit."
                 />
                 <ToolTrustNote text="Unabhängige Einschätzung – keine Produktempfehlung." />
+                <ToolSnapshotButton
+                  toolSlug="abo-audit"
+                  toolName="Abo-Audit"
+                  snapshotData={{
+                    abos,
+                    totalMonthly,
+                    activeCount: abos.filter(a => a.active).length,
+                    inactiveCount: abos.filter(a => !a.active).length,
+                  }}
+                />
               </>
             )}
           </div>

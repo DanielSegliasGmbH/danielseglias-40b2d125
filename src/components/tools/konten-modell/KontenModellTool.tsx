@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { PdfExportWrapper } from '@/components/tools/PdfExportWrapper';
+import { ToolSnapshotButton } from '@/components/tools/ToolSnapshotButton';
 import { ToolReflection, ToolTrustNote } from '@/components/tools/ToolConversionElements';
 import { useMetaProfile } from '@/hooks/useMetaProfile';
 import { usePeakScore } from '@/hooks/usePeakScore';
@@ -348,6 +349,16 @@ export function KontenModellTool({ mode = 'internal' }: Props) {
                   context="Das Konten-Modell ist der erste Schritt zu finanzieller Ordnung – und Freiheit."
                 />
                 <ToolTrustNote text="Empfohlene Grundstruktur – individuell anpassbar." />
+                <ToolSnapshotButton
+                  toolSlug="konten-modell"
+                  toolName="Konten-Modell"
+                  snapshotData={{
+                    accounts: accounts.map(a => ({ key: a.key, name: a.name, pct: a.pct })),
+                    jahresPct,
+                    showJahres,
+                    totalPct,
+                  }}
+                />
               </>
             )}
           </div>

@@ -11,6 +11,7 @@ import { StrategyPasswordGate } from '@/components/client-portal/StrategyPasswor
 import { useAuth } from '@/hooks/useAuth';
 import { useCurrentUserProfile } from '@/hooks/useUserManagement';
 import { Card, CardContent } from '@/components/ui/card';
+import { useChatDrawer } from '@/hooks/useChatDrawer';
 
 export default function ClientPortalStrategies() {
   const [selectedPlatform, setSelectedPlatform] = useState('finpension');
@@ -20,6 +21,7 @@ export default function ClientPortalStrategies() {
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const { role } = useAuth();
   const { data: profile, isLoading: profileLoading } = useCurrentUserProfile();
+  const { openChat } = useChatDrawer();
 
   const { data: settings } = useCustomerPortalSettings();
   const privacyMode = settings?.show_strategy_privacy ?? false;
@@ -70,7 +72,7 @@ export default function ClientPortalStrategies() {
                 Schreib ihm direkt — meistens geht das innerhalb eines Werktags.
               </p>
               <div className="flex flex-col gap-2 pt-2">
-                <Button onClick={() => (window.location.href = '/app/client-portal/chat')}>
+                <Button onClick={() => openChat('Hallo Daniel, ich würde gerne die Anlagestrategien freigeschaltet bekommen.')}>
                   Berater kontaktieren
                 </Button>
                 <Button variant="ghost" onClick={() => window.history.back()}>

@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PdfExportWrapper } from '@/components/tools/PdfExportWrapper';
+import { ToolSnapshotButton } from '@/components/tools/ToolSnapshotButton';
 import { ToolReflection, ToolTrustNote } from '@/components/tools/ToolConversionElements';
 import { useMetaProfile } from '@/hooks/useMetaProfile';
 import { usePeakScore, getRankForScore } from '@/hooks/usePeakScore';
@@ -297,6 +298,18 @@ export function GuiltyPleasureRechnerTool({ mode = 'internal' }: Props) {
                     context="Kleine Änderungen heute können zu grossen Ergebnissen führen."
                   />
                   <ToolTrustNote text="Unabhängige Berechnung – keine Produktempfehlung." />
+                  <ToolSnapshotButton
+                    toolSlug="guilty-pleasure-rechner"
+                    toolName="Guilty-Pleasure-Rechner"
+                    snapshotData={{
+                      habit: activeHabit,
+                      annualCost: result?.annualCost,
+                      workHoursPerYear: result?.workHoursPerYear,
+                      invested10y: result?.invested10y,
+                      invested30y: result?.invested30y,
+                      freedomYearsGained: result?.freedomYearsGained,
+                    }}
+                  />
                 </>
               )}
             </motion.div>

@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PdfExportWrapper } from '@/components/tools/PdfExportWrapper';
+import { ToolSnapshotButton } from '@/components/tools/ToolSnapshotButton';
 import { ToolNextStep } from '@/components/tools/ToolNextStep';
 import { ToolReflection, ToolTrustNote } from '@/components/tools/ToolConversionElements';
 import { useMetaProfile } from '@/hooks/useMetaProfile';
@@ -332,6 +333,17 @@ export function WasKostetDasWirklichTool({ mode = 'internal' }: Props) {
               }}
             />
             <ToolTrustNote text="Unabhängige Berechnung – keine Produktempfehlung." />
+            <ToolSnapshotButton
+              toolSlug="was-kostet-das-wirklich"
+              toolName="Was kostet das wirklich?"
+              snapshotData={{
+                itemName,
+                price,
+                grossHourlyRate,
+                years,
+                returnRate,
+              }}
+            />
           </>
         )}
       </div>

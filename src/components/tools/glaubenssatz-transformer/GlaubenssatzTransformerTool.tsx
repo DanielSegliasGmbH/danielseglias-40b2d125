@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PdfExportWrapper } from '../PdfExportWrapper';
+import { ToolSnapshotButton } from '../ToolSnapshotButton';
 import { ToolNextStep } from '../ToolNextStep';
 import { ToolTrustNote } from '../ToolConversionElements';
 import { BELIEFS, Belief } from './beliefData';
@@ -108,6 +109,17 @@ export function GlaubenssatzTransformerTool({ mode = 'internal' }: Props) {
               buttonLabel: '3a-Kurzcheck starten',
             }}
           />
+          {mode === 'internal' && (
+            <ToolSnapshotButton
+              toolSlug="glaubenssatz-transformer"
+              toolName="Glaubenssatz-Transformer"
+              snapshotData={{
+                beliefId: selected.id,
+                beliefTitle: selected.title,
+                beliefEmoji: selected.emoji,
+              }}
+            />
+          )}
         </div>
       </PdfExportWrapper>
     );

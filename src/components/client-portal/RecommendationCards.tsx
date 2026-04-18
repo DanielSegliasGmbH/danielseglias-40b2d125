@@ -15,6 +15,7 @@ import { ArrowRight, Wrench, BookOpen, Compass, Lock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { useChatDrawer } from '@/hooks/useChatDrawer';
 import type { Recommendation } from '@/config/recommendationConfig';
 
 interface RecommendationCardsProps {
@@ -28,6 +29,7 @@ export function RecommendationCards({
 }: RecommendationCardsProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { openChat } = useChatDrawer();
   const [lockedRec, setLockedRec] = useState<Recommendation | null>(null);
   const [requesting, setRequesting] = useState(false);
 
@@ -151,8 +153,14 @@ export function RecommendationCards({
             <Button variant="outline" onClick={() => setLockedRec(null)} disabled={requesting}>
               Abbrechen
             </Button>
-            <Button onClick={handleRequestUnlock} disabled={requesting}>
-              {requesting ? 'Wird gesendet…' : 'Anfrage senden'}
+            <Button
+              onClick={() => {
+                if (!lockedRec) return;
+                openChat(`Hallo Daniel, ich würde gerne das Tool «${lockedRec.title}» freigeschaltet bekommen.`);
+                setLockedRec(null);
+              }}
+            >
+              Anfrage senden
             </Button>
           </DialogFooter>
         </DialogContent>

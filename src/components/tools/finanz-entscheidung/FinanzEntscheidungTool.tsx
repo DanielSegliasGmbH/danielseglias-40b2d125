@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PdfExportWrapper } from '../PdfExportWrapper';
 import { ToolTrustNote } from '../ToolConversionElements';
+import { ToolSnapshotButton } from '../ToolSnapshotButton';
 import { ToolNextStep } from '../ToolNextStep';
 import {
   CheckCircle,
@@ -330,6 +331,17 @@ export function FinanzEntscheidungTool({ mode = 'internal' }: Props) {
         )}
 
         <ToolTrustNote text="Keine Daten gespeichert · Keine Produktwerbung · Dein Tempo" />
+        {mode === 'internal' && showDecision && (
+          <ToolSnapshotButton
+            toolSlug="finanz-entscheidung"
+            toolName="Finanz-Entscheidung"
+            snapshotData={{
+              selectedInsights: insights.filter(i => i.selected).map(i => i.id),
+              totalInsights: insights.length,
+              selectedCount: insights.filter(i => i.selected).length,
+            }}
+          />
+        )}
       </div>
     </PdfExportWrapper>
   );

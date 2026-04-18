@@ -27,6 +27,7 @@ import { Badge } from '@/components/ui/badge';
 import { BottomNavigation } from '@/components/client-portal/BottomNavigation';
 import { MoreSheet } from '@/components/client-portal/MoreSheet';
 import { ChatDrawer } from '@/components/client-portal/ChatDrawer';
+import { ChatDrawerProvider, useChatDrawer } from '@/hooks/useChatDrawer';
 import { FloatingChatBubble } from '@/components/client-portal/FloatingChatBubble';
 import { NotificationBell } from '@/components/client-portal/NotificationBell';
 import { PeakScoreNavBadge } from '@/components/client-portal/PeakScoreNavBadge';
@@ -86,13 +87,13 @@ function usePreviewCustomerName(customerId: string | null) {
   });
 }
 
-export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
+function ClientPortalLayoutInner({ children }: ClientPortalLayoutProps) {
   const { t } = useTranslation();
   const { user, role, signOut } = useAuth();
   const location = useLocation();
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [chatOpen, setChatOpen] = useState(false); // desktop only
+  const { open: chatOpen, setOpen: setChatOpen, openChat } = useChatDrawer();
   const { data: settings } = useCustomerPortalSettings();
   const { data: unreadCount = 0 } = useUnreadCount();
   useSmartNotifications();
@@ -319,5 +320,13 @@ export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
     </TooltipProvider>
     </HamsterSheetsProvider>
     </PrivacyModeProvider>
+  );
+}
+
+export function ClientPortalLayout({ children }: ClientPortalLayoutProps) {
+  return (
+    <ChatDrawerProvider>
+      <ClientPortalLayoutInner>{children}</ClientPortalLayoutInner>
+    </ChatDrawerProvider>
   );
 }
