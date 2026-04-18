@@ -332,7 +332,7 @@ export function useClientToolsFiltered() {
       const days = anchorIso
         ? Math.max(0, Math.floor((Date.now() - new Date(anchorIso).getTime()) / 86400000))
         : 0;
-      const peakScore = peakRow?.peak_score ?? null;
+      const peakScore = (peakRow as { score?: number } | null)?.score ?? null;
       const tDone = tasksCompleted ?? 0;
       const cDone = coachModules ?? 0;
 
