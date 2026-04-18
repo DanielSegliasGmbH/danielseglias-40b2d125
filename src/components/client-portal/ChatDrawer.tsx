@@ -12,6 +12,7 @@ import {
 } from '@/hooks/useChat';
 import { cn } from '@/lib/utils';
 import { useTracking } from '@/hooks/useTracking';
+import { useChatDrawer } from '@/hooks/useChatDrawer';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { toast } from 'sonner';
