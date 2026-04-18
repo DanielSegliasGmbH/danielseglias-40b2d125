@@ -485,10 +485,11 @@ export default function ClientPortalInsurances() {
                     </div>
                   </CardContent>
                 </Card>
-              );
-            })}
-          </div>
-        )}
+                );
+              })}
+            </div>
+          );
+        })()}
       </div>
 
       {/* Add / Edit Dialog */}
