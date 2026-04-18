@@ -330,9 +330,16 @@ export default function ClientPortalBudget() {
 
   return (
     <ClientPortalLayout>
-      <ScreenHeader title="💰 Mein Budget" backTo="/app/client-portal" />
       <PageTransition>
-      <div className="max-w-2xl mx-auto space-y-5">
+      <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
+        {/* Header — gleiche Struktur wie "Werkzeuge" */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-lg font-bold text-foreground">💰 Mein Budget</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">Einnahmen, Ausgaben & Cashflow im Überblick</p>
+          </div>
+        </div>
+
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="w-full">
             <TabsTrigger value="budget" className="flex-1 gap-1.5">
