@@ -287,6 +287,18 @@ export function NotfallCheckTool({ mode = 'internal' }: Props) {
                   context="Ein Notgroschen ist kein Luxus – er ist deine Versicherung gegen das Unerwartete."
                 />
                 <ToolTrustNote text="Unabhängige Einschätzung – keine Produktempfehlung." />
+                <ToolSnapshotButton
+                  toolSlug="notfall-check"
+                  toolName="Notfall-Check"
+                  snapshotData={{
+                    monthlyTotal,
+                    liquidSavings,
+                    fixedCosts,
+                    variableCosts,
+                    monthsSurvival,
+                    monthsSurvivalCut,
+                  }}
+                />
               </>
             )}
           </div>
