@@ -1,21 +1,23 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Bell, CheckCheck } from 'lucide-react';
+import { Bell, CheckCheck, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from '@/components/ui/sheet';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   useClientNotifications,
   useMarkNotificationRead,
   useMarkAllNotificationsRead,
-  getCategoryLabel,
+  useToggleNotificationStar,
 } from '@/hooks/useNotifications';
 import {
   useSmartNotificationsList,
   useMarkSmartNotificationRead,
   useMarkAllSmartNotificationsRead,
+  useToggleSmartNotificationStar,
 } from '@/hooks/useSmartNotifications';
 import { cn } from '@/lib/utils';
 import { format, isToday, isThisWeek } from 'date-fns';
@@ -31,11 +33,13 @@ interface UnifiedNotification {
   link_label?: string | null;
   category?: string;
   is_read: boolean;
+  is_starred: boolean;
   date: string;
   source: 'broadcast' | 'smart';
 }
 
 type ColorDot = 'blue' | 'green' | 'orange' | 'red';
+type FilterTab = 'unread' | 'read' | 'starred' | 'all';
 
 function getCategoryDotColor(category: string): ColorDot {
   switch (category) {
@@ -90,12 +94,15 @@ function groupNotifications(items: UnifiedNotification[]): GroupedNotifications[
 
 export function NotificationBell() {
   const [open, setOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<FilterTab>('unread');
   const { data: broadcastNotifs } = useClientNotifications();
   const { data: smartNotifs } = useSmartNotificationsList();
   const markBroadcastRead = useMarkNotificationRead();
   const markAllBroadcastRead = useMarkAllNotificationsRead();
   const markSmartRead = useMarkSmartNotificationRead();
   const markAllSmartRead = useMarkAllSmartNotificationsRead();
+  const toggleBroadcastStar = useToggleNotificationStar();
+  const toggleSmartStar = useToggleSmartNotificationStar();
 
   const notifications = useMemo<UnifiedNotification[]>(() => {
     const items: UnifiedNotification[] = [];
@@ -110,6 +117,7 @@ export function NotificationBell() {
         link_label: n.link_label,
         category: n.category,
         is_read: n.is_read,
+        is_starred: (n as any).is_starred ?? false,
         date: n.published_at || n.created_at,
         source: 'broadcast',
       });
@@ -124,6 +132,7 @@ export function NotificationBell() {
         link_label: n.link_label,
         category: n.notification_type,
         is_read: n.is_read,
+        is_starred: (n as any).is_starred ?? false,
         date: n.created_at,
         source: 'smart',
       });
@@ -134,7 +143,19 @@ export function NotificationBell() {
   }, [broadcastNotifs, smartNotifs]);
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
-  const grouped = groupNotifications(notifications);
+  const starredCount = notifications.filter(n => n.is_starred).length;
+
+  const filtered = useMemo(() => {
+    switch (activeTab) {
+      case 'unread': return notifications.filter(n => !n.is_read);
+      case 'read': return notifications.filter(n => n.is_read);
+      case 'starred': return notifications.filter(n => n.is_starred);
+      case 'all':
+      default: return notifications;
+    }
+  }, [notifications, activeTab]);
+
+  const grouped = groupNotifications(filtered);
 
   const handleClick = (n: UnifiedNotification) => {
     if (!n.is_read) {
@@ -143,10 +164,30 @@ export function NotificationBell() {
     }
   };
 
+  const handleToggleStar = (e: React.MouseEvent, n: UnifiedNotification) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (n.source === 'broadcast') {
+      toggleBroadcastStar.mutate({ notificationId: n.id, isStarred: !n.is_starred });
+    } else {
+      toggleSmartStar.mutate({ id: n.id, isStarred: !n.is_starred });
+    }
+  };
+
   const handleMarkAllRead = () => {
     markAllBroadcastRead.mutate();
     markAllSmartRead.mutate();
   };
+
+  const emptyMessage = (() => {
+    switch (activeTab) {
+      case 'unread': return { icon: '✅', title: 'Keine ungelesenen Erinnerungen', sub: 'Du bist auf dem Laufenden!' };
+      case 'read': return { icon: '📭', title: 'Noch nichts gelesen', sub: 'Gelesene Erinnerungen erscheinen hier.' };
+      case 'starred': return { icon: '⭐', title: 'Keine markierten Erinnerungen', sub: 'Tippe den Stern, um Wichtiges zu markieren.' };
+      case 'all':
+      default: return { icon: '🔔', title: 'Keine Erinnerungen', sub: 'Hier erscheinen alle Hinweise.' };
+    }
+  })();
 
   let globalIdx = 0;
 
@@ -180,69 +221,102 @@ export function NotificationBell() {
             </div>
           </SheetHeader>
 
-          <div className="overflow-y-auto flex-1" style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 20px)' }}>
-            {!notifications.length ? (
-              <div className="text-center py-20 px-6">
-                <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">✅</span>
-                </div>
-                <p className="text-sm font-semibold text-foreground mb-1">Keine neuen Erinnerungen</p>
-                <p className="text-xs text-muted-foreground">Du bist auf dem Laufenden!</p>
-              </div>
-            ) : (
-              <div className="py-2">
-                {grouped.map((group) => (
-                  <div key={group.label}>
-                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-5 pt-4 pb-1.5">
-                      {group.label}
-                    </p>
-                    {group.items.map(n => {
-                      const idx = globalIdx++;
-                      const dotColor = getCategoryDotColor(n.category || 'general');
-                      return (
-                        <motion.div
-                          key={`${n.source}-${n.id}`}
-                          initial={{ opacity: 0, y: 4 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.15, delay: idx * 0.02 }}
-                        >
-                          {n.link_url ? (
-                            <Link
-                              to={n.link_url}
-                              onClick={() => { handleClick(n); setOpen(false); }}
-                              className={cn(
-                                "flex items-start gap-3 px-5 py-3 transition-colors",
-                                !n.is_read ? "bg-primary/[0.04]" : "hover:bg-muted/50"
-                              )}
-                            >
-                              <NotificationRow n={n} dotColor={dotColor} />
-                            </Link>
-                          ) : (
-                            <div
-                              onClick={() => handleClick(n)}
-                              className={cn(
-                                "flex items-start gap-3 px-5 py-3 transition-colors cursor-pointer",
-                                !n.is_read ? "bg-primary/[0.04]" : "hover:bg-muted/50"
-                              )}
-                            >
-                              <NotificationRow n={n} dotColor={dotColor} />
-                            </div>
-                          )}
-                        </motion.div>
-                      );
-                    })}
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as FilterTab)} className="flex flex-col flex-1 min-h-0">
+            <div className="px-3 pt-3 shrink-0">
+              <TabsList className="grid grid-cols-4 w-full h-9">
+                <TabsTrigger value="unread" className="text-xs gap-1">
+                  Ungelesen
+                  {unreadCount > 0 && (
+                    <span className="text-[10px] bg-destructive text-destructive-foreground rounded-full px-1.5 min-w-[18px]">
+                      {unreadCount}
+                    </span>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="read" className="text-xs">Gelesen</TabsTrigger>
+                <TabsTrigger value="starred" className="text-xs gap-1">
+                  Mit Stern
+                  {starredCount > 0 && (
+                    <span className="text-[10px] bg-amber-500/20 text-amber-700 dark:text-amber-400 rounded-full px-1.5 min-w-[18px]">
+                      {starredCount}
+                    </span>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="all" className="text-xs">Alle</TabsTrigger>
+              </TabsList>
+            </div>
+
+            <TabsContent value={activeTab} className="flex-1 overflow-y-auto mt-0" style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 20px)' }}>
+              {!filtered.length ? (
+                <div className="text-center py-20 px-6">
+                  <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl">{emptyMessage.icon}</span>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  <p className="text-sm font-semibold text-foreground mb-1">{emptyMessage.title}</p>
+                  <p className="text-xs text-muted-foreground">{emptyMessage.sub}</p>
+                </div>
+              ) : (
+                <div className="py-2">
+                  {grouped.map((group) => (
+                    <div key={group.label}>
+                      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-5 pt-4 pb-1.5">
+                        {group.label}
+                      </p>
+                      {group.items.map(n => {
+                        const idx = globalIdx++;
+                        const dotColor = getCategoryDotColor(n.category || 'general');
+                        return (
+                          <motion.div
+                            key={`${n.source}-${n.id}`}
+                            initial={{ opacity: 0, y: 4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.15, delay: idx * 0.02 }}
+                          >
+                            {n.link_url ? (
+                              <Link
+                                to={n.link_url}
+                                onClick={() => { handleClick(n); setOpen(false); }}
+                                className={cn(
+                                  "flex items-start gap-3 px-5 py-3 transition-colors",
+                                  !n.is_read ? "bg-primary/[0.04]" : "hover:bg-muted/50"
+                                )}
+                              >
+                                <NotificationRow n={n} dotColor={dotColor} onToggleStar={(e) => handleToggleStar(e, n)} />
+                              </Link>
+                            ) : (
+                              <div
+                                onClick={() => handleClick(n)}
+                                className={cn(
+                                  "flex items-start gap-3 px-5 py-3 transition-colors cursor-pointer",
+                                  !n.is_read ? "bg-primary/[0.04]" : "hover:bg-muted/50"
+                                )}
+                              >
+                                <NotificationRow n={n} dotColor={dotColor} onToggleStar={(e) => handleToggleStar(e, n)} />
+                              </div>
+                            )}
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         </SheetContent>
       </Sheet>
     </>
   );
 }
 
-function NotificationRow({ n, dotColor }: { n: UnifiedNotification; dotColor: ColorDot }) {
+function NotificationRow({
+  n,
+  dotColor,
+  onToggleStar,
+}: {
+  n: UnifiedNotification;
+  dotColor: ColorDot;
+  onToggleStar: (e: React.MouseEvent) => void;
+}) {
   return (
     <>
       <div className={cn("w-2 h-2 rounded-full mt-[7px] shrink-0", dotColors[dotColor])} />
@@ -263,9 +337,22 @@ function NotificationRow({ n, dotColor }: { n: UnifiedNotification; dotColor: Co
           {format(new Date(n.date), 'dd. MMM, HH:mm', { locale: de })}
         </p>
       </div>
-      {!n.is_read && (
-        <div className="w-2 h-2 rounded-full bg-primary mt-[7px] shrink-0" />
-      )}
+      <div className="flex flex-col items-center gap-1.5 shrink-0">
+        <button
+          type="button"
+          onClick={onToggleStar}
+          className={cn(
+            "p-1 rounded-md hover:bg-muted transition-colors",
+            n.is_starred ? "text-amber-500" : "text-muted-foreground/40 hover:text-muted-foreground"
+          )}
+          aria-label={n.is_starred ? 'Stern entfernen' : 'Mit Stern markieren'}
+        >
+          <Star className={cn("h-4 w-4", n.is_starred && "fill-current")} />
+        </button>
+        {!n.is_read && (
+          <div className="w-2 h-2 rounded-full bg-primary" />
+        )}
+      </div>
     </>
   );
 }
