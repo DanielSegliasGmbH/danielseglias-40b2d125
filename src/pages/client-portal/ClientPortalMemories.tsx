@@ -97,8 +97,8 @@ export default function ClientPortalMemories() {
 
   return (
     <ClientPortalLayout>
-      <PageTransition>
-      <ScreenHeader title={t('clientPortal.activityTitle', 'Mein Verlauf')} showBack={false} />
+      <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1">
+      <ScreenHeader title={t('clientPortal.activityTitle', 'Mein Verlauf')} backTo="/app/client-portal" />
       <p className="text-sm text-muted-foreground mb-6">{t('clientPortal.activityDesc', 'Deine letzten Aktivitäten in der App.')}</p>
 
       {/* Filters */}
