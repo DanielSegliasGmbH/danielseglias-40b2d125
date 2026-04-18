@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useModuleProgress, useSaveCoachProgress, useEarnBadge } from '@/hooks/useCoachProgress';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,6 +18,8 @@ export default function ClientPortalCoachNewcomerModule() {
   const { moduleKey } = useParams<{ moduleKey: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const forceStart = searchParams.get('mode') === 'start';
 
   const mod = NEWCOMER_MODULES.find(m => m.key === moduleKey);
   const dbKey = mod ? `${NEWCOMER_DB_PREFIX}${mod.key}` : '';
@@ -39,7 +41,7 @@ export default function ClientPortalCoachNewcomerModule() {
   }
 
   const Icon = mod.icon;
-  const isCompleted = savedProgress?.status === 'completed';
+  const isCompleted = !forceStart && savedProgress?.status === 'completed';
   const totalSteps = mod.questions.length + 2; // intro + questions + action
   const currentStepNum = step === 'intro' ? 1 : step === 'questions' ? 2 + currentQ : step === 'action' ? totalSteps : totalSteps;
   const progressPct = Math.round((currentStepNum / totalSteps) * 100);
@@ -216,7 +218,7 @@ export default function ClientPortalCoachNewcomerModule() {
                   <h2 className="text-lg font-bold text-foreground">Geschafft! 🎉</h2>
                   <p className="text-sm text-muted-foreground">+{mod.xp} XP verdient</p>
                   {nextModule ? (
-                    <Button onClick={() => navigate(`/app/client-portal/coach-newcomer/${nextModule.key}`)} className="gap-2">
+                    <Button onClick={() => navigate(`/app/client-portal/coach-newcomer/${nextModule.key}?mode=start`)} className="gap-2">
                       Weiter: {nextModule.title} <ChevronRight className="h-4 w-4" />
                     </Button>
                   ) : (
