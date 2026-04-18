@@ -903,6 +903,58 @@
     "documentGenerator": {
       "name": "Dokument-Generator",
       "description": "Erstelle professionelle Beratungsdokumente."
+    },
+    "aboAudit": {
+      "name": "Abo-Audit",
+      "description": "Finde alle Abos und spare durch gezieltes Kündigen."
+    },
+    "ahv-tracker": {
+      "name": "AHV-Tracker",
+      "description": "Behalte deine AHV-Beitragsjahre im Blick."
+    },
+    "guiltyPleasureRechner": {
+      "name": "Guilty-Pleasure-Rechner",
+      "description": "Sieh, was deine kleinen Sünden über die Jahre kosten."
+    },
+    "humankapital": {
+      "name": "Humankapital-Rechner",
+      "description": "Berechne den Wert deiner zukünftigen Einkommen."
+    },
+    "kontenModell": {
+      "name": "Konten-Modell",
+      "description": "Strukturiere dein Geld mit dem Mehrkonten-System."
+    },
+    "krankenkassen-tracker": {
+      "name": "Krankenkassen-Tracker",
+      "description": "Verfolge Prämien und Leistungen deiner Krankenkasse."
+    },
+    "lebenserwartung": {
+      "name": "Lebenserwartung",
+      "description": "Schätze deine Lebenserwartung für die Vorsorgeplanung."
+    },
+    "lohnerhoher": {
+      "name": "Lohnerhöher",
+      "description": "Berechne, wie sich eine Lohnerhöhung wirklich auswirkt."
+    },
+    "meinFinanzplan": {
+      "name": "Mein Finanzplan",
+      "description": "Erstelle deinen persönlichen Finanzplan."
+    },
+    "notfallCheck": {
+      "name": "Notfall-Check",
+      "description": "Prüfe, ob du für finanzielle Notfälle gewappnet bist."
+    },
+    "sozialabgaben-uebersicht": {
+      "name": "Sozialabgaben-Übersicht",
+      "description": "Verstehe deine Sozialabgaben im Detail."
+    },
+    "steuerrechner": {
+      "name": "Steuerrechner",
+      "description": "Berechne deine Steuern schnell und einfach."
+    },
+    "wasKostetDasWirklich": {
+      "name": "Was kostet das wirklich?",
+      "description": "Sieh, wie viele Arbeitsstunden eine Ausgabe dich wirklich kostet."
     }
   },
   "adminLeads": {

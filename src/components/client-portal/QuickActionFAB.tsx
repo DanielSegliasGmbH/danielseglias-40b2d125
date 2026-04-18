@@ -59,7 +59,7 @@ export function QuickActionFAB() {
             animate={{ opacity: 0, y: -60 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.2, ease: 'easeOut' }}
-            className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[60] pointer-events-none"
+            className="fixed bottom-28 right-6 z-[60] pointer-events-none"
           >
             <span className="text-lg font-bold text-primary drop-shadow-md">
               +{xpAnim} XP ✨
@@ -72,7 +72,7 @@ export function QuickActionFAB() {
       <button
         onClick={() => setOpen(true)}
         className={cn(
-          'fixed z-50 bottom-[calc(env(safe-area-inset-bottom,0px)+140px)] left-1/2 -translate-x-1/2',
+          'fixed z-50 bottom-[calc(env(safe-area-inset-bottom,0px)+80px)] right-6',
           'w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg',
           'flex items-center justify-center',
           'hover:bg-primary/90 active:scale-95 transition-all duration-150',
