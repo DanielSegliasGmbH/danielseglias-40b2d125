@@ -205,14 +205,15 @@ export function useNextBestStep() {
     queryFn: async (): Promise<NextBestStepResult> => {
       if (!user) return { primary: null, secondary: null, reasoning: 'Kein User' };
 
-      // Fetch data in parallel
-      const [eventsRes, sessionsRes, scoringRes, settingsRes, metaRes] = await Promise.all([
+      // ARCHIVED: user_scoring belongs to old advisor CRM
+      // Returns null/default — admin scoring is decoupled from client app
+      const [eventsRes, sessionsRes, settingsRes, metaRes] = await Promise.all([
         supabase.from('tracking_events').select('event_type, tool_key').eq('user_id', user.id),
         supabase.from('tracking_sessions').select('id, started_at').eq('user_id', user.id),
-        supabase.from('user_scoring').select('score, status, labels').eq('user_id', user.id).maybeSingle(),
         supabase.from('customer_users').select('customer_id').eq('user_id', user.id).maybeSingle(),
         supabase.from('meta_profiles').select('id').eq('user_id', user.id).maybeSingle(),
       ]);
+      const scoringRes = { data: null as { score?: number; status?: string; labels?: string[] } | null };
 
       const events = eventsRes.data || [];
       const sessions = sessionsRes.data || [];
@@ -259,12 +260,14 @@ export function useNextBestStepForUser(userId: string | undefined) {
     queryFn: async (): Promise<NextBestStepResult> => {
       if (!userId) return { primary: null, secondary: null, reasoning: 'Kein User' };
 
-      const [eventsRes, sessionsRes, scoringRes, metaRes] = await Promise.all([
+      // ARCHIVED: user_scoring belongs to old advisor CRM
+      // Returns null/default — admin scoring is decoupled from client app
+      const [eventsRes, sessionsRes, metaRes] = await Promise.all([
         supabase.from('tracking_events').select('event_type, tool_key').eq('user_id', userId),
         supabase.from('tracking_sessions').select('id, started_at').eq('user_id', userId),
-        supabase.from('user_scoring').select('score, status, labels').eq('user_id', userId).maybeSingle(),
         supabase.from('meta_profiles').select('id').eq('user_id', userId).maybeSingle(),
       ]);
+      const scoringRes = { data: null as { score?: number; status?: string; labels?: string[] } | null };
 
       const events = eventsRes.data || [];
       const sessions = sessionsRes.data || [];

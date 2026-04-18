@@ -54,6 +54,10 @@ export function CreateTaskDialog() {
     }
 
     setLoading(true);
+    // DEPRECATED: use client_tasks instead
+    // Note: this admin CRM dialog still writes to `tasks` because the row is
+    // tied to a `case_id` (FK to cases), which client_tasks does not support.
+    // Migration to client_tasks requires the cases module to be retired first.
     const { error } = await supabase.from('tasks').insert({
       case_id: formData.case_id,
       title: formData.title,
