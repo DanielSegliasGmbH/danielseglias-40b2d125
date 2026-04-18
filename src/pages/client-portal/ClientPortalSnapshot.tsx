@@ -726,7 +726,7 @@ export default function ClientPortalSnapshot() {
       <div className="space-y-4">
         {/* Header */}
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="p-1.5 rounded-lg hover:bg-muted transition-colors">
+          <button onClick={() => navigate('/app/client-portal')} className="p-1.5 rounded-lg hover:bg-muted transition-colors">
             <ArrowLeft className="h-5 w-5 text-muted-foreground" />
           </button>
           <div className="flex-1">
