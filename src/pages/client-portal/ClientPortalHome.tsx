@@ -249,9 +249,8 @@ export default function ClientPortalHome() {
   const quickAccess = [
     { icon: Sparkles, label: 'Coach', path: '/app/client-portal/coach', emoji: '✨' },
     { icon: Wrench, label: 'Tools', path: '/app/client-portal/tools', emoji: '🔧' },
-    { icon: Wallet, label: 'Budget', path: '/app/client-portal/budget', emoji: '💰' },
+    { icon: Film, label: 'Lebensfilm', path: '/app/client-portal/life-film', emoji: '🎬' },
     { icon: CalendarDays, label: 'Kalender', path: '/app/client-portal/calendar', emoji: '📅' },
-    { icon: Camera, label: 'Snapshot', path: '/app/client-portal/snapshot', emoji: '📸' },
   ];
 
   return (
