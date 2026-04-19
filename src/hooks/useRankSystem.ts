@@ -24,6 +24,7 @@ export function useRankSystem() {
   const dismissRankChange = useCallback(() => setRankChange(null), []);
 
   useEffect(() => {
+    if (!RANK_ANIMATION_ENABLED) return;
     // CRITICAL: Wait for BOTH score AND saved rank to load.
     // Without this guard, the animation fires on every page load
     // because savedRank defaults to 1 before the DB query resolves.
