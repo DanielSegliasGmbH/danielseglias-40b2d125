@@ -200,7 +200,8 @@ export function useHabitTracker() {
             action_ref: `habit-all-${date}`,
             points_awarded: 10,
           });
-          toast.success('Alle Gewohnheiten erledigt! +10 Bonus-XP 🎉');
+          // ARCHIVED v1.0 — habit completion toast disabled. Restore in Claude Code v1.1
+          // toast.success('Alle Gewohnheiten erledigt! +10 Bonus-XP 🎉');
         }
 
         // Check streak milestones
@@ -215,7 +216,8 @@ export function useHabitTracker() {
             action_ref: `streak7-${habitId}`,
             points_awarded: 25,
           });
-          toast.success('🔥 7-Tage-Streak! +25 XP');
+          // ARCHIVED v1.0 — streak milestone toast disabled. Restore in Claude Code v1.1
+          // toast.success('🔥 7-Tage-Streak! +25 XP');
         } else if (streak === 30) {
           await supabase.from('gamification_actions').insert({
             user_id: user.id,
@@ -223,7 +225,8 @@ export function useHabitTracker() {
             action_ref: `streak30-${habitId}`,
             points_awarded: 100,
           });
-          toast.success('🏆 30-Tage-Streak! +100 XP');
+          // ARCHIVED v1.0 — streak milestone toast disabled. Restore in Claude Code v1.1
+          // toast.success('🏆 30-Tage-Streak! +100 XP');
         }
       }
     },
