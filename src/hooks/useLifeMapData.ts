@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
 
 export interface LifeMapTerritory {
-  key: 'vermoegen' | 'absicherung' | 'vorsorge' | 'cashflow' | 'wissen' | 'ziele';
+  key: 'vermoegen' | 'absicherung' | 'vorsorge' | 'cashflow' | 'wissen' | 'leben';
   label: string;
   emoji: string;
   /** HSL color token name from index.css; we fall back to inline HSL where needed */
@@ -27,6 +28,7 @@ const clamp01 = (n: number) => Math.max(0, Math.min(1, n));
 
 export function useLifeMapData(): LifeMapData {
   const { user } = useAuth();
+  const { profile } = useProfile();
   const uid = user?.id;
 
   const { data: assets = 0 } = useQuery({
@@ -92,20 +94,6 @@ export function useLifeMapData(): LifeMapData {
     enabled: !!uid,
   });
 
-  const { data: goals = { total: 0, done: 0 } } = useQuery({
-    queryKey: ['lifemap-goals', uid],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('client_goals')
-        .select('is_completed')
-        .eq('user_id', uid!);
-      const total = data?.length || 0;
-      const done = data?.filter((g) => g.is_completed).length || 0;
-      return { total, done };
-    },
-    enabled: !!uid,
-  });
-
   // Vorsorge progress from snapshot: 3a + PK + Freizügigkeit
   const pillar3aFilled = !!(snapshot?.['pillar_3a'] as Record<string, unknown>)?.amount;
   const pkFilled = !!(snapshot?.['pension_fund'] as Record<string, unknown>)?.amount;
@@ -118,15 +106,24 @@ export function useLifeMapData(): LifeMapData {
   const savingsRate = monthlyIncome > 0 ? monthlySavings / monthlyIncome : 0;
   const cashflowProgress = expenseCount >= 5 ? clamp01(savingsRate / 0.2) : 0;
 
+  // Budget & Vermögen — combined progress (assets + budget entries)
+  const assetScore = clamp01(assets / 5);
+  const budgetScore = clamp01(expenseCount / 10);
+  const vermoegenProgress = (assetScore + budgetScore) / 2;
+
+  // Mein Leben — discovered with basic profile data; grows with humankapital tool use
+  const hasBasicLifeData = !!(profile?.age && profile?.monthlyIncome);
+  const lebenProgress = hasBasicLifeData ? 0.5 : 0;
+
   const territories: LifeMapTerritory[] = [
     {
       key: 'vermoegen',
-      label: 'Vermögen',
+      label: 'Budget & Vermögen',
       emoji: '💰',
       colorVar: '142 71% 45%',
       glow: 'hsl(142 71% 45% / 0.55)',
-      progress: clamp01(assets / 5),
-      path: '/app/client-portal/net-worth',
+      progress: vermoegenProgress,
+      path: '/app/client-portal/budget',
     },
     {
       key: 'absicherung',
@@ -165,23 +162,19 @@ export function useLifeMapData(): LifeMapData {
       path: '/app/client-portal/library',
     },
     {
-      key: 'ziele',
-      label: 'Ziele',
-      emoji: '🎯',
-      colorVar: '24 95% 58%',
-      glow: 'hsl(24 95% 58% / 0.55)',
-      progress: goals.total > 0 ? clamp01(goals.done / goals.total) : 0,
-      path: '/app/client-portal/goals',
+      key: 'leben',
+      label: 'Mein Leben',
+      emoji: '📈',
+      colorVar: '200 80% 50%',
+      glow: 'hsl(200 80% 50% / 0.55)',
+      progress: lebenProgress,
+      path: '/app/client-portal/tools/humankapital',
     },
   ];
 
-  // Override: territory is "unlocked" (>0) ONLY if its trigger condition holds.
-  // For ziele, the trigger is "at least 1 goal created" — so even with 0 completed,
-  // if total>0 we want to show the territory as discovered (min 0.1 progress).
-  if (goals.total > 0 && territories[5].progress === 0) territories[5].progress = 0.1;
   // Same for cashflow: if 5+ expenses logged but savings rate unknown, show min 0.1
   if (expenseCount >= 5 && territories[3].progress === 0) territories[3].progress = 0.1;
-  // Absicherung: ab 1. erfasstem Produkt min 0.1 Progress (Territorium freigeschaltet)
+  // Absicherung: ab 1. erfasstem Produkt min 0.1 Progress
   if (insurances > 0 && territories[1].progress < 0.1) territories[1].progress = 0.1;
 
   const exploredPercent = Math.round(

@@ -7,14 +7,15 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Lock } from 'lucide-react';
 import { useLifeMapData, LifeMapTerritory } from '@/hooks/useLifeMapData';
+import { LifeTimelinePanel } from '@/components/client-portal/LifeTimelinePanel';
 import { cn } from '@/lib/utils';
 
 const UNLOCK_INFO: Record<LifeMapTerritory['key'], { description: string; howTo: string; ctaLabel: string; ctaPath: string }> = {
   vermoegen: {
-    description: 'Hier siehst du dein Vermögen wachsen — Konten, Investments, 3a, Immobilien.',
-    howTo: 'Füge deinen ersten Vermögenswert hinzu, um dieses Gebiet zu erschliessen.',
-    ctaLabel: 'Zu Mein Vermögen',
-    ctaPath: '/app/client-portal/net-worth',
+    description: 'Hier siehst du dein Vermögen wachsen — Konten, Investments, 3a, Immobilien — und führst dein Budget.',
+    howTo: 'Erfasse deinen ersten Vermögenswert oder eine Ausgabe, um dieses Gebiet zu erschliessen.',
+    ctaLabel: 'Zu Mein Budget',
+    ctaPath: '/app/client-portal/budget',
   },
   absicherung: {
     description: 'Dein Schutz gegen Lebensrisiken — Versicherungen, Notgroschen, Vorsorgevollmachten.',
@@ -40,11 +41,11 @@ const UNLOCK_INFO: Record<LifeMapTerritory['key'], { description: string; howTo:
     ctaLabel: 'Zur Bibliothek',
     ctaPath: '/app/client-portal/library',
   },
-  ziele: {
-    description: 'Wo du hin willst — finanzielle Ziele und Meilensteine.',
-    howTo: 'Setze dein erstes Ziel, um dieses Gebiet zu erschliessen.',
-    ctaLabel: 'Zu Meine Ziele',
-    ctaPath: '/app/client-portal/goals',
+  leben: {
+    description: 'Deine finanzielle Zeitachse — Humankapital, Vermögen und Rente über dein gesamtes Leben.',
+    howTo: 'Vervollständige Alter und Einkommen in deinem Profil, um diese Ansicht freizuschalten.',
+    ctaLabel: 'Zu Mein Profil',
+    ctaPath: '/app/client-portal/profile-data',
   },
 };
 
@@ -56,6 +57,7 @@ export function LifeMapCard() {
   const navigate = useNavigate();
   const { territories, exploredPercent, unlockedCount } = useLifeMapData();
   const [lockedInfo, setLockedInfo] = useState<LifeMapTerritory | null>(null);
+  const [timelineOpen, setTimelineOpen] = useState(false);
 
   // Track newly unlocked territories — fire toast on transition 0 -> >0.
   const prevUnlockedRef = useRef<Set<string> | null>(null);
@@ -99,17 +101,27 @@ export function LifeMapCard() {
               onClick={() => {
                 if (t.progress === 0) {
                   setLockedInfo(t);
+                } else if (t.key === 'leben') {
+                  setTimelineOpen((v) => !v);
                 } else {
                   navigate(t.path);
                 }
               }}
-              className="group relative aspect-square focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-2xl"
+              className={cn(
+                'group relative aspect-square focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-2xl',
+                t.key === 'leben' && timelineOpen && 'ring-2 ring-primary/60',
+              )}
               aria-label={`${t.label} – ${Math.round(t.progress * 100)}% erschlossen`}
+              aria-expanded={t.key === 'leben' ? timelineOpen : undefined}
             >
               <Hexagon territory={t} />
             </motion.button>
           ))}
         </div>
+
+        <AnimatePresence initial={false}>
+          {timelineOpen && <LifeTimelinePanel />}
+        </AnimatePresence>
 
         <motion.div
           initial={{ opacity: 0 }}
