@@ -90,14 +90,14 @@ function PlatformCard({
           )}
         </div>
         <p className="text-sm text-muted-foreground">{platform.description}</p>
-        <div className="space-y-1 pt-1">
-          <div className="flex justify-between gap-2 text-xs">
-            <span className="text-muted-foreground shrink-0">Produktkosten</span>
-            <span className="font-medium text-foreground text-right break-words min-w-0">{platform.productCosts}</span>
+        <div className="space-y-2 pt-1">
+          <div className="space-y-0.5">
+            <p className="text-[11px] text-muted-foreground">Produktkosten</p>
+            <p className="text-xs font-medium text-foreground break-words">{platform.productCosts}</p>
           </div>
-          <div className="flex justify-between gap-2 text-xs">
-            <span className="text-muted-foreground shrink-0">Weitere Gebühren</span>
-            <span className="font-medium text-foreground text-right break-words min-w-0">{platform.otherFees}</span>
+          <div className="space-y-0.5">
+            <p className="text-[11px] text-muted-foreground">Weitere Gebühren</p>
+            <p className="text-xs font-medium text-foreground break-words">{platform.otherFees}</p>
           </div>
         </div>
         {!privacyMode && (
