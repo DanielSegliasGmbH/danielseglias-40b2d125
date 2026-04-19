@@ -101,27 +101,17 @@ export function LifeMapCard() {
               onClick={() => {
                 if (t.progress === 0) {
                   setLockedInfo(t);
-                } else if (t.key === 'leben') {
-                  setTimelineOpen((v) => !v);
                 } else {
                   navigate(t.path);
                 }
               }}
-              className={cn(
-                'group relative aspect-square focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-2xl',
-                t.key === 'leben' && timelineOpen && 'ring-2 ring-primary/60',
-              )}
+              className="group relative aspect-square focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-2xl"
               aria-label={`${t.label} – ${Math.round(t.progress * 100)}% erschlossen`}
-              aria-expanded={t.key === 'leben' ? timelineOpen : undefined}
             >
               <Hexagon territory={t} />
             </motion.button>
           ))}
         </div>
-
-        <AnimatePresence initial={false}>
-          {timelineOpen && <LifeTimelinePanel />}
-        </AnimatePresence>
 
         <motion.div
           initial={{ opacity: 0 }}
