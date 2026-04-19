@@ -102,8 +102,8 @@ export function StrategySection({ platformId, privacyMode }: Props) {
                 </p>
 
                 {/* Mini donut + return range */}
-                <div className="flex items-center gap-3">
-                  <div className="w-16 h-16 shrink-0">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 shrink-0">
                     <DonutChart
                       allocations={s.allocations}
                       cryptoEnabled={false}
@@ -112,9 +112,9 @@ export function StrategySection({ platformId, privacyMode }: Props) {
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-muted-foreground">Erwartete Rendite</p>
-                    <p className="text-sm font-semibold text-foreground">{s.returnRange}</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                    <p className="text-[11px] text-muted-foreground truncate">Erwartete Rendite</p>
+                    <p className="text-sm font-semibold text-foreground break-words">{s.returnRange}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5 break-words">
                       Ø {s.avgReturn} ({s.returnSince})
                     </p>
                   </div>
