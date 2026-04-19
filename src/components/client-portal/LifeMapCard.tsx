@@ -240,25 +240,13 @@ function Hexagon({ territory }: HexagonProps) {
           <span className="text-2xl font-bold text-muted-foreground/60">?</span>
         ) : (
           <>
+            <span className="text-xl sm:text-2xl leading-none">{emoji}</span>
             <span
-              className={cn(
-                'text-xl sm:text-2xl leading-none',
-                !isMedium && 'opacity-60',
-              )}
+              className="mt-1 text-[9px] sm:text-[10px] font-semibold leading-tight text-foreground/90"
+              style={{ textShadow: '0 1px 2px hsl(var(--background) / 0.8)' }}
             >
-              {emoji}
+              {label}
             </span>
-            {isMedium && (
-              <span
-                className="mt-1 text-[9px] sm:text-[10px] font-semibold leading-tight text-foreground/90"
-                style={{ textShadow: '0 1px 2px hsl(var(--background) / 0.8)' }}
-              >
-                {label}
-              </span>
-            )}
-            {isMedium && !isFull && (
-              <span className="text-[9px] font-bold text-foreground/70">{pct}%</span>
-            )}
           </>
         )}
       </div>
