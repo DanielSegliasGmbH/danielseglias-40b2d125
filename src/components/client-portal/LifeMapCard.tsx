@@ -7,7 +7,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Lock } from 'lucide-react';
 import { useLifeMapData, LifeMapTerritory } from '@/hooks/useLifeMapData';
-import { LifeTimelinePanel } from '@/components/client-portal/LifeTimelinePanel';
+
 import { cn } from '@/lib/utils';
 
 const UNLOCK_INFO: Record<LifeMapTerritory['key'], { description: string; howTo: string; ctaLabel: string; ctaPath: string }> = {
