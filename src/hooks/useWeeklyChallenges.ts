@@ -210,9 +210,11 @@ export function useWeeklyChallenges() {
           .update({ bonus_claimed: true })
           .eq('id', currentWeek.id);
 
-        toast.success('🎉 Alle Quests erledigt! +50 Bonus-XP');
+        // ARCHIVED v1.0 — quest completion toast disabled. Restore in Claude Code v1.1
+        // toast.success('🎉 Alle Quests erledigt! +50 Bonus-XP');
       } else {
-        toast.success(`+${challenge.xp} XP verdient! ⚡`);
+        // ARCHIVED v1.0 — XP award toast disabled. Restore in Claude Code v1.1
+        // toast.success(`+${challenge.xp} XP verdient! ⚡`);
       }
     },
     onSuccess: () => {

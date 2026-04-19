@@ -260,11 +260,12 @@ export function useGamification() {
           points_awarded: POINTS_MAP.daily_login,
         });
 
-        setTimeout(() => {
-          toast('🔥 Tag 1 – Dein Streak beginnt!', {
-            description: 'Komm morgen wieder und baue deinen Streak aus.',
-          });
-        }, 1200);
+        // ARCHIVED v1.0 — first login toast disabled. Restore in Claude Code v1.1
+        // setTimeout(() => {
+        //   toast('🔥 Tag 1 – Dein Streak beginnt!', {
+        //     description: 'Komm morgen wieder und baue deinen Streak aus.',
+        //   });
+        // }, 1200);
       }
 
       initializedRef.current = true;
@@ -320,32 +321,36 @@ export function useGamification() {
     pointsRef.current = currentPts;
     setStreakDays(newStreak);
 
-    // Toasts
+    // ARCHIVED v1.0 — streak/milestone/level-up toasts disabled. Restore in Claude Code v1.1
     const fn = futureNameRef.current;
-    if (streakBroken) {
-      toast(fn ? `${fn} wartet. Gib nicht auf. 💪` : 'Neustart – heute beginnt dein neuer Lauf 💪', {
-        description: 'Ab heute zählt wieder jeder Tag!',
-      });
-    } else if (newStreak > 1) {
-      toast(`🔥 ${newStreak} Tage in Folge!`, {
-        description: fn ? `${fn} ist beeindruckt. +${loginPoints} XP` : `+${loginPoints} XP · Du bleibst dran!`,
-      });
-    }
+    void fn;
+    // if (streakBroken) {
+    //   toast(fn ? `${fn} wartet. Gib nicht auf. 💪` : 'Neustart – heute beginnt dein neuer Lauf 💪', {
+    //     description: 'Ab heute zählt wieder jeder Tag!',
+    //   });
+    // } else if (newStreak > 1) {
+    //   toast(`🔥 ${newStreak} Tage in Folge!`, {
+    //     description: fn ? `${fn} ist beeindruckt. +${loginPoints} XP` : `+${loginPoints} XP · Du bleibst dran!`,
+    //   });
+    // }
+    // if (milestoneMsg) {
+    //   setTimeout(() => {
+    //     toast.success(milestoneMsg, {
+    //       description: fn ? `${fn} sieht deinen Fortschritt.` : `${newStreak} Tage Disziplin – das ist echte Stärke.`,
+    //     });
+    //   }, 1500);
+    // }
+    void milestoneMsg;
 
-    if (milestoneMsg) {
-      setTimeout(() => {
-        toast.success(milestoneMsg, {
-          description: fn ? `${fn} sieht deinen Fortschritt.` : `${newStreak} Tage Disziplin – das ist echte Stärke.`,
-        });
-      }, 1500);
-    }
-
-    // Level up check
+    // Level up check — XP still tracked, but celebration disabled
     const oldLevel = getLevel(data.points).level;
     const newLevelInfo = getLevel(currentPts);
-    if (newLevelInfo.level > oldLevel) {
-      emitLevelUp(newLevelInfo.level, newLevelInfo.label);
-    }
+    // ARCHIVED v1.0 — level-up emission disabled. Restore in Claude Code v1.1
+    // if (newLevelInfo.level > oldLevel) {
+    //   emitLevelUp(newLevelInfo.level, newLevelInfo.label);
+    // }
+    void oldLevel;
+    void emitLevelUp;
     prevLevelRef.current = newLevelInfo.level;
   };
 
@@ -418,15 +423,17 @@ export function useGamification() {
       pointsRef.current = newPoints;
       setLastAwardedPoints({ amount: pointsToAdd, id: Date.now() });
 
-      const fn = futureNameRef.current;
-      const desc = fn
-        ? `${getActionMessage(actionType)} · Ein Schritt näher zu ${fn}.`
-        : getActionMessage(actionType);
-      toast(`+${pointsToAdd} XP`, { description: desc });
-
-      if (newLevelInfo.level > oldLevel) {
-        emitLevelUp(newLevelInfo.level, newLevelInfo.label);
-      }
+      // ARCHIVED v1.0 — XP toast + level-up celebration disabled. Restore in Claude Code v1.1
+      // const fn = futureNameRef.current;
+      // const desc = fn
+      //   ? `${getActionMessage(actionType)} · Ein Schritt näher zu ${fn}.`
+      //   : getActionMessage(actionType);
+      // toast(`+${pointsToAdd} XP`, { description: desc });
+      // if (newLevelInfo.level > oldLevel) {
+      //   emitLevelUp(newLevelInfo.level, newLevelInfo.label);
+      // }
+      void getActionMessage;
+      void oldLevel;
 
       prevLevelRef.current = newLevelInfo.level;
       return true;

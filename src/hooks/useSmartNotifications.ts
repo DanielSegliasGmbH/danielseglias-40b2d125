@@ -247,13 +247,19 @@ export function useSmartNotifications() {
     }
   }, [user, queryClient]);
 
-  // Run check on mount and every 30 minutes
+  // ARCHIVED v1.0 — restore in Claude Code v1.1
+  // Auto-notification generation disabled. Fires streak_reminder,
+  // weekly_budget, task_due, goal_milestone, monthly_report,
+  // calendar_deadline, weekly_quests notifications automatically
+  // on every layout mount. Re-enable after proper scheduling system.
   useEffect(() => {
+    return;
+    // eslint-disable-next-line no-unreachable
     if (!user) return;
     checkAll();
     const interval = setInterval(checkAll, 30 * 60 * 1000);
     return () => clearInterval(interval);
-  }, [user, checkAll]);
+  }, [user?.id, queryClient]);
 }
 
 export function useSmartNotificationsList() {
