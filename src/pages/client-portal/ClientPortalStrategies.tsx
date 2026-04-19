@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
-import { ScreenHeader } from '@/components/ScreenHeader';
 import { PlatformSelector } from '@/components/client-portal/strategy/PlatformSelector';
 import { StrategySection } from '@/components/client-portal/strategy/StrategySection';
 import { GlidepathSection } from '@/components/client-portal/strategy/GlidepathSection';
@@ -157,15 +156,15 @@ export default function ClientPortalStrategies() {
   return (
     <ClientPortalLayout>
       <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1 pb-24 sm:pb-12">
-        <ScreenHeader title="Anlageberatung" backTo="/app/client-portal" />
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-            <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-          </div>
+        {/* Header – analog zu Werkzeuge */}
+        <div className="flex items-center justify-between gap-2">
           <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold text-foreground">Anlageberatung</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">
-              Plattform wählen, Strategie verstehen, Umsetzung nachvollziehen
+            <h1 className="text-lg font-bold text-foreground flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-primary shrink-0" />
+              <span className="truncate">Anlageberatung</span>
+            </h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Plattform, Strategie & Umsetzung
             </p>
           </div>
         </div>
