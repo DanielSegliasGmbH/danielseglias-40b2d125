@@ -11,7 +11,7 @@ import { useGamification, LEVELS } from '@/hooks/useGamification';
 import { useNextBestStep } from '@/hooks/useNextBestStep';
 import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { NotificationBell } from '@/components/client-portal/NotificationBell';
-import { Sparkles, Wrench, Zap, Star, Trophy, Award, Crown, Wallet, Camera, CalendarDays } from 'lucide-react';
+import { Sparkles, Wrench, Zap, Star, Trophy, Award, Crown, Wallet, Camera, CalendarDays, Film } from 'lucide-react';
 import { useFinanzType } from '@/hooks/useFinanzType';
 import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
 import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
