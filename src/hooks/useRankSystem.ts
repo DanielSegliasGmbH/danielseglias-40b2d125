@@ -8,6 +8,11 @@ export type RankChangeEvent =
   | { type: 'rank_up'; oldRank: RankDef; newRank: RankDef }
   | { type: 'rank_down'; oldRank: RankDef; newRank: RankDef };
 
+// TEMPORARY: Rank-change animation is passive (disabled) until the
+// false-positive trigger on first load is fully resolved.
+// Restore by setting RANK_ANIMATION_ENABLED = true.
+const RANK_ANIMATION_ENABLED = false;
+
 export function useRankSystem() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
