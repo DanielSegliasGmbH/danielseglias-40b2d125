@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 
 export interface LifeMapTerritory {
-  key: 'vermoegen' | 'absicherung' | 'vorsorge' | 'cashflow' | 'wissen' | 'leben';
+  key: 'vermoegen' | 'absicherung' | 'vorsorge' | 'ziele' | 'wissen' | 'leben';
   label: string;
   emoji: string;
   /** HSL color token name from index.css; we fall back to inline HSL where needed */
