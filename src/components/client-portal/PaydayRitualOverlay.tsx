@@ -198,6 +198,7 @@ export function PaydayRitualOverlay() {
       </motion.div>
     </AnimatePresence>
   );
+  }
 }
 
 function StepWrapper({ children }: { children: React.ReactNode }) {

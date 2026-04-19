@@ -82,6 +82,7 @@ export function TruthMomentOverlay() {
       </motion.div>
     </AnimatePresence>
   );
+  }
 }
 
 /* ─── MOMENT 1: Das Gesamt-Verdient ─── */
