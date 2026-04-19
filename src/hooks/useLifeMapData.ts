@@ -181,13 +181,13 @@ export function useLifeMapData(): LifeMapData {
       path: '/app/client-portal/library',
     },
     {
-      key: 'leben',
-      label: 'Mein Leben',
+      key: 'anlagestrategie',
+      label: 'Anlagestrategie',
       emoji: '📈',
       colorVar: '200 80% 50%',
       glow: 'hsl(200 80% 50% / 0.55)',
-      progress: lebenProgress,
-      path: '/app/client-portal/tools/humankapital',
+      progress: anlagestrategieProgress,
+      path: '/app/client-portal/strategies',
     },
   ];
 
