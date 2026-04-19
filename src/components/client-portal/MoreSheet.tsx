@@ -118,7 +118,8 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
           <MoreLink to="/app/client-portal/monthly-report" icon={FileBarChart} label="Mein Monatsbericht" />
           <MoreLink to="/app/client-portal/friends" icon={Users} label="Freunde" />
           <MoreLink to="/app/client-portal/invite" icon={Gift} label="Freunde einladen" />
-          <MoreLink to="/app/client-portal/premium" icon={Crown} label="Premium" />
+          {/* ARCHIVED v1.0: Premium menu item — premium gates disabled, page not linked */}
+          {/* <MoreLink to="/app/client-portal/premium" icon={Crown} label="Premium" /> */}
           <MoreLink to={buildPath('/app/client-portal/profile-data')} icon={Wallet} label="Mein Finanzprofil" />
           <MoreLink to="/app/profile" icon={User} label={t('userManagement.profile')} />
           <MoreLink to={buildPath('/app/client-portal/profile-data')} icon={User} label="Mein Profil" />
