@@ -164,13 +164,13 @@ export function useLifeMapData(): LifeMapData {
       path: '/app/client-portal/snapshot',
     },
     {
-      key: 'cashflow',
-      label: 'Cashflow',
-      emoji: '📊',
+      key: 'ziele',
+      label: 'Ziele',
+      emoji: '🎯',
       colorVar: '82 55% 42%',
       glow: 'hsl(82 55% 42% / 0.55)',
-      progress: cashflowProgress,
-      path: '/app/client-portal/budget',
+      progress: zieleProgress,
+      path: '/app/client-portal/goals',
     },
     {
       key: 'wissen',
