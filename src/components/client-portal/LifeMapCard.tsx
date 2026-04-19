@@ -41,11 +41,11 @@ const UNLOCK_INFO: Record<LifeMapTerritory['key'], { description: string; howTo:
     ctaLabel: 'Zur Bibliothek',
     ctaPath: '/app/client-portal/library',
   },
-  leben: {
-    description: 'Deine finanzielle Zeitachse — Humankapital, Vermögen und Rente über dein gesamtes Leben.',
-    howTo: 'Vervollständige Alter und Einkommen in deinem Profil, um diese Ansicht freizuschalten.',
-    ctaLabel: 'Zu Mein Profil',
-    ctaPath: '/app/client-portal/profile-data',
+  anlagestrategie: {
+    description: 'Deine persönliche Anlagestrategie — strukturiert investieren mit klarem Risiko-Profil.',
+    howTo: 'Erfasse einen Vermögenswert, um deine Anlagestrategie freizuschalten.',
+    ctaLabel: 'Zu Anlagestrategie',
+    ctaPath: '/app/client-portal/strategies',
   },
 };
 
