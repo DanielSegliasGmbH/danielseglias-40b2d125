@@ -155,7 +155,7 @@ export default function ClientPortalStrategies() {
 
   return (
     <ClientPortalLayout>
-      <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-1 pb-24 sm:pb-12">
+      <div className="w-full max-w-2xl mx-auto space-y-5 overflow-x-hidden px-3 sm:px-4 pb-24 sm:pb-12">
         {/* Header – analog zu Werkzeuge */}
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0">
