@@ -87,6 +87,7 @@ export interface PeakScoreData {
   hasData: boolean;
   rank: RankDef;
   savedRank: number;
+  savedRankLoading: boolean;
   rankBuffer: { isWarning: boolean; buffer: number };
   assetCount: number;
   liabilityCount: number;
