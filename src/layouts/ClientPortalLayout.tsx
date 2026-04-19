@@ -1,9 +1,10 @@
 import { ReactNode, useState } from 'react';
-import { LevelUpCelebration } from '@/components/client-portal/LevelUpCelebration';
-import { TruthMomentOverlay } from '@/components/client-portal/TruthMomentOverlay';
-import { PaydayRitualOverlay } from '@/components/client-portal/PaydayRitualOverlay';
-import { StreakRescueOverlay } from '@/components/client-portal/StreakRescueOverlay';
-import { UnlockCelebration } from '@/components/client-portal/UnlockCelebration';
+// ARCHIVED for v1.0 — auto-firing overlays, restore individually after testing
+// import { LevelUpCelebration } from '@/components/client-portal/LevelUpCelebration';
+// import { TruthMomentOverlay } from '@/components/client-portal/TruthMomentOverlay';
+// import { PaydayRitualOverlay } from '@/components/client-portal/PaydayRitualOverlay';
+// import { StreakRescueOverlay } from '@/components/client-portal/StreakRescueOverlay';
+// import { UnlockCelebration } from '@/components/client-portal/UnlockCelebration';
 import { GoldNutCelebrationOverlay } from '@/components/client-portal/GoldNutCelebrationOverlay';
 import { HamsterSheetsProvider } from '@/hooks/useHamsterSheets';
 import { HamsterInventorySheet } from '@/components/client-portal/HamsterInventorySheet';
@@ -97,7 +98,7 @@ function ClientPortalLayoutInner({ children }: ClientPortalLayoutProps) {
   const { data: settings } = useCustomerPortalSettings();
   const { data: unreadCount = 0 } = useUnreadCount();
   useSmartNotifications();
-  const { newlyUnlocked, clearNewlyUnlocked } = useFeatureUnlock();
+  // ARCHIVED for v1.0: const { newlyUnlocked, clearNewlyUnlocked } = useFeatureUnlock();
   
   const previewCustomerId = usePreviewCustomerId();
   const isAdminPreview = role === 'admin' && !!previewCustomerId;
@@ -307,13 +308,12 @@ function ClientPortalLayoutInner({ children }: ClientPortalLayoutProps) {
         {/* Floating Chat Bubble (mobile) */}
         <FloatingChatBubble />
 
-        {/* Level-up celebration overlay */}
-        <LevelUpCelebration />
-        <TruthMomentOverlay />
-        <PaydayRitualOverlay />
-        {/* StreakRescueOverlay archiviert/stummgeschaltet auf Wunsch */}
+        {/* ARCHIVED for v1.0 — auto-firing overlays, restore individually after testing */}
+        {/* <LevelUpCelebration /> */}
+        {/* <TruthMomentOverlay /> */}
+        {/* <PaydayRitualOverlay /> */}
         {/* <StreakRescueOverlay /> */}
-        <UnlockCelebration newlyUnlocked={newlyUnlocked} onDismiss={clearNewlyUnlocked} />
+        {/* <UnlockCelebration newlyUnlocked={newlyUnlocked} onDismiss={clearNewlyUnlocked} /> */}
         <GoldNutCelebrationOverlay />
         <HamsterInventorySheet />
         <AchievementsSheet />

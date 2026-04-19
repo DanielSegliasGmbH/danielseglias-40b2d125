@@ -8,12 +8,16 @@ export type RankChangeEvent =
   | { type: 'rank_up'; oldRank: RankDef; newRank: RankDef }
   | { type: 'rank_down'; oldRank: RankDef; newRank: RankDef };
 
-// TEMPORARY: Rank-change animation is passive (disabled) until the
-// false-positive trigger on first load is fully resolved.
-// Restore by setting RANK_ANIMATION_ENABLED = true.
+// ARCHIVED for v1.0 — rank change detection has a race condition bug.
+// Hook preserved but returns no events. Re-enable after fixing in Claude Code.
 const RANK_ANIMATION_ENABLED = false;
 
 export function useRankSystem() {
+  // ARCHIVED: returns empty state to prevent broken animations
+  return { rankChange: null as RankChangeEvent | null, dismissRankChange: () => {} };
+  // eslint-disable-next-line no-unreachable
+  // @ts-ignore — original implementation preserved below for restoration
+  function _ArchivedImpl() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { score, rank, savedRank, savedRankLoading, loading } = usePeakScore();
@@ -67,4 +71,5 @@ export function useRankSystem() {
   }, [score, rank, savedRank, savedRankLoading, loading, user, queryClient]);
 
   return { rankChange, dismissRankChange };
+  }
 }

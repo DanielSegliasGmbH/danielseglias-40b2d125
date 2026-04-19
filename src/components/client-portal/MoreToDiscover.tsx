@@ -18,7 +18,7 @@ import { ShadowTwinCard } from '@/components/client-portal/ShadowTwinCard';
 import { LastPlanDashboardCard } from '@/components/client-portal/LastPlanDashboardCard';
 import { ProfessionDashboardTips } from '@/components/client-portal/ProfessionDashboardTips';
 import { JourneyDashboardWidget } from '@/components/client-portal/JourneyDashboardWidget';
-import { RankWarningBanner } from '@/components/client-portal/RankWarningBanner';
+// ARCHIVED for v1.0: import { RankWarningBanner } from '@/components/client-portal/RankWarningBanner';
 import { FreedomCountdown } from '@/components/client-portal/FreedomCountdown';
 
 interface CockpitCard {
@@ -109,7 +109,7 @@ export function MoreToDiscover(props: MoreToDiscoverProps) {
               <MoodCheckinCard />
               <FreedomCountdown />
               <WeeklyCheckCard />
-              <RankWarningBanner />
+              {/* ARCHIVED for v1.0: <RankWarningBanner /> */}
               <InflationTickerCard />
 
               {/* Finanz-Typ */}

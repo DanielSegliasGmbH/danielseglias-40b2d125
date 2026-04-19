@@ -45,7 +45,15 @@ function ConfettiParticle({ index }: { index: number }) {
   );
 }
 
-export function RankChangeOverlay({ event, onDismiss }: RankChangeOverlayProps) {
+// ARCHIVED for v1.0 — fires on every page load due to race condition between
+// score calculation and savedRank DB fetch. Re-enable after fixing in Claude Code.
+export function RankChangeOverlay(_props: RankChangeOverlayProps) {
+  // ARCHIVED: return null until bug is fixed in Claude Code
+  return null;
+  // eslint-disable-next-line @typescript-eslint/no-unreachable, no-unreachable
+  // @ts-ignore — original implementation preserved below for restoration
+  // eslint-disable-next-line
+  function _ArchivedImpl({ event, onDismiss }: RankChangeOverlayProps) {
   const navigate = useNavigate();
 
   // Auto-dismiss rank up after 5 seconds
@@ -159,4 +167,5 @@ export function RankChangeOverlay({ event, onDismiss }: RankChangeOverlayProps) 
       )}
     </AnimatePresence>
   );
+  }
 }

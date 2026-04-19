@@ -18,7 +18,13 @@ function formatCHF(n: number): string {
   return n.toLocaleString('de-CH', { maximumFractionDigits: 0 });
 }
 
+// ARCHIVED for v1.0 — auto-firing overlay, restore after testing in Claude Code.
 export function PaydayRitualOverlay() {
+  // ARCHIVED: return null
+  return null;
+  // eslint-disable-next-line no-unreachable
+  // @ts-ignore — original implementation preserved below for restoration
+  function _ArchivedImpl() {
   const { shouldShowRitual, saveRitual } = usePaydayRitual();
   const { points, streakDays, awardPoints } = useGamification();
   const { score, totalAssets, totalLiabilities, monthlyExpenses } = usePeakScore();
@@ -192,6 +198,7 @@ export function PaydayRitualOverlay() {
       </motion.div>
     </AnimatePresence>
   );
+  }
 }
 
 function StepWrapper({ children }: { children: React.ReactNode }) {

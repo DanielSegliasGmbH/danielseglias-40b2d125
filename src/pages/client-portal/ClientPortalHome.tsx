@@ -16,8 +16,9 @@ import { useFinanzType } from '@/hooks/useFinanzType';
 import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
 import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
 import { JourneyNudgeCard } from '@/components/client-portal/JourneyNudgeCard';
-import { RankChangeOverlay } from '@/components/client-portal/RankChangeOverlay';
-import { useRankSystem } from '@/hooks/useRankSystem';
+// ARCHIVED for v1.0 — race condition between score & savedRank fetch causes false positives
+// import { RankChangeOverlay } from '@/components/client-portal/RankChangeOverlay';
+// import { useRankSystem } from '@/hooks/useRankSystem';
 import { usePeakScore } from '@/hooks/usePeakScore';
 import { LifeMapCard } from '@/components/client-portal/LifeMapCard';
 import { DailyFocusCard } from '@/components/client-portal/DailyFocusCard';
@@ -57,7 +58,7 @@ export default function ClientPortalHome() {
   } = useGamification();
 
   const { data: nextStepResult } = useNextBestStep();
-  const { rankChange, dismissRankChange } = useRankSystem();
+  // ARCHIVED for v1.0: const { rankChange, dismissRankChange } = useRankSystem();
   const { score, rank: peakRank } = usePeakScore();
   const { completed: finanzTypCompleted, info: finanzTypInfo } = useFinanzType();
   const firstName = user?.user_metadata?.first_name || 'Kunde';
@@ -355,7 +356,7 @@ export default function ClientPortalHome() {
         }}
       />
       <QuickActionFAB />
-      <RankChangeOverlay event={rankChange} onDismiss={dismissRankChange} />
+      {/* ARCHIVED for v1.0: <RankChangeOverlay event={rankChange} onDismiss={dismissRankChange} /> */}
     </ClientPortalLayout>
   );
 }
