@@ -57,7 +57,7 @@ export function LifeMapCard() {
   const navigate = useNavigate();
   const { territories, exploredPercent, unlockedCount } = useLifeMapData();
   const [lockedInfo, setLockedInfo] = useState<LifeMapTerritory | null>(null);
-  const [timelineOpen, setTimelineOpen] = useState(false);
+  
 
   // Track newly unlocked territories — fire toast on transition 0 -> >0.
   const prevUnlockedRef = useRef<Set<string> | null>(null);
