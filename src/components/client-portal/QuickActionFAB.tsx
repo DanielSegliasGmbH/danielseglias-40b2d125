@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useHamsterSheets } from '@/hooks/useHamsterSheets';
+import { useChatDrawer } from '@/hooks/useChatDrawer';
 
 const BUDGET_CATEGORIES = [
   'Wohnen', 'Essen', 'Transport', 'Versicherungen', 'Gesundheit',
@@ -33,6 +34,7 @@ export function QuickActionFAB() {
   const [xpAnim, setXpAnim] = useState<number | null>(null);
   const navigate = useNavigate();
   const { openInventory, openAchievements } = useHamsterSheets();
+  const { openChat } = useChatDrawer();
 
   const showXp = (amount: number) => {
     setXpAnim(amount);
@@ -92,15 +94,9 @@ export function QuickActionFAB() {
           {!activeAction ? (
             <div className="grid grid-cols-2 gap-3 py-3">
               <ActionTile
-                emoji="🗺️"
-                label="Life Map"
-                onClick={() => {
-                  handleClose();
-                  navigate('/app/client-portal');
-                  setTimeout(() => {
-                    document.getElementById('life-map')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                  }, 200);
-                }}
+                emoji="💬"
+                label="Chat"
+                onClick={() => { handleClose(); openChat(); }}
               />
               <ActionTile
                 emoji="🎒"
