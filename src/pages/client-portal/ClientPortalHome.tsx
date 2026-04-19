@@ -11,7 +11,7 @@ import { useGamification, LEVELS } from '@/hooks/useGamification';
 import { useNextBestStep } from '@/hooks/useNextBestStep';
 import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { NotificationBell } from '@/components/client-portal/NotificationBell';
-import { Sparkles, Wrench, Zap, Star, Trophy, Award, Crown, Wallet, Camera, CalendarDays } from 'lucide-react';
+import { Sparkles, Wrench, Zap, Star, Trophy, Award, Crown, Wallet, Camera, CalendarDays, Film } from 'lucide-react';
 import { useFinanzType } from '@/hooks/useFinanzType';
 import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
 import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
@@ -249,9 +249,8 @@ export default function ClientPortalHome() {
   const quickAccess = [
     { icon: Sparkles, label: 'Coach', path: '/app/client-portal/coach', emoji: '✨' },
     { icon: Wrench, label: 'Tools', path: '/app/client-portal/tools', emoji: '🔧' },
-    { icon: Wallet, label: 'Budget', path: '/app/client-portal/budget', emoji: '💰' },
+    { icon: Film, label: 'Lebensfilm', path: '/app/client-portal/life-film', emoji: '🎬' },
     { icon: CalendarDays, label: 'Kalender', path: '/app/client-portal/calendar', emoji: '📅' },
-    { icon: Camera, label: 'Snapshot', path: '/app/client-portal/snapshot', emoji: '📸' },
   ];
 
   return (
