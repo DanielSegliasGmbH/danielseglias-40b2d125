@@ -11,15 +11,23 @@ interface SubscriptionState {
   subscriptionEnd: string | null;
 }
 
+// TEMPORARY: All users get premium access for v1.0 beta.
+// Restore actual subscription logic after Stripe integration is ready.
+const OVERRIDE_ALL_AS_PREMIUM = true;
+
 export function useSubscription() {
   const { user } = useAuth();
   const [state, setState] = useState<SubscriptionState>({
-    isPremium: false,
-    isLoading: true,
+    isPremium: OVERRIDE_ALL_AS_PREMIUM ? true : false,
+    isLoading: OVERRIDE_ALL_AS_PREMIUM ? false : true,
     subscriptionEnd: null,
   });
 
   const checkSubscription = useCallback(async () => {
+    if (OVERRIDE_ALL_AS_PREMIUM) {
+      setState({ isPremium: true, isLoading: false, subscriptionEnd: null });
+      return;
+    }
     if (!user) {
       setState({ isPremium: false, isLoading: false, subscriptionEnd: null });
       return;
@@ -41,6 +49,7 @@ export function useSubscription() {
   }, [user]);
 
   useEffect(() => {
+    if (OVERRIDE_ALL_AS_PREMIUM) return;
     checkSubscription();
     const interval = setInterval(checkSubscription, 60_000);
     return () => clearInterval(interval);

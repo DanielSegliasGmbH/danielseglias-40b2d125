@@ -21,7 +21,8 @@ import { useRankSystem } from '@/hooks/useRankSystem';
 import { usePeakScore } from '@/hooks/usePeakScore';
 import { LifeMapCard } from '@/components/client-portal/LifeMapCard';
 import { DailyFocusCard } from '@/components/client-portal/DailyFocusCard';
-import { MoreToDiscover } from '@/components/client-portal/MoreToDiscover';
+// ARCHIVED v1.0 (P4): MoreToDiscover — restore when widgets are production-ready
+// import { MoreToDiscover } from '@/components/client-portal/MoreToDiscover';
 import { HamsterHeaderBadge } from '@/components/client-portal/HamsterHeaderBadge';
 // ARCHIVED: future-self avatar system replaced by Hamster mascot
 // import { useUserAvatar } from '@/hooks/useUserAvatar';
@@ -311,9 +312,10 @@ export default function ClientPortalHome() {
         </div>
 
         {/* ═══════════════════════════════════════════════════════════
-            SECTION B — "Meine Welt"  (collapsed, NUR für returning users)
+            ARCHIVED v1.0 (P4) — "Mehr entdecken" / MoreToDiscover
+            Restore when individual widgets are production-ready.
             ═══════════════════════════════════════════════════════════ */}
-        {!isFirstWeek && (
+        {/* {!isFirstWeek && (
           <MoreToDiscover
             isSundayReflection={new Date().getDay() === 0}
             firstOfMonth={new Date().getDate() <= 7}
@@ -338,7 +340,7 @@ export default function ClientPortalHome() {
             nextStepResult={nextStepResult}
             navigate={navigate}
           />
-        )}
+        )} */}
         {/* Spacer so the FAB doesn't overlap the last interactive element */}
         <div className="mb-24" />
       </div>
