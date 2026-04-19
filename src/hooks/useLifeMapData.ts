@@ -192,8 +192,8 @@ export function useLifeMapData(): LifeMapData {
     },
   ];
 
-  // Same for cashflow: if 5+ expenses logged but savings rate unknown, show min 0.1
-  if (expenseCount >= 5 && territories[3].progress === 0) territories[3].progress = 0.1;
+  // Ziele: ab 1. erfasstem Ziel min 0.1 Progress
+  if (goals.length > 0 && territories[3].progress < 0.1) territories[3].progress = 0.1;
   // Absicherung: ab 1. erfasstem Produkt min 0.1 Progress
   if (insurances > 0 && territories[1].progress < 0.1) territories[1].progress = 0.1;
 
