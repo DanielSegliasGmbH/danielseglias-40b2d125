@@ -1,7 +1,13 @@
 import { AlertTriangle } from 'lucide-react';
 import { usePeakScore } from '@/hooks/usePeakScore';
 
+// ARCHIVED for v1.0 — auto-firing banner, restore after testing in Claude Code.
 export function RankWarningBanner() {
+  // ARCHIVED: return null
+  return null;
+  // eslint-disable-next-line no-unreachable
+  // @ts-ignore — original implementation preserved below for restoration
+  function _ArchivedImpl() {
   const { score, rankBuffer } = usePeakScore();
 
   if (score === null || !rankBuffer.isWarning) return null;

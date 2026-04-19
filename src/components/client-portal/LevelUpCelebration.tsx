@@ -45,7 +45,13 @@ const CONFETTI_COLORS = [
   '#34D399',
 ];
 
+// ARCHIVED for v1.0 — auto-firing overlay, restore after testing in Claude Code.
 export function LevelUpCelebration() {
+  // ARCHIVED: return null
+  return null;
+  // eslint-disable-next-line no-unreachable
+  // @ts-ignore — original implementation preserved below for restoration
+  function _ArchivedImpl() {
   const [celebration, setCelebration] = useState<{ level: number; label: string } | null>(null);
 
   useEffect(() => {
@@ -154,4 +160,5 @@ export function LevelUpCelebration() {
       )}
     </AnimatePresence>
   );
+  }
 }

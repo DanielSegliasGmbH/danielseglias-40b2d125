@@ -44,7 +44,13 @@ interface UnlockCelebrationProps {
   onDismiss: () => void;
 }
 
-export function UnlockCelebration({ newlyUnlocked, onDismiss }: UnlockCelebrationProps) {
+// ARCHIVED for v1.0 — auto-firing overlay, restore after testing in Claude Code.
+export function UnlockCelebration(_props: UnlockCelebrationProps) {
+  // ARCHIVED: return null
+  return null;
+  // eslint-disable-next-line no-unreachable
+  // @ts-ignore — original implementation preserved below for restoration
+  function _ArchivedImpl({ newlyUnlocked, onDismiss }: UnlockCelebrationProps) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -154,4 +160,5 @@ export function UnlockCelebration({ newlyUnlocked, onDismiss }: UnlockCelebratio
       )}
     </AnimatePresence>
   );
+  }
 }
