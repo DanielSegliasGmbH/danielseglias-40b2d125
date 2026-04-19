@@ -29,11 +29,11 @@ const UNLOCK_INFO: Record<LifeMapTerritory['key'], { description: string; howTo:
     ctaLabel: 'Zum Snapshot',
     ctaPath: '/app/client-portal/snapshot',
   },
-  cashflow: {
-    description: 'Dein Geldfluss — Einnahmen, Ausgaben, Sparrate.',
-    howTo: 'Erfasse mindestens 5 Ausgaben in deinem Budget, um dieses Gebiet zu erschliessen.',
-    ctaLabel: 'Zu Mein Budget',
-    ctaPath: '/app/client-portal/budget',
+  ziele: {
+    description: 'Deine finanziellen Ziele — vom Notgroschen bis zum Eigenheim. Hier hältst du Kurs.',
+    howTo: 'Erfasse dein erstes Ziel, um dieses Gebiet zu erschliessen.',
+    ctaLabel: 'Zu Meine Ziele',
+    ctaPath: '/app/client-portal/goals',
   },
   wissen: {
     description: 'Dein Finanzwissen wächst mit jedem Artikel, jedem Kurs.',
