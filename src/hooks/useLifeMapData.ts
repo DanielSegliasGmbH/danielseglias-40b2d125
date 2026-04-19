@@ -131,9 +131,8 @@ export function useLifeMapData(): LifeMapData {
   const budgetScore = clamp01(expenseCount / 10);
   const vermoegenProgress = (assetScore + budgetScore) / 2;
 
-  // Mein Leben — discovered with basic profile data; grows with humankapital tool use
-  const hasBasicLifeData = !!(profile?.age && profile?.monthlyIncome);
-  const lebenProgress = hasBasicLifeData ? 0.5 : 0;
+  // Anlagestrategie — discovered when user has any assets recorded
+  const anlagestrategieProgress = assets > 0 ? clamp01(0.3 + assets * 0.15) : 0;
 
   const territories: LifeMapTerritory[] = [
     {
