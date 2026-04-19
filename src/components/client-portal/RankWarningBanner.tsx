@@ -20,4 +20,5 @@ export function RankWarningBanner() {
       </span>
     </div>
   );
+  }
 }

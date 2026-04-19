@@ -10,8 +10,13 @@ function formatCHF(n: number): string {
   return n.toLocaleString('de-CH', { maximumFractionDigits: 0 });
 }
 
-/** Full-screen truth moment overlay */
+// ARCHIVED for v1.0 — auto-firing overlay, restore after testing in Claude Code.
 export function TruthMomentOverlay() {
+  // ARCHIVED: return null
+  return null;
+  // eslint-disable-next-line no-unreachable
+  // @ts-ignore — original implementation preserved below for restoration
+  function _ArchivedImpl() {
   const { moment, markShown } = useTruthMoments();
   const [dismissed, setDismissed] = useState(false);
   const [revealStep, setRevealStep] = useState(0);
