@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
@@ -11,17 +11,27 @@ export type RankChangeEvent =
 export function useRankSystem() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const { score, rank, savedRank, loading } = usePeakScore();
+  const { score, rank, savedRank, savedRankLoading, loading } = usePeakScore();
 
   const [rankChange, setRankChange] = useState<RankChangeEvent | null>(null);
+  const processedRankChange = useRef<string>('');
 
   const dismissRankChange = useCallback(() => setRankChange(null), []);
 
   useEffect(() => {
-    if (loading || score === null || !user) return;
+    // CRITICAL: Wait for BOTH score AND saved rank to load.
+    // Without this guard, the animation fires on every page load
+    // because savedRank defaults to 1 before the DB query resolves.
+    if (loading || savedRankLoading || score === null || !user) return;
+    if (savedRank === undefined || savedRank === null) return;
 
     const newRank = rank.rank;
     if (newRank === savedRank) return;
+
+    // Debounce: only process each transition once per session
+    const changeKey = `${savedRank}->${newRank}`;
+    if (processedRankChange.current === changeKey) return;
+    processedRankChange.current = changeKey;
 
     const oldRankDef = RANKS.find(r => r.rank === savedRank) || RANKS[0];
     const newRankDef = rank;
@@ -48,7 +58,7 @@ export function useRankSystem() {
       // Rank DOWN
       setRankChange({ type: 'rank_down', oldRank: oldRankDef, newRank: newRankDef });
     }
-  }, [score, rank, savedRank, loading, user]);
+  }, [score, rank, savedRank, savedRankLoading, loading, user, queryClient]);
 
   return { rankChange, dismissRankChange };
 }

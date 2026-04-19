@@ -87,6 +87,7 @@ export interface PeakScoreData {
   hasData: boolean;
   rank: RankDef;
   savedRank: number;
+  savedRankLoading: boolean;
   rankBuffer: { isWarning: boolean; buffer: number };
   assetCount: number;
   liabilityCount: number;
@@ -163,16 +164,16 @@ export function usePeakScore(): PeakScoreData {
   });
 
   // Fetch saved rank from profile
-  const { data: profileRank = 1 } = useQuery({
+  const { data: profileRank, isLoading: savedRankLoading } = useQuery({
     queryKey: ['profile-rank', user?.id],
     queryFn: async () => {
-      if (!user) return 1;
+      if (!user) return null;
       const { data } = await supabase
         .from('profiles')
         .select('current_rank')
         .eq('id', user.id)
         .maybeSingle();
-      return data?.current_rank || 1;
+      return data?.current_rank ?? 1;
     },
     enabled: !!user,
   });
@@ -205,7 +206,8 @@ export function usePeakScore(): PeakScoreData {
     loading: l1 || l2 || l3 || l4,
     hasData,
     rank,
-    savedRank: profileRank,
+    savedRank: profileRank ?? 1,
+    savedRankLoading,
     rankBuffer,
     assetCount: assets.length,
     liabilityCount: liabilities.length,
