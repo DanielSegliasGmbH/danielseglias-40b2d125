@@ -82,6 +82,18 @@ export function useLifeMapData(): LifeMapData {
     enabled: !!uid,
   });
 
+  const { data: goalsData } = useQuery({
+    queryKey: ['lifemap-goals', uid],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('client_goals')
+        .select('current_amount, target_amount, is_completed')
+        .eq('user_id', uid!);
+      return data || [];
+    },
+    enabled: !!uid,
+  });
+
   const { data: articleReads = 0 } = useQuery({
     queryKey: ['lifemap-articles', uid],
     queryFn: async () => {
@@ -100,11 +112,19 @@ export function useLifeMapData(): LifeMapData {
   const fzFilled = !!(snapshot?.['vested_benefits'] as Record<string, unknown>)?.amount;
   const vorsorgeFilled = [pillar3aFilled, pkFilled, fzFilled].filter(Boolean).length;
 
-  // Cashflow progress: savings rate vs 20% target (placeholder; uses snapshot if available)
-  const monthlyIncome = Number((snapshot?.['monthly_income'] as Record<string, unknown>)?.amount || 0);
-  const monthlySavings = Number((snapshot?.['monthly_savings'] as Record<string, unknown>)?.amount || 0);
-  const savingsRate = monthlyIncome > 0 ? monthlySavings / monthlyIncome : 0;
-  const cashflowProgress = expenseCount >= 5 ? clamp01(savingsRate / 0.2) : 0;
+  // Ziele progress: average completion ratio across goals
+  const goals = goalsData || [];
+  let zieleProgress = 0;
+  if (goals.length > 0) {
+    const ratios = goals.map((g) => {
+      if (g.is_completed) return 1;
+      const target = Number(g.target_amount || 0);
+      const current = Number(g.current_amount || 0);
+      return target > 0 ? clamp01(current / target) : 0.1;
+    });
+    zieleProgress = clamp01(ratios.reduce((s, r) => s + r, 0) / ratios.length);
+    if (zieleProgress < 0.1) zieleProgress = 0.1;
+  }
 
   // Budget & Vermögen — combined progress (assets + budget entries)
   const assetScore = clamp01(assets / 5);
