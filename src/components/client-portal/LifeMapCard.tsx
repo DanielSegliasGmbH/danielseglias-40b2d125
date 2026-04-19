@@ -7,7 +7,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Lock } from 'lucide-react';
 import { useLifeMapData, LifeMapTerritory } from '@/hooks/useLifeMapData';
-import { LifeTimelinePanel } from '@/components/client-portal/LifeTimelinePanel';
+
 import { cn } from '@/lib/utils';
 
 const UNLOCK_INFO: Record<LifeMapTerritory['key'], { description: string; howTo: string; ctaLabel: string; ctaPath: string }> = {
@@ -41,11 +41,11 @@ const UNLOCK_INFO: Record<LifeMapTerritory['key'], { description: string; howTo:
     ctaLabel: 'Zur Bibliothek',
     ctaPath: '/app/client-portal/library',
   },
-  leben: {
-    description: 'Deine finanzielle Zeitachse — Humankapital, Vermögen und Rente über dein gesamtes Leben.',
-    howTo: 'Vervollständige Alter und Einkommen in deinem Profil, um diese Ansicht freizuschalten.',
-    ctaLabel: 'Zu Mein Profil',
-    ctaPath: '/app/client-portal/profile-data',
+  anlagestrategie: {
+    description: 'Deine persönliche Anlagestrategie — strukturiert investieren mit klarem Risiko-Profil.',
+    howTo: 'Erfasse einen Vermögenswert, um deine Anlagestrategie freizuschalten.',
+    ctaLabel: 'Zu Anlagestrategie',
+    ctaPath: '/app/client-portal/strategies',
   },
 };
 
@@ -57,7 +57,7 @@ export function LifeMapCard() {
   const navigate = useNavigate();
   const { territories, exploredPercent, unlockedCount } = useLifeMapData();
   const [lockedInfo, setLockedInfo] = useState<LifeMapTerritory | null>(null);
-  const [timelineOpen, setTimelineOpen] = useState(false);
+  
 
   // Track newly unlocked territories — fire toast on transition 0 -> >0.
   const prevUnlockedRef = useRef<Set<string> | null>(null);
@@ -101,27 +101,17 @@ export function LifeMapCard() {
               onClick={() => {
                 if (t.progress === 0) {
                   setLockedInfo(t);
-                } else if (t.key === 'leben') {
-                  setTimelineOpen((v) => !v);
                 } else {
                   navigate(t.path);
                 }
               }}
-              className={cn(
-                'group relative aspect-square focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-2xl',
-                t.key === 'leben' && timelineOpen && 'ring-2 ring-primary/60',
-              )}
+              className="group relative aspect-square focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-2xl"
               aria-label={`${t.label} – ${Math.round(t.progress * 100)}% erschlossen`}
-              aria-expanded={t.key === 'leben' ? timelineOpen : undefined}
             >
               <Hexagon territory={t} />
             </motion.button>
           ))}
         </div>
-
-        <AnimatePresence initial={false}>
-          {timelineOpen && <LifeTimelinePanel />}
-        </AnimatePresence>
 
         <motion.div
           initial={{ opacity: 0 }}

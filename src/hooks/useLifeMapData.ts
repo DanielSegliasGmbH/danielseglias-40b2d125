@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 
 export interface LifeMapTerritory {
-  key: 'vermoegen' | 'absicherung' | 'vorsorge' | 'ziele' | 'wissen' | 'leben';
+  key: 'vermoegen' | 'absicherung' | 'vorsorge' | 'ziele' | 'wissen' | 'anlagestrategie';
   label: string;
   emoji: string;
   /** HSL color token name from index.css; we fall back to inline HSL where needed */
@@ -131,9 +131,8 @@ export function useLifeMapData(): LifeMapData {
   const budgetScore = clamp01(expenseCount / 10);
   const vermoegenProgress = (assetScore + budgetScore) / 2;
 
-  // Mein Leben — discovered with basic profile data; grows with humankapital tool use
-  const hasBasicLifeData = !!(profile?.age && profile?.monthlyIncome);
-  const lebenProgress = hasBasicLifeData ? 0.5 : 0;
+  // Anlagestrategie — discovered when user has any assets recorded
+  const anlagestrategieProgress = assets > 0 ? clamp01(0.3 + assets * 0.15) : 0;
 
   const territories: LifeMapTerritory[] = [
     {
@@ -182,13 +181,13 @@ export function useLifeMapData(): LifeMapData {
       path: '/app/client-portal/library',
     },
     {
-      key: 'leben',
-      label: 'Mein Leben',
+      key: 'anlagestrategie',
+      label: 'Anlagestrategie',
       emoji: '📈',
       colorVar: '200 80% 50%',
       glow: 'hsl(200 80% 50% / 0.55)',
-      progress: lebenProgress,
-      path: '/app/client-portal/tools/humankapital',
+      progress: anlagestrategieProgress,
+      path: '/app/client-portal/strategies',
     },
   ];
 
