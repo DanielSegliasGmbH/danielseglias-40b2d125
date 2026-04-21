@@ -5,10 +5,12 @@ import { toast } from 'sonner';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Lock } from 'lucide-react';
+import { ArrowRight, Lock, Clock } from 'lucide-react';
 import { useLifeMapData, LifeMapTerritory } from '@/hooks/useLifeMapData';
 
 import { cn } from '@/lib/utils';
+
+const COMING_SOON_TERRITORIES: LifeMapTerritory['key'][] = ['vermoegen', 'vorsorge'];
 
 const UNLOCK_INFO: Record<LifeMapTerritory['key'], { description: string; howTo: string; ctaLabel: string; ctaPath: string }> = {
   vermoegen: {
@@ -55,7 +57,14 @@ const UNLOCK_INFO: Record<LifeMapTerritory['key'], { description: string; howTo:
  */
 export function LifeMapCard() {
   const navigate = useNavigate();
-  const { territories, exploredPercent, unlockedCount } = useLifeMapData();
+  const { territories, unlockedCount } = useLifeMapData();
+  // Recompute exploredPercent excluding coming-soon territories
+  const activeTerritories = territories.filter((t) => !COMING_SOON_TERRITORIES.includes(t.key));
+  const exploredPercent = activeTerritories.length
+    ? Math.round((activeTerritories.reduce((acc, t) => acc + Math.min(1, t.progress), 0) / activeTerritories.length) * 100)
+    : 0;
+  const activeTotal = activeTerritories.length;
+  const activeUnlocked = activeTerritories.filter((t) => t.progress > 0).length;
   const [lockedInfo, setLockedInfo] = useState<LifeMapTerritory | null>(null);
   
 
@@ -91,26 +100,38 @@ export function LifeMapCard() {
         </div>
 
         <div className="grid grid-cols-3 gap-3 sm:gap-4 max-w-md mx-auto">
-          {territories.map((t, i) => (
-            <motion.button
-              key={t.key}
-              type="button"
-              initial={{ opacity: 0, scale: 0.85, y: 8 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ delay: i * 0.07, duration: 0.35, ease: 'easeOut' }}
-              onClick={() => {
-                if (t.progress === 0) {
-                  setLockedInfo(t);
-                } else {
-                  navigate(t.path);
+          {territories.map((t, i) => {
+            const isComingSoon = COMING_SOON_TERRITORIES.includes(t.key);
+            return (
+              <motion.button
+                key={t.key}
+                type="button"
+                disabled={isComingSoon}
+                initial={{ opacity: 0, scale: 0.85, y: 8 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ delay: i * 0.07, duration: 0.35, ease: 'easeOut' }}
+                onClick={() => {
+                  if (isComingSoon) return;
+                  if (t.progress === 0) {
+                    setLockedInfo(t);
+                  } else {
+                    navigate(t.path);
+                  }
+                }}
+                className={cn(
+                  'group relative aspect-square focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-2xl',
+                  isComingSoon && 'cursor-not-allowed'
+                )}
+                aria-label={
+                  isComingSoon
+                    ? `${t.label} – bald verfügbar`
+                    : `${t.label} – ${Math.round(t.progress * 100)}% erschlossen`
                 }
-              }}
-              className="group relative aspect-square focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-2xl"
-              aria-label={`${t.label} – ${Math.round(t.progress * 100)}% erschlossen`}
-            >
-              <Hexagon territory={t} />
-            </motion.button>
-          ))}
+              >
+                {isComingSoon ? <ComingSoonHexagon label={t.label} /> : <Hexagon territory={t} />}
+              </motion.button>
+            );
+          })}
         </div>
 
         <motion.div
@@ -126,7 +147,7 @@ export function LifeMapCard() {
               deiner Finanz-Welt erschlossen.
             </p>
             <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-muted text-muted-foreground shrink-0">
-              {unlockedCount}/6 Gebiete
+              {activeUnlocked}/{activeTotal} Gebiete
             </span>
           </div>
           <div className="mt-2 h-1.5 w-full bg-muted rounded-full overflow-hidden">
@@ -276,5 +297,32 @@ function Hexagon({ territory }: HexagonProps) {
         </motion.span>
       )}
     </motion.div>
+  );
+}
+
+function ComingSoonHexagon({ label }: { label: string }) {
+  const hexPath = 'M50 4 L91 27 L91 73 L50 96 L9 73 L9 27 Z';
+  return (
+    <div className="relative w-full h-full">
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <path
+          d={hexPath}
+          fill="hsl(var(--muted))"
+          stroke="hsl(var(--muted-foreground) / 0.2)"
+          strokeWidth={1.5}
+          strokeLinejoin="round"
+          className="opacity-80"
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-1 pointer-events-none">
+        <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground/70" />
+        <span className="mt-1 text-[8px] sm:text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">
+          Bald
+        </span>
+        <span className="mt-0.5 text-[8px] sm:text-[9px] leading-tight text-muted-foreground/80 line-clamp-2">
+          {label}
+        </span>
+      </div>
+    </div>
   );
 }
