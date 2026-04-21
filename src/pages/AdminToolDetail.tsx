@@ -483,7 +483,72 @@ export default function AdminToolDetail() {
               </CardContent>
             </Card>
 
-            {/* Tool Content */}
+            {/* Public Link & Sharing */}
+            {tool.enabled_for_public && tool.slug && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Link2 className="h-5 w-5" />
+                    Öffentlicher Link
+                  </CardTitle>
+                  <CardDescription>
+                    Teile diesen Link mit Personen, die das Tool nutzen sollen.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <code className="flex-1 min-w-0 truncate rounded-md bg-muted px-3 py-2 text-sm">
+                      {window.location.origin}/tools/{tool.slug}
+                    </code>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleCopy(`${window.location.origin}/tools/${tool.slug}`, 'Link kopiert!')}
+                    >
+                      <Copy className="h-4 w-4 mr-1" />
+                      Link
+                    </Button>
+                    <Button size="sm" variant="outline" asChild>
+                      <a href={`/tools/${tool.slug}`} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="h-4 w-4 mr-1" />
+                        Öffnen
+                      </a>
+                    </Button>
+                  </div>
+
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="w-full sm:w-auto"
+                    onClick={() => {
+                      const url = `${window.location.origin}/tools/${tool.slug}`;
+                      const text = tool.public_password
+                        ? `🔧 ${t(tool.name_key)}\n\nZugang: ${url}\nPasswort: ${tool.public_password}`
+                        : `🔧 ${t(tool.name_key)}\n\nZugang: ${url}`;
+                      handleCopy(text, 'Teilen-Text kopiert!');
+                    }}
+                  >
+                    <Copy className="h-4 w-4 mr-2" />
+                    {tool.public_password ? 'Link + Passwort kopieren' : 'Link kopieren (zum Teilen)'}
+                  </Button>
+
+                  {tool.public_password && (
+                    <div className="flex items-center gap-2 rounded-md border border-amber-500/20 bg-amber-500/5 px-3 py-2 text-xs text-muted-foreground">
+                      <KeyRound className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                      <span>
+                        Passwort aktiv: Besucher brauchen{' '}
+                        <strong className="text-foreground font-mono">
+                          {showPassword ? tool.public_password : '••••••••'}
+                        </strong>{' '}
+                        zum Zugang.
+                      </span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+
             <Card>
               <CardHeader>
                 <CardTitle>Tool-Vorschau</CardTitle>
