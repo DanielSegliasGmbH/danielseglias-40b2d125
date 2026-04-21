@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import DOMPurify from 'dompurify';
 import { Link, useParams } from 'react-router-dom';
@@ -7,6 +8,7 @@ import { PublicLayout } from '@/layouts/PublicLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LeadCaptureForm } from '@/components/public/LeadCaptureForm';
+import { PublicToolPasswordGate } from '@/components/public/PublicToolPasswordGate';
 import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, ClipboardCheck, Home, ShieldCheck, LucideIcon } from 'lucide-react';
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
 import VorsorgecheckTool from '@/components/tools/vorsorgecheck/VorsorgecheckTool';
@@ -81,11 +83,46 @@ export default function PublicToolDetail() {
     refetchOnWindowFocus: false,
   });
 
+  // Fetch password protection info from tools table
+  const { data: toolData } = useQuery({
+    queryKey: ['public-tool-password', slug],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('tools')
+        .select('public_password, public_password_hint')
+        .eq('slug', slug)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!slug,
+    staleTime: 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
+  const [passwordGranted, setPasswordGranted] = useState(
+    () => sessionStorage.getItem(`tool_pw_${slug}`) === 'granted'
+  );
+
   const IconComponent = iconMap['wrench'] || Wrench;
 
   // If not loading and no page found → 404
   if (!isLoading && !publicPage) {
     return <NotFound />;
+  }
+
+  // Password gate: if tool has password and not granted yet, block access
+  if (publicPage && toolData?.public_password && !passwordGranted) {
+    return (
+      <PublicLayout>
+        <PublicToolPasswordGate
+          toolSlug={slug || ''}
+          toolName={publicPage.title || slug || ''}
+          requiredPassword={toolData.public_password}
+          hint={toolData.public_password_hint}
+          onSuccess={() => setPasswordGranted(true)}
+        />
+      </PublicLayout>
+    );
   }
 
   return (
