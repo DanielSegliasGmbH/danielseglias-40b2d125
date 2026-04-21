@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { UserRound } from 'lucide-react';
+import { UserRound, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,6 +10,7 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ChevronRight, Sparkles, Brain, Eye, Target, LayoutGrid, Shield, Settings2, TrendingUp, Rocket, Star, RotateCcw, Info, Lock, CheckCircle, Clock, Play, Zap, Film, ArrowRight } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { useSubscription } from '@/hooks/useSubscription';
 import { useAllCoachProgress, useCoachBadges, getModuleStatus } from '@/hooks/useCoachProgress';
@@ -44,6 +45,14 @@ export default function ClientPortalCoach() {
   const { data: allProgress = [] } = useAllCoachProgress();
   const { data: badges = [] } = useCoachBadges();
   const { completed: finanzTypCompleted, recommendedModules } = useFinanzType();
+
+  const [disclaimerSeen, setDisclaimerSeen] = useState(
+    () => sessionStorage.getItem('coach_disclaimer_seen') === 'true'
+  );
+  const acceptDisclaimer = () => {
+    sessionStorage.setItem('coach_disclaimer_seen', 'true');
+    setDisclaimerSeen(true);
+  };
 
   const { data: lifeFilmCompleted = false } = useQuery({
     queryKey: ['life-film-completed', user?.id],
@@ -324,6 +333,27 @@ export default function ClientPortalCoach() {
           </>
         )}
       </div>
+
+      <Dialog open={!disclaimerSeen} onOpenChange={(open) => { if (!open) acceptDisclaimer(); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <div className="mx-auto mb-2 h-12 w-12 rounded-full bg-amber-500/15 flex items-center justify-center">
+              <AlertTriangle className="h-6 w-6 text-amber-500" />
+            </div>
+            <DialogTitle className="text-center">Hinweis zum Finanz-Coach</DialogTitle>
+            <DialogDescription className="text-sm leading-relaxed text-left pt-2 space-y-3">
+              <p>Der Finanz-Coach befindet sich noch in der Entwicklung und wird laufend verbessert.</p>
+              <p>Die KI-generierten Analysen und Empfehlungen dienen ausschliesslich zur Orientierung und ersetzen keine professionelle Finanzberatung.</p>
+              <p>Bitte prüfe alle Aussagen kritisch und wende dich bei Fragen an deinen Berater.</p>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={acceptDisclaimer} className="w-full">
+              Verstanden – weiter zum Coach
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </ClientPortalLayout>
   );
 }
