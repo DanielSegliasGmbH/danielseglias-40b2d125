@@ -88,6 +88,31 @@ export default function AdminToolDetail() {
     enabled: !!slug,
   });
 
+  // Sync local form state with loaded tool
+  useEffect(() => {
+    if (tool) {
+      setPwInput(tool.public_password ?? '');
+      setHintInput(tool.public_password_hint ?? '');
+    }
+  }, [tool?.id, tool?.public_password, tool?.public_password_hint]);
+
+  const handleSavePassword = () => {
+    if (!tool) return;
+    updateTool.mutate(
+      {
+        id: tool.id,
+        updates: {
+          public_password: pwInput.trim() === '' ? null : pwInput,
+          public_password_hint: hintInput.trim() === '' ? null : hintInput,
+        },
+      },
+      {
+        onSuccess: () => toast.success('Passwort-Einstellungen gespeichert'),
+        onError: () => toast.error('Fehler beim Speichern'),
+      }
+    );
+  };
+
   const handleTogglePublic = (currentValue: boolean) => {
     if (!tool) return;
     updateTool.mutate(
