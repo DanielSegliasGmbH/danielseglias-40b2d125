@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, Clock, Globe, Users, ExternalLink, ClipboardCheck, Briefcase, Receipt, Landmark, Heart, Shield, Hourglass, Lock, LucideIcon } from 'lucide-react';
+import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, Clock, Globe, Users, ExternalLink, ClipboardCheck, Briefcase, Receipt, Landmark, Heart, Shield, Hourglass, Lock, Eye, EyeOff, Copy, Link2, KeyRound, LucideIcon } from 'lucide-react';
 import { useUpdateTool, Tool } from '@/hooks/useTools';
 import { toast } from 'sonner';
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
@@ -72,6 +72,12 @@ export default function AdminToolDetail() {
 
   const [pwInput, setPwInput] = useState('');
   const [hintInput, setHintInput] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleCopy = (text: string, msg = 'Kopiert!') => {
+    navigator.clipboard.writeText(text);
+    toast.success(msg);
+  };
 
   const { data: tool, isLoading, error } = useQuery({
     queryKey: ['admin-tool', slug],
@@ -415,14 +421,25 @@ export default function AdminToolDetail() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="public-password">Öffentliches Passwort</Label>
-                  <Input
-                    id="public-password"
-                    type="text"
-                    value={pwInput}
-                    onChange={(e) => setPwInput(e.target.value)}
-                    placeholder="Leer lassen = kein Passwort nötig"
-                    autoComplete="off"
-                  />
+                  <div className="relative">
+                    <Input
+                      id="public-password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={pwInput}
+                      onChange={(e) => setPwInput(e.target.value)}
+                      placeholder="Leer lassen = kein Passwort nötig"
+                      autoComplete="off"
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      aria-label={showPassword ? 'Passwort verbergen' : 'Passwort anzeigen'}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                   <p className="text-xs text-muted-foreground">
                     Dieses Passwort teilst du mit Personen, die das Tool nutzen sollen. Klartext, damit du es jederzeit nachschlagen kannst.
                   </p>
@@ -466,7 +483,72 @@ export default function AdminToolDetail() {
               </CardContent>
             </Card>
 
-            {/* Tool Content */}
+            {/* Public Link & Sharing */}
+            {tool.enabled_for_public && tool.slug && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Link2 className="h-5 w-5" />
+                    Öffentlicher Link
+                  </CardTitle>
+                  <CardDescription>
+                    Teile diesen Link mit Personen, die das Tool nutzen sollen.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <code className="flex-1 min-w-0 truncate rounded-md bg-muted px-3 py-2 text-sm">
+                      {window.location.origin}/tools/{tool.slug}
+                    </code>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleCopy(`${window.location.origin}/tools/${tool.slug}`, 'Link kopiert!')}
+                    >
+                      <Copy className="h-4 w-4 mr-1" />
+                      Link
+                    </Button>
+                    <Button size="sm" variant="outline" asChild>
+                      <a href={`/tools/${tool.slug}`} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="h-4 w-4 mr-1" />
+                        Öffnen
+                      </a>
+                    </Button>
+                  </div>
+
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="w-full sm:w-auto"
+                    onClick={() => {
+                      const url = `${window.location.origin}/tools/${tool.slug}`;
+                      const text = tool.public_password
+                        ? `🔧 ${t(tool.name_key)}\n\nZugang: ${url}\nPasswort: ${tool.public_password}`
+                        : `🔧 ${t(tool.name_key)}\n\nZugang: ${url}`;
+                      handleCopy(text, 'Teilen-Text kopiert!');
+                    }}
+                  >
+                    <Copy className="h-4 w-4 mr-2" />
+                    {tool.public_password ? 'Link + Passwort kopieren' : 'Link kopieren (zum Teilen)'}
+                  </Button>
+
+                  {tool.public_password && (
+                    <div className="flex items-center gap-2 rounded-md border border-amber-500/20 bg-amber-500/5 px-3 py-2 text-xs text-muted-foreground">
+                      <KeyRound className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                      <span>
+                        Passwort aktiv: Besucher brauchen{' '}
+                        <strong className="text-foreground font-mono">
+                          {showPassword ? tool.public_password : '••••••••'}
+                        </strong>{' '}
+                        zum Zugang.
+                      </span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+
             <Card>
               <CardHeader>
                 <CardTitle>Tool-Vorschau</CardTitle>
