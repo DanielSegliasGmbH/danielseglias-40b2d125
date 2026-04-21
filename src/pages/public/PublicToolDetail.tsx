@@ -187,7 +187,7 @@ export default function PublicToolDetail() {
             </Card>
           )}
 
-          {publicPage && (
+          {hasContent && (
             <>
               {/* Header */}
               <div className="flex items-start gap-4 mb-8">
@@ -196,11 +196,11 @@ export default function PublicToolDetail() {
                 </div>
                 <div>
                   <h1 className="text-3xl font-bold text-foreground mb-2">
-                    {publicPage.title}
+                    {resolvedTitle}
                   </h1>
-                  {publicPage.excerpt && (
+                  {resolvedExcerpt && (
                     <p className="text-lg text-muted-foreground">
-                      {publicPage.excerpt}
+                      {resolvedExcerpt}
                     </p>
                   )}
                 </div>
@@ -208,149 +208,87 @@ export default function PublicToolDetail() {
 
               {/* Tool Content - Render appropriate tool component */}
               {slug === 'finanzcheck' ? (
-                <div className="mb-8">
-                  <FinanzcheckTool mode="public" />
-                </div>
+                <div className="mb-8"><FinanzcheckTool mode="public" /></div>
               ) : slug === 'kvg-praemienvergleich' ? (
-                <div className="mb-8">
-                  <KvgPraemienvergleichTool />
-                </div>
+                <div className="mb-8"><KvgPraemienvergleichTool /></div>
               ) : slug === 'vvg-leistungsvergleich' ? (
-                <div className="mb-8">
-                  <VvgLeistungsvergleichTool />
-                </div>
+                <div className="mb-8"><VvgLeistungsvergleichTool /></div>
               ) : slug === 'vorsorgecheck-3a' ? (
-                <div className="mb-8">
-                  <VorsorgecheckTool />
-                </div>
+                <div className="mb-8"><VorsorgecheckTool /></div>
               ) : slug === 'rendite-risiko-simulation' ? (
-                <div className="mb-8">
-                  <RenditeRisikoTool mode="public" />
-                </div>
+                <div className="mb-8"><RenditeRisikoTool mode="public" /></div>
               ) : slug === 'tragbarkeitsrechner' ? (
-                <div className="mb-8">
-                  <TragbarkeitsrechnerTool mode="public" />
-                </div>
+                <div className="mb-8"><TragbarkeitsrechnerTool mode="public" /></div>
               ) : slug === 'verlustrechner-3a' ? (
-                <div className="mb-8">
-                  <Verlustrechner3aTool />
-                </div>
+                <div className="mb-8"><Verlustrechner3aTool /></div>
+              ) : slug === 'vergleichsrechner-3a' ? (
+                <div className="mb-8"><Vergleichsrechner3aTool /></div>
+              ) : slug === 'inflationsrechner' ? (
+                <div className="mb-8"><InflationsrechnerTool /></div>
+              ) : slug === 'beratungsreise' ? (
+                <div className="mb-8"><BeratungsreiseTool mode="public" /></div>
+              ) : slug === 'mini-3a-kurzcheck' ? (
+                <div className="mb-8"><Mini3aKurzcheckTool mode="public" /></div>
               ) : slug === 'transparenz-check' ? (
-                <div className="mb-8">
-                  <TransparenzCheckTool mode="public" />
-                </div>
+                <div className="mb-8"><TransparenzCheckTool mode="public" /></div>
               ) : slug === 'kostenaufschluesselung' ? (
-                <div className="mb-8">
-                  <KostenaufschluesselungTool mode="public" />
-                </div>
+                <div className="mb-8"><KostenaufschluesselungTool mode="public" /></div>
               ) : slug === 'kosten-impact-simulator' ? (
-                <div className="mb-8">
-                  <KostenImpactSimulatorTool mode="public" />
-                </div>
+                <div className="mb-8"><KostenImpactSimulatorTool mode="public" /></div>
               ) : slug === 'wahrscheinlichkeitsrechner' ? (
-                <div className="mb-8">
-                  <WahrscheinlichkeitsrechnerTool mode="public" />
-                </div>
+                <div className="mb-8"><WahrscheinlichkeitsrechnerTool mode="public" /></div>
               ) : slug === 'zufalls-realitaets-check' ? (
-                <div className="mb-8">
-                  <ZufallsRealitaetsCheckTool mode="public" />
-                </div>
+                <div className="mb-8"><ZufallsRealitaetsCheckTool mode="public" /></div>
               ) : slug === 'recovery-analyse' ? (
-                <div className="mb-8">
-                  <RecoveryAnalyseTool mode="public" />
-                </div>
+                <div className="mb-8"><RecoveryAnalyseTool mode="public" /></div>
               ) : slug === 'sicherheitsvergleich' ? (
-                <div className="mb-8">
-                  <SicherheitsvergleichTool mode="public" />
-                </div>
+                <div className="mb-8"><SicherheitsvergleichTool mode="public" /></div>
               ) : slug === 'zeitverlust-simulator' ? (
-                <div className="mb-8">
-                  <ZeitverlustSimulatorTool mode="public" />
-                </div>
+                <div className="mb-8"><ZeitverlustSimulatorTool mode="public" /></div>
               ) : slug === 'glaubenssatz-transformer' ? (
-                <div className="mb-8">
-                  <GlaubenssatzTransformerTool mode="public" />
-                </div>
+                <div className="mb-8"><GlaubenssatzTransformerTool mode="public" /></div>
               ) : slug === 'finanz-entscheidung' ? (
-                <div className="mb-8">
-                  <FinanzEntscheidungTool mode="public" />
-                </div>
+                <div className="mb-8"><FinanzEntscheidungTool mode="public" /></div>
               ) : slug === 'lebenzeit-rechner' ? (
-                <div className="mb-8">
-                  <LebenzeitRechnerTool mode="public" />
-                </div>
+                <div className="mb-8"><LebenzeitRechnerTool mode="public" /></div>
               ) : slug === 'rolex-rechner' ? (
-                <div className="mb-8">
-                  <RolexRechnerTool mode="public" />
-                </div>
+                <div className="mb-8"><RolexRechnerTool mode="public" /></div>
               ) : slug === 'three-a-analyzer' ? (
-                <div className="mb-8">
-                  <ThreeAAnalyzerTool mode="public" />
-                </div>
+                <div className="mb-8"><ThreeAAnalyzerTool mode="public" /></div>
               ) : slug === 'steuer-check' ? (
-                <div className="mb-8">
-                  <SteuerCheckTool mode="public" />
-                </div>
+                <div className="mb-8"><SteuerCheckTool mode="public" /></div>
               ) : slug === 'versicherungs-check' ? (
-                <div className="mb-8">
-                  <VersicherungsCheckTool mode="public" />
-                </div>
+                <div className="mb-8"><VersicherungsCheckTool mode="public" /></div>
               ) : slug === 'was-kostet-das-wirklich' ? (
-                <div className="mb-8">
-                  <WasKostetDasWirklichTool mode="public" />
-                </div>
+                <div className="mb-8"><WasKostetDasWirklichTool mode="public" /></div>
               ) : slug === 'guilty-pleasure-rechner' ? (
-                <div className="mb-8">
-                  <GuiltyPleasureRechnerTool mode="public" />
-                </div>
+                <div className="mb-8"><GuiltyPleasureRechnerTool mode="public" /></div>
               ) : slug === 'notfall-check' ? (
-                <div className="mb-8">
-                  <NotfallCheckTool mode="public" />
-                </div>
+                <div className="mb-8"><NotfallCheckTool mode="public" /></div>
               ) : slug === 'abo-audit' ? (
-                <div className="mb-8">
-                  <AboAuditTool mode="public" />
-                </div>
+                <div className="mb-8"><AboAuditTool mode="public" /></div>
               ) : slug === 'lohnerhoher' ? (
-                <div className="mb-8">
-                  <LohnerhoherTool mode="public" />
-                </div>
+                <div className="mb-8"><LohnerhoherTool mode="public" /></div>
               ) : slug === 'mein-finanzplan' ? (
-                <div className="mb-8">
-                  <MeinFinanzplanTool mode="public" />
-                </div>
+                <div className="mb-8"><MeinFinanzplanTool mode="public" /></div>
               ) : slug === 'konten-modell' ? (
-                <div className="mb-8">
-                  <KontenModellTool mode="public" />
-                </div>
+                <div className="mb-8"><KontenModellTool mode="public" /></div>
               ) : slug === 'humankapital' ? (
-                <div className="mb-8">
-                  <HumankapitalTool mode="public" />
-                </div>
+                <div className="mb-8"><HumankapitalTool mode="public" /></div>
               ) : slug === 'steuerrechner' ? (
-                <div className="mb-8">
-                  <SteuerrechnerTool mode="public" />
-                </div>
+                <div className="mb-8"><SteuerrechnerTool mode="public" /></div>
               ) : slug === 'ahv-tracker' ? (
-                <div className="mb-8">
-                  <AhvTrackerTool mode="public" />
-                </div>
+                <div className="mb-8"><AhvTrackerTool mode="public" /></div>
               ) : slug === 'krankenkassen-tracker' ? (
-                <div className="mb-8">
-                  <KrankenkassenTrackerTool mode="public" />
-                </div>
+                <div className="mb-8"><KrankenkassenTrackerTool mode="public" /></div>
               ) : slug === 'sozialabgaben-uebersicht' ? (
-                <div className="mb-8">
-                  <SozialabgabenUebersichtTool mode="public" />
-                </div>
+                <div className="mb-8"><SozialabgabenUebersichtTool mode="public" /></div>
               ) : slug === 'lebenserwartung' ? (
-                <div className="mb-8">
-                  <LebenserwartungTool mode="public" />
-                </div>
-              ) : publicPage.content ? (
+                <div className="mb-8"><LebenserwartungTool mode="public" /></div>
+              ) : resolvedContent ? (
                 <Card className="mb-8">
                   <CardContent className="py-6 prose prose-neutral dark:prose-invert max-w-none">
-                    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(publicPage.content, {
+                    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(resolvedContent, {
                       ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a', 'blockquote', 'code', 'pre', 'img', 'span', 'div', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
                       ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'src', 'alt', 'width', 'height']
                     }) }} />
