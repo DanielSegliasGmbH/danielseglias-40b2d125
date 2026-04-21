@@ -21,7 +21,7 @@ import { JourneyNudgeCard } from '@/components/client-portal/JourneyNudgeCard';
 // import { useRankSystem } from '@/hooks/useRankSystem';
 import { usePeakScore } from '@/hooks/usePeakScore';
 import { LifeMapCard } from '@/components/client-portal/LifeMapCard';
-import { DailyFocusCard } from '@/components/client-portal/DailyFocusCard';
+// ARCHIVED: import { DailyFocusCard } from '@/components/client-portal/DailyFocusCard';
 // ARCHIVED v1.0 (P4): MoreToDiscover — restore when widgets are production-ready
 // import { MoreToDiscover } from '@/components/client-portal/MoreToDiscover';
 import { HamsterHeaderBadge } from '@/components/client-portal/HamsterHeaderBadge';
@@ -286,8 +286,8 @@ export default function ClientPortalHome() {
         {/* PeakScore (immer) */}
         <PeakScoreCard onClick={() => navigate('/app/client-portal/peak-score')} />
 
-        {/* DAILY FOCUS — die EINE Aktion für heute */}
-        <DailyFocusCard />
+        {/* ARCHIVED: DAILY FOCUS — die EINE Aktion für heute */}
+        {/* ARCHIVED: <DailyFocusCard /> */}
 
         {/* Life Map */}
         <div id="life-map">
