@@ -116,18 +116,18 @@ export function MoreSheet({ open, onOpenChange, buildPath, onLogout, visibleSect
           <MoreLink to="/app/client-portal/calendar" icon={CalendarDays} label="Finanz-Kalender" />
           <MoreLink to="/app/client-portal/habits" icon={CheckSquare} label="Gewohnheiten" />
           <MoreLink to="/app/client-portal/monthly-report" icon={FileBarChart} label="Mein Monatsbericht" />
-          <MoreLink to="/app/client-portal/friends" icon={Users} label="Freunde" />
-          <MoreLink to="/app/client-portal/invite" icon={Gift} label="Freunde einladen" />
+          {/* ARCHIVED v1.0: Freunde & Freunde einladen — not ready */}
+          {/* <MoreLink to="/app/client-portal/friends" icon={Users} label="Freunde" /> */}
+          {/* <MoreLink to="/app/client-portal/invite" icon={Gift} label="Freunde einladen" /> */}
           {/* ARCHIVED v1.0: Premium menu item — premium gates disabled, page not linked */}
           {/* <MoreLink to="/app/client-portal/premium" icon={Crown} label="Premium" /> */}
           <MoreLink to={buildPath('/app/client-portal/profile-data')} icon={Wallet} label="Mein Finanzprofil" />
-          <MoreLink to="/app/profile" icon={User} label={t('userManagement.profile')} />
-          <MoreLink to={buildPath('/app/client-portal/profile-data')} icon={User} label="Mein Profil" />
           <MoreLink to="/app/client-portal/settings" icon={Settings} label="Einstellungen" />
-          <MoreLink to="/app/client-portal/manifest" icon={Scroll} label="Mein Manifest" />
-          <MoreLink to="/app/client-portal/last-plan" icon={FileText} label="Mein letzter Plan" />
-          <MoreLink to="/app/client-portal/expat" icon={Plane} label="Ins Ausland?" />
-          <MoreLink to="/app/client-portal/journey" icon={Map} label="Mein Finanz-Pfad" />
+          {/* ARCHIVED v1.0: Manifest, letzter Plan, Expat, Finanz-Pfad — nicht stabil/relevant für v1 */}
+          {/* <MoreLink to="/app/client-portal/manifest" icon={Scroll} label="Mein Manifest" /> */}
+          {/* <MoreLink to="/app/client-portal/last-plan" icon={FileText} label="Mein letzter Plan" /> */}
+          {/* <MoreLink to="/app/client-portal/expat" icon={Plane} label="Ins Ausland?" /> */}
+          {/* <MoreLink to="/app/client-portal/journey" icon={Map} label="Mein Finanz-Pfad" /> */}
         </div>
 
         <Separator className="my-3" />
