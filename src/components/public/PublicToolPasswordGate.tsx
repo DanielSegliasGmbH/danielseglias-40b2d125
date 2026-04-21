@@ -103,7 +103,7 @@ export function PublicToolPasswordGate({
               </a>
               <span className="text-muted-foreground/40 hidden sm:inline">·</span>
               <a
-                href={whatsappUrl}
+                href="https://wa.me/41774448608"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 text-xs text-[#25D366] hover:underline font-medium"
