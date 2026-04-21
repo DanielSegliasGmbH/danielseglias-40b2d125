@@ -243,6 +243,22 @@ export default function AdminToolDetail() {
         return <SozialabgabenUebersichtTool mode="internal" />;
       case 'lebenserwartung':
         return <LebenserwartungTool mode="internal" />;
+      case 'vergleichsrechner-3a':
+        return <Vergleichsrechner3aTool />;
+      case 'inflationsrechner':
+        return <InflationsrechnerTool />;
+      case 'vorsorgecheck-3a':
+        return <VorsorgecheckTool />;
+      case 'kvg-praemienvergleich':
+        return <KvgPraemienvergleichTool />;
+      case 'vvg-leistungsvergleich':
+        return <VvgLeistungsvergleichTool />;
+      case 'tragbarkeitsrechner':
+        return <TragbarkeitsrechnerTool mode="internal" />;
+      case 'verlustrechner-3a':
+        return <Verlustrechner3aTool />;
+      case 'transparenz-check':
+        return <TransparenzCheckTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">
