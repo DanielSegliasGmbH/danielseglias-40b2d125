@@ -104,24 +104,47 @@ export default function PublicToolDetail() {
     refetchOnWindowFocus: false,
   });
 
+  // Fallback: load from tools table directly when no public_pages entry exists
+  const { data: toolFallback, isLoading: isLoadingFallback } = useQuery({
+    queryKey: ['tools-fallback', slug],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('tools')
+        .select('*')
+        .eq('slug', slug)
+        .eq('enabled_for_public', true)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!slug && !isLoading && !publicPage,
+  });
+
   const [passwordGranted, setPasswordGranted] = useState(
     () => sessionStorage.getItem(`tool_pw_${slug}`) === 'granted'
   );
 
   const IconComponent = iconMap['wrench'] || Wrench;
 
-  // If not loading and no page found → 404
-  if (!isLoading && !publicPage) {
+  // Resolved view-model from either source
+  const resolvedTitle = publicPage?.title
+    ?? (toolFallback ? resolveToolText(t, toolFallback.name_key, 'name') : '');
+  const resolvedExcerpt = publicPage?.excerpt
+    ?? (toolFallback ? resolveToolText(t, toolFallback.description_key, 'description') : '');
+  const resolvedContent = publicPage?.content ?? null;
+  const hasContent = !!publicPage || !!toolFallback;
+
+  // If not loading and neither source returned anything → 404
+  if (!isLoading && !isLoadingFallback && !publicPage && !toolFallback) {
     return <NotFound />;
   }
 
   // Password gate: if tool has password and not granted yet, block access
-  if (publicPage && toolData?.public_password && !passwordGranted) {
+  if (hasContent && toolData?.public_password && !passwordGranted) {
     return (
       <PublicLayout>
         <PublicToolPasswordGate
           toolSlug={slug || ''}
-          toolName={publicPage.title || slug || ''}
+          toolName={resolvedTitle || slug || ''}
           requiredPassword={toolData.public_password}
           hint={toolData.public_password_hint}
           onSuccess={() => setPasswordGranted(true)}
