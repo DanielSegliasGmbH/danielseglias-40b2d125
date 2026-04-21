@@ -4,7 +4,7 @@ import { PublicLayout } from '@/layouts/PublicLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Calculator, Wrench, ArrowRight, AlertCircle } from 'lucide-react';
+import { Calculator, Wrench, ArrowRight, AlertCircle, Lock } from 'lucide-react';
 import { usePublicTools } from '@/hooks/useTools';
 import { groupToolsByCluster } from '@/config/toolClusters';
 import { resolveToolText } from '@/lib/toolTranslations';
@@ -68,7 +68,17 @@ export default function PublicTools() {
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
                         <Wrench className="h-5 w-5 text-primary" />
                       </div>
-                      <CardTitle className="text-lg">{resolveToolText(t, tool.name_key, 'name')}</CardTitle>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <span>{resolveToolText(t, tool.name_key, 'name')}</span>
+                        {(tool as { has_password?: boolean }).has_password && (
+                          <span
+                            title="Passwortgeschützt"
+                            className="inline-flex items-center gap-1 text-xs font-normal text-muted-foreground bg-muted px-2 py-0.5 rounded-full"
+                          >
+                            <Lock className="h-3 w-3" />
+                          </span>
+                        )}
+                      </CardTitle>
                       {tool.description_key && (
                         <CardDescription>{resolveToolText(t, tool.description_key, 'description')}</CardDescription>
                       )}
