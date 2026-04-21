@@ -23,14 +23,7 @@ export function PublicToolPasswordGate({
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
 
-  const handleWhatsApp = () => {
-    const number = '41774448608';
-    window.open(`https://wa.me/${number}`, '_blank', 'noopener,noreferrer');
-  };
 
-  const handleEmail = () => {
-    window.open('mailto:hallo@danielseglias.ch');
-  };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -100,23 +93,23 @@ export function PublicToolPasswordGate({
           <div className="mt-6 text-center space-y-2">
             <p className="text-xs text-muted-foreground">Noch kein Zugang?</p>
             <div className="flex items-center justify-center gap-3 flex-wrap">
-              <button
-                type="button"
-                onClick={handleEmail}
+              <a
+                href="mailto:hallo@danielseglias.ch"
                 className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
               >
                 <Mail className="h-3.5 w-3.5" />
                 Per E-Mail anfragen
-              </button>
+              </a>
               <span className="text-muted-foreground/40 hidden sm:inline">·</span>
-              <button
-                type="button"
-                onClick={handleWhatsApp}
+              <a
+                href="https://wa.me/41774448608"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 text-xs text-[#25D366] hover:underline font-medium"
               >
                 <MessageCircle className="h-3.5 w-3.5" />
                 WhatsApp
-              </button>
+              </a>
             </div>
           </div>
         </CardContent>
