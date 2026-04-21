@@ -22,9 +22,9 @@ export function DonutChart({ allocations, cryptoEnabled, avgReturn, privacyMode,
     data.push({ name: privacyMode ? `Baustein ${data.length + 1}` : 'Krypto', value: remainder });
   }
 
-  const chartHeight = mini ? 64 : 220;
-  const innerR = mini ? 18 : 55;
-  const outerR = mini ? 30 : 90;
+  const chartHeight = mini ? 48 : 220;
+  const innerR = mini ? 14 : 55;
+  const outerR = mini ? 22 : 90;
 
   return (
     <div className={`w-full relative`} style={{ height: chartHeight }}>
