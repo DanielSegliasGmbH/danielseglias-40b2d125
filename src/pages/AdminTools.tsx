@@ -158,6 +158,36 @@ export default function AdminTools() {
                                 {visibilityBadge(tool.visibility, tool.unlock_phase)}
                               </div>
                               <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{resolveToolText(t, tool.description_key, 'description')}</p>
+                              {tool.enabled_for_public && tool.slug && (
+                                <div
+                                  className="mt-2 flex flex-wrap items-center gap-2 text-xs"
+                                  onClick={(e) => e.preventDefault()}
+                                >
+                                  <Link2 className="h-3 w-3 text-muted-foreground shrink-0" />
+                                  <code className="truncate text-muted-foreground max-w-[220px]">
+                                    /tools/{tool.slug}
+                                  </code>
+                                  {tool.public_password && (
+                                    <Badge variant="outline" className="h-5 gap-1 text-[10px]">
+                                      <KeyRound className="h-2.5 w-2.5" />
+                                      PW
+                                    </Badge>
+                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      navigator.clipboard.writeText(`${window.location.origin}/tools/${tool.slug}`);
+                                      toast.success('Link kopiert');
+                                    }}
+                                    className="inline-flex items-center gap-1 text-primary hover:underline"
+                                  >
+                                    <Copy className="h-3 w-3" />
+                                    Kopieren
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           </div>
                           <div className="flex items-center gap-3 sm:gap-4 shrink-0">
