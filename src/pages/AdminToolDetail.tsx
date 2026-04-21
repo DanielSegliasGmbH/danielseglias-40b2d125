@@ -421,14 +421,25 @@ export default function AdminToolDetail() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="public-password">Öffentliches Passwort</Label>
-                  <Input
-                    id="public-password"
-                    type="text"
-                    value={pwInput}
-                    onChange={(e) => setPwInput(e.target.value)}
-                    placeholder="Leer lassen = kein Passwort nötig"
-                    autoComplete="off"
-                  />
+                  <div className="relative">
+                    <Input
+                      id="public-password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={pwInput}
+                      onChange={(e) => setPwInput(e.target.value)}
+                      placeholder="Leer lassen = kein Passwort nötig"
+                      autoComplete="off"
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      aria-label={showPassword ? 'Passwort verbergen' : 'Passwort anzeigen'}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                   <p className="text-xs text-muted-foreground">
                     Dieses Passwort teilst du mit Personen, die das Tool nutzen sollen. Klartext, damit du es jederzeit nachschlagen kannst.
                   </p>
