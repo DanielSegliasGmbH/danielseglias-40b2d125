@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, Clock, Globe, Users, ExternalLink, ClipboardCheck, Briefcase, Receipt, Landmark, Heart, Shield, Hourglass, Lock, LucideIcon } from 'lucide-react';
+import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, Clock, Globe, Users, ExternalLink, ClipboardCheck, Briefcase, Receipt, Landmark, Heart, Shield, Hourglass, Lock, Eye, EyeOff, Copy, Link2, KeyRound, LucideIcon } from 'lucide-react';
 import { useUpdateTool, Tool } from '@/hooks/useTools';
 import { toast } from 'sonner';
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
