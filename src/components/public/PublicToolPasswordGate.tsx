@@ -90,25 +90,26 @@ export function PublicToolPasswordGate({
             </Button>
           </form>
 
-          <div className="mt-6 text-center space-y-2">
-            <p className="text-xs text-muted-foreground">Noch kein Zugang?</p>
-            <div className="flex items-center justify-center gap-3 flex-wrap">
+          <div className="mt-6 text-center space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Noch kein Zugang? Kontakt aufnehmen:
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2 justify-center">
               <a
                 href="mailto:hallo@danielseglias.ch"
-                className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
+                className="inline-flex items-center justify-center gap-2 text-sm border border-border rounded-lg px-4 py-2 hover:bg-muted transition-colors"
               >
-                <Mail className="h-3.5 w-3.5" />
-                Per E-Mail anfragen
+                <Mail className="h-4 w-4" />
+                hallo@danielseglias.ch
               </a>
-              <span className="text-muted-foreground/40 hidden sm:inline">·</span>
               <a
-                href="https://wa.me/41774448608"
+                href="https://wa.me/41774448608?text=Hallo%2C%20ich%20möchte%20Zugang%20zu%20einem%20Tool%20anfragen."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs text-[#25D366] hover:underline font-medium"
+                className="inline-flex items-center justify-center gap-2 text-sm border border-[#25D366] text-[#25D366] rounded-lg px-4 py-2 hover:bg-[#25D366]/10 transition-colors font-medium"
               >
-                <MessageCircle className="h-3.5 w-3.5" />
-                WhatsApp
+                <MessageCircle className="h-4 w-4" />
+                WhatsApp: +41 77 444 86 08
               </a>
             </div>
           </div>
