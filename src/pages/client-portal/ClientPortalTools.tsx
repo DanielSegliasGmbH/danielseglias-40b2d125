@@ -1,16 +1,18 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Wrench, Calculator, PieChart, TrendingUp, FileText, ChevronRight, Search, LucideIcon, Archive, AlertTriangle } from 'lucide-react';
-import { useClientToolsFiltered } from '@/hooks/useClientPortal';
-import { groupToolsByCluster } from '@/config/toolClusters';
+import { Wrench, Calculator, PieChart, TrendingUp, FileText, ChevronRight, Search, LucideIcon, Archive, AlertTriangle, Clock } from 'lucide-react';
+import { useFeatureUnlock } from '@/hooks/useFeatureUnlock';
+import type { Tool } from '@/hooks/useTools';
 import { resolveToolText } from '@/lib/toolTranslations';
-import { Separator } from '@/components/ui/separator';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -25,24 +27,131 @@ const iconMap: Record<string, LucideIcon> = {
 export default function ClientPortalTools() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { data: tools, isLoading, error } = useClientToolsFiltered();
+  const { isUnlocked, currentPhase, loading: unlockLoading } = useFeatureUnlock();
   const [search, setSearch] = useState('');
 
-  const hasTools = tools && tools.length > 0;
-  const clusteredTools = hasTools ? groupToolsByCluster(tools) : [];
+  // Fetch all client-enabled tools (active + planned) regardless of visibility,
+  // so we can split into "available" and "coming soon" groups.
+  const { data: tools, isLoading: toolsLoading, error } = useQuery({
+    queryKey: ['client-tools-all'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tools')
+        .select('*')
+        .eq('enabled_for_clients', true)
+        .in('status', ['active', 'planned'])
+        .order('sort_order', { ascending: true });
+      if (error) throw error;
+      return data as Tool[];
+    },
+  });
 
-  // Filter by search
-  const filteredClusters = clusteredTools.map(({ cluster, tools: clusterTools }) => ({
-    cluster,
-    tools: clusterTools.filter(tool => {
-      if (!search.trim()) return true;
-      const name = resolveToolText(t, tool.name_key, 'name').toLowerCase();
-      const desc = resolveToolText(t, tool.description_key, 'description').toLowerCase();
-      return name.includes(search.toLowerCase()) || desc.includes(search.toLowerCase());
-    }),
-  })).filter(c => c.tools.length > 0);
+  const isLoading = toolsLoading || unlockLoading;
 
-  let globalIndex = 0;
+  const isAccessible = (tool: Tool): boolean => {
+    if (tool.status !== 'active') return false;
+    if (tool.visibility === 'public') return true;
+    if (tool.visibility === 'phase_locked') {
+      // Phase-gating: unlocked when current phase >= tool.unlock_phase
+      if (tool.unlock_phase != null) return currentPhase >= tool.unlock_phase;
+      return isUnlocked(tool.slug || tool.key);
+    }
+    return false;
+  };
+
+  const isComingSoon = (tool: Tool): boolean => {
+    if (tool.visibility === 'hidden') return false;
+    if (tool.visibility === 'admin_only') return false;
+    if (tool.status === 'planned') return true;
+    if (tool.visibility === 'phase_locked') return !isAccessible(tool);
+    return false;
+  };
+
+  const matchesSearch = (tool: Tool): boolean => {
+    if (!search.trim()) return true;
+    const q = search.toLowerCase();
+    const name = resolveToolText(t, tool.name_key, 'name').toLowerCase();
+    const desc = resolveToolText(t, tool.description_key, 'description').toLowerCase();
+    return name.includes(q) || desc.includes(q);
+  };
+
+  const { accessibleTools, comingSoonTools } = useMemo(() => {
+    const accessible: Tool[] = [];
+    const coming: Tool[] = [];
+    for (const tool of tools ?? []) {
+      if (!matchesSearch(tool)) continue;
+      if (isAccessible(tool)) accessible.push(tool);
+      else if (isComingSoon(tool)) coming.push(tool);
+    }
+    return { accessibleTools: accessible, comingSoonTools: coming };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tools, search, currentPhase, t]);
+
+  const renderAccessibleCard = (tool: Tool, idx: number) => {
+    const IconComponent = iconMap[tool.icon] || Wrench;
+    return (
+      <motion.button
+        key={tool.id}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, delay: idx * 0.03 }}
+        whileTap={{ scale: 0.98 }}
+        onClick={() => tool.slug && navigate(`/app/client-portal/tools/${tool.slug}`)}
+        disabled={!tool.slug}
+        className={cn(
+          "w-full flex items-center gap-3 p-3 rounded-xl border border-border/50 bg-card text-left transition-colors",
+          "hover:bg-accent/40 active:bg-accent/60",
+          !tool.slug && "opacity-50 cursor-not-allowed"
+        )}
+      >
+        <div className="w-9 h-9 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
+          <IconComponent className="h-[18px] w-[18px] text-primary" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[15px] font-semibold text-foreground truncate">
+            {resolveToolText(t, tool.name_key, 'name')}
+          </p>
+          <p className="text-[13px] text-muted-foreground line-clamp-2">
+            {resolveToolText(t, tool.description_key, 'description')}
+          </p>
+        </div>
+        <ChevronRight className="h-4 w-4 text-muted-foreground/50 shrink-0" />
+      </motion.button>
+    );
+  };
+
+  const renderComingSoonCard = (tool: Tool, idx: number) => {
+    const IconComponent = iconMap[tool.icon] || Wrench;
+    return (
+      <motion.div
+        key={tool.id}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, delay: idx * 0.03 }}
+        className={cn(
+          "w-full flex items-center gap-3 p-3 rounded-xl border border-border/40 bg-muted/30 text-left",
+          "opacity-70"
+        )}
+      >
+        <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
+          <Clock className="h-[18px] w-[18px] text-muted-foreground" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[15px] font-semibold text-muted-foreground truncate">
+            {resolveToolText(t, tool.name_key, 'name')}
+          </p>
+          <p className="text-[13px] text-muted-foreground/80 line-clamp-2">
+            {resolveToolText(t, tool.description_key, 'description')}
+          </p>
+        </div>
+        <Badge variant="secondary" className="shrink-0 gap-1">
+          <Clock className="h-3 w-3" />
+          Bald verfügbar
+        </Badge>
+        <IconComponent className="hidden" />
+      </motion.div>
+    );
+  };
 
   return (
     <ClientPortalLayout>
@@ -108,70 +217,50 @@ export default function ClientPortalTools() {
           </Card>
         )}
 
-        {/* Empty */}
-        {!isLoading && !hasTools && (
-          <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-            <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-4">
-              <Wrench className="h-6 w-6 text-muted-foreground" />
-            </div>
-            <h3 className="text-base font-semibold text-foreground mb-1">Noch keine Tools freigeschaltet</h3>
-            <p className="text-sm text-muted-foreground max-w-xs">
-              Dein Berater schaltet die passenden Analyse-Tools für dich frei.
-            </p>
-          </div>
-        )}
-
-        {/* No results */}
-        {!isLoading && hasTools && filteredClusters.length === 0 && search.trim() && (
+        {/* No search results */}
+        {!isLoading && !error && search.trim() && accessibleTools.length === 0 && comingSoonTools.length === 0 && (
           <div className="text-center py-10">
             <p className="text-sm text-muted-foreground">Kein Tool gefunden für „{search}"</p>
           </div>
         )}
 
-        {/* Tool list */}
-        {filteredClusters.map(({ cluster, tools: clusterTools }, clusterIdx) => (
-          <div key={cluster.key}>
-            {clusterIdx > 0 && <Separator className="mb-4" />}
+        {/* Section 1 — Verfügbare Tools */}
+        {!isLoading && !error && (
+          <div>
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">
-              {t(cluster.i18nKey)}
+              Verfügbare Tools
+            </p>
+            {accessibleTools.length > 0 ? (
+              <div className="space-y-1.5">
+                {accessibleTools.map((tool, idx) => renderAccessibleCard(tool, idx))}
+              </div>
+            ) : (
+              !search.trim() && (
+                <div className="flex flex-col items-center justify-center py-10 px-6 text-center rounded-xl border border-border/50 bg-muted/20">
+                  <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-3">
+                    <Wrench className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-base font-semibold text-foreground mb-1">Noch keine Tools verfügbar</h3>
+                  <p className="text-sm text-muted-foreground max-w-xs">
+                    Dein Berater schaltet sie schrittweise frei.
+                  </p>
+                </div>
+              )
+            )}
+          </div>
+        )}
+
+        {/* Section 2 — Demnächst verfügbar */}
+        {!isLoading && !error && comingSoonTools.length > 0 && (
+          <div>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">
+              Demnächst verfügbar
             </p>
             <div className="space-y-1.5">
-              {clusterTools.map((tool) => {
-                const IconComponent = iconMap[tool.icon] || Wrench;
-                const idx = globalIndex++;
-                return (
-                  <motion.button
-                    key={tool.id}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2, delay: idx * 0.03 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => tool.slug && navigate(`/app/client-portal/tools/${tool.slug}`)}
-                    disabled={!tool.slug}
-                    className={cn(
-                      "w-full flex items-center gap-3 p-3 rounded-xl border border-border/50 bg-card text-left transition-colors",
-                      "hover:bg-accent/40 active:bg-accent/60",
-                      !tool.slug && "opacity-50 cursor-not-allowed"
-                    )}
-                  >
-                    <div className="w-9 h-9 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
-                      <IconComponent className="h-[18px] w-[18px] text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[15px] font-semibold text-foreground truncate">
-                        {resolveToolText(t, tool.name_key, 'name')}
-                      </p>
-                      <p className="text-[13px] text-muted-foreground line-clamp-2">
-                        {resolveToolText(t, tool.description_key, 'description')}
-                      </p>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground/50 shrink-0" />
-                  </motion.button>
-                );
-              })}
+              {comingSoonTools.map((tool, idx) => renderComingSoonCard(tool, idx))}
             </div>
           </div>
-        ))}
+        )}
       </div>
     </ClientPortalLayout>
   );
