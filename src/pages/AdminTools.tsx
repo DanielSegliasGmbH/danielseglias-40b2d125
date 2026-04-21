@@ -104,7 +104,7 @@ export default function AdminTools() {
                     >
                       <Link2 className="h-3 w-3 text-muted-foreground shrink-0" />
                       <code className="truncate text-muted-foreground max-w-[220px]">
-                        /tools/{tool.slug}
+                        /open/{tool.slug}
                       </code>
                       {tool.public_password && (
                         <Badge variant="outline" className="h-5 gap-1 text-[10px]">
@@ -117,7 +117,7 @@ export default function AdminTools() {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          navigator.clipboard.writeText(`${window.location.origin}/tools/${tool.slug}`);
+                          navigator.clipboard.writeText(`${window.location.origin}/open/${tool.slug}`);
                           toast.success('Link kopiert');
                         }}
                         className="inline-flex items-center gap-1 text-primary hover:underline"

@@ -26,6 +26,12 @@ function ClientToCustomerRedirect() {
   return <Navigate to={`/app/customers/${id || ''}`} replace />;
 }
 
+// Helper component to redirect legacy /tools/:slug to /open/:slug
+function RedirectToolSlug() {
+  const { slug } = useParams<{ slug: string }>();
+  return <Navigate to={`/open/${slug || ''}`} replace />;
+}
+
 import CaseList from "./pages/CaseList";
 import CaseDetail from "./pages/CaseDetail";
 import TaskList from "./pages/TaskList";
@@ -164,10 +170,13 @@ function App() {
               {/* ARCHIVED: <Route path="/contact" element={<PublicContact />} /> */}
               {/* ARCHIVED: <Route path="/blog" element={<PublicBlog />} /> */}
               {/* ARCHIVED: <Route path="/blog/:slug" element={<PublicBlogDetail />} /> */}
-              <Route path="/tools" element={<PublicTools />} />
+              <Route path="/open" element={<PublicTools />} />
+              <Route path="/open/:slug" element={<PublicToolDetail />} />
+              {/* Legacy redirects from /tools to /open */}
+              <Route path="/tools" element={<Navigate to="/open" replace />} />
+              <Route path="/tools/:slug" element={<RedirectToolSlug />} />
               {/* ARCHIVED: <Route path="/case-studies" element={<PublicCaseStudies />} /> */}
               {/* ARCHIVED: <Route path="/case-studies/:slug" element={<PublicCaseStudyDetail />} /> */}
-              <Route path="/tools/:slug" element={<PublicToolDetail />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Navigate to="/login" replace />} />
               <Route path="/reset-password" element={<ResetPassword />} />

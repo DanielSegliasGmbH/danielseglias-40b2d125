@@ -79,7 +79,7 @@ export default function PublicTools() {
                     )}
                   </CardHeader>
                   <CardContent>
-                    <Link to={`/tools/${tool.slug}`}>
+                    <Link to={`/open/${tool.slug}`}>
                       <Button variant="outline" className="w-full">
                         {t('public.tools.startTool')}
                         <ArrowRight className="ml-2 h-4 w-4" />
