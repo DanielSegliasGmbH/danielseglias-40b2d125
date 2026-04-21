@@ -47,6 +47,14 @@ import { KrankenkassenTrackerTool } from '@/components/tools/krankenkassen-track
 import { SozialabgabenUebersichtTool } from '@/components/tools/sozialabgaben-uebersicht/SozialabgabenUebersichtTool';
 import { LebenserwartungTool } from '@/components/tools/lebenserwartung/LebenserwartungTool';
 import { VersicherungsCheckTool } from '@/components/tools/versicherungs-check/VersicherungsCheckTool';
+import { Vergleichsrechner3aTool } from '@/components/tools/vergleichsrechner-3a/Vergleichsrechner3aTool';
+import { InflationsrechnerTool } from '@/components/tools/inflationsrechner/InflationsrechnerTool';
+import VorsorgecheckTool from '@/components/tools/vorsorgecheck/VorsorgecheckTool';
+import KvgPraemienvergleichTool from '@/components/tools/kvg-praemienvergleich/KvgPraemienvergleichTool';
+import VvgLeistungsvergleichTool from '@/components/tools/vvg-leistungsvergleich/VvgLeistungsvergleichTool';
+import { TragbarkeitsrechnerTool } from '@/components/tools/tragbarkeitsrechner/TragbarkeitsrechnerTool';
+import { Verlustrechner3aTool } from '@/components/tools/verlustrechner-3a/Verlustrechner3aTool';
+import { TransparenzCheckTool } from '@/components/tools/transparenz-check/TransparenzCheckTool';
 
 // Icon mapping
 const iconMap: Record<string, LucideIcon> = {
@@ -235,6 +243,22 @@ export default function AdminToolDetail() {
         return <SozialabgabenUebersichtTool mode="internal" />;
       case 'lebenserwartung':
         return <LebenserwartungTool mode="internal" />;
+      case 'vergleichsrechner-3a':
+        return <Vergleichsrechner3aTool />;
+      case 'inflationsrechner':
+        return <InflationsrechnerTool />;
+      case 'vorsorgecheck-3a':
+        return <VorsorgecheckTool />;
+      case 'kvg-praemienvergleich':
+        return <KvgPraemienvergleichTool />;
+      case 'vvg-leistungsvergleich':
+        return <VvgLeistungsvergleichTool />;
+      case 'tragbarkeitsrechner':
+        return <TragbarkeitsrechnerTool mode="internal" />;
+      case 'verlustrechner-3a':
+        return <Verlustrechner3aTool />;
+      case 'transparenz-check':
+        return <TransparenzCheckTool mode="internal" />;
       default:
         return (
           <div className="bg-muted/50 rounded-lg p-8 text-center min-h-[300px] flex items-center justify-center">
