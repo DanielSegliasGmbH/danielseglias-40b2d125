@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, ArrowUp, ArrowDown, Shield, Sparkles, TrendingUp, ChevronRight, Target } from 'lucide-react';
+import { ArrowLeft, ArrowUp, ArrowDown, Shield, Sparkles, TrendingUp, ChevronRight, Target, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { InfoHint } from '@/components/client-portal/InfoHint';
 import { cn } from '@/lib/utils';
@@ -205,6 +205,18 @@ export default function ClientPortalPeakScore() {
     <ClientPortalLayout>
       <ScreenHeader title="PeakScore" backTo="/app/client-portal" />
       <div className="max-w-2xl mx-auto space-y-5">
+
+        {/* Coming Soon Banner */}
+        <Card className="border-amber-500/40 bg-amber-50 dark:bg-amber-950/30">
+          <CardContent className="p-4 flex items-start gap-3">
+            <div className="shrink-0 mt-0.5">
+              <Clock className="h-5 w-5 text-amber-700 dark:text-amber-400" />
+            </div>
+            <p className="text-sm text-amber-900 dark:text-amber-100 leading-relaxed">
+              Der PeakScore befindet sich noch im Aufbau. Er wird in einer der nächsten Versionen vollständig verfügbar sein.
+            </p>
+          </CardContent>
+        </Card>
 
         {/* First-time overlay */}
         <AnimatePresence>
