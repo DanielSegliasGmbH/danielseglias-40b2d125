@@ -1,12 +1,11 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { getDefaultRouteForRole } from '@/components/RouteGuard';
-import MinimalLanding from './MinimalLanding';
 
 /**
- * Gate for the root "/" route.
- * - Logged-in users: redirect straight to their dashboard (no splash).
- * - Logged-out users: see the public MinimalLanding splash.
+ * Gate for the root "/" route (v1.0).
+ * - Logged-in users: redirect straight to their dashboard.
+ * - Logged-out users: redirect to /tools (only public area in v1.0).
  */
 export default function MinimalLandingGate() {
   const { user, role, loading } = useAuth();
@@ -24,5 +23,5 @@ export default function MinimalLandingGate() {
     return <Navigate to={target} replace />;
   }
 
-  return <MinimalLanding />;
+  return <Navigate to="/tools" replace />;
 }

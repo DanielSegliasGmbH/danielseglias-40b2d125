@@ -158,15 +158,15 @@ function App() {
           <AuthProvider>
             <PageViewTracker />
             <Routes>
-              {/* Public routes (no auth) */}
+              {/* Public routes (no auth) — v1.0: only tools area */}
               <Route path="/" element={<MinimalLandingGate />} />
-              <Route path="/hauptseite" element={<PublicLanding />} />
-              <Route path="/contact" element={<PublicContact />} />
-              <Route path="/blog" element={<PublicBlog />} />
-              <Route path="/blog/:slug" element={<PublicBlogDetail />} />
+              {/* ARCHIVED: <Route path="/hauptseite" element={<PublicLanding />} /> */}
+              {/* ARCHIVED: <Route path="/contact" element={<PublicContact />} /> */}
+              {/* ARCHIVED: <Route path="/blog" element={<PublicBlog />} /> */}
+              {/* ARCHIVED: <Route path="/blog/:slug" element={<PublicBlogDetail />} /> */}
               <Route path="/tools" element={<PublicTools />} />
-              <Route path="/case-studies" element={<PublicCaseStudies />} />
-              <Route path="/case-studies/:slug" element={<PublicCaseStudyDetail />} />
+              {/* ARCHIVED: <Route path="/case-studies" element={<PublicCaseStudies />} /> */}
+              {/* ARCHIVED: <Route path="/case-studies/:slug" element={<PublicCaseStudyDetail />} /> */}
               <Route path="/tools/:slug" element={<PublicToolDetail />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Navigate to="/login" replace />} />
