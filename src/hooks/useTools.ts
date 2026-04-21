@@ -17,8 +17,14 @@ export interface Tool {
   sort_order: number;
   slug: string | null;
   cta_mode: 'contact' | 'download' | 'booking' | null;
+  public_password: string | null;
+  public_password_hint: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface PublicTool extends Tool {
+  has_password: boolean;
 }
 
 // Hook for Admin: fetch all tools
@@ -68,12 +74,15 @@ export function usePublicTools() {
         .order('sort_order', { ascending: true });
 
       if (error) throw error;
-      return data as Tool[];
+      return (data as Tool[]).map((tool) => ({
+        ...tool,
+        has_password: !!tool.public_password,
+      })) as PublicTool[];
     },
   });
 }
 
-// Hook for Admin: update tool settings (incl. visibility + unlock_phase)
+// Hook for Admin: update tool settings (incl. visibility + unlock_phase + password)
 export function useUpdateTool() {
   const queryClient = useQueryClient();
 
@@ -83,7 +92,7 @@ export function useUpdateTool() {
       updates,
     }: {
       id: string;
-      updates: Partial<Pick<Tool, 'enabled_for_clients' | 'enabled_for_public' | 'status' | 'sort_order' | 'visibility' | 'unlock_phase'>>;
+      updates: Partial<Pick<Tool, 'enabled_for_clients' | 'enabled_for_public' | 'status' | 'sort_order' | 'visibility' | 'unlock_phase' | 'public_password' | 'public_password_hint'>>;
     }) => {
       const { data, error } = await supabase
         .from('tools')
