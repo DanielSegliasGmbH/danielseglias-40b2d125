@@ -401,6 +401,71 @@ export default function AdminToolDetail() {
               </CardContent>
             </Card>
 
+            {/* Public Password Protection */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Lock className="h-5 w-5" />
+                  Öffentlicher Passwortschutz
+                </CardTitle>
+                <CardDescription>
+                  Schütze die öffentliche Tool-Seite mit einem Passwort. Teile das Passwort gezielt mit ausgewählten Personen.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="public-password">Öffentliches Passwort</Label>
+                  <Input
+                    id="public-password"
+                    type="text"
+                    value={pwInput}
+                    onChange={(e) => setPwInput(e.target.value)}
+                    placeholder="Leer lassen = kein Passwort nötig"
+                    autoComplete="off"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Dieses Passwort teilst du mit Personen, die das Tool nutzen sollen. Klartext, damit du es jederzeit nachschlagen kannst.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="public-password-hint">Passwort-Hinweis (optional)</Label>
+                  <Input
+                    id="public-password-hint"
+                    type="text"
+                    value={hintInput}
+                    onChange={(e) => setHintInput(e.target.value)}
+                    placeholder="z. B. 'Fragen Sie Ihren Berater'"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Wird auf der Passwort-Seite als Hinweis angezeigt.
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between pt-2">
+                  <div className="text-xs text-muted-foreground">
+                    Aktueller Status:{' '}
+                    {tool.public_password ? (
+                      <span className="text-foreground font-medium">🔒 Passwort gesetzt</span>
+                    ) : (
+                      <span>Kein Passwort — frei zugänglich</span>
+                    )}
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={handleSavePassword}
+                    disabled={
+                      updateTool.isPending ||
+                      ((pwInput || '') === (tool.public_password || '') &&
+                        (hintInput || '') === (tool.public_password_hint || ''))
+                    }
+                  >
+                    Speichern
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Tool Content */}
             <Card>
               <CardHeader>
