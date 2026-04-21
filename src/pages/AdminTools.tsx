@@ -7,7 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Wrench, Calculator, PieChart, TrendingUp, FileText, Clock, ClipboardCheck, ChevronRight, Briefcase, Receipt, Landmark, Heart, Shield, Hourglass, Lock, EyeOff, Globe, LucideIcon } from 'lucide-react';
+import { Wrench, Calculator, PieChart, TrendingUp, FileText, Clock, ClipboardCheck, ChevronRight, Briefcase, Receipt, Landmark, Heart, Shield, Hourglass, Lock, EyeOff, Globe, Copy, Link2, KeyRound, LucideIcon } from 'lucide-react';
 import { useAllTools, useUpdateTool, type ToolVisibility } from '@/hooks/useTools';
 import { groupToolsByCluster } from '@/config/toolClusters';
 import { toast } from 'sonner';
