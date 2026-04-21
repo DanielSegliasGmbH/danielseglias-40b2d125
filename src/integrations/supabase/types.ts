@@ -3507,6 +3507,7 @@ export type Database = {
           is_published: boolean | null
           page_type: string
           published_at: string | null
+          requires_password: boolean | null
           slug: string
           title: string
           updated_at: string
@@ -3520,6 +3521,7 @@ export type Database = {
           is_published?: boolean | null
           page_type: string
           published_at?: string | null
+          requires_password?: boolean | null
           slug: string
           title: string
           updated_at?: string
@@ -3533,6 +3535,7 @@ export type Database = {
           is_published?: boolean | null
           page_type?: string
           published_at?: string | null
+          requires_password?: boolean | null
           slug?: string
           title?: string
           updated_at?: string
@@ -4269,6 +4272,8 @@ export type Database = {
           id: string
           key: string
           name_key: string
+          public_password: string | null
+          public_password_hint: string | null
           slug: string | null
           sort_order: number
           status: string
@@ -4286,6 +4291,8 @@ export type Database = {
           id?: string
           key: string
           name_key: string
+          public_password?: string | null
+          public_password_hint?: string | null
           slug?: string | null
           sort_order?: number
           status?: string
@@ -4303,6 +4310,8 @@ export type Database = {
           id?: string
           key?: string
           name_key?: string
+          public_password?: string | null
+          public_password_hint?: string | null
           slug?: string | null
           sort_order?: number
           status?: string
