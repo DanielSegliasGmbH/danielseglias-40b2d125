@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, ArrowUp, ArrowDown, Shield, Sparkles, TrendingUp, ChevronRight, Target } from 'lucide-react';
+import { ArrowLeft, ArrowUp, ArrowDown, Shield, Sparkles, TrendingUp, ChevronRight, Target, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { InfoHint } from '@/components/client-portal/InfoHint';
 import { cn } from '@/lib/utils';
