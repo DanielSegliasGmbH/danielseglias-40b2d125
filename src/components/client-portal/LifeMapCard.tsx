@@ -299,3 +299,30 @@ function Hexagon({ territory }: HexagonProps) {
     </motion.div>
   );
 }
+
+function ComingSoonHexagon({ label }: { label: string }) {
+  const hexPath = 'M50 4 L91 27 L91 73 L50 96 L9 73 L9 27 Z';
+  return (
+    <div className="relative w-full h-full">
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <path
+          d={hexPath}
+          fill="hsl(var(--muted))"
+          stroke="hsl(var(--muted-foreground) / 0.2)"
+          strokeWidth={1.5}
+          strokeLinejoin="round"
+          className="opacity-80"
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-1 pointer-events-none">
+        <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground/70" />
+        <span className="mt-1 text-[8px] sm:text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">
+          Bald
+        </span>
+        <span className="mt-0.5 text-[8px] sm:text-[9px] leading-tight text-muted-foreground/80 line-clamp-2">
+          {label}
+        </span>
+      </div>
+    </div>
+  );
+}
