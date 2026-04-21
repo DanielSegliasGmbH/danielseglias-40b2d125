@@ -23,6 +23,9 @@ export function PublicToolPasswordGate({
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
 
+  const whatsappNumber = '41774448608';
+  const whatsappUrl = `https://wa.me/${whatsappNumber}`;
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (password === requiredPassword) {
@@ -100,7 +103,7 @@ export function PublicToolPasswordGate({
               </a>
               <span className="text-muted-foreground/40 hidden sm:inline">·</span>
               <a
-                href="https://wa.me/41774448608"
+                href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 text-xs text-[#25D366] hover:underline font-medium"
