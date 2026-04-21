@@ -4,6 +4,7 @@ import DOMPurify from 'dompurify';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { resolveToolText } from '@/lib/toolTranslations';
 import { PublicLayout } from '@/layouts/PublicLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -45,6 +46,10 @@ import { AhvTrackerTool } from '@/components/tools/ahv-tracker/AhvTrackerTool';
 import { KrankenkassenTrackerTool } from '@/components/tools/krankenkassen-tracker/KrankenkassenTrackerTool';
 import { SozialabgabenUebersichtTool } from '@/components/tools/sozialabgaben-uebersicht/SozialabgabenUebersichtTool';
 import { LebenserwartungTool } from '@/components/tools/lebenserwartung/LebenserwartungTool';
+import { Vergleichsrechner3aTool } from '@/components/tools/vergleichsrechner-3a/Vergleichsrechner3aTool';
+import { InflationsrechnerTool } from '@/components/tools/inflationsrechner/InflationsrechnerTool';
+import { BeratungsreiseTool } from '@/components/tools/beratungsreise/BeratungsreiseTool';
+import { Mini3aKurzcheckTool } from '@/components/tools/mini-3a-kurzcheck/Mini3aKurzcheckTool';
 import NotFound from '@/pages/NotFound';
 
 // Icon mapping
