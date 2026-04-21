@@ -72,6 +72,12 @@ export default function AdminToolDetail() {
 
   const [pwInput, setPwInput] = useState('');
   const [hintInput, setHintInput] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleCopy = (text: string, msg = 'Kopiert!') => {
+    navigator.clipboard.writeText(text);
+    toast.success(msg);
+  };
 
   const { data: tool, isLoading, error } = useQuery({
     queryKey: ['admin-tool', slug],
