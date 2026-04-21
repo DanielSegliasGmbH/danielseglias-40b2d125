@@ -479,22 +479,16 @@ export function OnboardingWizard() {
             <motion.div key="s6" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
               className="text-center pt-4">
               <Confetti />
-              <p className="text-sm text-muted-foreground mb-2 tracking-wider">DEIN ERSTER PEAKSCORE</p>
-              <div className="text-6xl sm:text-7xl font-bold text-foreground mb-2">
-                {peakScore !== null ? peakScore : '–'}
-                <span className="text-2xl text-muted-foreground ml-2">Monate</span>
-              </div>
-              <p className="text-muted-foreground max-w-md mx-auto mb-6">
-                So lange könntest du heute leben, ohne zu arbeiten.
+              <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 mt-4">
+                Du bist bereit! 🎉
+              </h2>
+              <p className="text-base text-muted-foreground max-w-md mx-auto mb-6">
+                Dein Profil ist eingerichtet. Dein <strong className="text-foreground">PeakScore</strong> wird in Kürze berechnet.
               </p>
 
-              {peakRank && (
-                <div className="mb-6">
-                  <div className="text-5xl mb-2">{peakRank.emoji}</div>
-                  <p className="text-lg font-semibold text-foreground">{peakRank.name}</p>
-                  <p className="text-xs text-muted-foreground">Dein aktueller Rang</p>
-                </div>
-              )}
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-semibold text-primary mb-8">
+                <Sparkles className="h-4 w-4" /> +250 XP
+              </div>
 
               {avatar.name && (
                 <p className="text-sm text-muted-foreground mb-8">
