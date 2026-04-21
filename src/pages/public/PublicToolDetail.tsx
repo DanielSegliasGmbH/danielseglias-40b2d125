@@ -156,7 +156,7 @@ export default function PublicToolDetail() {
   return (
     <PublicLayout>
       <div className="container mx-auto px-4 py-12">
-        <Link to="/tools" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-8">
+        <Link to="/open" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-8">
           <ArrowLeft className="mr-2 h-4 w-4" />
           {t('public.tools.backToList')}
         </Link>

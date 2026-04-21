@@ -393,7 +393,7 @@ export default function AdminToolDetail() {
                       </span>
                       {tool.enabled_for_public && tool.slug && (
                         <a
-                          href={`/tools/${tool.slug}`}
+                          href={`/open/${tool.slug}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-sm text-primary hover:underline inline-flex items-center gap-1"
@@ -522,18 +522,18 @@ export default function AdminToolDetail() {
                 <CardContent className="space-y-3">
                   <div className="flex flex-wrap items-center gap-2">
                     <code className="flex-1 min-w-0 truncate rounded-md bg-muted px-3 py-2 text-sm">
-                      {window.location.origin}/tools/{tool.slug}
+                      {window.location.origin}/open/{tool.slug}
                     </code>
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleCopy(`${window.location.origin}/tools/${tool.slug}`, 'Link kopiert!')}
+                      onClick={() => handleCopy(`${window.location.origin}/open/${tool.slug}`, 'Link kopiert!')}
                     >
                       <Copy className="h-4 w-4 mr-1" />
-                      Link
+                      Kopieren
                     </Button>
                     <Button size="sm" variant="outline" asChild>
-                      <a href={`/tools/${tool.slug}`} target="_blank" rel="noopener noreferrer">
+                      <a href={`/open/${tool.slug}`} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="h-4 w-4 mr-1" />
                         Öffnen
                       </a>
@@ -545,7 +545,7 @@ export default function AdminToolDetail() {
                     variant="secondary"
                     className="w-full sm:w-auto"
                     onClick={() => {
-                      const url = `${window.location.origin}/tools/${tool.slug}`;
+                      const url = `${window.location.origin}/open/${tool.slug}`;
                       const text = tool.public_password
                         ? `🔧 ${t(tool.name_key)}\n\nZugang: ${url}\nPasswort: ${tool.public_password}`
                         : `🔧 ${t(tool.name_key)}\n\nZugang: ${url}`;
