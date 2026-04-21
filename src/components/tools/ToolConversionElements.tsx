@@ -1,5 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { MessageCircle, ShieldCheck, Flame } from 'lucide-react';
+import { MessageCircle, ShieldCheck, Flame, Calendar, Phone } from 'lucide-react';
 import { formatToolImpact } from '@/lib/peakScoreFormat';
 
 interface ToolReflectionProps {
@@ -87,14 +87,26 @@ export function ToolSoftCta({
               {note}
             </p>
           )}
-          <a
-            href={bookingUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
-          >
-            {buttonLabel}
-          </a>
+          <div className="flex flex-col sm:flex-row gap-2 justify-center pt-1">
+            <a
+              href={bookingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
+            >
+              <Calendar className="h-4 w-4" />
+              15-Minuten-Gespräch buchen
+            </a>
+            <a
+              href={bookingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg border border-primary/30 text-foreground text-sm font-medium hover:bg-primary/5 transition-colors"
+            >
+              <Phone className="h-4 w-4" />
+              Persönliche Beratung
+            </a>
+          </div>
           <p className="text-xs text-muted-foreground pt-1">
             Unverbindlich · Du entscheidest jederzeit selbst
           </p>
