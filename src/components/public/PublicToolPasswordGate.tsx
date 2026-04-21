@@ -23,14 +23,7 @@ export function PublicToolPasswordGate({
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
 
-  const handleWhatsApp = () => {
-    const number = '41774448608';
-    window.open(`https://wa.me/${number}`, '_blank', 'noopener,noreferrer');
-  };
 
-  const handleEmail = () => {
-    window.open('mailto:hallo@danielseglias.ch');
-  };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
