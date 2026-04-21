@@ -1,5 +1,5 @@
 import { useState, FormEvent } from 'react';
-import { Lock, Sparkles } from 'lucide-react';
+import { Lock, Sparkles, Mail, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -88,13 +88,27 @@ export function PublicToolPasswordGate({
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <a
-              href="mailto:daniel@danielseglias.ch"
-              className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2"
-            >
-              Noch kein Zugang? Berater kontaktieren
-            </a>
+          <div className="mt-6 text-center space-y-2">
+            <p className="text-xs text-muted-foreground">Noch kein Zugang?</p>
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              <a
+                href="mailto:hallo@danielseglias.ch"
+                className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
+              >
+                <Mail className="h-3.5 w-3.5" />
+                Per E-Mail anfragen
+              </a>
+              <span className="text-muted-foreground/40 hidden sm:inline">·</span>
+              <a
+                href="https://wa.me/41774448608"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs text-[#25D366] hover:underline font-medium"
+              >
+                <MessageCircle className="h-3.5 w-3.5" />
+                WhatsApp
+              </a>
+            </div>
           </div>
         </CardContent>
       </Card>
