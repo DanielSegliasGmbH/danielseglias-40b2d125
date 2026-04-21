@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -8,9 +9,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, Clock, Globe, Users, ExternalLink, ClipboardCheck, Briefcase, Receipt, Landmark, Heart, Shield, Hourglass, LucideIcon } from 'lucide-react';
+import { ArrowLeft, Wrench, Calculator, PieChart, TrendingUp, FileText, Clock, Globe, Users, ExternalLink, ClipboardCheck, Briefcase, Receipt, Landmark, Heart, Shield, Hourglass, Lock, LucideIcon } from 'lucide-react';
 import { useUpdateTool, Tool } from '@/hooks/useTools';
 import { toast } from 'sonner';
 import { FinanzcheckTool } from '@/components/tools/finanzcheck/FinanzcheckTool';
@@ -68,6 +70,9 @@ export default function AdminToolDetail() {
   const navigate = useNavigate();
   const updateTool = useUpdateTool();
 
+  const [pwInput, setPwInput] = useState('');
+  const [hintInput, setHintInput] = useState('');
+
   const { data: tool, isLoading, error } = useQuery({
     queryKey: ['admin-tool', slug],
     queryFn: async () => {
@@ -82,6 +87,31 @@ export default function AdminToolDetail() {
     },
     enabled: !!slug,
   });
+
+  // Sync local form state with loaded tool
+  useEffect(() => {
+    if (tool) {
+      setPwInput(tool.public_password ?? '');
+      setHintInput(tool.public_password_hint ?? '');
+    }
+  }, [tool?.id, tool?.public_password, tool?.public_password_hint]);
+
+  const handleSavePassword = () => {
+    if (!tool) return;
+    updateTool.mutate(
+      {
+        id: tool.id,
+        updates: {
+          public_password: pwInput.trim() === '' ? null : pwInput,
+          public_password_hint: hintInput.trim() === '' ? null : hintInput,
+        },
+      },
+      {
+        onSuccess: () => toast.success('Passwort-Einstellungen gespeichert'),
+        onError: () => toast.error('Fehler beim Speichern'),
+      }
+    );
+  };
 
   const handleTogglePublic = (currentValue: boolean) => {
     if (!tool) return;
@@ -368,6 +398,71 @@ export default function AdminToolDetail() {
                     Hinweis: Toggles sind nur verfügbar, wenn das Tool aktiv ist.
                   </p>
                 )}
+              </CardContent>
+            </Card>
+
+            {/* Public Password Protection */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Lock className="h-5 w-5" />
+                  Öffentlicher Passwortschutz
+                </CardTitle>
+                <CardDescription>
+                  Schütze die öffentliche Tool-Seite mit einem Passwort. Teile das Passwort gezielt mit ausgewählten Personen.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="public-password">Öffentliches Passwort</Label>
+                  <Input
+                    id="public-password"
+                    type="text"
+                    value={pwInput}
+                    onChange={(e) => setPwInput(e.target.value)}
+                    placeholder="Leer lassen = kein Passwort nötig"
+                    autoComplete="off"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Dieses Passwort teilst du mit Personen, die das Tool nutzen sollen. Klartext, damit du es jederzeit nachschlagen kannst.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="public-password-hint">Passwort-Hinweis (optional)</Label>
+                  <Input
+                    id="public-password-hint"
+                    type="text"
+                    value={hintInput}
+                    onChange={(e) => setHintInput(e.target.value)}
+                    placeholder="z. B. 'Fragen Sie Ihren Berater'"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Wird auf der Passwort-Seite als Hinweis angezeigt.
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between pt-2">
+                  <div className="text-xs text-muted-foreground">
+                    Aktueller Status:{' '}
+                    {tool.public_password ? (
+                      <span className="text-foreground font-medium">🔒 Passwort gesetzt</span>
+                    ) : (
+                      <span>Kein Passwort — frei zugänglich</span>
+                    )}
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={handleSavePassword}
+                    disabled={
+                      updateTool.isPending ||
+                      ((pwInput || '') === (tool.public_password || '') &&
+                        (hintInput || '') === (tool.public_password_hint || ''))
+                    }
+                  >
+                    Speichern
+                  </Button>
+                </div>
               </CardContent>
             </Card>
 
