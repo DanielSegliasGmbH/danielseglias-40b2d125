@@ -48,23 +48,16 @@ export default function ClientPortalTools() {
 
   const isLoading = toolsLoading || unlockLoading;
 
+  // ARCHIVED for v1.0: phase-unlock disabled. Show all non-hidden/non-admin tools.
   const isAccessible = (tool: Tool): boolean => {
     if (tool.status !== 'active') return false;
-    if (tool.visibility === 'public') return true;
-    if (tool.visibility === 'phase_locked') {
-      // Phase-gating: unlocked when current phase >= tool.unlock_phase
-      if (tool.unlock_phase != null) return currentPhase >= tool.unlock_phase;
-      return isUnlocked(tool.slug || tool.key);
-    }
-    return false;
+    if (tool.visibility === 'hidden' || tool.visibility === 'admin_only') return false;
+    return tool.visibility === 'public' || tool.visibility === 'phase_locked';
   };
 
   const isComingSoon = (tool: Tool): boolean => {
-    if (tool.visibility === 'hidden') return false;
-    if (tool.visibility === 'admin_only') return false;
-    if (tool.status === 'planned') return true;
-    if (tool.visibility === 'phase_locked') return !isAccessible(tool);
-    return false;
+    if (tool.visibility === 'hidden' || tool.visibility === 'admin_only') return false;
+    return tool.status === 'planned';
   };
 
   const matchesSearch = (tool: Tool): boolean => {
