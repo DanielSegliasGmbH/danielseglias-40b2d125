@@ -54,6 +54,8 @@ function meetsGate(
 }
 
 export function useFeatureUnlock(): FeatureUnlockState {
+  // ARCHIVED: Journey phase unlocking disabled for v1.0
+  // All tools show based only on visibility field in DB.
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [newlyUnlocked, setNewlyUnlocked] = useState<string[]>([]);
@@ -258,9 +260,10 @@ export function useFeatureUnlock(): FeatureUnlockState {
     }
   }, [currentPhase, user?.id, journeyLoading]);
 
+  // ARCHIVED for v1.0: always return true; visibility is controlled by DB field only.
   const isUnlocked = useCallback(
-    (featureKey: string) => unlockedFeatures.has(featureKey),
-    [unlockedFeatures],
+    (_featureKey: string) => true,
+    [],
   );
 
   const clearNewlyUnlocked = useCallback(() => setNewlyUnlocked([]), []);
