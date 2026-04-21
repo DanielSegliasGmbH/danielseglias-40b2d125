@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Wrench, Calculator, PieChart, TrendingUp, FileText, ChevronRight, Search, LucideIcon, Archive } from 'lucide-react';
+import { Wrench, Calculator, PieChart, TrendingUp, FileText, ChevronRight, Search, LucideIcon, Archive, AlertTriangle } from 'lucide-react';
 import { useClientToolsFiltered } from '@/hooks/useClientPortal';
 import { groupToolsByCluster } from '@/config/toolClusters';
 import { resolveToolText } from '@/lib/toolTranslations';
@@ -62,6 +62,15 @@ export default function ClientPortalTools() {
             <Archive className="h-3.5 w-3.5" />
             Mein Archiv
           </Button>
+        </div>
+
+        {/* Disclaimer */}
+        <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-sm">
+          <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+          <p className="text-xs text-muted-foreground">
+            <strong className="text-foreground">Hinweis:</strong>{' '}
+            Die Berechnungen der Werkzeuge sind Schätzungen und dienen nur zur Orientierung. Zahlen bitte immer kritisch prüfen und nicht als verbindlich betrachten.
+          </p>
         </div>
 
         {/* Search */}

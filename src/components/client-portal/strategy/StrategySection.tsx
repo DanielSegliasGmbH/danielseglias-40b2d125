@@ -103,7 +103,7 @@ export function StrategySection({ platformId, privacyMode }: Props) {
 
                 {/* Mini donut + return range */}
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="w-11 h-11 sm:w-14 sm:h-14 shrink-0">
+                  <div className="w-12 h-12 shrink-0">
                     <DonutChart
                       allocations={s.allocations}
                       cryptoEnabled={false}
