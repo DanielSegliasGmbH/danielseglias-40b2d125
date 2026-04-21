@@ -188,10 +188,13 @@ export function Vergleichsrechner3aTool() {
 
               {/* Alt vs Neu side by side */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="space-y-3">
+                <div className="space-y-3 bg-[#f5f0e8] dark:bg-[#3d3828] rounded-xl p-4 border border-[#d4c9a8]">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-destructive/60" />
-                    <p className="text-sm font-medium">Bestehende Lösung</p>
+                    <div className="w-3 h-3 rounded-full bg-[#c4a882]" />
+                    <div>
+                      <p className="text-sm font-semibold text-[#8B7355]">Bestehende Lösung</p>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">3a alt</p>
+                    </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <InputField label="Rendite nominal" field={altRendite} suffix="%" />
@@ -204,10 +207,13 @@ export function Vergleichsrechner3aTool() {
                   <InputField label="Fixe Kosten / Prognose" field={altFee} suffix="CHF" />
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-3 bg-[#4a5240] rounded-xl p-4 border border-[#5a6450] [&_label]:text-white/90 [&_input]:bg-[#3d4436] [&_input]:border-[#5a6450] [&_input]:text-white [&_input]:placeholder:text-[#8a9480] [&_span]:text-white/70">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-success/60" />
-                    <p className="text-sm font-medium">Optimierte Lösung</p>
+                    <div className="w-3 h-3 rounded-full bg-[#a8c090]" />
+                    <div>
+                      <p className="text-sm font-semibold text-white">Optimierte Lösung</p>
+                      <p className="text-[10px] text-[#a8c090] uppercase tracking-wider">3a neu</p>
+                    </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <InputField label="Rendite nominal" field={neuRendite} suffix="%" />
@@ -235,34 +241,34 @@ export function Vergleichsrechner3aTool() {
 
           <div className="space-y-4">
             {/* Alt bar */}
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 bg-[#f5f0e8] dark:bg-[#3d3828] rounded-xl p-3 border border-[#d4c9a8]">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground flex items-center gap-1.5">
-                  <span className="inline-block w-2.5 h-2.5 rounded-full bg-destructive/60" />
-                  Bestehende Lösung
+                <span className="flex items-center gap-1.5 text-[#8B7355] font-medium">
+                  <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#c4a882]" />
+                  Bestehende Lösung <span className="text-[10px] text-muted-foreground uppercase tracking-wider ml-1">3a alt</span>
                 </span>
-                <span className="font-semibold tabular-nums text-foreground">CHF {formatCHF(altResult.endPayout)}</span>
+                <span className="font-semibold tabular-nums text-[#8B7355]">CHF {formatCHF(altResult.endPayout)}</span>
               </div>
-              <div className="h-8 bg-muted/50 rounded-lg overflow-hidden">
+              <div className="h-8 bg-[#e8dfc9]/60 dark:bg-[#2d2820]/60 rounded-lg overflow-hidden">
                 <div
-                  className="h-full bg-destructive/20 rounded-lg transition-all duration-700 ease-out"
+                  className="h-full bg-[#c4a882] rounded-lg transition-all duration-700 ease-out"
                   style={{ width: `${altPct}%` }}
                 />
               </div>
             </div>
 
             {/* Neu bar */}
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 bg-[#4a5240] rounded-xl p-3 border border-[#5a6450]">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground flex items-center gap-1.5">
-                  <span className="inline-block w-2.5 h-2.5 rounded-full bg-success/60" />
-                  Optimierte Lösung
+                <span className="flex items-center gap-1.5 text-white font-medium">
+                  <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#a8c090]" />
+                  Optimierte Lösung <span className="text-[10px] text-[#a8c090] uppercase tracking-wider ml-1">3a neu</span>
                 </span>
-                <span className="font-semibold tabular-nums text-foreground">CHF {formatCHF(neuResult.endPayout)}</span>
+                <span className="font-semibold tabular-nums text-[#a8c090]">CHF {formatCHF(neuResult.endPayout)}</span>
               </div>
-              <div className="h-8 bg-muted/50 rounded-lg overflow-hidden">
+              <div className="h-8 bg-[#3d4436] rounded-lg overflow-hidden">
                 <div
-                  className="h-full bg-success/20 rounded-lg transition-all duration-700 ease-out"
+                  className="h-full bg-[#6b7a5a] rounded-lg transition-all duration-700 ease-out"
                   style={{ width: `${neuPct}%` }}
                 />
               </div>
@@ -287,34 +293,34 @@ export function Vergleichsrechner3aTool() {
         style={{ animationDelay: '200ms', animationFillMode: 'both', animationDuration: '600ms' }}
       >
         {/* Loss card */}
-        <Card className="border-destructive/20">
+        <Card className="bg-[#f5f0e8] dark:bg-[#3d3828] border-[#d4c9a8]">
           <CardContent className="p-5 space-y-2">
             <div className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-destructive" />
-              <p className="text-xs font-medium text-destructive">Verpasste Chance</p>
+              <AlertTriangle className="h-4 w-4 text-[#8B7355]" />
+              <p className="text-xs font-medium text-[#8B7355]">Verpasste Chance <span className="text-muted-foreground">· 3a alt</span></p>
             </div>
             <p className="text-sm text-muted-foreground">
               {isNeuBetter
                 ? 'Mit deiner bestehenden Lösung verlierst du voraussichtlich:'
                 : 'Deine bestehende Lösung bringt dir mehr:'}
             </p>
-            <p className="text-xl font-bold tabular-nums text-foreground">
+            <p className="text-xl font-bold tabular-nums text-[#8B7355]">
               CHF {formatCHF(isNeuBetter ? absDiff : 0)}
             </p>
           </CardContent>
         </Card>
 
         {/* Gain card */}
-        <Card className="border-success/20">
+        <Card className="bg-[#4a5240] border-[#5a6450]">
           <CardContent className="p-5 space-y-2">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-success" />
-              <p className="text-xs font-medium text-success">Mit optimierter Lösung</p>
+              <Sparkles className="h-4 w-4 text-[#a8c090]" />
+              <p className="text-xs font-medium text-white">Mit optimierter Lösung <span className="text-[#a8c090]">· 3a neu</span></p>
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-white/70">
               Du hättest nach {laufzeit.value} Jahren:
             </p>
-            <p className="text-xl font-bold tabular-nums text-foreground">
+            <p className="text-xl font-bold tabular-nums text-[#a8c090]">
               CHF {formatCHF(neuResult.endPayout)}
             </p>
           </CardContent>
