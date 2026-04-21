@@ -206,6 +206,18 @@ export default function ClientPortalPeakScore() {
       <ScreenHeader title="PeakScore" backTo="/app/client-portal" />
       <div className="max-w-2xl mx-auto space-y-5">
 
+        {/* Coming Soon Banner */}
+        <Card className="border-amber-500/40 bg-amber-50 dark:bg-amber-950/30">
+          <CardContent className="p-4 flex items-start gap-3">
+            <div className="shrink-0 mt-0.5">
+              <Clock className="h-5 w-5 text-amber-700 dark:text-amber-400" />
+            </div>
+            <p className="text-sm text-amber-900 dark:text-amber-100 leading-relaxed">
+              Der PeakScore befindet sich noch im Aufbau. Er wird in einer der nächsten Versionen vollständig verfügbar sein.
+            </p>
+          </CardContent>
+        </Card>
+
         {/* First-time overlay */}
         <AnimatePresence>
           {showIntro && (
