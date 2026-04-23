@@ -200,69 +200,58 @@ export default function ClientPortalProfileData() {
       <div className="w-full max-w-3xl mx-auto space-y-6 overflow-x-hidden px-1">
         <PageHeader title="🪪 Mein Profil" subtitle="Alles, was FinLife über dich weiss." />
 
-        {/* SECTION 1 — Mein Hamster */}
-        <div className="relative">
-          <Card className="overflow-hidden">
-            <CardContent className="pt-6 pb-5">
-              <div className="flex flex-col items-center text-center space-y-3">
-                <HamsterAvatar size="lg" />
-                <div>
-                  <p className="text-lg font-bold text-foreground flex items-center justify-center gap-1.5">
-                    <span aria-hidden>{rankEmoji}</span>{rankName}
-                  </p>
-                  <p className="text-xs text-muted-foreground italic max-w-[320px] mt-0.5">
-                    {rankDescription}
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-sm font-semibold text-foreground">
-                    <span aria-hidden>🪙</span>{coins}
-                    <span className="text-muted-foreground font-normal text-xs">Münzen</span>
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-warning/15 px-3 py-1 text-sm font-semibold text-foreground">
-                    <span aria-hidden>🥜</span>{collectedCount}
-                    <span className="text-muted-foreground font-normal text-xs">/ {totalPossible}</span>
-                  </span>
-                  {score !== null && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
-                      <Sparkles className="h-3.5 w-3.5" />PeakScore {score.toFixed(1)}
-                      <span className="text-muted-foreground font-normal text-xs">Rang {rank}</span>
-                    </span>
-                  )}
-                </div>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => openInventory()}
-                  className="gap-1.5 mt-2"
-                >
-                  <Package className="h-4 w-4" />
-                  Inventar öffnen
-                </Button>
-
-                <div className="flex flex-wrap items-center justify-center gap-2 pt-3 text-[11px] text-muted-foreground">
-                  <span>Mitglied seit {memberSince}</span>
-                  <span aria-hidden>•</span>
-                  <Badge variant={plan === 'premium' ? 'default' : 'secondary'} className="gap-1 text-[10px]">
-                    {plan === 'premium' && <Crown className="h-3 w-3" />}
-                    {plan === 'premium' ? 'Premium' : 'Basis'}
-                  </Badge>
-                </div>
+        {/* SECTION 1 — Mein Hamster (Status & Inventar) */}
+        <Card className="overflow-hidden">
+          <CardContent className="pt-6 pb-5">
+            <div className="flex flex-col items-center text-center space-y-3">
+              <HamsterAvatar size="lg" />
+              <div>
+                <p className="text-lg font-bold text-foreground flex items-center justify-center gap-1.5">
+                  <span aria-hidden>{rankEmoji}</span>{rankName}
+                </p>
+                <p className="text-xs text-muted-foreground italic max-w-[320px] mt-0.5">
+                  {rankDescription}
+                </p>
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Coming-soon Overlay */}
-          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm rounded-xl flex flex-col items-center justify-center gap-2 z-10 px-4">
-            <span className="text-3xl">🐹</span>
-            <p className="text-sm font-semibold text-foreground">Hamster im Aufbau</p>
-            <p className="text-xs text-muted-foreground text-center">
-              Dein Hamster und die Spielfunktionen werden in der nächsten Version verfügbar sein.
-            </p>
-          </div>
-        </div>
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-sm font-semibold text-foreground">
+                  <span aria-hidden>🪙</span>{coins}
+                  <span className="text-muted-foreground font-normal text-xs">Münzen</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-warning/15 px-3 py-1 text-sm font-semibold text-foreground">
+                  <span aria-hidden>🥜</span>{collectedCount}
+                  <span className="text-muted-foreground font-normal text-xs">/ {totalPossible}</span>
+                </span>
+                {score !== null && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
+                    <Sparkles className="h-3.5 w-3.5" />PeakScore {score.toFixed(1)}
+                    <span className="text-muted-foreground font-normal text-xs">Rang {rank}</span>
+                  </span>
+                )}
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => openInventory()}
+                className="gap-1.5 mt-2"
+              >
+                <Package className="h-4 w-4" />
+                Inventar öffnen
+              </Button>
+
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-3 text-[11px] text-muted-foreground">
+                <span>Mitglied seit {memberSince}</span>
+                <span aria-hidden>•</span>
+                <Badge variant={plan === 'premium' ? 'default' : 'secondary'} className="gap-1 text-[10px]">
+                  {plan === 'premium' && <Crown className="h-3 w-3" />}
+                  {plan === 'premium' ? 'Premium' : 'Basis'}
+                </Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* SECTION 2 — Meine Person */}
         <Card>
