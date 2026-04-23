@@ -270,7 +270,7 @@ export function OnboardingWizard() {
         </div>
       </div>
 
-      <div className="flex-1 mx-auto w-full max-w-2xl px-4 py-6 sm:py-10">
+      <div className="flex-1 mx-auto w-full max-w-2xl px-5 sm:px-6 pt-8 pb-12 sm:pt-12 sm:pb-16">
         <AnimatePresence mode="wait">
           {/* ─── STEP 1: Welcome ─── */}
           {step === 1 && (
