@@ -254,10 +254,10 @@ export function OnboardingWizard() {
   const progress = (step / ONBOARDING_TOTAL_STEPS) * 100;
 
   return (
-    <div className="min-h-[100dvh] bg-background flex flex-col">
+    <div className="min-h-[100dvh] bg-background flex flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
       {/* Sticky progress */}
       <div className="sticky top-0 z-20 bg-background/95 backdrop-blur border-b">
-        <div className="mx-auto max-w-2xl px-4 py-3">
+        <div className="mx-auto max-w-2xl px-4 pt-5 pb-3 sm:pt-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-medium text-muted-foreground tracking-wider">
               SCHRITT {step} VON {ONBOARDING_TOTAL_STEPS}
