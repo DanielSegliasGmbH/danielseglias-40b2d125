@@ -3381,6 +3381,7 @@ export type Database = {
           onboarding_completed: boolean
           onboarding_completed_at: string | null
           onboarding_current_step: number
+          password_change_required: boolean
           payday_date: number
           peak_score_visible: boolean
           phone: string | null
@@ -3428,6 +3429,7 @@ export type Database = {
           onboarding_completed?: boolean
           onboarding_completed_at?: string | null
           onboarding_current_step?: number
+          password_change_required?: boolean
           payday_date?: number
           peak_score_visible?: boolean
           phone?: string | null
@@ -3475,6 +3477,7 @@ export type Database = {
           onboarding_completed?: boolean
           onboarding_completed_at?: string | null
           onboarding_current_step?: number
+          password_change_required?: boolean
           payday_date?: number
           peak_score_visible?: boolean
           phone?: string | null

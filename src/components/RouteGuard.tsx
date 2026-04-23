@@ -6,6 +6,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { ConsentGate } from '@/components/ConsentGate';
 import { OnboardingGate } from '@/components/OnboardingGate';
+import { PasswordChangeGate } from '@/components/PasswordChangeGate';
 
 interface RouteGuardProps {
   children: ReactNode;
@@ -59,15 +60,18 @@ export function RouteGuard({ children, allowedRoles }: RouteGuardProps) {
     return <Navigate to="/app" replace />;
   }
 
-  // Admins skip consent + onboarding gate
+  // Admins skip consent + onboarding gate, but STILL must change an admin-set
+  // initial password (in case an admin account itself was bootstrapped that way).
   if (role === 'admin') {
-    return <>{children}</>;
+    return <PasswordChangeGate>{children}</PasswordChangeGate>;
   }
 
   return (
-    <OnboardingGate>
-      <ConsentGate>{children}</ConsentGate>
-    </OnboardingGate>
+    <PasswordChangeGate>
+      <OnboardingGate>
+        <ConsentGate>{children}</ConsentGate>
+      </OnboardingGate>
+    </PasswordChangeGate>
   );
 }
 

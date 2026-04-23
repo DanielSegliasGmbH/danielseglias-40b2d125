@@ -240,6 +240,7 @@ export default function Profile() {
   const professionInfo = metaProfile?.professional_status
     ? getProfessionInfo(metaProfile.professional_status)
     : null;
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPasswordSection, setShowPasswordSection] = useState(false);
@@ -299,10 +300,24 @@ export default function Profile() {
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPassword.length < 8) { toast.error('Passwort muss mindestens 8 Zeichen lang sein.'); return; }
+    if (!currentPassword) { toast.error('Bitte aktuelles Passwort eingeben.'); return; }
+    if (newPassword.length < 8) { toast.error('Neues Passwort muss mindestens 8 Zeichen lang sein.'); return; }
     if (newPassword !== confirmPassword) { toast.error('Passwörter stimmen nicht überein.'); return; }
+    if (currentPassword === newPassword) { toast.error('Das neue Passwort darf nicht mit dem aktuellen identisch sein.'); return; }
+    if (!user?.email) { toast.error('Kein E-Mail-Konto verknüpft.'); return; }
+
     setLoading(true);
     try {
+      // Reauthenticate first to verify the current password.
+      const { error: reauthError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword,
+      });
+      if (reauthError) {
+        toast.error('Aktuelles Passwort ist nicht korrekt.');
+        return;
+      }
+
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) {
         if (error.message.includes('same')) {
@@ -310,7 +325,7 @@ export default function Profile() {
         } else { throw error; }
       } else {
         toast.success('Passwort erfolgreich geändert.');
-        setNewPassword(''); setConfirmPassword(''); setShowPasswordSection(false);
+        setCurrentPassword(''); setNewPassword(''); setConfirmPassword(''); setShowPasswordSection(false);
       }
     } catch (error: any) {
       toast.error(`Fehler: ${error.message}`);
@@ -484,22 +499,32 @@ export default function Profile() {
               <CardContent className="p-4">
                 <form onSubmit={handlePasswordChange} className="space-y-4">
                   <div className="space-y-2">
+                    <Label htmlFor="currentPassword">Aktuelles Passwort</Label>
+                    <Input id="currentPassword" type="password" value={currentPassword}
+                      onChange={e => setCurrentPassword(e.target.value)} required
+                      placeholder="Dein aktuelles Passwort" className="h-14 rounded-2xl"
+                      autoComplete="current-password" />
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="newPassword">Neues Passwort</Label>
                     <Input id="newPassword" type="password" value={newPassword}
                       onChange={e => setNewPassword(e.target.value)} required minLength={8}
-                      placeholder="Mindestens 8 Zeichen" className="h-14 rounded-2xl" />
+                      placeholder="Mindestens 8 Zeichen" className="h-14 rounded-2xl"
+                      autoComplete="new-password" />
                     {newPassword.length > 0 && <PasswordStrengthChecker password={newPassword} />}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Passwort bestätigen</Label>
+                    <Label htmlFor="confirmPassword">Neues Passwort bestätigen</Label>
                     <Input id="confirmPassword" type="password" value={confirmPassword}
                       onChange={e => setConfirmPassword(e.target.value)} required minLength={8}
-                      placeholder="Passwort wiederholen" className="h-14 rounded-2xl" />
+                      placeholder="Passwort wiederholen" className="h-14 rounded-2xl"
+                      autoComplete="new-password" />
                     {confirmPassword && newPassword !== confirmPassword && (
                       <p className="text-xs text-destructive">Passwörter stimmen nicht überein</p>
                     )}
                   </div>
-                  <Button type="submit" disabled={loading || newPassword.length < 8 || newPassword !== confirmPassword}
+                  <Button type="submit"
+                    disabled={loading || !currentPassword || newPassword.length < 8 || newPassword !== confirmPassword}
                     className="w-full h-14 rounded-2xl">
                     {loading ? 'Wird gespeichert…' : 'Passwort ändern'}
                   </Button>

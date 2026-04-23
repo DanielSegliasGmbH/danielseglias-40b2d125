@@ -10,6 +10,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ResetPassword from "./pages/ResetPassword";
+import SetPassword from "./pages/SetPassword";
 import AdminNotifications from "./pages/AdminNotifications";
 import AdminPortalSettings from "./pages/AdminPortalSettings";
 import Onboarding from "./pages/Onboarding";
@@ -180,6 +181,9 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Navigate to="/login" replace />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              {/* Forced first-login password change. Authenticated but NOT wrapped
+                  in RouteGuard, otherwise PasswordChangeGate would redirect in a loop. */}
+              <Route path="/set-password" element={<SetPassword />} />
               <Route path="/onboarding" element={<Onboarding />} />
               
               {/* Protected: Internal area (admin + staff) */}
