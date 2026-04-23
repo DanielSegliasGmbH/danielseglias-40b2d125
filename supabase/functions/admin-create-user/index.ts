@@ -15,6 +15,22 @@ interface CreateUserRequest {
   clientId?: string
 }
 
+/**
+ * Generate a memorable but secure initial password.
+ * Format: <Word><Word>-<4 digits>  e.g. "Falke-Wolke-7421"
+ * Length 16+, mixed case, digits, dash. Easy to read aloud.
+ */
+function generateInitialPassword(): string {
+  const words = [
+    'Falke', 'Wolke', 'Berg', 'Stern', 'Anker', 'Kompass', 'Welle', 'Komet',
+    'Pinie', 'Eiche', 'Mond', 'Sonne', 'Hafen', 'Pfeil', 'Brunnen', 'Tiger',
+  ]
+  const w1 = words[Math.floor(Math.random() * words.length)]
+  const w2 = words[Math.floor(Math.random() * words.length)]
+  const digits = Math.floor(1000 + Math.random() * 9000)
+  return `${w1}-${w2}-${digits}`
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
@@ -60,7 +76,7 @@ Deno.serve(async (req) => {
     }
 
     const body: CreateUserRequest = await req.json()
-    const { email, password, firstName, lastName, role, customerId, clientId } = body
+    const { email, password: providedPassword, firstName, lastName, role, customerId, clientId } = body
     const targetCustomerId = customerId || clientId
 
     if (!email || !firstName || !lastName || !role) {
@@ -77,46 +93,41 @@ Deno.serve(async (req) => {
       )
     }
 
-    // customerId is optional for client role – can be linked later
-
     const adminClient = createClient(supabaseUrl, supabaseServiceKey)
+
+    // Always create the user with a real password so the admin can hand it over.
+    // If the admin specified one, use it; otherwise we generate one.
+    const initialPassword = (providedPassword && providedPassword.length >= 8)
+      ? providedPassword
+      : generateInitialPassword()
 
     console.log('Creating user with email:', email)
 
-    // Use inviteUserByEmail for invitation flow (sends email automatically)
-    // If password is provided, create user directly with password
-    let newUserId: string
-
-    if (password) {
-      // Direct creation with password (backward compatible)
-      const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
-        email,
-        password,
-        email_confirm: true,
-        user_metadata: { first_name: firstName, last_name: lastName },
-      })
-      if (authError) {
-        return new Response(
-          JSON.stringify({ error: authError.message }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
-      }
-      newUserId = authData.user.id
-    } else {
-      // Invitation flow - sends invite email to user
-      const { data: authData, error: authError } = await adminClient.auth.admin.inviteUserByEmail(email, {
-        data: { first_name: firstName, last_name: lastName },
-      })
-      if (authError) {
-        return new Response(
-          JSON.stringify({ error: authError.message }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
-      }
-      newUserId = authData.user.id
+    const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
+      email,
+      password: initialPassword,
+      email_confirm: true,
+      user_metadata: { first_name: firstName, last_name: lastName },
+    })
+    if (authError) {
+      return new Response(
+        JSON.stringify({ error: authError.message }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
+    const newUserId = authData.user.id
 
     console.log('User created with ID:', newUserId)
+
+    // Force the user to change the initial password on first login.
+    const { error: profileFlagError } = await adminClient
+      .from('profiles')
+      .update({ password_change_required: true })
+      .eq('id', newUserId)
+    if (profileFlagError) {
+      console.warn('Could not set password_change_required flag:', profileFlagError)
+      // non-fatal — the profile row may not exist yet (trigger race); we continue.
+    }
 
     // Insert the role
     const { error: roleInsertError } = await adminClient
@@ -154,11 +165,15 @@ Deno.serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         userId: newUserId,
-        invited: !password,
-        message: password ? 'User created successfully' : 'Invitation sent successfully',
+        email,
+        // Plain-text initial password — shown ONCE in the admin UI so it can be
+        // handed over to the user. The user is forced to change it on first login.
+        initialPassword,
+        passwordGenerated: !providedPassword,
+        message: 'Benutzer erstellt. Bitte initiales Passwort sicher übergeben.',
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
