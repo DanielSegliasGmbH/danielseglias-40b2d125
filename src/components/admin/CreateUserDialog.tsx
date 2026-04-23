@@ -197,9 +197,9 @@ export function CreateUserDialog() {
               Beides als Text kopieren
             </Button>
 
-            <div className="rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-900/40 px-3 py-2.5">
-              <p className="text-xs text-amber-900 dark:text-amber-200 leading-snug">
-                Dieses Passwort wird <strong>nur einmal</strong> angezeigt. Aus Sicherheitsgründen ist es danach
+            <div className="rounded-lg bg-muted/60 border border-border px-3 py-2.5">
+              <p className="text-xs text-muted-foreground leading-snug">
+                Dieses Passwort wird <strong className="text-foreground">nur einmal</strong> angezeigt. Aus Sicherheitsgründen ist es danach
                 nicht mehr abrufbar. Beim ersten Login wird der Benutzer automatisch zur Passwort-Vergabe geführt.
               </p>
             </div>
