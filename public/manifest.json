@@ -1,22 +1,27 @@
 {
-  "name": "FinLife",
+  "name": "FinLife – Dein Finanz-Coach",
   "short_name": "FinLife",
-  "description": "FinLife – Dein digitaler Finanz-Coach von Daniel Seglias",
-  "start_url": "/",
+  "description": "Dein persönlicher Finanz-Coach von Daniel Seglias",
+  "start_url": "/app/client-portal/home",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0a1628",
   "theme_color": "#0a1628",
+  "lang": "de",
+  "categories": ["finance", "productivity"],
   "icons": [
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/icon-512.png",
@@ -24,5 +29,7 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false
 }
