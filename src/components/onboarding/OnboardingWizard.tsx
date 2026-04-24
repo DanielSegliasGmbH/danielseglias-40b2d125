@@ -356,7 +356,55 @@ export function OnboardingWizard() {
           )}
 
           {/* ─── STEP 4: Dein Name ─── */}
-          {step === 4 && (
+          {/* ─── STEP 4 (optional): Push-Benachrichtigungen ─── */}
+          {showNotifStep && step === NOTIF_STEP && (
+            <motion.div
+              key="s-notif"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.4 }}
+              className="text-center pt-4"
+            >
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 text-primary mb-6">
+                <Bell className="h-7 w-7" />
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
+                Bleib auf dem Laufenden 🔔
+              </h2>
+              <p className="text-base text-muted-foreground max-w-md mx-auto mb-10 leading-relaxed">
+                Erlaube Benachrichtigungen — so verpasst du keine wichtigen
+                Erinnerungen mehr.
+                <br />
+                <span className="text-sm">
+                  Wir senden dir nur relevante Hinweise, nie Spam.
+                </span>
+              </p>
+
+              <div className="flex flex-col gap-3 max-w-sm mx-auto">
+                <Button
+                  size="lg"
+                  className="text-base px-8 py-6 rounded-xl"
+                  disabled={notifLoading}
+                  onClick={handleEnableNotifications}
+                >
+                  {notifLoading ? 'Einen Moment…' : 'Benachrichtigungen erlauben'}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  className="text-base"
+                  disabled={notifLoading}
+                  onClick={() => goToStep(NAME_STEP)}
+                >
+                  Später in den Einstellungen
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ─── STEP: Dein Name ─── */}
+          {step === NAME_STEP && (
             <motion.div
               key="s4"
               initial={{ opacity: 0, y: 12 }}
