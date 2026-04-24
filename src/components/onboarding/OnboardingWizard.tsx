@@ -454,7 +454,7 @@ export function OnboardingWizard() {
                   className="text-base px-8 py-6 rounded-xl"
                   disabled={savingName}
                   onClick={async () => {
-                    if (await saveFirstName()) goToStep(5);
+                    if (await saveFirstName()) goToStep(FINISH_STEP);
                   }}
                 >
                   Weiter <ArrowRight className="ml-2 h-5 w-5" />
