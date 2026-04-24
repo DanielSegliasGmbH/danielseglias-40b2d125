@@ -13,7 +13,7 @@ import { useCustomerPortalSettings } from '@/hooks/useClientPortal';
 import { NotificationBell } from '@/components/client-portal/NotificationBell';
 import { Sparkles, Wrench, Zap, Star, Trophy, Award, Crown, Wallet, Camera, CalendarDays, Film } from 'lucide-react';
 import { useFinanzType } from '@/hooks/useFinanzType';
-import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
+// ARCHIVED: import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
 import { AppTour } from '@/components/client-portal/AppTour';
 // ARCHIVED v1.0: import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
 // ARCHIVED v1.0: import { JourneyNudgeCard } from '@/components/client-portal/JourneyNudgeCard';
@@ -406,7 +406,7 @@ export default function ClientPortalHome() {
           navigate('/app/client-portal/strategies');
         }}
       />
-      <QuickActionFAB />
+      {/* ARCHIVED: <QuickActionFAB /> */}
       <AppTour open={showTour} onClose={() => { setShowTour(false); sessionStorage.setItem('tour_shown', 'true'); }} />
       {/* ARCHIVED for v1.0: <RankChangeOverlay event={rankChange} onDismiss={dismissRankChange} /> */}
     </ClientPortalLayout>
