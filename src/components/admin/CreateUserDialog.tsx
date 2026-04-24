@@ -45,6 +45,7 @@ export function CreateUserDialog() {
     lastName: '',
     role: '' as AppRole | '',
     customerId: '',
+    password: '',
   });
 
   // After creation: surface the initial password so the admin can hand it over.
