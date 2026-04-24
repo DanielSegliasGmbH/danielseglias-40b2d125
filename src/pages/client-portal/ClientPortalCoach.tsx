@@ -290,7 +290,6 @@ export default function ClientPortalCoach() {
           </p>
         </div>
           </>
-        )}
       </div>
 
       <Dialog open={!disclaimerSeen} onOpenChange={(open) => { if (!open) acceptDisclaimer(); }}>
