@@ -25,6 +25,7 @@ interface CalendarEvent {
   description: string;
   type: 'deadline' | 'opportunity' | 'reminder';
   cta?: { label: string; path: string };
+  comingSoon?: boolean;
 }
 
 const SWISS_EVENTS: CalendarEvent[] = [
@@ -42,10 +43,10 @@ const QUARTERLY_EVENTS: CalendarEvent[] = [
   { month: 6, day: 30, title: 'Budget-Review Q2', description: 'Quartals-Check: Wie steht dein Budget?', type: 'reminder', cta: { label: 'Budget öffnen', path: '/app/client-portal/budget' } },
   { month: 9, day: 30, title: 'Budget-Review Q3', description: 'Quartals-Check: Wie steht dein Budget?', type: 'reminder', cta: { label: 'Budget öffnen', path: '/app/client-portal/budget' } },
   { month: 12, day: 31, title: 'Budget-Review Q4', description: 'Quartals-Check: Wie steht dein Budget?', type: 'reminder', cta: { label: 'Budget öffnen', path: '/app/client-portal/budget' } },
-  { month: 3, day: 15, title: 'Snapshot-Erinnerung', description: 'Erstelle einen neuen Finanz-Snapshot.', type: 'reminder', cta: { label: 'Snapshot', path: '/app/client-portal/snapshot' } },
-  { month: 6, day: 15, title: 'Snapshot-Erinnerung', description: 'Erstelle einen neuen Finanz-Snapshot.', type: 'reminder', cta: { label: 'Snapshot', path: '/app/client-portal/snapshot' } },
-  { month: 9, day: 15, title: 'Snapshot-Erinnerung', description: 'Erstelle einen neuen Finanz-Snapshot.', type: 'reminder', cta: { label: 'Snapshot', path: '/app/client-portal/snapshot' } },
-  { month: 12, day: 15, title: 'Snapshot-Erinnerung', description: 'Erstelle einen neuen Finanz-Snapshot.', type: 'reminder', cta: { label: 'Snapshot', path: '/app/client-portal/snapshot' } },
+  { month: 3, day: 15, title: 'Snapshot-Erinnerung', description: 'Snapshot-Funktion wird in einer der nächsten Versionen freigeschaltet.', type: 'reminder', comingSoon: true },
+  { month: 6, day: 15, title: 'Snapshot-Erinnerung', description: 'Snapshot-Funktion wird in einer der nächsten Versionen freigeschaltet.', type: 'reminder', comingSoon: true },
+  { month: 9, day: 15, title: 'Snapshot-Erinnerung', description: 'Snapshot-Funktion wird in einer der nächsten Versionen freigeschaltet.', type: 'reminder', comingSoon: true },
+  { month: 12, day: 15, title: 'Snapshot-Erinnerung', description: 'Snapshot-Funktion wird in einer der nächsten Versionen freigeschaltet.', type: 'reminder', comingSoon: true },
 ];
 
 const ALL_SWISS = [...SWISS_EVENTS, ...QUARTERLY_EVENTS];
