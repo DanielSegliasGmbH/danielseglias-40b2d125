@@ -18,18 +18,34 @@ import {
   MessageCircle,
   Wrench,
   CalendarDays,
+  Bell,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { isPushSupported, ensureServiceWorker, subscribeToPush } from '@/lib/push';
 
-// New onboarding has 5 steps. We map them to the underlying state machine
-// (which still tracks numbers 1..N) and call markComplete() at the end.
-const TOTAL_STEPS = 5;
+// Onboarding has 5 base steps (Willkommen, Haltung, Mitgliederbereich, Name, Fertig).
+// When push notifications are supported and not yet decided, an extra step is
+// inserted between step 3 and the name step (becoming step 4 → name=5 → finish=6).
+const BASE_TOTAL_STEPS = 5;
 
 export function OnboardingWizard() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const qc = useQueryClient();
   const { state, setStep, markComplete } = useOnboardingState();
+
+  const [showNotifStep] = useState(() => {
+    return (
+      isPushSupported() &&
+      typeof Notification !== 'undefined' &&
+      Notification.permission === 'default'
+    );
+  });
+  const TOTAL_STEPS = showNotifStep ? BASE_TOTAL_STEPS + 1 : BASE_TOTAL_STEPS;
+  // When notif step is shown, name step shifts from 4 → 5 and finish 5 → 6.
+  const NAME_STEP = showNotifStep ? 5 : 4;
+  const FINISH_STEP = showNotifStep ? 6 : 5;
+  const NOTIF_STEP = 4; // only used when showNotifStep
 
   const [step, setStepLocal] = useState<number>(() => {
     const s = state?.currentStep ?? 1;
@@ -46,6 +62,7 @@ export function OnboardingWizard() {
   const [firstName, setFirstName] = useState('');
   const [savingName, setSavingName] = useState(false);
   const [finishing, setFinishing] = useState(false);
+  const [notifLoading, setNotifLoading] = useState(false);
 
   // Prefill firstName from profile
   useEffect(() => {
@@ -104,6 +121,29 @@ export function OnboardingWizard() {
       toast.error('Abschluss fehlgeschlagen. Bitte erneut versuchen.');
     } finally {
       setFinishing(false);
+    }
+  };
+
+  const handleEnableNotifications = async () => {
+    if (notifLoading) return;
+    setNotifLoading(true);
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        // Best-effort: register SW + subscribe in background
+        try {
+          await ensureServiceWorker();
+          await subscribeToPush();
+        } catch (e) {
+          console.warn('[onboarding] push subscription failed', e);
+        }
+        toast.success('Danke! Du erhältst ab sofort Erinnerungen.');
+      }
+    } catch (e) {
+      console.error('[onboarding] notification permission failed', e);
+    } finally {
+      setNotifLoading(false);
+      goToStep(NAME_STEP);
     }
   };
 
@@ -307,7 +347,7 @@ export function OnboardingWizard() {
                 <Button
                   size="lg"
                   className="text-base px-8 py-6 rounded-xl"
-                  onClick={() => goToStep(4)}
+                  onClick={() => goToStep(showNotifStep ? NOTIF_STEP : NAME_STEP)}
                 >
                   Zeig mir mehr <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
@@ -316,7 +356,55 @@ export function OnboardingWizard() {
           )}
 
           {/* ─── STEP 4: Dein Name ─── */}
-          {step === 4 && (
+          {/* ─── STEP 4 (optional): Push-Benachrichtigungen ─── */}
+          {showNotifStep && step === NOTIF_STEP && (
+            <motion.div
+              key="s-notif"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.4 }}
+              className="text-center pt-4"
+            >
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 text-primary mb-6">
+                <Bell className="h-7 w-7" />
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
+                Bleib auf dem Laufenden 🔔
+              </h2>
+              <p className="text-base text-muted-foreground max-w-md mx-auto mb-10 leading-relaxed">
+                Erlaube Benachrichtigungen — so verpasst du keine wichtigen
+                Erinnerungen mehr.
+                <br />
+                <span className="text-sm">
+                  Wir senden dir nur relevante Hinweise, nie Spam.
+                </span>
+              </p>
+
+              <div className="flex flex-col gap-3 max-w-sm mx-auto">
+                <Button
+                  size="lg"
+                  className="text-base px-8 py-6 rounded-xl"
+                  disabled={notifLoading}
+                  onClick={handleEnableNotifications}
+                >
+                  {notifLoading ? 'Einen Moment…' : 'Benachrichtigungen erlauben'}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  className="text-base"
+                  disabled={notifLoading}
+                  onClick={() => goToStep(NAME_STEP)}
+                >
+                  Später in den Einstellungen
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ─── STEP: Dein Name ─── */}
+          {step === NAME_STEP && (
             <motion.div
               key="s4"
               initial={{ opacity: 0, y: 12 }}
@@ -342,7 +430,7 @@ export function OnboardingWizard() {
                   className="text-center text-lg h-14 rounded-xl"
                   onKeyDown={async (e) => {
                     if (e.key === 'Enter') {
-                      if (await saveFirstName()) goToStep(5);
+                      if (await saveFirstName()) goToStep(FINISH_STEP);
                     }
                   }}
                 />
@@ -366,7 +454,7 @@ export function OnboardingWizard() {
                   className="text-base px-8 py-6 rounded-xl"
                   disabled={savingName}
                   onClick={async () => {
-                    if (await saveFirstName()) goToStep(5);
+                    if (await saveFirstName()) goToStep(FINISH_STEP);
                   }}
                 >
                   Weiter <ArrowRight className="ml-2 h-5 w-5" />
@@ -376,7 +464,7 @@ export function OnboardingWizard() {
           )}
 
           {/* ─── STEP 5: Du bist dabei ─── */}
-          {step === 5 && (
+          {step === FINISH_STEP && (
             <motion.div
               key="s5"
               initial={{ opacity: 0, scale: 0.96 }}
