@@ -69,7 +69,9 @@ export default function ClientPortalHome() {
   });
 
   useEffect(() => {
+    if (sessionStorage.getItem('tour_shown')) return;
     if (tourProfile?.onboarding_completed && !tourProfile?.tour_completed) {
+      sessionStorage.setItem('tour_shown', 'true');
       setShowTour(true);
     }
   }, [tourProfile]);
@@ -335,6 +337,32 @@ export default function ClientPortalHome() {
           ))}
         </div>
 
+        {/* WhatsApp Community + Direktkontakt */}
+        <div className="grid grid-cols-2 gap-3">
+          <a
+            href="https://whatsapp.com/channel/0029Vb8dob2HltY6raitvG14"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col items-center justify-center gap-2 bg-[#25D366]/10 border border-[#25D366]/20 rounded-2xl p-4 text-center active:scale-[0.96] transition-transform"
+          >
+            <span className="text-2xl">📢</span>
+            <span className="text-xs font-medium text-foreground leading-tight">
+              WhatsApp<br />Community
+            </span>
+          </a>
+          <a
+            href="https://wa.me/message/J3XC2KSMTCU4C1"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col items-center justify-center gap-2 bg-[#25D366]/10 border border-[#25D366]/20 rounded-2xl p-4 text-center active:scale-[0.96] transition-transform"
+          >
+            <span className="text-2xl">💬</span>
+            <span className="text-xs font-medium text-foreground leading-tight">
+              Direkt mit<br />Daniel schreiben
+            </span>
+          </a>
+        </div>
+
         {/* ═══════════════════════════════════════════════════════════
             ARCHIVED v1.0 (P4) — "Mehr entdecken" / MoreToDiscover
             Restore when individual widgets are production-ready.
@@ -379,7 +407,7 @@ export default function ClientPortalHome() {
         }}
       />
       <QuickActionFAB />
-      <AppTour open={showTour} onClose={() => setShowTour(false)} />
+      <AppTour open={showTour} onClose={() => { setShowTour(false); sessionStorage.setItem('tour_shown', 'true'); }} />
       {/* ARCHIVED for v1.0: <RankChangeOverlay event={rankChange} onDismiss={dismissRankChange} /> */}
     </ClientPortalLayout>
   );

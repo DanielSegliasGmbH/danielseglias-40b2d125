@@ -246,8 +246,8 @@ function Hexagon({ territory }: HexagonProps) {
         )}
       </div>
 
-      {/* Completion badge + star sparkle */}
-      <AnimatePresence>
+      {/* ARCHIVED: completion checkmark badge — hexagon shows only emoji */}
+      {/* <AnimatePresence>
         {isFull && (
           <motion.div
             key="check"
@@ -260,7 +260,7 @@ function Hexagon({ territory }: HexagonProps) {
             ✓
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
       {isFull && (
         <motion.span
           className="absolute top-1 left-1 text-[10px]"
