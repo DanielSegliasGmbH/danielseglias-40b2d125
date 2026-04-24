@@ -18,12 +18,15 @@ import {
   MessageCircle,
   Wrench,
   CalendarDays,
+  Bell,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { isPushSupported, ensureServiceWorker, subscribeToPush } from '@/lib/push';
 
-// New onboarding has 5 steps. We map them to the underlying state machine
-// (which still tracks numbers 1..N) and call markComplete() at the end.
-const TOTAL_STEPS = 5;
+// Onboarding has 5 base steps (Willkommen, Haltung, Mitgliederbereich, Name, Fertig).
+// When push notifications are supported and not yet decided, an extra step is
+// inserted between step 3 and the name step (becoming step 4 → name=5 → finish=6).
+const BASE_TOTAL_STEPS = 5;
 
 export function OnboardingWizard() {
   const navigate = useNavigate();
