@@ -82,7 +82,6 @@ export function AppTour({ open, onClose }: AppTourProps) {
         }}
       >
         <motion.div
-          key={`sheet-${step}`}
           initial={{ y: 40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 40, opacity: 0 }}
@@ -129,7 +128,7 @@ export function AppTour({ open, onClose }: AppTourProps) {
             >
               Überspringen
             </button>
-            <Button onClick={next} disabled={saving} className="rounded-xl">
+            <Button type="button" onClick={next} disabled={saving} className="rounded-xl">
               {isLast ? 'Tour beenden' : 'Weiter'}
               <ArrowRight className="ml-1.5 h-4 w-4" />
             </Button>
