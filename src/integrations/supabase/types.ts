@@ -3395,6 +3395,7 @@ export type Database = {
           streak_rescue_enabled: boolean
           tax_burden: number | null
           theme_preference: string
+          tour_completed: boolean | null
           updated_at: string
           user_type: string
           voice_brief_enabled: boolean
@@ -3443,6 +3444,7 @@ export type Database = {
           streak_rescue_enabled?: boolean
           tax_burden?: number | null
           theme_preference?: string
+          tour_completed?: boolean | null
           updated_at?: string
           user_type?: string
           voice_brief_enabled?: boolean
@@ -3491,6 +3493,7 @@ export type Database = {
           streak_rescue_enabled?: boolean
           tax_burden?: number | null
           theme_preference?: string
+          tour_completed?: boolean | null
           updated_at?: string
           user_type?: string
           voice_brief_enabled?: boolean
