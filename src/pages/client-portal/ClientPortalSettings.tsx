@@ -259,6 +259,11 @@ export default function ClientPortalSettings() {
         </div>
 
         <Separator />
+
+        {/* Passwort ändern */}
+        <PasswordChangeSection />
+
+        <Separator />
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground px-1">Privatsphäre</p>
           <div className="space-y-2">
