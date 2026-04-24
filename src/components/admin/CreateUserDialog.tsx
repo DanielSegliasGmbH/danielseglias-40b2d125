@@ -246,8 +246,32 @@ export function CreateUserDialog() {
                   required
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Passwort (optional)</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  autoComplete="new-password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  placeholder="Mindestens 8 Zeichen"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Leer lassen = automatisch generiertes Initial-Passwort wird angezeigt.
+                </p>
+                {formData.password && (
+                  <PasswordStrengthChecker
+                    password={formData.password}
+                    context={{
+                      email: formData.email,
+                      firstName: formData.firstName,
+                      lastName: formData.lastName,
+                    }}
+                  />
+                )}
+              </div>
               <p className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-lg leading-snug">
-                Es wird automatisch ein <strong className="text-foreground">Initial-Passwort</strong> erzeugt.
+                Wenn kein Passwort gesetzt wird, erzeugt das System automatisch ein <strong className="text-foreground">Initial-Passwort</strong>.
                 Du siehst es nach der Erstellung einmalig und kannst es dem Benutzer übergeben.
                 Beim ersten Login wird er aufgefordert, sein eigenes Passwort zu vergeben.
               </p>
