@@ -25,6 +25,7 @@ interface CalendarEvent {
   description: string;
   type: 'deadline' | 'opportunity' | 'reminder';
   cta?: { label: string; path: string };
+  comingSoon?: boolean;
 }
 
 const SWISS_EVENTS: CalendarEvent[] = [
@@ -42,10 +43,10 @@ const QUARTERLY_EVENTS: CalendarEvent[] = [
   { month: 6, day: 30, title: 'Budget-Review Q2', description: 'Quartals-Check: Wie steht dein Budget?', type: 'reminder', cta: { label: 'Budget öffnen', path: '/app/client-portal/budget' } },
   { month: 9, day: 30, title: 'Budget-Review Q3', description: 'Quartals-Check: Wie steht dein Budget?', type: 'reminder', cta: { label: 'Budget öffnen', path: '/app/client-portal/budget' } },
   { month: 12, day: 31, title: 'Budget-Review Q4', description: 'Quartals-Check: Wie steht dein Budget?', type: 'reminder', cta: { label: 'Budget öffnen', path: '/app/client-portal/budget' } },
-  { month: 3, day: 15, title: 'Snapshot-Erinnerung', description: 'Erstelle einen neuen Finanz-Snapshot.', type: 'reminder', cta: { label: 'Snapshot', path: '/app/client-portal/snapshot' } },
-  { month: 6, day: 15, title: 'Snapshot-Erinnerung', description: 'Erstelle einen neuen Finanz-Snapshot.', type: 'reminder', cta: { label: 'Snapshot', path: '/app/client-portal/snapshot' } },
-  { month: 9, day: 15, title: 'Snapshot-Erinnerung', description: 'Erstelle einen neuen Finanz-Snapshot.', type: 'reminder', cta: { label: 'Snapshot', path: '/app/client-portal/snapshot' } },
-  { month: 12, day: 15, title: 'Snapshot-Erinnerung', description: 'Erstelle einen neuen Finanz-Snapshot.', type: 'reminder', cta: { label: 'Snapshot', path: '/app/client-portal/snapshot' } },
+  { month: 3, day: 15, title: 'Snapshot-Erinnerung', description: 'Snapshot-Funktion wird in einer der nächsten Versionen freigeschaltet.', type: 'reminder', comingSoon: true },
+  { month: 6, day: 15, title: 'Snapshot-Erinnerung', description: 'Snapshot-Funktion wird in einer der nächsten Versionen freigeschaltet.', type: 'reminder', comingSoon: true },
+  { month: 9, day: 15, title: 'Snapshot-Erinnerung', description: 'Snapshot-Funktion wird in einer der nächsten Versionen freigeschaltet.', type: 'reminder', comingSoon: true },
+  { month: 12, day: 15, title: 'Snapshot-Erinnerung', description: 'Snapshot-Funktion wird in einer der nächsten Versionen freigeschaltet.', type: 'reminder', comingSoon: true },
 ];
 
 const ALL_SWISS = [...SWISS_EVENTS, ...QUARTERLY_EVENTS];
@@ -192,12 +193,12 @@ export default function ClientPortalCalendar() {
 
   // All upcoming events sorted
   const upcomingEvents = useMemo(() => {
-    const items: { date: Date; title: string; description: string; type: string; cta?: { label: string; path: string }; daysUntil: number }[] = [];
+    const items: { date: Date; title: string; description: string; type: string; cta?: { label: string; path: string }; comingSoon?: boolean; daysUntil: number }[] = [];
 
     ALL_SWISS.forEach(e => {
       const d = getDaysUntil(e.month, e.day);
       const date = getNextOccurrence(e.month, e.day);
-      items.push({ date, title: e.title, description: e.description, type: e.type, cta: e.cta, daysUntil: d });
+      items.push({ date, title: e.title, description: e.description, type: e.type, cta: e.cta, comingSoon: e.comingSoon, daysUntil: d });
     });
 
     personalEvents.forEach(pe => {
@@ -259,7 +260,12 @@ export default function ClientPortalCalendar() {
                 <p className="text-xs text-muted-foreground">
                   {nextDeadline.date.toLocaleDateString('de-CH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
-                {nextDeadline.cta && (
+                {nextDeadline.comingSoon ? (
+                  <Button disabled size="sm" variant="outline" className="gap-1.5 opacity-60">
+                    <Clock className="h-3.5 w-3.5" />
+                    Snapshot (bald verfügbar)
+                  </Button>
+                ) : nextDeadline.cta && (
                   <Button size="sm" className="gap-1.5" onClick={() => navigate(nextDeadline.cta!.path)}>
                     {nextDeadline.cta.label} <ArrowRight className="h-3.5 w-3.5" />
                   </Button>
@@ -361,7 +367,11 @@ export default function ClientPortalCalendar() {
                       {evt.description && (
                         <p className="text-xs text-muted-foreground/70 line-clamp-2 mt-0.5">{evt.description}</p>
                       )}
-                      {evt.cta && (
+                      {evt.comingSoon ? (
+                        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                          <Clock className="h-3 w-3" /> bald verfügbar
+                        </span>
+                      ) : evt.cta && (
                         <Button
                           size="sm"
                           variant="ghost"
