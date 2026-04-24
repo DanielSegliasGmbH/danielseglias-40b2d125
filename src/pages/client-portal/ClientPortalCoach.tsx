@@ -85,9 +85,9 @@ export default function ClientPortalCoach() {
   // Find resumable module (in_progress)
   const resumeModule = modules.find(m => getModuleStatus(progressMap.get(m.key)) === 'in_progress');
 
-  // Check if user has started original coach
-  const hasStartedOriginal = allProgress.some(p => !p.module_key.startsWith(NEWCOMER_DB_PREFIX) && (p.status === 'in_progress' || p.status === 'completed'));
-  const [activeTab, setActiveTab] = useState<'original' | 'newcomer'>(hasStartedOriginal ? 'original' : 'newcomer');
+  // ARCHIVED v1.0: Newcomer Coach removed — only Original Coach remains
+  // const hasStartedOriginal = allProgress.some(p => !p.module_key.startsWith(NEWCOMER_DB_PREFIX) && (p.status === 'in_progress' || p.status === 'completed'));
+  // const [activeTab, setActiveTab] = useState<'original' | 'newcomer'>(hasStartedOriginal ? 'original' : 'newcomer');
 
   return (
     <ClientPortalLayout>
@@ -101,55 +101,14 @@ export default function ClientPortalCoach() {
             </h1>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Wähle deinen Weg: Einfacher Einstieg oder tiefgreifende Analyse.
+            Schritt für Schritt durch deine finanzielle Entwicklung.
           </p>
         </div>
 
-        {/* Tab Switcher */}
-        <div className="flex gap-2 p-1 bg-muted rounded-xl">
-          <button
-            onClick={() => setActiveTab('newcomer')}
-            className={cn(
-              "flex-1 py-2.5 px-3 rounded-lg text-sm font-medium transition-all",
-              activeTab === 'newcomer'
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            🌱 Newcomer Coach
-          </button>
-          <button
-            onClick={() => setActiveTab('original')}
-            className={cn(
-              "flex-1 py-2.5 px-3 rounded-lg text-sm font-medium transition-all",
-              activeTab === 'original'
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            🧠 Original Coach
-          </button>
-        </div>
+        {/* ARCHIVED v1.0: Tab switcher + Newcomer redirect block removed */}
 
-        {/* Newcomer redirect */}
-        {activeTab === 'newcomer' && (
-          <>
-            <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-              <CardContent className="p-5 space-y-3">
-                <h2 className="text-base font-bold text-foreground">Neu bei Finanzen?</h2>
-                <p className="text-sm text-muted-foreground">
-                  5 kurze Module, kein Fachchinesisch. In unter 1 Stunde hast du einen soliden Grundstein gelegt.
-                </p>
-                <Button onClick={() => navigate('/app/client-portal/coach-newcomer')} className="gap-2">
-                  Newcomer Coach starten <ArrowRight className="h-4 w-4" />
-                </Button>
-              </CardContent>
-            </Card>
-          </>
-        )}
+        <>
 
-        {activeTab === 'original' && (
-          <>
         <p className="text-sm font-medium text-muted-foreground">
           Ohne Verkaufsinteressen. Mit klarem Plan und echter Umsetzung.
         </p>
