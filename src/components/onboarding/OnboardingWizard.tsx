@@ -1,504 +1,413 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
-import { useOnboardingState, ONBOARDING_TOTAL_STEPS } from '@/hooks/useOnboardingState';
+import { useOnboardingState } from '@/hooks/useOnboardingState';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
-import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, ArrowRight, Sparkles, Loader2 } from 'lucide-react';
+import {
+  ArrowRight,
+  Sparkles,
+  Search,
+  Handshake,
+  Leaf,
+  LayoutDashboard,
+  MessageCircle,
+  Wrench,
+  CalendarDays,
+} from 'lucide-react';
 import { toast } from 'sonner';
-import { getRankForScore } from '@/hooks/usePeakScore';
-import { cn } from '@/lib/utils';
-import { HamsterAvatar } from '@/components/client-portal/HamsterAvatar';
 
-/* ───────── Finanz-Typ Quick-Quiz (6 fragen, identische Logik wie ClientPortalFinanzTyp) ───────── */
-const FT_QUESTIONS = [
-  { id: 'q1', q: 'Am Ende des Monats ist auf deinem Konto meistens...', opts: [
-    { v: 'A', l: 'Mehr als am Anfang' }, { v: 'B', l: 'Ungefähr gleich viel' }, { v: 'C', l: 'Weniger als am Anfang' } ] },
-  { id: 'q2', q: 'CHF 5\'000 geschenkt – was machst du?', opts: [
-    { v: 'A', l: 'Sofort anlegen oder sparen' }, { v: 'B', l: 'Teil sparen, Teil ausgeben' }, { v: 'C', l: 'Mir etwas gönnen' } ] },
-  { id: 'q3', q: 'Wie fühlst du dich beim Investieren?', opts: [
-    { v: 'A', l: 'Interessiert, aber unsicher' }, { v: 'B', l: 'Will mich nicht damit befassen' }, { v: 'C', l: 'Habe Erfahrung' } ] },
-  { id: 'q4', q: 'Wie oft schaust du auf deinen Kontostand?', opts: [
-    { v: 'A', l: 'Fast täglich' }, { v: 'B', l: 'Ein paar Mal pro Monat' }, { v: 'C', l: 'Nur wenn ich muss' } ] },
-  { id: 'q5', q: 'Was beschreibt dich besser?', opts: [
-    { v: 'A', l: 'Ich sorge mich oft ums Geld' }, { v: 'B', l: 'Geld ist mir nicht so wichtig' }, { v: 'C', l: 'Ich könnte mehr rausholen' } ] },
-  { id: 'q6', q: 'Deine Säule 3a...', opts: [
-    { v: 'A', l: 'Zahle ich jedes Jahr ein' }, { v: 'B', l: 'Habe ich, aber nicht regelmässig' }, { v: 'C', l: 'Was ist das?' } ] },
-] as const;
+// New onboarding has 5 steps. We map them to the underlying state machine
+// (which still tracks numbers 1..N) and call markComplete() at the end.
+const TOTAL_STEPS = 5;
 
-const FT_LABEL: Record<string, { title: string; emoji: string; desc: string }> = {
-  skeptiker:    { title: 'Der Sparsame Skeptiker',  emoji: '🛡️', desc: 'Du bist vorsichtig und schützt, was du hast. Jetzt lernst du, dein Geld klug arbeiten zu lassen.' },
-  abenteurer:   { title: 'Der Abenteurer',          emoji: '🚀', desc: 'Du bist mutig und bereit für Chancen. Wir geben deinem Mut eine Strategie.' },
-  pragmatiker:  { title: 'Der Pragmatiker',         emoji: '⚖️', desc: 'Du suchst Balance. Mit System wird aus „okay" ein echtes Vermögen.' },
-  geniesser:    { title: 'Der Genießer',            emoji: '🌿', desc: 'Du lebst im Jetzt. Wir zeigen dir, wie du das beibehältst, ohne morgen zu verlieren.' },
-  unsichere:    { title: 'Der Unsichere',           emoji: '🧭', desc: 'Du brauchst Klarheit. Genau die bekommst du jetzt – Schritt für Schritt.' },
-  visionaer:    { title: 'Der Visionär',            emoji: '🌟', desc: 'Du denkst gross. Lass uns deine Vision in einen Plan verwandeln.' },
-};
-
-function calcFinanzType(answers: Record<string, string>): string {
-  const counts: Record<string, number> = { A: 0, B: 0, C: 0 };
-  Object.values(answers).forEach(v => { if (v in counts) counts[v]++; });
-  const a = counts.A, b = counts.B, c = counts.C;
-  if (a >= 4) return 'skeptiker';
-  if (c >= 4) return 'geniesser';
-  if (b >= 3) return 'pragmatiker';
-  if (a >= 2 && c >= 2) return 'visionaer';
-  if (b >= 2 && c >= 2) return 'abenteurer';
-  return 'unsichere';
-}
-
-/* ───────── Component ───────── */
 export function OnboardingWizard() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const qc = useQueryClient();
   const { state, setStep, markComplete } = useOnboardingState();
 
-  const [step, setStepLocal] = useState<number>(state?.currentStep ?? 1);
+  const [step, setStepLocal] = useState<number>(() => {
+    const s = state?.currentStep ?? 1;
+    return Math.max(1, Math.min(TOTAL_STEPS, s));
+  });
 
-  // Resume: when state loads, jump to saved step
   useEffect(() => {
-    if (state?.currentStep && state.currentStep !== step) {
-      setStepLocal(state.currentStep);
+    if (state?.currentStep) {
+      setStepLocal(Math.max(1, Math.min(TOTAL_STEPS, state.currentStep)));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state?.currentStep]);
 
-  // Step 2 form state, prefilled from existing meta_profile (resume-safe)
-  const { data: profileData } = useQuery({
-    queryKey: ['onb-profile', user?.id],
-    enabled: !!user,
-    queryFn: async () => {
-      if (!user) return null;
-      const { data: p } = await supabase
-        .from('profiles')
-        .select('first_name, age, professional_status, monthly_income, fixed_costs, wealth')
-        .eq('id', user.id)
-        .maybeSingle();
-      return { firstName: p?.first_name ?? '', meta: p };
-    },
-  });
-
-  const [basics, setBasics] = useState({
-    firstName: '',
-    age: '' as string,
-    professionalStatus: '' as 'employed' | 'self_employed' | 'student' | '',
-    monthlyIncome: '' as string,
-    monthlyExpenses: '' as string,
-    wealth: '' as string,
-  });
-
-  useEffect(() => {
-    if (!profileData) return;
-    setBasics(b => ({
-      firstName: b.firstName || profileData.firstName || '',
-      age: b.age || (profileData.meta?.age?.toString() ?? ''),
-      professionalStatus: b.professionalStatus || ((profileData.meta?.professional_status as 'employed'|'self_employed'|'student'|undefined) ?? ''),
-      monthlyIncome: b.monthlyIncome || (profileData.meta?.monthly_income?.toString() ?? ''),
-      monthlyExpenses: b.monthlyExpenses || (profileData.meta?.fixed_costs?.toString() ?? ''),
-      wealth: b.wealth || (profileData.meta?.wealth?.toString() ?? ''),
-    }));
-  }, [profileData]);
-
-  // Step 3 (Finanz-Typ) state
-  const [ftAnswers, setFtAnswers] = useState<Record<string, string>>({});
-  const [ftIndex, setFtIndex] = useState(0);
-  const [ftResult, setFtResult] = useState<string | null>(null);
-  const [ftSaving, setFtSaving] = useState(false);
-
-  // Load existing FT result on resume
-  useEffect(() => {
-    if (!user || step !== 3) return;
-    supabase.from('finanz_type_results').select('finanz_type, completed').eq('user_id', user.id).maybeSingle().then(({ data }) => {
-      if (data?.completed && data.finanz_type) setFtResult(data.finanz_type);
-    });
-  }, [user, step]);
-
-  // Step 4 (Avatar) state
-  const [avatar, setAvatar] = useState({ name: '', age: 50, definingMoment: '' });
-  const [avatarSaving, setAvatarSaving] = useState(false);
-
-  useEffect(() => {
-    if (!user || step !== 4) return;
-    supabase.from('user_avatars').select('future_self_name, future_self_age, future_self_defining_moment').eq('user_id', user.id).maybeSingle().then(({ data }) => {
-      if (data) setAvatar({
-        name: data.future_self_name ?? '',
-        age: data.future_self_age ?? 50,
-        definingMoment: data.future_self_defining_moment ?? '',
-      });
-    });
-  }, [user, step]);
-
-  // Step 5 (Manifest)
-  const [manifestAccepted, setManifestAccepted] = useState(false);
-
-  // Step 6 PeakScore
-  const peakScore = useMemo(() => {
-    const exp = Number(basics.monthlyExpenses);
-    const w = Number(basics.wealth);
-    if (!exp || exp <= 0) return null;
-    return Math.max(0, Math.round((w / exp) * 10) / 10);
-  }, [basics.monthlyExpenses, basics.wealth]);
-
-  const peakRank = peakScore !== null ? getRankForScore(peakScore) : null;
-
-  /* ── Persist current step on change ── */
-  const goToStep = async (next: number) => {
-    const safe = Math.max(1, Math.min(ONBOARDING_TOTAL_STEPS, next));
-    setStepLocal(safe);
-    try { await setStep(safe); } catch (e) { /* non-blocking */ }
-  };
-
-  /* ── Step 2 save ── */
-  const saveBasics = async (): Promise<boolean> => {
-    if (!user) return false;
-    if (!basics.firstName.trim() || !basics.age || !basics.professionalStatus || !basics.monthlyIncome || !basics.monthlyExpenses || !basics.wealth) {
-      toast.error('Bitte alle Felder ausfüllen.');
-      return false;
-    }
-    const ageNum = Number(basics.age);
-    if (!Number.isFinite(ageNum) || ageNum < 14 || ageNum > 110) { toast.error('Bitte gültiges Alter eingeben.'); return false; }
-
-    // Single consolidated profile update (meta_profiles is deprecated).
-    const { error } = await supabase.from('profiles').update({
-      first_name: basics.firstName.trim(),
-      age: ageNum,
-      professional_status: basics.professionalStatus,
-      monthly_income: Number(basics.monthlyIncome),
-      fixed_costs: Number(basics.monthlyExpenses),
-      wealth: Number(basics.wealth),
-      last_confirmed_at: new Date().toISOString(),
-    } as any).eq('id', user.id);
-
-    if (error) { toast.error('Speichern fehlgeschlagen.'); return false; }
-    qc.invalidateQueries({ queryKey: ['onb-profile', user.id] });
-    return true;
-  };
-
-  /* ── Step 3 save ── */
-  const saveFinanzType = async (typeKey: string) => {
-    if (!user) return;
-    setFtSaving(true);
-    await supabase.from('finanz_type_results').upsert({
-      user_id: user.id, answers: ftAnswers, finanz_type: typeKey, completed: true,
-    }, { onConflict: 'user_id' });
-    setFtSaving(false);
-  };
-
-  /* ── Step 4 save ── */
-  const saveAvatar = async (): Promise<boolean> => {
-    if (!user) return false;
-    if (avatar.name.trim().length < 2 || avatar.definingMoment.trim().length < 3) {
-      toast.error('Bitte Name und prägenden Moment ausfüllen.');
-      return false;
-    }
-    setAvatarSaving(true);
-    const { error } = await supabase.from('user_avatars').upsert({
-      user_id: user.id,
-      future_self_name: avatar.name.trim(),
-      future_self_age: avatar.age,
-      future_self_defining_moment: avatar.definingMoment.trim(),
-      avatar_completed: true,
-    }, { onConflict: 'user_id' });
-    setAvatarSaving(false);
-    if (error) { toast.error('Speichern fehlgeschlagen.'); return false; }
-    return true;
-  };
-
-  /* ── Step 5 save ── */
-  const saveManifest = async () => {
-    if (!user) return;
-    await supabase.from('user_manifest_acceptance').upsert({
-      user_id: user.id, accepted_at: new Date().toISOString(),
-    }, { onConflict: 'user_id' });
-    setManifestAccepted(true);
-  };
-
-  /* ── Step 6 save & complete ── */
+  const [firstName, setFirstName] = useState('');
+  const [savingName, setSavingName] = useState(false);
   const [finishing, setFinishing] = useState(false);
+
+  // Prefill firstName from profile
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('profiles')
+      .select('first_name')
+      .eq('id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.first_name) setFirstName(data.first_name);
+      });
+  }, [user]);
+
+  const goToStep = async (next: number) => {
+    const safe = Math.max(1, Math.min(TOTAL_STEPS, next));
+    setStepLocal(safe);
+    try {
+      await setStep(safe);
+    } catch {
+      /* non-blocking */
+    }
+  };
+
+  const saveFirstName = async (): Promise<boolean> => {
+    if (!user) return false;
+    const trimmed = firstName.trim();
+    if (trimmed.length < 2) {
+      toast.error('Bitte gib deinen Vornamen ein.');
+      return false;
+    }
+    setSavingName(true);
+    const { error } = await supabase
+      .from('profiles')
+      .update({ first_name: trimmed })
+      .eq('id', user.id);
+    setSavingName(false);
+    if (error) {
+      toast.error('Speichern fehlgeschlagen.');
+      return false;
+    }
+    return true;
+  };
+
   const finishOnboarding = async () => {
     if (!user || finishing) return;
     setFinishing(true);
     try {
-      if (peakScore !== null) {
-        const { error: psErr } = await supabase
-          .from('peak_scores')
-          .insert({ user_id: user.id, score: peakScore, is_snapshot: true });
-        if (psErr) console.warn('[onboarding] peak_scores insert failed (non-fatal)', psErr);
-      }
-      try {
-        await markComplete();
-      } catch (err) {
-        console.error('[onboarding] markComplete failed', err);
-        toast.error('Abschluss fehlgeschlagen. Bitte erneut versuchen.');
-        setFinishing(false);
-        return;
-      }
-      // Ensure OnboardingGate re-reads the completed state immediately.
+      await markComplete();
       await qc.invalidateQueries({ queryKey: ['onboarding-state', user.id] });
       await qc.refetchQueries({ queryKey: ['onboarding-state', user.id] });
       toast.success('Willkommen an Bord! 🎉');
       navigate('/app/client-portal', { replace: true });
+    } catch (err) {
+      console.error('[onboarding] markComplete failed', err);
+      toast.error('Abschluss fehlgeschlagen. Bitte erneut versuchen.');
     } finally {
       setFinishing(false);
     }
   };
 
-  /* ───────── Render ───────── */
-  const progress = (step / ONBOARDING_TOTAL_STEPS) * 100;
+  const progress = (step / TOTAL_STEPS) * 100;
 
   return (
-    <div className="min-h-[100dvh] bg-background flex flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+    <div className="min-h-[100dvh] bg-background flex flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] relative overflow-hidden">
+      {/* Subtle ambient gradient */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-60"
+        style={{
+          background:
+            'radial-gradient(ellipse at top, hsl(var(--primary) / 0.08), transparent 60%), radial-gradient(ellipse at bottom, hsl(var(--accent) / 0.06), transparent 60%)',
+        }}
+      />
+
       {/* Sticky progress */}
-      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur border-b">
-        <div className="mx-auto max-w-2xl px-4 pt-5 pb-3 sm:pt-4">
+      <div className="sticky top-0 z-20 bg-background/85 backdrop-blur border-b border-border/50">
+        <div className="mx-auto max-w-2xl px-5 pt-5 pb-3 sm:pt-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-medium text-muted-foreground tracking-wider">
-              SCHRITT {step} VON {ONBOARDING_TOTAL_STEPS}
+            <span className="text-xs text-muted-foreground tracking-wider">
+              {step} / {TOTAL_STEPS}
             </span>
             <span className="text-xs text-primary font-medium flex items-center gap-1">
               <Sparkles className="h-3 w-3" /> FinLife
             </span>
           </div>
-          <Progress value={progress} className="h-1.5" />
+          <Progress value={progress} className="h-1" />
         </div>
       </div>
 
-      <div className="flex-1 mx-auto w-full max-w-2xl px-5 sm:px-6 pt-8 pb-12 sm:pt-12 sm:pb-16">
+      <div className="relative flex-1 mx-auto w-full max-w-2xl px-5 sm:px-6 pt-10 pb-14 sm:pt-14 sm:pb-20">
         <AnimatePresence mode="wait">
-          {/* ─── STEP 1: Welcome ─── */}
+          {/* ─── STEP 1: Willkommen ─── */}
           {step === 1 && (
-            <motion.div key="s1" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
-              className="text-center pt-6">
-              <div className="text-6xl mb-6">🌟</div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Willkommen bei FinLife</h1>
-              <p className="text-base sm:text-lg text-muted-foreground mb-3 max-w-md mx-auto">
-                In den nächsten 5 Minuten richten wir alles für dich ein.
+            <motion.div
+              key="s1"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.4 }}
+              className="text-center"
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1, duration: 0.5 }}
+                className="inline-flex items-center gap-2 mb-8"
+              >
+                <span className="text-primary text-3xl leading-none">✦</span>
+                <span className="text-2xl font-semibold tracking-tight text-foreground">
+                  FinLife
+                </span>
+              </motion.div>
+
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-5 leading-tight">
+                Willkommen.
+                <br />
+                Du hast den ersten Schritt gemacht.
+              </h1>
+              <p className="text-base text-muted-foreground mb-10 max-w-md mx-auto leading-relaxed">
+                Diese App ist mehr als ein Finanz-Tool. Sie ist dein
+                persönlicher Raum — um Klarheit zu gewinnen, Entscheidungen zu
+                verstehen und finanziell in Ruhe zu kommen.
               </p>
-              <p className="text-base sm:text-lg text-muted-foreground mb-10 max-w-md mx-auto">
-                Danach kennst du deinen <strong className="text-foreground">PeakScore</strong> und deinen <strong className="text-foreground">Finanz-Typ</strong>.
-              </p>
-              <Button size="lg" className="text-base px-8 py-6 rounded-xl" onClick={() => goToStep(2)}>
+
+              <div className="space-y-5 max-w-md mx-auto mb-12 text-left">
+                <ValueRow
+                  icon={<Search className="h-5 w-5" />}
+                  title="Transparenz statt Intransparenz"
+                  text="Du verstehst, was mit deinem Geld passiert. Immer. Ohne Fachjargon."
+                />
+                <ValueRow
+                  icon={<Handshake className="h-5 w-5" />}
+                  title="Wissen statt Unwissenheit"
+                  text="Finanzwissen ist kein Privileg. Es gehört dir — verständlich und umsetzbar."
+                />
+                <ValueRow
+                  icon={<Leaf className="h-5 w-5" />}
+                  title="Gelassenheit statt Stress"
+                  text="Finanzen müssen kein Angstthema sein. Wir bringen Ordnung, Klarheit und Ruhe."
+                />
+              </div>
+
+              <Button
+                size="lg"
+                className="text-base px-8 py-6 rounded-xl"
+                onClick={() => goToStep(2)}
+              >
                 Los geht's <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </motion.div>
           )}
 
-          {/* ─── STEP 2: Basis-Daten ─── */}
+          {/* ─── STEP 2: Unsere Haltung ─── */}
           {step === 2 && (
-            <motion.div key="s2" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}>
-              <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Deine Basis-Daten</h2>
-              <p className="text-muted-foreground mb-6">Damit wir alles für dich berechnen können. Schätzungen reichen.</p>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="firstName">Vorname</Label>
-                  <Input id="firstName" value={basics.firstName} onChange={e => setBasics({ ...basics, firstName: e.target.value })} className="text-base" />
-                </div>
-                <div>
-                  <Label htmlFor="age">Alter</Label>
-                  <Input id="age" inputMode="numeric" value={basics.age} onChange={e => setBasics({ ...basics, age: e.target.value.replace(/\D/g, '') })} className="text-base" />
-                </div>
-                <div>
-                  <Label>Beruflicher Status</Label>
-                  <div className="grid grid-cols-3 gap-2 mt-1">
-                    {([['employed','Angestellt'],['self_employed','Selbstständig'],['student','Student']] as const).map(([v,l]) => (
-                      <button key={v} type="button" onClick={() => setBasics({ ...basics, professionalStatus: v })}
-                        className={cn('rounded-lg border px-3 py-3 text-sm font-medium transition-colors',
-                          basics.professionalStatus === v ? 'border-primary bg-primary/10 text-foreground' : 'border-border bg-background text-muted-foreground hover:bg-muted')}>
-                        {l}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="income">Monatliches Bruttoeinkommen (CHF)</Label>
-                  <Input id="income" inputMode="numeric" value={basics.monthlyIncome} onChange={e => setBasics({ ...basics, monthlyIncome: e.target.value.replace(/\D/g, '') })} className="text-base" />
-                </div>
-                <div>
-                  <Label htmlFor="exp">Monatliche Ausgaben gesamt (CHF)</Label>
-                  <Input id="exp" inputMode="numeric" value={basics.monthlyExpenses} onChange={e => setBasics({ ...basics, monthlyExpenses: e.target.value.replace(/\D/g, '') })} className="text-base" />
-                </div>
-                <div>
-                  <Label htmlFor="wealth">Aktuelles Vermögen (CHF, ungefähr)</Label>
-                  <Input id="wealth" inputMode="numeric" value={basics.wealth} onChange={e => setBasics({ ...basics, wealth: e.target.value.replace(/\D/g, '') })} className="text-base" />
-                </div>
-              </div>
-              <NavRow onBack={() => goToStep(1)} onNext={async () => { if (await saveBasics()) goToStep(3); }} />
-            </motion.div>
-          )}
-
-          {/* ─── STEP 3: Finanz-Typ ─── */}
-          {step === 3 && (
-            <motion.div key="s3" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}>
-              <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Dein Finanz-Typ</h2>
-              <p className="text-muted-foreground mb-6">6 schnelle Fragen. Ehrlich antworten.</p>
-
-              {!ftResult ? (
-                <Card className="border-border">
-                  <CardContent className="p-5 sm:p-6">
-                    <p className="text-xs font-medium text-muted-foreground mb-3 tracking-wider">FRAGE {ftIndex + 1} / {FT_QUESTIONS.length}</p>
-                    <p className="text-lg font-semibold text-foreground mb-5">{FT_QUESTIONS[ftIndex].q}</p>
-                    <div className="space-y-2">
-                      {FT_QUESTIONS[ftIndex].opts.map(opt => (
-                        <button key={opt.v} type="button"
-                          onClick={async () => {
-                            const next = { ...ftAnswers, [FT_QUESTIONS[ftIndex].id]: opt.v };
-                            setFtAnswers(next);
-                            if (ftIndex + 1 < FT_QUESTIONS.length) {
-                              setFtIndex(ftIndex + 1);
-                            } else {
-                              const typeKey = calcFinanzType(next);
-                              await saveFinanzType(typeKey);
-                              setFtResult(typeKey);
-                            }
-                          }}
-                          className="w-full text-left rounded-lg border border-border bg-background p-4 text-sm hover:border-primary hover:bg-primary/5 transition-colors">
-                          {opt.l}
-                        </button>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="text-center py-4">
-                  <div className="text-6xl mb-4">{FT_LABEL[ftResult]?.emoji}</div>
-                  <p className="text-sm text-muted-foreground mb-1">Du bist...</p>
-                  <h3 className="text-2xl font-bold text-foreground mb-3">{FT_LABEL[ftResult]?.title}</h3>
-                  <p className="text-muted-foreground max-w-md mx-auto mb-4">{FT_LABEL[ftResult]?.desc}</p>
-                  <div className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
-                    <Sparkles className="h-3.5 w-3.5" /> +100 XP
-                  </div>
-                </div>
-              )}
-
-              <NavRow onBack={() => goToStep(2)} onNext={() => goToStep(4)} disabled={!ftResult || ftSaving} />
-            </motion.div>
-          )}
-
-          {/* ─── STEP 4: Hamster-Einführung ─── */}
-          {step === 4 && (
-            <motion.div key="s4" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
-              className="text-center py-6">
-              <motion.div
-                className="text-8xl mb-6 inline-block"
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
-              >
-                🐹
-              </motion.div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">Dein Hamster erwacht</h2>
-              <p className="text-muted-foreground max-w-md mx-auto mb-1">Er war lange im Rad. Jetzt ist es Zeit.</p>
-              <p className="text-muted-foreground max-w-md mx-auto mb-8">
-                Mit FinLife bringst du ihn Schritt für Schritt raus.
+            <motion.div
+              key="s2"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.4 }}
+              className="text-center"
+            >
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">
+                Unsere Haltung
               </p>
-
-              <div className="flex justify-center mb-4">
-                <HamsterAvatar size="lg" showRank />
-              </div>
-              <p className="text-base font-semibold text-foreground mb-6">Rang 1: Im Hamsterrad 🐹</p>
-
-              <p className="text-xs text-muted-foreground max-w-sm mx-auto mb-6">
-                Dein Hamster wächst mit dir. Je höher dein PeakScore, desto freier wird er.
-              </p>
-
-              <div className="flex items-center justify-center gap-2 sm:gap-3 mb-6 text-2xl sm:text-3xl">
-                {[
-                  { e: '🐹', n: 'Rad' },
-                  { e: '👁️', n: 'Erwacht' },
-                  { e: '🚪', n: 'Ausweg' },
-                  { e: '🏗️', n: 'Aufbau' },
-                  { e: '📈', n: 'Wachstum' },
-                  { e: '🌟', n: 'Frei' },
-                ].map((r, i, arr) => (
-                  <div key={r.n} className="flex items-center gap-1 sm:gap-2">
-                    <div className="flex flex-col items-center">
-                      <span>{r.e}</span>
-                      <span className="text-[10px] text-muted-foreground mt-0.5">{r.n}</span>
-                    </div>
-                    {i < arr.length - 1 && <span className="text-muted-foreground/50 text-sm">→</span>}
-                  </div>
-                ))}
-              </div>
-
-              <div className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
-                <Sparkles className="h-3.5 w-3.5" /> +100 XP
-              </div>
-
-              <NavRow onBack={() => goToStep(3)} onNext={() => goToStep(5)} />
-            </motion.div>
-          )}
-
-          {/* ─── STEP 5: Hamsterrad-Manifest ─── */}
-          {step === 5 && (
-            <motion.div key="s5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <div className="rounded-2xl bg-foreground text-background p-6 sm:p-10 min-h-[60vh] flex flex-col items-center justify-center text-center space-y-6">
-                {[
-                  { text: 'Aufstehen. Arbeiten. Rechnungen. Schlafen.', delay: 0.2, className: 'text-base sm:text-lg text-background/70' },
-                  { text: 'Das Hamsterrad.', delay: 1.6, className: 'text-3xl sm:text-4xl font-bold' },
-                  { text: 'FinLife ist dein Ausweg.', delay: 3.0, className: 'text-xl sm:text-2xl font-semibold text-primary' },
-                  { text: 'Dein Hamster schläft noch. Weck ihn auf.', delay: 4.2, className: 'text-base sm:text-lg text-background/80' },
-                ].map((line) => (
-                  <motion.p
-                    key={line.text}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: line.delay, ease: 'easeOut' }}
-                    className={line.className}
-                  >
-                    {line.text}
-                  </motion.p>
-                ))}
-
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 5.2 }}
-                  className="inline-flex items-center gap-1 rounded-full bg-primary/20 px-3 py-1 text-sm font-semibold text-primary"
-                >
-                  <Sparkles className="h-3.5 w-3.5" /> +250 XP
-                </motion.div>
-              </div>
-
-              <NavRow
-                onBack={() => goToStep(4)}
-                onNext={async () => { await saveManifest(); goToStep(6); }}
-                nextLabel="Spiel starten"
-              />
-            </motion.div>
-          )}
-
-
-          {/* ─── STEP 6: PeakScore + complete ─── */}
-          {step === 6 && (
-            <motion.div key="s6" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
-              className="text-center pt-4">
-              <Confetti />
-              <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 mt-4">
-                Du bist bereit! 🎉
+              <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-8">
+                Was uns antreibt
               </h2>
-              <p className="text-base text-muted-foreground max-w-md mx-auto mb-6">
-                Dein Profil ist eingerichtet. Dein <strong className="text-foreground">PeakScore</strong> wird in Kürze berechnet.
-              </p>
 
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-semibold text-primary mb-8">
-                <Sparkles className="h-4 w-4" /> +250 XP
+              <div className="space-y-4 max-w-lg mx-auto text-left text-base sm:text-lg leading-relaxed text-foreground/90 mb-10">
+                <p>Intransparenz gehört der Vergangenheit an.</p>
+                <p>Unwissenheit ausnutzen gehört der Vergangenheit an.</p>
+                <p>
+                  Finanzprodukte, die niemand versteht, gehören der
+                  Vergangenheit an.
+                </p>
               </div>
 
-              {avatar.name && (
-                <p className="text-sm text-muted-foreground mb-8">
-                  Dein Ziel: <strong className="text-foreground">{avatar.name}</strong> wartet.
-                </p>
-              )}
+              <div className="mx-auto w-16 h-px bg-border my-8" />
 
-              <Button size="lg" className="text-base px-8 py-6 rounded-xl" onClick={finishOnboarding} disabled={finishing}>
-                {finishing ? 'Wird abgeschlossen…' : 'Dashboard öffnen'} <ArrowRight className="ml-2 h-5 w-5" />
+              <div className="max-w-lg mx-auto text-left space-y-5">
+                <div>
+                  <p className="text-base sm:text-lg font-semibold text-foreground leading-relaxed">
+                    Was bleibt:
+                  </p>
+                  <p className="text-base sm:text-lg text-foreground/80 leading-relaxed">
+                    Deine Ziele. Deine Werte. Dein Leben.
+                  </p>
+                </div>
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                  Wir glauben, dass jeder Mensch das Recht hat, seine
+                  finanzielle Situation zu verstehen — nicht irgendwann,
+                  sondern jetzt.
+                </p>
+                <p className="text-xs text-muted-foreground italic">
+                  — Daniel Seglias, Finanzberater
+                </p>
+              </div>
+
+              <div className="mt-12 flex justify-center">
+                <Button
+                  size="lg"
+                  className="text-base px-8 py-6 rounded-xl"
+                  onClick={() => goToStep(3)}
+                >
+                  Das klingt richtig <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ─── STEP 3: Mitgliederbereich ─── */}
+          {step === 3 && (
+            <motion.div
+              key="s3"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.4 }}
+            >
+              <div className="text-center mb-10">
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">
+                  Dein Mitgliederbereich
+                </p>
+                <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">
+                  Was dich erwartet
+                </h2>
+                <p className="text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
+                  Dein persönlicher Finanzbereich — strukturiert, vertraulich,
+                  auf dich zugeschnitten.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 max-w-lg mx-auto mb-10">
+                <FeatureCard
+                  icon={<LayoutDashboard className="h-5 w-5 text-primary" />}
+                  title="Deine Finanz-Welt"
+                  text="Absicherung, Ziele, Wissen und Anlagestrategie — alles an einem Ort."
+                />
+                <FeatureCard
+                  icon={<MessageCircle className="h-5 w-5 text-primary" />}
+                  title="Persönlicher Finanzcoach"
+                  text="Ein KI-gestützter Assistent, der deine Fragen beantwortet. Immer verfügbar."
+                />
+                <FeatureCard
+                  icon={<Wrench className="h-5 w-5 text-primary" />}
+                  title="Finanzrechner"
+                  text="Praktische Tools für konkrete Entscheidungen. Von 3a bis Zinseszins."
+                />
+                <FeatureCard
+                  icon={<CalendarDays className="h-5 w-5 text-primary" />}
+                  title="Dein Finanzkalender"
+                  text="Erinnerungen für die Dinge, die wirklich wichtig sind. Kein wichtiger Termin geht vergessen."
+                />
+              </div>
+
+              <div className="flex justify-center">
+                <Button
+                  size="lg"
+                  className="text-base px-8 py-6 rounded-xl"
+                  onClick={() => goToStep(4)}
+                >
+                  Zeig mir mehr <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ─── STEP 4: Dein Name ─── */}
+          {step === 4 && (
+            <motion.div
+              key="s4"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.4 }}
+              className="text-center pt-6"
+            >
+              <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">
+                Wie darf ich dich nennen?
+              </h2>
+              <p className="text-base text-muted-foreground max-w-md mx-auto mb-10 leading-relaxed">
+                Nur dein Vorname — damit die App sich wie ein persönlicher
+                Raum anfühlt.
+              </p>
+
+              <div className="max-w-sm mx-auto">
+                <Input
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder="Dein Vorname"
+                  autoFocus
+                  className="text-center text-lg h-14 rounded-xl"
+                  onKeyDown={async (e) => {
+                    if (e.key === 'Enter') {
+                      if (await saveFirstName()) goToStep(5);
+                    }
+                  }}
+                />
+                <p className="mt-4 text-xs text-muted-foreground leading-relaxed">
+                  Deine Daten bleiben vertraulich. Erfahre mehr in unserer{' '}
+                  <a
+                    href="/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:text-foreground"
+                  >
+                    Datenschutzerklärung
+                  </a>
+                  .
+                </p>
+              </div>
+
+              <div className="mt-12 flex justify-center">
+                <Button
+                  size="lg"
+                  className="text-base px-8 py-6 rounded-xl"
+                  disabled={savingName}
+                  onClick={async () => {
+                    if (await saveFirstName()) goToStep(5);
+                  }}
+                >
+                  Weiter <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ─── STEP 5: Du bist dabei ─── */}
+          {step === 5 && (
+            <motion.div
+              key="s5"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="text-center pt-4 relative"
+            >
+              <Confetti />
+              <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-6 mt-4">
+                Du bist dabei. 🎉
+              </h2>
+              <p className="text-base text-muted-foreground max-w-md mx-auto mb-12 leading-relaxed">
+                Dein Mitgliederbereich ist bereit. Erkunde deine Finanz-Welt,
+                stelle Fragen an den Finanzcoach oder schau dir die Werkzeuge
+                an — in deinem eigenen Tempo.
+              </p>
+
+              <Button
+                size="lg"
+                className="text-base px-10 py-6 rounded-xl"
+                onClick={finishOnboarding}
+                disabled={finishing}
+              >
+                {finishing ? 'Wird abgeschlossen…' : 'Zur App'}
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
+
+              <p className="mt-8 text-xs text-muted-foreground max-w-sm mx-auto leading-relaxed">
+                Bei Fragen erreichst du Daniel jederzeit über den Chat.
+              </p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -508,15 +417,49 @@ export function OnboardingWizard() {
 }
 
 /* ───────── Helpers ───────── */
-function NavRow({ onBack, onNext, nextLabel = 'Weiter', disabled }: { onBack?: () => void; onNext: () => void; nextLabel?: string; disabled?: boolean }) {
+
+function ValueRow({
+  icon,
+  title,
+  text,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  text: string;
+}) {
   return (
-    <div className="mt-8 flex items-center justify-between gap-3">
-      {onBack ? (
-        <Button variant="ghost" onClick={onBack}><ArrowLeft className="mr-1.5 h-4 w-4" /> Zurück</Button>
-      ) : <span />}
-      <Button onClick={onNext} disabled={disabled} className="rounded-xl">
-        {disabled ? <Loader2 className="h-4 w-4 animate-spin" /> : <>{nextLabel} <ArrowRight className="ml-1.5 h-4 w-4" /></>}
-      </Button>
+    <div className="flex items-start gap-4">
+      <div className="shrink-0 w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+        {icon}
+      </div>
+      <div>
+        <p className="text-sm sm:text-base font-semibold text-foreground">
+          {title}
+        </p>
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mt-0.5">
+          {text}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function FeatureCard({
+  icon,
+  title,
+  text,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  text: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-border/60 bg-card p-4 sm:p-5 flex flex-col gap-2">
+      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+        {icon}
+      </div>
+      <p className="text-sm font-semibold text-foreground mt-1">{title}</p>
+      <p className="text-xs text-muted-foreground leading-relaxed">{text}</p>
     </div>
   );
 }
@@ -526,11 +469,22 @@ function Confetti() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {pieces.map((_, i) => (
-        <motion.div key={i}
+        <motion.div
+          key={i}
           initial={{ y: -20, x: `${(i / 24) * 100}%`, opacity: 0 }}
-          animate={{ y: '100vh', opacity: [0, 1, 1, 0], rotate: 360 * (i % 2 ? 1 : -1) }}
-          transition={{ duration: 2.5 + (i % 5) * 0.4, ease: 'easeOut', delay: (i % 6) * 0.1 }}
-          className="absolute w-2 h-3 bg-primary rounded-sm" style={{ top: 0 }} />
+          animate={{
+            y: '100vh',
+            opacity: [0, 1, 1, 0],
+            rotate: 360 * (i % 2 ? 1 : -1),
+          }}
+          transition={{
+            duration: 2.5 + (i % 5) * 0.4,
+            ease: 'easeOut',
+            delay: (i % 6) * 0.1,
+          }}
+          className="absolute w-2 h-3 bg-primary rounded-sm"
+          style={{ top: 0 }}
+        />
       ))}
     </div>
   );
