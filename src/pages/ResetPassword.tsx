@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, EyeOff, Loader2, CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Eye, EyeOff, Loader2, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { PasswordStrengthChecker } from '@/components/PasswordStrengthChecker';
 
 export default function ResetPassword() {
@@ -13,7 +13,7 @@ export default function ResetPassword() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  
   const [sessionReady, setSessionReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -70,24 +70,13 @@ export default function ResetPassword() {
         toast({ variant: 'destructive', title: 'Fehler', description: error.message });
       }
     } else {
-      setSuccess(true);
-      setTimeout(() => navigate('/login', { replace: true }), 3000);
+      toast({
+        title: '✓ Passwort gesetzt',
+        description: 'Du kannst dich jetzt anmelden.',
+      });
+      navigate('/login', { replace: true });
     }
   };
-
-  if (success) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6">
-        <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-6">
-          <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
-        </div>
-        <h1 className="text-2xl font-bold text-foreground mb-2">Passwort gesetzt</h1>
-        <p className="text-muted-foreground text-center max-w-sm">
-          Dein Passwort wurde erfolgreich geändert. Du wirst jetzt zur Anmeldeseite weitergeleitet…
-        </p>
-      </div>
-    );
-  }
 
   if (error) {
     return (
