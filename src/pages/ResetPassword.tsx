@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, EyeOff, Loader2, CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Eye, EyeOff, Loader2, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { PasswordStrengthChecker } from '@/components/PasswordStrengthChecker';
 
 export default function ResetPassword() {
