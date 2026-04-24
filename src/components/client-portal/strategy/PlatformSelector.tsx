@@ -105,9 +105,23 @@ function PlatformCard({
             <Button variant="outline" size="sm" className="text-xs h-7 flex-1">
               Mehr erfahren
             </Button>
-            <Button variant="ghost" size="sm" className="text-xs h-7 gap-1">
-              Website <ExternalLink className="h-3 w-3" />
-            </Button>
+            {platform.websiteUrl && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-xs h-7 gap-1"
+                asChild
+              >
+                <a
+                  href={platform.websiteUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Website <ExternalLink className="h-3 w-3" />
+                </a>
+              </Button>
+            )}
           </div>
         )}
       </CardContent>

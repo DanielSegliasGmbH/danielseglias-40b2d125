@@ -23,6 +23,7 @@ export const platforms: Platform[] = [
     description: 'Hohe Flexibilität, tiefe Gebühren.',
     productCosts: '0.39%',
     otherFees: '0.00 – 0.20% TER + keine Handelskommission',
+    websiteUrl: 'https://app.finpension.ch/login',
   },
   {
     id: 'truewealth',
@@ -32,6 +33,7 @@ export const platforms: Platform[] = [
     description: 'Die günstigste Lösung am Markt.',
     productCosts: 'Keine',
     otherFees: '0.13 – 0.20% TER + keine Handelskommission',
+    websiteUrl: 'https://app.truewealth.ch/app/login',
   },
   {
     id: 'saxo',
@@ -41,6 +43,7 @@ export const platforms: Platform[] = [
     description: 'Lösung für freies Vermögen.',
     productCosts: 'Keine',
     otherFees: '0.13 – 0.35% TER + Handelskommission',
+    websiteUrl: 'https://www.home.saxo/de-ch/campaigns/money-mastery',
   },
 ];
 
