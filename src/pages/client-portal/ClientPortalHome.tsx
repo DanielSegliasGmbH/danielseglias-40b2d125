@@ -14,17 +14,17 @@ import { NotificationBell } from '@/components/client-portal/NotificationBell';
 import { Sparkles, Wrench, Zap, Star, Trophy, Award, Crown, Wallet, Camera, CalendarDays, Film } from 'lucide-react';
 import { useFinanzType } from '@/hooks/useFinanzType';
 import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
-import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
-import { JourneyNudgeCard } from '@/components/client-portal/JourneyNudgeCard';
+// ARCHIVED v1.0: import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
+// ARCHIVED v1.0: import { JourneyNudgeCard } from '@/components/client-portal/JourneyNudgeCard';
 // ARCHIVED for v1.0 — race condition between score & savedRank fetch causes false positives
 // import { RankChangeOverlay } from '@/components/client-portal/RankChangeOverlay';
 // import { useRankSystem } from '@/hooks/useRankSystem';
-import { usePeakScore } from '@/hooks/usePeakScore';
+// ARCHIVED v1.0: import { usePeakScore } from '@/hooks/usePeakScore';
 import { LifeMapCard } from '@/components/client-portal/LifeMapCard';
 // ARCHIVED: import { DailyFocusCard } from '@/components/client-portal/DailyFocusCard';
 // ARCHIVED v1.0 (P4): MoreToDiscover — restore when widgets are production-ready
 // import { MoreToDiscover } from '@/components/client-portal/MoreToDiscover';
-import { HamsterHeaderBadge } from '@/components/client-portal/HamsterHeaderBadge';
+// ARCHIVED v1.0: import { HamsterHeaderBadge } from '@/components/client-portal/HamsterHeaderBadge';
 // ARCHIVED: future-self avatar system replaced by Hamster mascot
 // import { useUserAvatar } from '@/hooks/useUserAvatar';
 
@@ -59,7 +59,7 @@ export default function ClientPortalHome() {
 
   const { data: nextStepResult } = useNextBestStep();
   // ARCHIVED for v1.0: const { rankChange, dismissRankChange } = useRankSystem();
-  const { score, rank: peakRank } = usePeakScore();
+  // ARCHIVED v1.0: const { score, rank: peakRank } = usePeakScore();
   const { completed: finanzTypCompleted, info: finanzTypInfo } = useFinanzType();
   const firstName = user?.user_metadata?.first_name || 'Kunde';
   // ARCHIVED: const { futureSelfName, completed: avatarCompleted } = useUserAvatar();
@@ -270,7 +270,7 @@ export default function ClientPortalHome() {
             </h1>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <HamsterHeaderBadge />
+            {/* ARCHIVED v1.0: <HamsterHeaderBadge /> */}
             <NotificationBell />
           </div>
         </div>
@@ -280,11 +280,11 @@ export default function ClientPortalHome() {
             One thing per moment. Auf einem iPhone ohne Scroll sichtbar.
             ═══════════════════════════════════════════════════════════ */}
 
-        {/* Journey-Nudge (nur wenn aktiv) */}
-        <JourneyNudgeCard />
+        {/* ARCHIVED v1.0: Journey-Nudge */}
+        {/* <JourneyNudgeCard /> */}
 
-        {/* PeakScore (immer) */}
-        <PeakScoreCard onClick={() => navigate('/app/client-portal/peak-score')} />
+        {/* ARCHIVED v1.0 — PeakScore not ready for clients */}
+        {/* <PeakScoreCard onClick={() => navigate('/app/client-portal/peak-score')} /> */}
 
         {/* ARCHIVED: DAILY FOCUS — die EINE Aktion für heute */}
         {/* ARCHIVED: <DailyFocusCard /> */}
