@@ -64,7 +64,7 @@ export function CreateUserDialog() {
     try {
       const result = await createUser.mutateAsync({
         email: formData.email,
-        password: '', // empty = backend generates a memorable initial password
+        password: formData.password.trim() || '', // empty = backend generates a memorable initial password
         firstName: formData.firstName,
         lastName: formData.lastName,
         role: formData.role as AppRole,
