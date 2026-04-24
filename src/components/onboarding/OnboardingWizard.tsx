@@ -124,6 +124,29 @@ export function OnboardingWizard() {
     }
   };
 
+  const handleEnableNotifications = async () => {
+    if (notifLoading) return;
+    setNotifLoading(true);
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        // Best-effort: register SW + subscribe in background
+        try {
+          await ensureServiceWorker();
+          await subscribeToPush();
+        } catch (e) {
+          console.warn('[onboarding] push subscription failed', e);
+        }
+        toast.success('Danke! Du erhältst ab sofort Erinnerungen.');
+      }
+    } catch (e) {
+      console.error('[onboarding] notification permission failed', e);
+    } finally {
+      setNotifLoading(false);
+      goToStep(NAME_STEP);
+    }
+  };
+
   const progress = (step / TOTAL_STEPS) * 100;
 
   return (
