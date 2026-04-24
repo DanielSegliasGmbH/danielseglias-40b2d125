@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -14,6 +14,7 @@ import { NotificationBell } from '@/components/client-portal/NotificationBell';
 import { Sparkles, Wrench, Zap, Star, Trophy, Award, Crown, Wallet, Camera, CalendarDays, Film } from 'lucide-react';
 import { useFinanzType } from '@/hooks/useFinanzType';
 import { QuickActionFAB } from '@/components/client-portal/QuickActionFAB';
+import { AppTour } from '@/components/client-portal/AppTour';
 // ARCHIVED v1.0: import { PeakScoreCard } from '@/components/client-portal/PeakScoreCard';
 // ARCHIVED v1.0: import { JourneyNudgeCard } from '@/components/client-portal/JourneyNudgeCard';
 // ARCHIVED for v1.0 — race condition between score & savedRank fetch causes false positives
@@ -50,6 +51,28 @@ export default function ClientPortalHome() {
 
   const [strategyUnlocked, setStrategyUnlocked] = useState(false);
   const [passwordGateOpen, setPasswordGateOpen] = useState(false);
+  const [showTour, setShowTour] = useState(false);
+
+  // First-time tour: shows after onboarding is complete, until tour_completed
+  const { data: tourProfile } = useQuery({
+    queryKey: ['tour-status', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase
+        .from('profiles')
+        .select('onboarding_completed, tour_completed')
+        .eq('id', user.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  useEffect(() => {
+    if (tourProfile?.onboarding_completed && !tourProfile?.tour_completed) {
+      setShowTour(true);
+    }
+  }, [tourProfile]);
 
   const {
     points, streakDays, level, levelLabel,
@@ -356,6 +379,7 @@ export default function ClientPortalHome() {
         }}
       />
       <QuickActionFAB />
+      <AppTour open={showTour} onClose={() => setShowTour(false)} />
       {/* ARCHIVED for v1.0: <RankChangeOverlay event={rankChange} onDismiss={dismissRankChange} /> */}
     </ClientPortalLayout>
   );
