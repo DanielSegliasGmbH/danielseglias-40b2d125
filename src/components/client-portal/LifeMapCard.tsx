@@ -57,35 +57,35 @@ const UNLOCK_INFO: Record<LifeMapTerritory['key'], { description: string; howTo:
  */
 export function LifeMapCard() {
   const navigate = useNavigate();
-  const { territories, unlockedCount } = useLifeMapData();
-  // Recompute exploredPercent excluding coming-soon territories
-  const activeTerritories = territories.filter((t) => !COMING_SOON_TERRITORIES.includes(t.key));
-  const exploredPercent = activeTerritories.length
-    ? Math.round((activeTerritories.reduce((acc, t) => acc + Math.min(1, t.progress), 0) / activeTerritories.length) * 100)
-    : 0;
-  const activeTotal = activeTerritories.length;
-  const activeUnlocked = activeTerritories.filter((t) => t.progress > 0).length;
+  const { territories } = useLifeMapData();
+  // ARCHIVED v1.0: progress percent + activeUnlocked footer removed
+  // const activeTerritories = territories.filter((t) => !COMING_SOON_TERRITORIES.includes(t.key));
+  // const exploredPercent = activeTerritories.length
+  //   ? Math.round((activeTerritories.reduce((acc, t) => acc + Math.min(1, t.progress), 0) / activeTerritories.length) * 100)
+  //   : 0;
+  // const activeTotal = activeTerritories.length;
+  // const activeUnlocked = activeTerritories.filter((t) => t.progress > 0).length;
   const [lockedInfo, setLockedInfo] = useState<LifeMapTerritory | null>(null);
   
 
-  // Track newly unlocked territories — fire toast on transition 0 -> >0.
-  const prevUnlockedRef = useRef<Set<string> | null>(null);
-  useEffect(() => {
-    const currentUnlocked = new Set(
-      territories.filter((t) => t.progress > 0).map((t) => t.key),
-    );
-    if (prevUnlockedRef.current) {
-      for (const t of territories) {
-        if (t.progress > 0 && !prevUnlockedRef.current.has(t.key)) {
-          toast.success(`+1 Gebiet entdeckt: ${t.label}!`, {
-            description: 'Deine Finanz-Welt wächst. Mach weiter so!',
-            duration: 4000,
-          });
-        }
-      }
-    }
-    prevUnlockedRef.current = currentUnlocked;
-  }, [territories]);
+  // ARCHIVED v1.0: territory unlock toast removed
+  // const prevUnlockedRef = useRef<Set<string> | null>(null);
+  // useEffect(() => {
+  //   const currentUnlocked = new Set(
+  //     territories.filter((t) => t.progress > 0).map((t) => t.key),
+  //   );
+  //   if (prevUnlockedRef.current) {
+  //     for (const t of territories) {
+  //       if (t.progress > 0 && !prevUnlockedRef.current.has(t.key)) {
+  //         toast.success(`+1 Gebiet entdeckt: ${t.label}!`, {
+  //           description: 'Deine Finanz-Welt wächst. Mach weiter so!',
+  //           duration: 4000,
+  //         });
+  //       }
+  //     }
+  //   }
+  //   prevUnlockedRef.current = currentUnlocked;
+  // }, [territories]);
 
   const lockedDetails = lockedInfo ? UNLOCK_INFO[lockedInfo.key] : null;
 
@@ -102,6 +102,10 @@ export function LifeMapCard() {
         <div className="grid grid-cols-3 gap-3 sm:gap-4 max-w-md mx-auto">
           {territories.map((t, i) => {
             const isComingSoon = COMING_SOON_TERRITORIES.includes(t.key);
+            // Active territories always render as fully discovered
+            const displayTerritory: LifeMapTerritory = isComingSoon
+              ? t
+              : { ...t, progress: 1 };
             return (
               <motion.button
                 key={t.key}
@@ -112,11 +116,7 @@ export function LifeMapCard() {
                 transition={{ delay: i * 0.07, duration: 0.35, ease: 'easeOut' }}
                 onClick={() => {
                   if (isComingSoon) return;
-                  if (t.progress === 0) {
-                    setLockedInfo(t);
-                  } else {
-                    navigate(t.path);
-                  }
+                  navigate(t.path);
                 }}
                 className={cn(
                   'group relative aspect-square focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-2xl',
@@ -125,40 +125,14 @@ export function LifeMapCard() {
                 aria-label={
                   isComingSoon
                     ? `${t.label} – bald verfügbar`
-                    : `${t.label} – ${Math.round(t.progress * 100)}% erschlossen`
+                    : t.label
                 }
               >
-                {isComingSoon ? <ComingSoonHexagon label={t.label} /> : <Hexagon territory={t} />}
+                {isComingSoon ? <ComingSoonHexagon label={t.label} /> : <Hexagon territory={displayTerritory} />}
               </motion.button>
             );
           })}
         </div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="mt-5 pt-4 border-t border-border/50"
-        >
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-xs text-muted-foreground">
-              Du hast{' '}
-              <span className="font-bold text-foreground">{exploredPercent}%</span>{' '}
-              deiner Finanz-Welt erschlossen.
-            </p>
-            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-muted text-muted-foreground shrink-0">
-              {activeUnlocked}/{activeTotal} Gebiete
-            </span>
-          </div>
-          <div className="mt-2 h-1.5 w-full bg-muted rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-foreground rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${exploredPercent}%` }}
-              transition={{ delay: 0.6, duration: 0.8, ease: 'easeOut' }}
-            />
-          </div>
-        </motion.div>
       </CardContent>
 
       <Sheet open={!!lockedInfo} onOpenChange={(open) => !open && setLockedInfo(null)}>
