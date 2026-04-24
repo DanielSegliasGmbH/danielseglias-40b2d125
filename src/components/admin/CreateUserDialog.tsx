@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/select';
 import { UserPlus, Copy, Check, KeyRound, Mail, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
+import { PasswordStrengthChecker } from '@/components/PasswordStrengthChecker';
 import type { Database } from '@/integrations/supabase/types';
 
 type AppRole = Database['public']['Enums']['app_role'];
@@ -44,6 +45,7 @@ export function CreateUserDialog() {
     lastName: '',
     role: '' as AppRole | '',
     customerId: '',
+    password: '',
   });
 
   // After creation: surface the initial password so the admin can hand it over.
@@ -62,7 +64,7 @@ export function CreateUserDialog() {
     try {
       const result = await createUser.mutateAsync({
         email: formData.email,
-        password: '', // empty = backend generates a memorable initial password
+        password: formData.password.trim() || '', // empty = backend generates a memorable initial password
         firstName: formData.firstName,
         lastName: formData.lastName,
         role: formData.role as AppRole,
@@ -92,7 +94,7 @@ export function CreateUserDialog() {
     setOpen(false);
     setCreatedUser(null);
     setCopiedField(null);
-    setFormData({ email: '', firstName: '', lastName: '', role: '', customerId: '' });
+    setFormData({ email: '', firstName: '', lastName: '', role: '', customerId: '', password: '' });
   };
 
   const copy = async (text: string, field: 'email' | 'password' | 'both') => {
@@ -244,8 +246,32 @@ export function CreateUserDialog() {
                   required
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Passwort (optional)</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  autoComplete="new-password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  placeholder="Mindestens 8 Zeichen"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Leer lassen = automatisch generiertes Initial-Passwort wird angezeigt.
+                </p>
+                {formData.password && (
+                  <PasswordStrengthChecker
+                    password={formData.password}
+                    context={{
+                      email: formData.email,
+                      firstName: formData.firstName,
+                      lastName: formData.lastName,
+                    }}
+                  />
+                )}
+              </div>
               <p className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-lg leading-snug">
-                Es wird automatisch ein <strong className="text-foreground">Initial-Passwort</strong> erzeugt.
+                Wenn kein Passwort gesetzt wird, erzeugt das System automatisch ein <strong className="text-foreground">Initial-Passwort</strong>.
                 Du siehst es nach der Erstellung einmalig und kannst es dem Benutzer übergeben.
                 Beim ersten Login wird er aufgefordert, sein eigenes Passwort zu vergeben.
               </p>

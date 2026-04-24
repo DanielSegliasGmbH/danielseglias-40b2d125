@@ -259,6 +259,11 @@ export default function ClientPortalSettings() {
         </div>
 
         <Separator />
+
+        {/* Passwort ändern */}
+        <PasswordChangeSection />
+
+        <Separator />
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground px-1">Privatsphäre</p>
           <div className="space-y-2">
@@ -529,6 +534,71 @@ function RitualSettingsSection({ userId }: { userId?: string }) {
           </Card>
         );
       })}
+    </div>
+  );
+}
+
+function PasswordChangeSection() {
+  const [newPw, setNewPw] = useState('');
+  const [confirmPw, setConfirmPw] = useState('');
+  const [pwLoading, setPwLoading] = useState(false);
+
+  const handlePasswordChange = async () => {
+    if (newPw !== confirmPw) {
+      toast.error('Passwörter stimmen nicht überein');
+      return;
+    }
+    if (newPw.length < 8) {
+      toast.error('Mindestens 8 Zeichen erforderlich');
+      return;
+    }
+    setPwLoading(true);
+    const { error } = await supabase.auth.updateUser({ password: newPw });
+    setPwLoading(false);
+    if (error) {
+      toast.error('Fehler: ' + error.message);
+    } else {
+      toast.success('Passwort erfolgreich geändert');
+      setNewPw('');
+      setConfirmPw('');
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <p className="text-xs font-medium text-muted-foreground px-1">Passwort ändern</p>
+      <Card>
+        <CardContent className="p-4 space-y-3">
+          <div className="space-y-1.5">
+            <Label className="text-xs">Neues Passwort</Label>
+            <Input
+              type="password"
+              autoComplete="new-password"
+              value={newPw}
+              onChange={(e) => setNewPw(e.target.value)}
+              placeholder="Mindestens 8 Zeichen"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">Passwort bestätigen</Label>
+            <Input
+              type="password"
+              autoComplete="new-password"
+              value={confirmPw}
+              onChange={(e) => setConfirmPw(e.target.value)}
+              placeholder="Passwort wiederholen"
+            />
+          </div>
+          <Button
+            onClick={handlePasswordChange}
+            disabled={pwLoading || !newPw || !confirmPw}
+            size="sm"
+            className="w-full"
+          >
+            {pwLoading ? 'Wird geändert...' : 'Passwort ändern'}
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }
