@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/select';
 import { UserPlus, Copy, Check, KeyRound, Mail, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
+import { PasswordStrengthChecker } from '@/components/PasswordStrengthChecker';
 import type { Database } from '@/integrations/supabase/types';
 
 type AppRole = Database['public']['Enums']['app_role'];
