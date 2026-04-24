@@ -94,7 +94,7 @@ export function CreateUserDialog() {
     setOpen(false);
     setCreatedUser(null);
     setCopiedField(null);
-    setFormData({ email: '', firstName: '', lastName: '', role: '', customerId: '' });
+    setFormData({ email: '', firstName: '', lastName: '', role: '', customerId: '', password: '' });
   };
 
   const copy = async (text: string, field: 'email' | 'password' | 'both') => {
