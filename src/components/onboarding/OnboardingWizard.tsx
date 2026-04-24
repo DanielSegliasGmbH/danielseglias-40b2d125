@@ -464,7 +464,7 @@ export function OnboardingWizard() {
           )}
 
           {/* ─── STEP 5: Du bist dabei ─── */}
-          {step === 5 && (
+          {step === FINISH_STEP && (
             <motion.div
               key="s5"
               initial={{ opacity: 0, scale: 0.96 }}
