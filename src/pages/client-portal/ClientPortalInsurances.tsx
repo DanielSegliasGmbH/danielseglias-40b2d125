@@ -410,20 +410,23 @@ export default function ClientPortalInsurances() {
 
           if (filteredProducts.length === 0) {
             return (
-              <div className="space-y-4">
-                <EmptyState
-                  icon={Shield}
-                  title={categoryFilter === 'all' ? 'Noch keine Produkte' : 'Keine Produkte in dieser Kategorie'}
-                  description={categoryFilter === 'all'
-                    ? 'Füge dein erstes Finanzprodukt hinzu – z. B. eine Versicherung, Vorsorge oder Anlage.'
-                    : 'In dieser Kategorie hast du noch keine Produkte erfasst.'}
-                />
+              <div className="flex flex-col items-center justify-center gap-6 py-16 text-center">
+                <div className="text-5xl">🛡️</div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold text-foreground">
+                    {categoryFilter === 'all' ? 'Deine Versicherungsübersicht' : 'Keine Produkte in dieser Kategorie'}
+                  </h3>
+                  <p className="text-sm text-muted-foreground max-w-xs mx-auto leading-relaxed">
+                    {categoryFilter === 'all'
+                      ? 'Hinterlege deine Versicherungsprodukte — so hast du Policennummern, Kontakte und Links immer griffbereit.'
+                      : 'In dieser Kategorie hast du noch keine Produkte erfasst.'}
+                  </p>
+                </div>
                 {customerId && (
-                  <div className="flex justify-center">
-                    <Button onClick={openAdd} className="gap-2">
-                      <Plus className="h-4 w-4" /> Produkt hinzufügen
-                    </Button>
-                  </div>
+                  <Button onClick={openAdd} size="lg" className="gap-2">
+                    <Plus className="h-5 w-5" />
+                    {categoryFilter === 'all' ? 'Erstes Produkt hinzufügen' : 'Produkt hinzufügen'}
+                  </Button>
                 )}
               </div>
             );
@@ -491,6 +494,18 @@ export default function ClientPortalInsurances() {
           );
         })()}
       </div>
+
+      {/* Floating add button — always visible when products exist */}
+      {customerId && products.length > 0 && (
+        <Button
+          onClick={openAdd}
+          size="lg"
+          className="fixed bottom-24 right-4 shadow-lg gap-2 z-40 rounded-full px-5"
+        >
+          <Plus className="h-5 w-5" />
+          Produkt hinzufügen
+        </Button>
+      )}
 
       {/* Add / Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={(open) => !open && closeDialog()}>
@@ -592,14 +607,17 @@ export default function ClientPortalInsurances() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="portal_url">Link zum Kundenportal (optional)</Label>
+              <Label htmlFor="portal_url">Link zum Online-Portal (optional)</Label>
               <Input
                 id="portal_url"
                 type="url"
                 value={form.portal_url}
                 onChange={e => updateField('portal_url', e.target.value)}
-                placeholder="z.B. https://login.axa.ch"
+                placeholder="https://meinversicherer.ch/login"
               />
+              <p className="text-xs text-muted-foreground">
+                Direkter Zugang zu deinem Versicherungsportal
+              </p>
             </div>
 
             <DialogFooter>
