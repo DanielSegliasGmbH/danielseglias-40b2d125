@@ -34,6 +34,19 @@ export function OnboardingWizard() {
   const qc = useQueryClient();
   const { state, setStep, markComplete } = useOnboardingState();
 
+  const [showNotifStep] = useState(() => {
+    return (
+      isPushSupported() &&
+      typeof Notification !== 'undefined' &&
+      Notification.permission === 'default'
+    );
+  });
+  const TOTAL_STEPS = showNotifStep ? BASE_TOTAL_STEPS + 1 : BASE_TOTAL_STEPS;
+  // When notif step is shown, name step shifts from 4 → 5 and finish 5 → 6.
+  const NAME_STEP = showNotifStep ? 5 : 4;
+  const FINISH_STEP = showNotifStep ? 6 : 5;
+  const NOTIF_STEP = 4; // only used when showNotifStep
+
   const [step, setStepLocal] = useState<number>(() => {
     const s = state?.currentStep ?? 1;
     return Math.max(1, Math.min(TOTAL_STEPS, s));
@@ -49,6 +62,7 @@ export function OnboardingWizard() {
   const [firstName, setFirstName] = useState('');
   const [savingName, setSavingName] = useState(false);
   const [finishing, setFinishing] = useState(false);
+  const [notifLoading, setNotifLoading] = useState(false);
 
   // Prefill firstName from profile
   useEffect(() => {
