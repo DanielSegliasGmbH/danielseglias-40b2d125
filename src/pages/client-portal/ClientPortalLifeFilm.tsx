@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useMetaProfile } from '@/hooks/useMetaProfile';
-import { useGamification } from '@/hooks/useGamification';
+// ARCHIVED: import { useGamification } from '@/hooks/useGamification';
 import { ClientPortalLayout } from '@/layouts/ClientPortalLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,7 +36,7 @@ export default function ClientPortalLifeFilm() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { profile: metaProfile } = useMetaProfile();
-  const { awardPoints } = useGamification();
+  // ARCHIVED: const { awardPoints } = useGamification();
 
   const [step, setStep] = useState(0);
   const [age, setAge] = useState('');
@@ -104,7 +104,7 @@ export default function ClientPortalLifeFilm() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['life-film-data'] });
-      awardPoints('life_film_completed', `life_film_${Date.now()}`);
+      // ARCHIVED: awardPoints('life_film_completed', `life_film_${Date.now()}`);
       // Navigate to film result
       navigate('/app/client-portal/life-film-result');
     },
@@ -417,12 +417,13 @@ export default function ClientPortalLifeFilm() {
           </Button>
         </div>
 
-        {/* XP hint */}
+        {/* ARCHIVED: XP hint
         <div className="text-center mt-4">
           <Badge variant="secondary" className="text-[10px] gap-1">
             🎬 +150 XP für deinen Lebensfilm
           </Badge>
         </div>
+        */}
       </div>
     </ClientPortalLayout>
   );
