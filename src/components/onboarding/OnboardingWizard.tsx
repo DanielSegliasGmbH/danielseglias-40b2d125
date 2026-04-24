@@ -430,7 +430,7 @@ export function OnboardingWizard() {
                   className="text-center text-lg h-14 rounded-xl"
                   onKeyDown={async (e) => {
                     if (e.key === 'Enter') {
-                      if (await saveFirstName()) goToStep(5);
+                      if (await saveFirstName()) goToStep(FINISH_STEP);
                     }
                   }}
                 />
