@@ -23,5 +23,5 @@ export default function MinimalLandingGate() {
     return <Navigate to={target} replace />;
   }
 
-  return <Navigate to="/open" replace />;
+  return <Navigate to="/login" replace />;
 }
